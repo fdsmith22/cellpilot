@@ -97,7 +97,7 @@ function getFeaturesByPlan(plan: string) {
       formulaBuilder: false,
       emailAutomation: false,
       calendarIntegration: false,
-      priority Support: false
+      prioritySupport: false
     },
     starter: {
       operationsLimit: 500,
