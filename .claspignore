@@ -1,0 +1,33 @@
+# Ignore website files
+site/**
+
+# Ignore scripts
+scripts/**
+
+# Ignore documentation
+*.md
+README.md
+
+# Ignore version control
+.git/**
+.gitignore
+
+# Ignore environment files
+.env*
+*.env
+
+# Ignore node modules
+node_modules/**
+
+# Ignore clasp config
+.clasp.json
+.claspignore
+
+# Ignore test files
+test-*.js
+test-*.html
+*-test.js
+*-test.html
+
+# Ignore html folder (files are at root for Apps Script)
+html/**

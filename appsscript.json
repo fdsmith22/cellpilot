@@ -1,0 +1,32 @@
+{
+  "timeZone": "Europe/London",
+  "dependencies": {},
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "addOns": {
+    "common": {
+      "name": "CellPilot",
+      "logoUrl": "https://www.gstatic.com/images/branding/product/2x/sheets_48dp.png",
+      "useLocaleFromApp": true,
+      "homepageTrigger": {
+        "runFunction": "buildHomepage",
+        "enabled": true
+      }
+    },
+    "sheets": {
+      "homepageTrigger": {
+        "runFunction": "buildHomepage",
+        "enabled": true
+      }
+    }
+  },
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/spreadsheets.currentonly",
+    "https://www.googleapis.com/auth/script.locale",
+    "https://www.googleapis.com/auth/script.container.ui"
+  ],
+  "urlFetchWhitelist": [
+    "https://cellpilot.co.uk/*",
+    "https://api.cellpilot.co.uk/*"
+  ]
+}

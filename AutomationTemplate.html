@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('SharedStyles'); ?>
+</head>
+<body>
+  <div class="nav-header">
+    <button class="nav-back" onclick="backToMain()">←</button>
+    <div class="nav-title">
+      <h2>Smart Automation</h2>
+      <p>Automate repetitive tasks and save hours</p>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div id="statusMessage" style="display: none;"></div>
+    
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+      <button class="tab-button active" onclick="switchTab('formatting')">
+        Format Persistence
+      </button>
+      <button class="tab-button" onclick="switchTab('categorization')">
+        Auto-Categorize
+      </button>
+      <button class="tab-button" onclick="switchTab('migration')">
+        Excel Migration
+      </button>
+      <button class="tab-button" onclick="switchTab('protection')">
+        Change Protection
+      </button>
+    </div>
+    
+    <!-- Format Persistence Tab -->
+    <div id="formattingTab" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Smart Format Persistence</div>
+          <div class="card-description">Prevent formatting from breaking when new data arrives</div>
+        </div>
+        
+        <div class="alert alert-info">
+          This feature solves the #1 automation blocker - formats reverting to "Automatic" when data is added
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Format Rules</label>
+          <div class="form-check">
+            <input type="checkbox" id="preserveNumbers" class="form-check-input" checked>
+            <label for="preserveNumbers" class="form-check-label">
+              Preserve Number Formats
+              <div class="form-help">Keep currency, percentages, and decimals as configured</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="preventScientific" class="form-check-input" checked>
+            <label for="preventScientific" class="form-check-label">
+              Prevent Scientific Notation
+              <div class="form-help">Stop IDs like "1234567890" from becoming "1.23E+09"</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="maintainDates" class="form-check-input" checked>
+            <label for="maintainDates" class="form-check-label">
+              Maintain Date Formats
+              <div class="form-help">Keep DD/MM/YYYY or MM/DD/YYYY as set</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="preserveText" class="form-check-input" checked>
+            <label for="preserveText" class="form-check-label">
+              Force Text for IDs
+              <div class="form-help">Keep task IDs, phone numbers as text</div>
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Apply To</label>
+          <select class="form-select" id="formatScope">
+            <option value="selection">Current Selection</option>
+            <option value="sheet">Entire Sheet</option>
+            <option value="newRows">New Rows Only</option>
+            <option value="allSheets">All Sheets</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="analyzeFormats()">
+          <span class="spinner" id="analyzeSpinner" style="display:none"></span>
+          Analyze Current Formats
+        </button>
+        <button class="btn btn-primary" onclick="applyFormatRules()">
+          <span class="spinner" id="applyFormatSpinner" style="display:none"></span>
+          Apply Format Protection
+        </button>
+      </div>
+      
+      <div id="formatAnalysis" style="display: none;">
+        <div class="preview-section">
+          <div class="preview-header">
+            <div class="preview-title">Format Analysis</div>
+          </div>
+          <div id="formatAnalysisContent"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Auto-Categorization Tab -->
+    <div id="categorizationTab" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Intelligent Auto-Categorization</div>
+          <div class="card-description">Automatically categorize transactions, expenses, and data</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Category Type</label>
+          <select class="form-select" id="categoryType">
+            <option value="financial">Financial Transactions</option>
+            <option value="expense">Business Expenses</option>
+            <option value="leads">Lead Status</option>
+            <option value="custom">Custom Categories</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Learning Mode</label>
+          <div class="form-check">
+            <input type="radio" name="learningMode" id="learnFromExisting" class="form-check-input" checked>
+            <label for="learnFromExisting" class="form-check-label">
+              Learn from Existing Data
+              <div class="form-help">Analyze your current categorizations to learn patterns</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="radio" name="learningMode" id="useTemplates" class="form-check-input">
+            <label for="useTemplates" class="form-check-label">
+              Use Pre-built Templates
+              <div class="form-help">Apply industry-standard categorization rules</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="radio" name="learningMode" id="manualRules" class="form-check-input">
+            <label for="manualRules" class="form-check-label">
+              Define Custom Rules
+              <div class="form-help">Create your own categorization logic</div>
+            </label>
+          </div>
+        </div>
+        
+        <div id="customRules" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">Categorization Rules</label>
+            <textarea class="form-textarea" id="categoryRules" placeholder="Enter rules like:
+Contains 'Amazon' → Shopping
+Contains 'Salary' → Income
+Amount > 1000 → Large Transaction"></textarea>
+          </div>
+        </div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="previewCategorization()">
+          <span class="spinner" id="categPreviewSpinner" style="display:none"></span>
+          Preview Categories
+        </button>
+        <button class="btn btn-primary" onclick="applyCategorization()">
+          <span class="spinner" id="categApplySpinner" style="display:none"></span>
+          Auto-Categorize
+        </button>
+      </div>
+    </div>
+    
+    <!-- Excel Migration Tab -->
+    <div id="migrationTab" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Excel to Sheets Migration</div>
+          <div class="card-description">Fix formula errors and optimize Excel imports</div>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="formulaErrors">-</div>
+            <div class="stat-label">Formula Errors</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="refErrors">-</div>
+            <div class="stat-label">#REF! Errors</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="volatileFuncs">-</div>
+            <div class="stat-label">Volatile Functions</div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Migration Options</label>
+          <div class="form-check">
+            <input type="checkbox" id="convertFormulas" class="form-check-input" checked>
+            <label for="convertFormulas" class="form-check-label">
+              Convert Excel Formulas
+              <div class="form-help">Automatically converts Excel formulas to work in Google Sheets</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="fixReferences" class="form-check-input" checked>
+            <label for="fixReferences" class="form-check-label">
+              Fix Broken References
+              <div class="form-help">Resolve #REF! and #NAME? errors</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="optimizeVolatile" class="form-check-input" checked>
+            <label for="optimizeVolatile" class="form-check-label">
+              Optimize Volatile Functions
+              <div class="form-help">Replace NOW(), TODAY() with static values where possible</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="handleLocale" class="form-check-input" checked>
+            <label for="handleLocale" class="form-check-label">
+              Fix Locale Issues
+              <div class="form-help">Convert between comma/semicolon separators</div>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="scanForIssues()">
+          <span class="spinner" id="scanSpinner" style="display:none"></span>
+          Scan for Issues
+        </button>
+        <button class="btn btn-primary" onclick="migrateFromExcel()">
+          <span class="spinner" id="migrateSpinner" style="display:none"></span>
+          Fix All Issues
+        </button>
+      </div>
+      
+      <div id="migrationReport" style="display: none;">
+        <div class="preview-section">
+          <div class="preview-header">
+            <div class="preview-title">Migration Report</div>
+          </div>
+          <div id="migrationReportContent"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Change Protection Tab -->
+    <div id="protectionTab" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Change Protection & Recovery</div>
+          <div class="card-description">Protect against accidental changes and enable easy recovery</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Protection Level</label>
+          <select class="form-select" id="protectionLevel">
+            <option value="basic">Basic - Protect formulas only</option>
+            <option value="moderate">Moderate - Protect formulas and formatting</option>
+            <option value="strict">Strict - Require confirmation for all changes</option>
+            <option value="custom">Custom - Define specific rules</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Protection Rules</label>
+          <div class="form-check">
+            <input type="checkbox" id="protectFormulas" class="form-check-input" checked>
+            <label for="protectFormulas" class="form-check-label">
+              Protect Formulas
+              <div class="form-help">Prevent formula cells from being overwritten</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="protectHeaders" class="form-check-input" checked>
+            <label for="protectHeaders" class="form-check-label">
+              Protect Headers
+              <div class="form-help">Lock first row/column from changes</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="backupBulk" class="form-check-input" checked>
+            <label for="backupBulk" class="form-check-label">
+              Auto-backup Before Bulk Changes
+              <div class="form-help">Save state before operations affecting >10 cells</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="trackChanges" class="form-check-input">
+            <label for="trackChanges" class="form-check-label">
+              Track All Changes
+              <div class="form-help">Log who changed what and when</div>
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Recovery Options</label>
+          <div class="form-check">
+            <input type="checkbox" id="enableUndo" class="form-check-input" checked>
+            <label for="enableUndo" class="form-check-label">
+              Enhanced Undo (Last 50 operations)
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="hourlyBackup" class="form-check-input">
+            <label for="hourlyBackup" class="form-check-label">
+              Automatic Hourly Backups
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="reviewProtection()">
+          <span class="spinner" id="reviewSpinner" style="display:none"></span>
+          Review Current Protection
+        </button>
+        <button class="btn btn-primary" onclick="applyProtection()">
+          <span class="spinner" id="protectSpinner" style="display:none"></span>
+          Apply Protection
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Tab switching
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      document.getElementById(tab + 'Tab').style.display = 'block';
+      
+      // Special handling for custom rules
+      if (tab === 'categorization') {
+        document.querySelector('input[name="learningMode"]').addEventListener('change', function() {
+          document.getElementById('customRules').style.display = 
+            document.getElementById('manualRules').checked ? 'block' : 'none';
+        });
+      }
+      
+      hideStatus();
+    }
+    
+    function backToMain() {
+      google.script.run.showCellPilotSidebar();
+    }
+    
+    function showStatus(message, type = 'info') {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.className = 'alert alert-' + type;
+      statusDiv.textContent = message;
+      statusDiv.style.display = 'flex';
+      
+      if (type === 'success') {
+        setTimeout(hideStatus, 5000);
+      }
+    }
+    
+    function hideStatus() {
+      document.getElementById('statusMessage').style.display = 'none';
+    }
+    
+    // Format Persistence Functions
+    function analyzeFormats() {
+      document.getElementById('analyzeSpinner').style.display = 'inline-block';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('analyzeSpinner').style.display = 'none';
+          
+          if (result.success) {
+            let html = '<div class="stats-grid mb-3">';
+            html += '<div class="stat-card"><div class="stat-value">' + result.numberFormats + '</div><div class="stat-label">Number Formats</div></div>';
+            html += '<div class="stat-card"><div class="stat-value">' + result.dateFormats + '</div><div class="stat-label">Date Formats</div></div>';
+            html += '<div class="stat-card"><div class="stat-value">' + result.textFormats + '</div><div class="stat-label">Text Formats</div></div>';
+            html += '</div>';
+            
+            if (result.issues && result.issues.length > 0) {
+              html += '<div class="alert alert-warning">Found ' + result.issues.length + ' formatting issues that may break with automation</div>';
+              result.issues.forEach(issue => {
+                html += '<div class="preview-item">';
+                html += '<span class="text-small">' + issue + '</span>';
+                html += '</div>';
+              });
+            }
+            
+            document.getElementById('formatAnalysisContent').innerHTML = html;
+            document.getElementById('formatAnalysis').style.display = 'block';
+          } else {
+            showStatus(result.error || 'Failed to analyze formats', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('analyzeSpinner').style.display = 'none';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .analyzeFormats({
+          preserveNumbers: document.getElementById('preserveNumbers').checked,
+          preventScientific: document.getElementById('preventScientific').checked,
+          maintainDates: document.getElementById('maintainDates').checked,
+          preserveText: document.getElementById('preserveText').checked,
+          scope: document.getElementById('formatScope').value
+        });
+    }
+    
+    function applyFormatRules() {
+      showStatus('Format protection will be implemented in the next update', 'info');
+    }
+    
+    // Auto-categorization Functions
+    function previewCategorization() {
+      showStatus('Auto-categorization preview coming soon', 'info');
+    }
+    
+    function applyCategorization() {
+      showStatus('Auto-categorization will be implemented in the next update', 'info');
+    }
+    
+    // Excel Migration Functions
+    function scanForIssues() {
+      document.getElementById('scanSpinner').style.display = 'inline-block';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('scanSpinner').style.display = 'none';
+          
+          if (result.success) {
+            // Update stats
+            document.getElementById('formulaErrors').textContent = result.summary.formulaErrors;
+            document.getElementById('refErrors').textContent = result.summary.refErrors;
+            document.getElementById('volatileFuncs').textContent = result.summary.volatileFunctions;
+            
+            // Show detailed report
+            if (result.summary.totalIssues > 0) {
+              let reportHtml = '<div class="alert alert-warning">Found ' + result.summary.totalIssues + ' issues</div>';
+              
+              if (result.issues.formulaErrors.length > 0) {
+                reportHtml += '<h4>Formula Errors (' + result.issues.formulaErrors.length + ')</h4>';
+                result.issues.formulaErrors.slice(0, 5).forEach(issue => {
+                  reportHtml += '<div class="preview-item"><span class="text-small">' + issue.cell + ': ' + issue.error + '</span></div>';
+                });
+              }
+              
+              if (result.issues.refErrors.length > 0) {
+                reportHtml += '<h4>#REF! Errors (' + result.issues.refErrors.length + ')</h4>';
+                result.issues.refErrors.slice(0, 5).forEach(issue => {
+                  reportHtml += '<div class="preview-item"><span class="text-small">' + issue.cell + ': ' + issue.suggestion + '</span></div>';
+                });
+              }
+              
+              if (result.issues.volatileFunctions.length > 0) {
+                reportHtml += '<h4>Volatile Functions (' + result.issues.volatileFunctions.length + ')</h4>';
+                result.issues.volatileFunctions.slice(0, 5).forEach(issue => {
+                  reportHtml += '<div class="preview-item"><span class="text-small">' + issue.cell + ': ' + issue.functions.join(', ') + '</span></div>';
+                });
+              }
+              
+              document.getElementById('migrationReportContent').innerHTML = reportHtml;
+              document.getElementById('migrationReport').style.display = 'block';
+              
+              showStatus('Found ' + result.summary.totalIssues + ' issues that can be fixed', 'warning');
+            } else {
+              showStatus('No Excel migration issues found!', 'success');
+            }
+          } else {
+            showStatus(result.error || 'Failed to scan for issues', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('scanSpinner').style.display = 'none';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .scanForExcelIssues();
+    }
+    
+    function migrateFromExcel() {
+      if (!confirm('This will attempt to fix all detected Excel migration issues. Continue?')) {
+        return;
+      }
+      
+      document.getElementById('migrateSpinner').style.display = 'inline-block';
+      
+      const options = {
+        fixLocale: document.getElementById('handleLocale').checked,
+        convertXlookup: document.getElementById('convertFormulas').checked,
+        fixStructuredRefs: document.getElementById('fixReferences').checked,
+        optimizeVolatile: document.getElementById('optimizeVolatile').checked,
+        createBackup: true
+      };
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('migrateSpinner').style.display = 'none';
+          
+          if (result.success) {
+            showStatus(result.message, 'success');
+            
+            // Update report with fixes
+            if (result.fixes && result.fixes.length > 0) {
+              let fixHtml = '<div class="alert alert-success">Applied ' + result.fixCount + ' fixes</div>';
+              fixHtml += '<h4>Fixes Applied:</h4>';
+              result.fixes.forEach(fix => {
+                fixHtml += '<div class="preview-item"><span class="text-small">' + fix + '</span></div>';
+              });
+              
+              if (result.remaining > 0) {
+                fixHtml += '<div class="alert alert-info mt-3">Still ' + result.remaining + ' issues remaining</div>';
+              }
+              
+              document.getElementById('migrationReportContent').innerHTML = fixHtml;
+              document.getElementById('migrationReport').style.display = 'block';
+            }
+            
+            // Re-scan to update stats
+            setTimeout(scanForIssues, 1000);
+          } else {
+            showStatus(result.error || 'Failed to fix issues', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('migrateSpinner').style.display = 'none';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .fixExcelIssues(options);
+    }
+    
+    // Change Protection Functions
+    function reviewProtection() {
+      showStatus('Protection review will be implemented in the next update', 'info');
+    }
+    
+    function applyProtection() {
+      showStatus('Protection rules will be implemented in the next update', 'info');
+    }
+    
+    // Handle radio button changes
+    document.addEventListener('DOMContentLoaded', function() {
+      const radios = document.querySelectorAll('input[name="learningMode"]');
+      radios.forEach(radio => {
+        radio.addEventListener('change', function() {
+          document.getElementById('customRules').style.display = 
+            document.getElementById('manualRules').checked ? 'block' : 'none';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

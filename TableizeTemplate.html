@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('SharedStyles'); ?>
+  <style>
+    .parse-option {
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .parse-option:hover {
+      border-color: #6366f1;
+      background: #f9fafb;
+    }
+    
+    .parse-option.selected {
+      border-color: #6366f1;
+      background: #eff6ff;
+    }
+    
+    .parse-method-title {
+      font-weight: 600;
+      font-size: 13px;
+      color: #1f2937;
+      margin-bottom: 4px;
+    }
+    
+    .parse-method-desc {
+      font-size: 11px;
+      color: #6b7280;
+    }
+    
+    .preview-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-top: 12px;
+      background: white;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    
+    .preview-table th {
+      background: #f3f4f6;
+      padding: 8px;
+      text-align: left;
+      font-weight: 600;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .preview-table td {
+      padding: 6px 8px;
+      border: 1px solid #e5e7eb;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .delimiter-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    @media (min-width: 300px) {
+      .delimiter-options {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    
+    .delimiter-btn {
+      padding: 8px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      font-size: 12px;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+    
+    .delimiter-btn:hover {
+      background: #f9fafb;
+      border-color: #6366f1;
+    }
+    
+    .delimiter-btn.active {
+      background: #6366f1;
+      color: white;
+      border-color: #6366f1;
+    }
+    
+    .custom-delimiter-input {
+      margin-top: 8px;
+      display: none;
+    }
+    
+    .column-adjuster {
+      margin-top: 12px;
+      padding: 12px;
+      background: #f9fafb;
+      border-radius: 6px;
+    }
+    
+    .column-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    
+    .column-width-input {
+      width: 60px;
+      padding: 4px 6px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-header">
+    <button class="nav-back" onclick="backToMain()">←</button>
+    <div class="nav-title">
+      <h2>Tableize Data</h2>
+      <p>Structure your data into proper columns</p>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div id="statusMessage"></div>
+    
+    <div id="analysisSection" class="card">
+      <div class="card-title">Data Analysis</div>
+      <div class="card-description">Analyzing your data structure...</div>
+      <div class="progress">
+        <div class="progress-bar" style="width: 0%"></div>
+      </div>
+    </div>
+    
+    <div id="optionsSection" style="display: none;">
+      <div class="card">
+        <div class="card-title">Choose Parsing Method</div>
+        <div class="card-description">Select how to split your data into columns</div>
+        
+        <div id="parseOptions"></div>
+        
+        <div id="delimiterSection" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">Select Delimiter</label>
+            <div class="delimiter-options">
+              <button class="delimiter-btn" data-delimiter="comma">Comma (,)</button>
+              <button class="delimiter-btn" data-delimiter="tab">Tab</button>
+              <button class="delimiter-btn" data-delimiter="space">Space</button>
+              <button class="delimiter-btn" data-delimiter="pipe">Pipe (|)</button>
+              <button class="delimiter-btn" data-delimiter="semicolon">Semicolon (;)</button>
+              <button class="delimiter-btn" data-delimiter="custom">Custom...</button>
+            </div>
+            <div class="custom-delimiter-input">
+              <input type="text" id="customDelimiter" class="form-input" placeholder="Enter custom delimiter" maxlength="5">
+            </div>
+          </div>
+        </div>
+        
+        <div id="fixedWidthSection" style="display: none;">
+          <div class="column-adjuster">
+            <div class="form-label">Column Widths</div>
+            <div class="form-help">Specify the width of each column in characters</div>
+            <div id="columnWidthControls"></div>
+            <button class="btn btn-secondary" onclick="addColumnWidth()">Add Column</button>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <div class="form-checkbox-group">
+            <input type="checkbox" id="hasHeaders" class="form-checkbox" checked>
+            <label for="hasHeaders" class="form-checkbox-label">First row contains headers</label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <div class="form-checkbox-group">
+            <input type="checkbox" id="trimSpaces" class="form-checkbox" checked>
+            <label for="trimSpaces" class="form-checkbox-label">Trim extra spaces from cells</label>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary btn-block" onclick="previewParsing()">
+          <span class="spinner" id="previewSpinner" style="display:none"></span>
+          Preview Results
+        </button>
+      </div>
+    </div>
+    
+    <div id="previewSection" style="display: none;">
+      <div class="card">
+        <div class="card-title">Preview</div>
+        <div class="card-description">
+          <span id="previewStats"></span>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="preview-table" id="previewTable"></table>
+        </div>
+        
+        <div class="btn-group mt-2">
+          <button class="btn btn-secondary" onclick="adjustSettings()">Adjust Settings</button>
+          <button class="btn btn-success" onclick="applyTableize()">
+            <span class="spinner" id="applySpinner" style="display:none"></span>
+            Apply Structure
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let analysisResult = null;
+    let currentMethod = 'delimiter';
+    let currentDelimiter = 'comma';
+    let columnWidths = [10, 10, 10];
+    let previewData = null;
+    
+    // Analyze data on load
+    window.onload = function() {
+      analyzeData();
+    };
+    
+    function backToMain() {
+      google.script.run.showCellPilotSidebar();
+    }
+    
+    function showStatus(message, type = 'info') {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.className = 'alert alert-' + type;
+      statusDiv.textContent = message;
+      statusDiv.style.display = 'block';
+      
+      if (type === 'success') {
+        setTimeout(function() {
+          statusDiv.style.display = 'none';
+        }, 3000);
+      }
+    }
+    
+    function analyzeData() {
+      const progressBar = document.querySelector('.progress-bar');
+      let progress = 0;
+      
+      console.log('Starting analysis...');
+      showStatus('Analyzing data...', 'info');
+      
+      const progressInterval = setInterval(function() {
+        progress += 10;
+        progressBar.style.width = progress + '%';
+        if (progress >= 90) {
+          clearInterval(progressInterval);
+        }
+      }, 100);
+      
+      // Add timeout to detect hanging
+      const timeoutId = setTimeout(function() {
+        clearInterval(progressInterval);
+        console.error('Analysis timed out');
+        showStatus('Analysis timed out. Using default options.', 'warning');
+        
+        // Use default options if analysis fails
+        const defaultResult = {
+          hasData: true,
+          rowCount: 1,
+          suggestedDelimiter: 'space',
+          delimiters: {
+            space: { char: ' ', count: 2, consistent: true },
+            comma: { char: ',', count: 0, consistent: true }
+          },
+          patterns: {},
+          hasHeaders: true,
+          estimatedColumns: 3
+        };
+        
+        analysisResult = defaultResult;
+        displayOptions(defaultResult);
+        document.getElementById('analysisSection').style.display = 'none';
+        document.getElementById('optionsSection').style.display = 'block';
+      }, 5000); // 5 second timeout
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          console.log('Analysis succeeded:', result);
+          clearTimeout(timeoutId);
+          clearInterval(progressInterval);
+          progressBar.style.width = '100%';
+          
+          if (!result || !result.hasData) {
+            showStatus('No data found in selection', 'error');
+            return;
+          }
+          
+          analysisResult = result;
+          displayOptions(result);
+          
+          document.getElementById('analysisSection').style.display = 'none';
+          document.getElementById('optionsSection').style.display = 'block';
+        })
+        .withFailureHandler(function(error) {
+          console.error('Analysis failed:', error);
+          clearTimeout(timeoutId);
+          clearInterval(progressInterval);
+          showStatus('Failed to analyze data: ' + error.message, 'error');
+        })
+        .analyzeDataForTableize();
+    }
+    
+    function displayOptions(analysis) {
+      const optionsHtml = [];
+      
+      // Delimiter option
+      if (analysis.suggestedDelimiter) {
+        optionsHtml.push(`
+          <div class="parse-option selected" onclick="selectMethod('delimiter', this)">
+            <div class="parse-method-title">Split by Delimiter</div>
+            <div class="parse-method-desc">
+              Detected: ${analysis.suggestedDelimiter} delimiter 
+              (≈${analysis.estimatedColumns} columns)
+            </div>
+          </div>
+        `);
+        currentDelimiter = analysis.suggestedDelimiter;
+      } else {
+        optionsHtml.push(`
+          <div class="parse-option" onclick="selectMethod('delimiter', this)">
+            <div class="parse-method-title">Split by Delimiter</div>
+            <div class="parse-method-desc">Choose a character to split columns</div>
+          </div>
+        `);
+      }
+      
+      // Key-value option
+      if (analysis.patterns && analysis.patterns.keyValue) {
+        optionsHtml.push(`
+          <div class="parse-option" onclick="selectMethod('keyvalue', this)">
+            <div class="parse-method-title">Key-Value Pairs</div>
+            <div class="parse-method-desc">Parse "Name: John, Age: 25" format</div>
+          </div>
+        `);
+      }
+      
+      // Fixed width option
+      optionsHtml.push(`
+        <div class="parse-option" onclick="selectMethod('fixedwidth', this)">
+          <div class="parse-method-title">Fixed Width Columns</div>
+          <div class="parse-method-desc">Split at specific character positions</div>
+        </div>
+      `);
+      
+      // Smart detection option - make it prominent
+      optionsHtml.push(`
+        <div class="parse-option" onclick="selectMethod('smart', this)" style="border: 2px solid #10b981; background: #f0fdf4;">
+          <div class="parse-method-title" style="color: #059669;">
+            Smart Detection (Recommended)
+          </div>
+          <div class="parse-method-desc">
+            Intelligently groups multi-word names, detects regions and numbers
+          </div>
+        </div>
+      `);
+      
+      document.getElementById('parseOptions').innerHTML = optionsHtml.join('');
+      
+      // Show delimiter section by default if delimiter detected
+      if (analysis.suggestedDelimiter) {
+        // Find the delimiter option element and select it
+        const delimiterOption = document.querySelector('.parse-option.selected');
+        selectMethod('delimiter', delimiterOption);
+        
+        // Highlight suggested delimiter
+        setTimeout(function() {
+          const delimiterBtn = document.querySelector(`[data-delimiter="${analysis.suggestedDelimiter}"]`);
+          if (delimiterBtn) {
+            delimiterBtn.classList.add('active');
+          }
+        }, 100);
+      }
+      
+      // Set headers checkbox based on detection
+      document.getElementById('hasHeaders').checked = analysis.hasHeaders;
+    }
+    
+    function selectMethod(method, element) {
+      currentMethod = method;
+      
+      // Update UI
+      document.querySelectorAll('.parse-option').forEach(el => el.classList.remove('selected'));
+      
+      // Handle both event and direct element cases
+      const targetElement = element || (event && event.target ? event.target.closest('.parse-option') : null);
+      if (targetElement) {
+        targetElement.classList.add('selected');
+      }
+      
+      // Show/hide relevant sections
+      document.getElementById('delimiterSection').style.display = 
+        method === 'delimiter' ? 'block' : 'none';
+      document.getElementById('fixedWidthSection').style.display = 
+        method === 'fixedwidth' ? 'block' : 'none';
+        
+      if (method === 'fixedwidth') {
+        setupColumnWidthControls();
+      }
+    }
+    
+    // Delimiter selection
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('delimiter-btn')) {
+        document.querySelectorAll('.delimiter-btn').forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        
+        const delimiter = e.target.dataset.delimiter;
+        if (delimiter === 'custom') {
+          document.querySelector('.custom-delimiter-input').style.display = 'block';
+          document.getElementById('customDelimiter').focus();
+        } else {
+          document.querySelector('.custom-delimiter-input').style.display = 'none';
+          currentDelimiter = delimiter;
+        }
+      }
+    });
+    
+    function setupColumnWidthControls() {
+      const container = document.getElementById('columnWidthControls');
+      container.innerHTML = '';
+      
+      columnWidths.forEach((width, index) => {
+        const control = document.createElement('div');
+        control.className = 'column-control';
+        control.innerHTML = `
+          <span style="font-size: 12px;">Column ${index + 1}:</span>
+          <input type="number" class="column-width-input" value="${width}" 
+                 onchange="updateColumnWidth(${index}, this.value)">
+          <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;"
+                  onclick="removeColumn(${index})">Remove</button>
+        `;
+        container.appendChild(control);
+      });
+    }
+    
+    function updateColumnWidth(index, value) {
+      columnWidths[index] = parseInt(value) || 10;
+    }
+    
+    function addColumnWidth() {
+      columnWidths.push(10);
+      setupColumnWidthControls();
+    }
+    
+    function removeColumn(index) {
+      if (columnWidths.length > 1) {
+        columnWidths.splice(index, 1);
+        setupColumnWidthControls();
+      }
+    }
+    
+    function previewParsing() {
+      document.getElementById('previewSpinner').style.display = 'inline-block';
+      document.getElementById('previewSection').style.display = 'none';
+      
+      const options = {
+        method: currentMethod,
+        delimiter: currentDelimiter === 'custom' ? 
+                  document.getElementById('customDelimiter').value : currentDelimiter,
+        hasHeaders: document.getElementById('hasHeaders').checked,
+        trimSpaces: document.getElementById('trimSpaces').checked,
+        columnWidths: columnWidths
+      };
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('previewSpinner').style.display = 'none';
+          
+          if (result.success && result.data) {
+            previewData = result.data;
+            displayPreview(result.data, result.columns, result.method || options.method);
+            document.getElementById('previewSection').style.display = 'block';
+          } else {
+            showStatus(result.error || 'Failed to parse data', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('previewSpinner').style.display = 'none';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .previewTableize(options);
+    }
+    
+    function displayPreview(data, columns, method) {
+      const table = document.getElementById('previewTable');
+      const hasHeaders = document.getElementById('hasHeaders').checked;
+      const maxRows = Math.min(10, data.length);
+      
+      // Update stats with method info
+      let statsText = `${data.length} rows × ${columns} columns`;
+      if (method === 'smart') {
+        statsText += ' (Smart Detection Applied)';
+      }
+      document.getElementById('previewStats').textContent = statsText;
+      
+      let html = '';
+      
+      // Add headers
+      if (data.length > 0) {
+        html += '<thead><tr>';
+        
+        // For smart detection, always show the first row as headers
+        if (method === 'smart' || hasHeaders) {
+          data[0].forEach(header => {
+            html += `<th style="background: #6366f1; color: white; font-weight: 600;">${escapeHtml(header)}</th>`;
+          });
+        } else {
+          // Create generic headers
+          for (let i = 0; i < columns; i++) {
+            html += `<th>Column ${i + 1}</th>`;
+          }
+        }
+        html += '</tr></thead>';
+      }
+      
+      // Add data rows
+      html += '<tbody>';
+      const startRow = (method === 'smart' || hasHeaders) ? 1 : 0;
+      
+      for (let i = startRow; i < Math.min(data.length, startRow + maxRows); i++) {
+        html += '<tr>';
+        
+        // Ensure we have the right number of columns
+        for (let j = 0; j < columns; j++) {
+          const cell = data[i] && data[i][j] !== undefined ? data[i][j] : '';
+          
+          // Highlight different data types for smart detection
+          let cellStyle = '';
+          if (method === 'smart' && cell) {
+            // Check if it's a number
+            if (!isNaN(cell) || /^[$£€¥]?[\d,]+\.?\d*$/.test(cell)) {
+              cellStyle = 'style="background: #fef3c7; font-weight: 600;"';
+            }
+            // Check if it might be a region
+            else if (/north|south|east|west|central/i.test(cell)) {
+              cellStyle = 'style="background: #dbeafe;"';
+            }
+          }
+          
+          html += `<td ${cellStyle} title="${escapeHtml(cell)}">${escapeHtml(cell)}</td>`;
+        }
+        html += '</tr>';
+      }
+      
+      if (data.length > startRow + maxRows) {
+        html += `<tr><td colspan="${columns}" style="text-align: center; font-style: italic; color: #6b7280;">
+                 ... and ${data.length - startRow - maxRows} more rows</td></tr>`;
+      }
+      
+      html += '</tbody>';
+      table.innerHTML = html;
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = String(text);
+      return div.innerHTML;
+    }
+    
+    function adjustSettings() {
+      document.getElementById('previewSection').style.display = 'none';
+    }
+    
+    function applyTableize() {
+      if (!confirm('This will restructure your selected data. Continue?')) {
+        return;
+      }
+      
+      document.getElementById('applySpinner').style.display = 'inline-block';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('applySpinner').style.display = 'none';
+          
+          if (result.success) {
+            showStatus(`Successfully structured ${result.rows} rows into ${result.columns} columns`, 'success');
+            setTimeout(function() {
+              backToMain();
+            }, 2000);
+          } else {
+            showStatus(result.error || 'Failed to apply structure', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('applySpinner').style.display = 'none';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .applyTableize(previewData);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('SharedStyles'); ?>
+</head>
+<body>
+  <div class="nav-header">
+    <button class="nav-back" onclick="backToMain()">←</button>
+    <div class="nav-title">
+      <h2>Data Cleaning</h2>
+      <p>Remove duplicates and clean your data</p>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div id="statusMessage" style="display: none;"></div>
+    
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+      <button class="tab-button active" onclick="switchTab('duplicates')">
+        Remove Duplicates
+      </button>
+      <button class="tab-button" onclick="switchTab('standardize')">
+        Text Standardization
+      </button>
+      <button class="tab-button" onclick="switchTab('validation')">
+        Data Validation
+      </button>
+    </div>
+    
+    <!-- Duplicates Tab -->
+    <div id="duplicatesTab" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Detection Settings</div>
+          <div class="card-description">Configure how duplicates are identified in your selection</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Similarity Threshold</label>
+          <input type="range" id="threshold" class="form-range" min="0.5" max="1" step="0.05" value="0.85">
+          <div class="form-range-label">
+            <span class="text-small text-muted">Fuzzy Match</span>
+            <span class="form-range-value" id="thresholdValue">85%</span>
+            <span class="text-small text-muted">Exact Match</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Matching Options</label>
+          <div class="form-check">
+            <input type="checkbox" id="caseSensitive" class="form-check-input">
+            <label for="caseSensitive" class="form-check-label">
+              Case Sensitive Matching
+              <div class="form-help">Treat uppercase and lowercase as different</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="trimWhitespace" class="form-check-input" checked>
+            <label for="trimWhitespace" class="form-check-label">
+              Trim Whitespace
+              <div class="form-help">Remove extra spaces before and after text</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="ignoreSpecialChars" class="form-check-input">
+            <label for="ignoreSpecialChars" class="form-check-label">
+              Ignore Special Characters
+              <div class="form-help">Ignore punctuation and symbols when matching</div>
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Keep Which Values</label>
+          <select class="form-select" id="keepStrategy">
+            <option value="first">Keep First Occurrence</option>
+            <option value="last">Keep Last Occurrence</option>
+            <option value="mostComplete">Keep Most Complete (Recommended)</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="previewDuplicates()">
+          <span class="spinner" id="previewSpinner" style="display:none"></span>
+          Preview Changes
+        </button>
+        <button class="btn btn-primary" onclick="removeDuplicates()">
+          <span class="spinner" id="removeSpinner" style="display:none"></span>
+          Remove Duplicates
+        </button>
+      </div>
+      
+      <div id="duplicatesPreview" style="display: none;">
+        <div class="preview-section">
+          <div class="preview-header">
+            <div class="preview-title">Preview of Changes</div>
+            <div class="preview-count" id="duplicateCount">0 duplicates</div>
+          </div>
+          <div class="preview-grid" id="previewContent"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Standardization Tab -->
+    <div id="standardizeTab" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Text Standardization</div>
+          <div class="card-description">Apply consistent formatting to your text data</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Text Case</label>
+          <select class="form-select" id="textCase">
+            <option value="none">No Change</option>
+            <option value="lower">lowercase</option>
+            <option value="upper">UPPERCASE</option>
+            <option value="title">Title Case</option>
+            <option value="sentence">Sentence case</option>
+            <option value="proper">Proper Names</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Cleanup Options</label>
+          <div class="form-check">
+            <input type="checkbox" id="removeExtraSpaces" class="form-check-input" checked>
+            <label for="removeExtraSpaces" class="form-check-label">
+              Remove Extra Spaces
+              <div class="form-help">Convert multiple spaces to single space</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="trimCells" class="form-check-input" checked>
+            <label for="trimCells" class="form-check-label">
+              Trim Cell Contents
+              <div class="form-help">Remove leading and trailing spaces</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="removeLineBreaks" class="form-check-input">
+            <label for="removeLineBreaks" class="form-check-label">
+              Remove Line Breaks
+              <div class="form-help">Replace line breaks with spaces</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="fixPunctuation" class="form-check-input">
+            <label for="fixPunctuation" class="form-check-label">
+              Fix Punctuation Spacing
+              <div class="form-help">Ensure proper spacing around punctuation</div>
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Number Formatting</label>
+          <div class="form-check">
+            <input type="checkbox" id="standardizeNumbers" class="form-check-input">
+            <label for="standardizeNumbers" class="form-check-label">
+              Standardize Number Format
+              <div class="form-help">Apply consistent decimal and thousand separators</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="removeCurrencySymbols" class="form-check-input">
+            <label for="removeCurrencySymbols" class="form-check-label">
+              Remove Currency Symbols
+              <div class="form-help">Strip currency symbols from numbers</div>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="previewStandardization()">
+          <span class="spinner" id="standardPreviewSpinner" style="display:none"></span>
+          Preview Changes
+        </button>
+        <button class="btn btn-primary" onclick="applyStandardization()">
+          <span class="spinner" id="standardApplySpinner" style="display:none"></span>
+          Apply Standardization
+        </button>
+      </div>
+      
+      <div id="standardizePreview" style="display: none;">
+        <div class="preview-section">
+          <div class="preview-header">
+            <div class="preview-title">Preview of Changes</div>
+            <div class="preview-count" id="standardizeCount">0 changes</div>
+          </div>
+          <div class="preview-grid" id="standardizePreviewContent"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Validation Tab -->
+    <div id="validationTab" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Data Validation</div>
+          <div class="card-description">Check data quality and identify issues</div>
+        </div>
+        
+        <div class="stats-grid" id="validationStats">
+          <div class="stat-card">
+            <div class="stat-value">-</div>
+            <div class="stat-label">Total Cells</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">-</div>
+            <div class="stat-label">Empty Cells</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">-</div>
+            <div class="stat-label">Invalid</div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Validation Rules</label>
+          <div class="form-check">
+            <input type="checkbox" id="checkEmpty" class="form-check-input" checked>
+            <label for="checkEmpty" class="form-check-label">
+              Flag Empty Cells
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="checkEmail" class="form-check-input">
+            <label for="checkEmail" class="form-check-label">
+              Validate Email Addresses
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="checkPhone" class="form-check-input">
+            <label for="checkPhone" class="form-check-label">
+              Validate Phone Numbers
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="checkDates" class="form-check-input">
+            <label for="checkDates" class="form-check-label">
+              Validate Date Formats
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="checkNumbers" class="form-check-input">
+            <label for="checkNumbers" class="form-check-label">
+              Check Numeric Values
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-primary btn-block" onclick="runValidation()">
+          <span class="spinner" id="validationSpinner" style="display:none"></span>
+          Run Validation Check
+        </button>
+      </div>
+      
+      <div id="validationResults" style="display: none;">
+        <div class="preview-section">
+          <div class="preview-header">
+            <div class="preview-title">Validation Results</div>
+          </div>
+          <div id="validationContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Tab switching
+    function switchTab(tab) {
+      // Update button states
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      // Show/hide content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      document.getElementById(tab + 'Tab').style.display = 'block';
+      
+      // Clear any messages
+      hideStatus();
+    }
+    
+    // Update threshold display
+    document.getElementById('threshold').addEventListener('input', function(e) {
+      document.getElementById('thresholdValue').textContent = Math.round(e.target.value * 100) + '%';
+    });
+    
+    function backToMain() {
+      google.script.run.showCellPilotSidebar();
+    }
+    
+    function showStatus(message, type = 'info') {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.className = 'alert alert-' + type;
+      statusDiv.textContent = message;
+      statusDiv.style.display = 'flex';
+      
+      // Auto-hide success messages
+      if (type === 'success') {
+        setTimeout(hideStatus, 5000);
+      }
+    }
+    
+    function hideStatus() {
+      document.getElementById('statusMessage').style.display = 'none';
+    }
+    
+    // Duplicate removal functions
+    function getDuplicateOptions() {
+      return {
+        threshold: parseFloat(document.getElementById('threshold').value),
+        caseSensitive: document.getElementById('caseSensitive').checked,
+        trimWhitespace: document.getElementById('trimWhitespace').checked,
+        ignoreSpecialChars: document.getElementById('ignoreSpecialChars').checked,
+        keepStrategy: document.getElementById('keepStrategy').value
+      };
+    }
+    
+    function previewDuplicates() {
+      hideStatus();
+      document.getElementById('previewSpinner').style.display = 'inline-block';
+      document.getElementById('duplicatesPreview').style.display = 'none';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('previewSpinner').style.display = 'none';
+          
+          if (result.success) {
+            if (result.duplicates && result.duplicates.length > 0) {
+              // Update stats
+              document.getElementById('duplicateCount').textContent = result.duplicates.length + ' duplicates';
+              
+              // Build preview HTML
+              let previewHtml = '<div class="stats-grid mb-3">';
+              previewHtml += '<div class="stat-card"><div class="stat-value">' + result.totalRows + '</div><div class="stat-label">Total Rows</div></div>';
+              previewHtml += '<div class="stat-card"><div class="stat-value">' + result.duplicates.length + '</div><div class="stat-label">Duplicates</div></div>';
+              previewHtml += '<div class="stat-card"><div class="stat-value">' + (result.totalRows - result.duplicates.length) + '</div><div class="stat-label">Unique</div></div>';
+              previewHtml += '</div>';
+              
+              // Show sample duplicates
+              const sampleSize = Math.min(10, result.duplicates.length);
+              for (let i = 0; i < sampleSize; i++) {
+                const dup = result.duplicates[i];
+                previewHtml += '<div class="preview-item">';
+                previewHtml += '<div class="preview-item-content">';
+                previewHtml += '<span class="text-small text-muted">Row ' + (dup.row + 1) + '</span>';
+                previewHtml += '<span class="preview-item-old">' + dup.preview + '</span>';
+                previewHtml += '</div>';
+                previewHtml += '</div>';
+              }
+              
+              if (result.duplicates.length > sampleSize) {
+                previewHtml += '<div class="text-center text-muted text-small mt-3">... and ' + (result.duplicates.length - sampleSize) + ' more duplicates</div>';
+              }
+              
+              document.getElementById('previewContent').innerHTML = previewHtml;
+              document.getElementById('duplicatesPreview').style.display = 'block';
+            } else {
+              showStatus('No duplicates found with current settings', 'success');
+            }
+          } else {
+            showStatus(result.error || 'Failed to preview duplicates', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('previewSpinner').style.display = 'none';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .previewDuplicates(getDuplicateOptions());
+    }
+    
+    function removeDuplicates() {
+      if (!confirm('This will remove duplicate rows from your selection. Continue?')) {
+        return;
+      }
+      
+      hideStatus();
+      document.getElementById('removeSpinner').style.display = 'inline-block';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('removeSpinner').style.display = 'none';
+          
+          if (result.success) {
+            showStatus(result.message, 'success');
+            document.getElementById('duplicatesPreview').style.display = 'none';
+          } else {
+            showStatus(result.error || 'Failed to remove duplicates', 'error');
+            
+            if (result.showUpgrade) {
+              setTimeout(function() {
+                google.script.run.showUpgradeOptions();
+              }, 2000);
+            }
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('removeSpinner').style.display = 'none';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .removeDuplicatesProcess(getDuplicateOptions());
+    }
+    
+    // Text standardization functions
+    function getStandardizationOptions() {
+      return {
+        textCase: document.getElementById('textCase').value,
+        removeExtraSpaces: document.getElementById('removeExtraSpaces').checked,
+        trimCells: document.getElementById('trimCells').checked,
+        removeLineBreaks: document.getElementById('removeLineBreaks').checked,
+        fixPunctuation: document.getElementById('fixPunctuation').checked,
+        standardizeNumbers: document.getElementById('standardizeNumbers').checked,
+        removeCurrencySymbols: document.getElementById('removeCurrencySymbols').checked
+      };
+    }
+    
+    function previewStandardization() {
+      showStatus('Standardization preview coming soon', 'info');
+    }
+    
+    function applyStandardization() {
+      hideStatus();
+      document.getElementById('standardApplySpinner').style.display = 'inline-block';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('standardApplySpinner').style.display = 'none';
+          
+          if (result.success) {
+            showStatus('Text standardization applied successfully', 'success');
+          } else {
+            showStatus(result.error || 'Failed to standardize text', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('standardApplySpinner').style.display = 'none';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .standardizeText(getStandardizationOptions());
+    }
+    
+    // Data validation functions
+    function runValidation() {
+      showStatus('Data validation coming soon', 'info');
+    }
+  </script>
+</body>
+</html>

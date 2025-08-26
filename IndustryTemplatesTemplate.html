@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('SharedStyles'); ?>
+</head>
+<body>
+  <div class="nav-header">
+    <button class="nav-back" onclick="backToMain()">←</button>
+    <div class="nav-title">
+      <h2>Industry Templates</h2>
+      <p>Pre-built solutions saving 15-25 hours weekly</p>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div id="statusMessage" style="display: none;"></div>
+    
+    <!-- Stats showing value -->
+    <div class="card" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe);">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">250%</div>
+          <div class="stat-label">Average ROI</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">20 hrs</div>
+          <div class="stat-label">Saved Weekly</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">6-9 mo</div>
+          <div class="stat-label">Payback Period</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Industry Categories -->
+    <div class="tab-nav">
+      <button class="tab-button active" onclick="switchCategory('real-estate')">
+        Real Estate
+      </button>
+      <button class="tab-button" onclick="switchCategory('construction')">
+        Construction
+      </button>
+      <button class="tab-button" onclick="switchCategory('healthcare')">
+        Healthcare
+      </button>
+      <button class="tab-button" onclick="switchCategory('marketing')">
+        Marketing
+      </button>
+    </div>
+    
+    <!-- Real Estate Templates -->
+    <div id="real-estate" class="category-content">
+      <div class="feature-grid">
+        <div class="feature-card" onclick="applyTemplate('commission-tracker')">
+          <div class="feature-icon" style="background: #fef3c7; color: #d97706;">$</div>
+          <div class="feature-title">Commission Tracker</div>
+          <div class="feature-description">GCI tracking with automated splits</div>
+          <div class="text-small text-muted mt-2">Saves 8 hrs/week</div>
+        </div>
+        
+        <div class="feature-card" onclick="applyTemplate('property-manager')">
+          <div class="feature-icon" style="background: #dbeafe; color: #2563eb;">PM</div>
+          <div class="feature-title">Property Manager</div>
+          <div class="feature-description">Rent, maintenance, tenant tracking</div>
+          <div class="text-small text-muted mt-2">Saves 12 hrs/week</div>
+        </div>
+        
+        <div class="feature-card" onclick="applyTemplate('investment-analyzer')">
+          <div class="feature-icon" style="background: #dcfce7; color: #16a34a;">IA</div>
+          <div class="feature-title">Investment Analyzer</div>
+          <div class="feature-description">ROI, cash flow, cap rate calcs</div>
+          <div class="text-small text-muted mt-2">7%+ returns</div>
+        </div>
+        
+        <div class="feature-card" onclick="applyTemplate('lead-pipeline')">
+          <div class="feature-icon" style="background: #fce7f3; color: #ec4899;">LP</div>
+          <div class="feature-title">Lead Pipeline</div>
+          <div class="feature-description">Client tracking & follow-up</div>
+          <div class="text-small text-muted mt-2">25% more deals</div>
+        </div>
+      </div>
+      
+      <div class="card mt-3">
+        <div class="card-title">What's Included</div>
+        <ul style="margin-top: 12px; color: var(--gray-700);">
+          <li>Automated commission calculations with split tracking</li>
+          <li>MLS data integration formulas</li>
+          <li>Client follow-up scheduling</li>
+          <li>Property cash flow analysis</li>
+          <li>Tax deduction tracking</li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- Construction Templates -->
+    <div id="construction" class="category-content" style="display: none;">
+      <div class="feature-grid">
+        <div class="feature-card" onclick="applyTemplate('cost-estimator')">
+          <div class="feature-icon" style="background: #fed7aa; color: #ea580c;">CE</div>
+          <div class="feature-title">Cost Estimator</div>
+          <div class="feature-description">Line items with markup calcs</div>
+          <div class="text-small text-muted mt-2">Saves 15 hrs/week</div>
+        </div>
+        
+        <div class="feature-card" onclick="applyTemplate('project-gantt')">
+          <div class="feature-icon" style="background: #c7d2fe; color: #4f46e5;">GT</div>
+          <div class="feature-title">Project Gantt Chart</div>
+          <div class="feature-description">Milestone & resource tracking</div>
+          <div class="text-small text-muted mt-2">25% less delays</div>
+        </div>
+        
+        <div class="feature-card" onclick="applyTemplate('material-tracker')">
+          <div class="feature-icon" style="background: #bbf7d0; color: #059669;">MT</div>
+          <div class="feature-title">Material Tracker</div>
+          <div class="feature-description">Inventory & waste monitoring</div>
+          <div class="text-small text-muted mt-2">20% waste reduction</div>
+        </div>
+        
+        <div class="feature-card" onclick="applyTemplate('timesheet-processor')">
+          <div class="feature-icon" style="background: #e9d5ff; color: #a855f7;">TS</div>
+          <div class="feature-title">Timesheet Processor</div>
+          <div class="feature-description">Digital timesheets & payroll</div>
+          <div class="text-small text-muted mt-2">60% faster</div>
+        </div>
+      </div>
+      
+      <div class="card mt-3">
+        <div class="card-title">What's Included</div>
+        <ul style="margin-top: 12px; color: var(--gray-700);">
+          <li>Quantity × unit cost formulas with automatic tax</li>
+          <li>10-15% contingency planning built-in</li>
+          <li>Material waste tracking (save $15-30k/project)</li>
+          <li>Resource allocation optimization</li>
+          <li>$360,000 in documented savings over 5 years</li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- Healthcare Templates -->
+    <div id="healthcare" class="category-content" style="display: none;">
+      <div class="feature-grid">
+        <div class="feature-card" onclick="applyTemplate('insurance-verifier')">
+          <div class="feature-icon" style="background: #fee2e2; color: #dc2626;">IV</div>
+          <div class="feature-title">Insurance Verifier</div>
+          <div class="feature-description">Eligibility & auth tracking</div>
+          <div class="text-small text-muted mt-2">Save 8.4 hrs/day</div>
+        </div>
+        
+        <div class="feature-card" onclick="applyTemplate('billing-tracker')">
+          <div class="feature-icon" style="background: #cffafe; color: #0891b2;">BT</div>
+          <div class="feature-title">Billing Tracker</div>
+          <div class="feature-description">Claims & denial management</div>
+          <div class="text-small text-muted mt-2">95% collection rate</div>
+        </div>
+        
+        <div class="feature-card" onclick="applyTemplate('patient-scheduler')">
+          <div class="feature-icon" style="background: #f3e8ff; color: #9333ea;">PS</div>
+          <div class="feature-title">Patient Scheduler</div>
+          <div class="feature-description">Appointments & reminders</div>
+          <div class="text-small text-muted mt-2">30% less no-shows</div>
+        </div>
+        
+        <div class="feature-card" onclick="applyTemplate('inventory-manager')">
+          <div class="feature-icon" style="background: #ffedd5; color: #ea580c;">MI</div>
+          <div class="feature-title">Medical Inventory</div>
+          <div class="feature-description">Supplies & expiration dates</div>
+          <div class="text-small text-muted mt-2">Zero stockouts</div>
+        </div>
+      </div>
+      
+      <div class="card mt-3">
+        <div class="card-title">What's Included</div>
+        <ul style="margin-top: 12px; color: var(--gray-700);">
+          <li>HIPAA-compliant data handling templates</li>
+          <li>Insurance verification from 12.6 min to 5 sec</li>
+          <li>Denial tracking (15% average rate reduction)</li>
+          <li>Prior auth workflow automation</li>
+          <li>$496 billion in addressable admin costs</li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- Marketing Templates -->
+    <div id="marketing" class="category-content" style="display: none;">
+      <div class="feature-grid">
+        <div class="feature-card" onclick="applyTemplate('campaign-dashboard')">
+          <div class="feature-icon" style="background: #ede9fe; color: #7c3aed;">CD</div>
+          <div class="feature-title">Campaign Dashboard</div>
+          <div class="feature-description">Multi-channel performance</div>
+          <div class="text-small text-muted mt-2">Save 30 hrs/month</div>
+        </div>
+        
+        <div class="feature-card" onclick="applyTemplate('lead-scorer')">
+          <div class="feature-icon" style="background: #fef9c3; color: #ca8a04;">LS</div>
+          <div class="feature-title">Lead Scoring</div>
+          <div class="feature-description">Automated qualification</div>
+          <div class="text-small text-muted mt-2">73% better conversion</div>
+        </div>
+        
+        <div class="feature-card" onclick="applyTemplate('client-reporter')">
+          <div class="feature-icon" style="background: #dbeafe; color: #2563eb;">CR</div>
+          <div class="feature-title">Client Reporter</div>
+          <div class="feature-description">Automated monthly reports</div>
+          <div class="text-small text-muted mt-2">2.5 hrs → 15 min</div>
+        </div>
+        
+        <div class="feature-card" onclick="applyTemplate('content-calendar')">
+          <div class="feature-icon" style="background: #fce7f3; color: #ec4899;">CC</div>
+          <div class="feature-title">Content Calendar</div>
+          <div class="feature-description">Social & blog scheduling</div>
+          <div class="text-small text-muted mt-2">52% better retention</div>
+        </div>
+      </div>
+      
+      <div class="card mt-3">
+        <div class="card-title">What's Included</div>
+        <ul style="margin-top: 12px; color: var(--gray-700);">
+          <li>Google Analytics + Facebook Ads + Google Ads integration</li>
+          <li>Attribution modeling with source tracking</li>
+          <li>248% ROI with 6-month payback</li>
+          <li>Revenue per client tracking (only 49% do this)</li>
+          <li>$360,000 annual savings from automation</li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- Implementation Guide -->
+    <div class="card" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); margin-top: 24px;">
+      <div class="card-title">Quick Start Guide</div>
+      <div class="card-description">Get up and running in minutes</div>
+      
+      <ol style="margin-top: 16px; padding-left: 20px; color: var(--gray-700);">
+        <li style="margin-bottom: 8px;">Select your industry template above</li>
+        <li style="margin-bottom: 8px;">Template automatically creates sheets and formulas</li>
+        <li style="margin-bottom: 8px;">Customize fields for your business</li>
+        <li style="margin-bottom: 8px;">Import existing data (we'll help format it)</li>
+        <li style="margin-bottom: 8px;">Start saving 15-25 hours weekly!</li>
+      </ol>
+      
+      <div class="alert alert-success mt-3">
+        <strong>ROI Guarantee:</strong> Most businesses see positive ROI within 30 days
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Check if a default category was passed and switch to it on load
+    <? if (typeof defaultCategory !== 'undefined' && defaultCategory) { ?>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Hide all categories first
+        document.querySelectorAll('.category-content').forEach(content => {
+          content.style.display = 'none';
+        });
+        
+        // Show the selected category
+        const categoryElement = document.getElementById('<?= defaultCategory ?>');
+        if (categoryElement) {
+          categoryElement.style.display = 'block';
+        }
+        
+        // Update button states
+        document.querySelectorAll('.tab-button').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        // Find and activate the corresponding button
+        const categoryMap = {
+          'real-estate': 0,
+          'construction': 1,
+          'healthcare': 2,
+          'marketing': 3,
+          'ecommerce': 3,
+          'consulting': 3
+        };
+        
+        const tabIndex = categoryMap['<?= defaultCategory ?>'] || 0;
+        const buttons = document.querySelectorAll('.tab-button');
+        if (buttons[tabIndex]) {
+          buttons[tabIndex].classList.add('active');
+        }
+      });
+    <? } ?>
+    
+    function backToMain() {
+      google.script.run.showCellPilotSidebar();
+    }
+    
+    function switchCategory(category) {
+      // Update button states
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      // Show/hide content
+      document.querySelectorAll('.category-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      document.getElementById(category).style.display = 'block';
+    }
+    
+    function showStatus(message, type = 'info') {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.className = 'alert alert-' + type;
+      statusDiv.textContent = message;
+      statusDiv.style.display = 'flex';
+      
+      if (type === 'success') {
+        setTimeout(() => {
+          statusDiv.style.display = 'none';
+        }, 5000);
+      }
+    }
+    
+    function applyTemplate(templateType) {
+      showStatus('Applying ' + templateType.replace('-', ' ') + ' template...', 'info');
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showStatus('Template applied successfully! Check your new sheets.', 'success');
+            
+            // Optionally navigate to the first sheet created
+            if (result.sheets && result.sheets.length > 0) {
+              setTimeout(() => {
+                google.script.run.navigateToSheet(result.sheets[0]);
+              }, 2000);
+            }
+          } else {
+            showStatus(result.error || 'Failed to apply template', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .applyIndustryTemplate(templateType);
+    }
+  </script>
+</body>
+</html>

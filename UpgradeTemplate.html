@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('SharedStyles'); ?>
+</head>
+<body>
+  <div class="nav-header">
+    <button class="nav-back" onclick="backToMain()">←</button>
+    <div class="nav-title">
+      <h2>Upgrade CellPilot</h2>
+      <p>Choose the perfect plan for your needs</p>
+    </div>
+  </div>
+  
+  <div class="container">
+    <!-- Current Plan -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Your Current Plan: Free</div>
+        <div class="card-description">Basic features with limited operations</div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">87</div>
+          <div class="stat-label">Operations Left</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">100</div>
+          <div class="stat-label">Monthly Limit</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">13%</div>
+          <div class="stat-label">Used</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Plans -->
+    <div style="margin: 24px 0;">
+      <h3 style="font-size: 14px; color: var(--gray-700); margin-bottom: 16px;">Available Plans</h3>
+      
+      <!-- Starter Plan -->
+      <div class="card" style="border: 2px solid var(--primary-300); position: relative;">
+        <div class="card-header">
+          <div class="card-title" style="color: var(--primary-600);">
+            Starter Plan
+            <span style="font-size: 20px; float: right;">£5.99<span style="font-size: 12px; color: var(--gray-500);">/mo</span></span>
+          </div>
+          <div class="card-description">Perfect for individuals and freelancers</div>
+        </div>
+        
+        <div style="margin: 16px 0;">
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
+            <span style="font-size: 13px;">500 operations per month (5x more)</span>
+          </div>
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
+            <span style="font-size: 13px;">AI-powered formula builder</span>
+          </div>
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
+            <span style="font-size: 13px;">Basic automation features</span>
+          </div>
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
+            <span style="font-size: 13px;">Email support</span>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary btn-block" onclick="subscribeToPlan('starter')">
+          Upgrade to Starter
+        </button>
+      </div>
+      
+      <!-- Professional Plan (Recommended) -->
+      <div class="card" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(34, 197, 94, 0.1)); border: 2px solid var(--success-500); position: relative;">
+        <span style="position: absolute; top: -12px; right: 20px; background: var(--success-500); color: white; padding: 4px 16px; border-radius: 20px; font-size: 11px; font-weight: 600;">MOST POPULAR</span>
+        
+        <div class="card-header">
+          <div class="card-title" style="color: var(--success-600);">
+            Professional Plan
+            <span style="font-size: 20px; float: right;">£11.99<span style="font-size: 12px; color: var(--gray-500);">/mo</span></span>
+          </div>
+          <div class="card-description">Best for teams and growing businesses</div>
+        </div>
+        
+        <div style="margin: 16px 0;">
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
+            <span style="font-size: 13px; font-weight: 600;">Unlimited operations</span>
+          </div>
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
+            <span style="font-size: 13px;">Everything in Starter, plus:</span>
+          </div>
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
+            <span style="font-size: 13px;">Excel migration assistant</span>
+          </div>
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
+            <span style="font-size: 13px;">Advanced automation workflows</span>
+          </div>
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
+            <span style="font-size: 13px;">Industry-specific templates</span>
+          </div>
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
+            <span style="font-size: 13px;">Priority support & training</span>
+          </div>
+        </div>
+        
+        <button class="btn btn-success btn-block" onclick="subscribeToPlan('professional')">
+          Upgrade to Professional
+        </button>
+      </div>
+      
+      <!-- Enterprise Plan -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            Enterprise Plan
+            <span style="font-size: 16px; float: right; color: var(--gray-600);">Custom</span>
+          </div>
+          <div class="card-description">For large organizations with custom needs</div>
+        </div>
+        
+        <div style="margin: 16px 0;">
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: var(--primary-500); margin-right: 8px;">✓</span>
+            <span style="font-size: 13px;">Everything in Professional</span>
+          </div>
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: var(--primary-500); margin-right: 8px;">✓</span>
+            <span style="font-size: 13px;">Connect with your business tools</span>
+          </div>
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: var(--primary-500); margin-right: 8px;">✓</span>
+            <span style="font-size: 13px;">Dedicated account manager</span>
+          </div>
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: var(--primary-500); margin-right: 8px;">✓</span>
+            <span style="font-size: 13px;">On-premise deployment option</span>
+          </div>
+        </div>
+        
+        <button class="btn btn-secondary btn-block" onclick="contactSales()">
+          Contact Sales
+        </button>
+      </div>
+    </div>
+    
+    <!-- Features Comparison -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Why Upgrade?</div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 12px;">
+        <div style="padding: 12px; background: var(--gray-50); border-radius: 8px;">
+          <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--gray-700);">TIME</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--gray-700);">Save 10+ hours/month</div>
+          <div style="font-size: 11px; color: var(--gray-500);">Automate repetitive tasks</div>
+        </div>
+        
+        <div style="padding: 12px; background: var(--gray-50); border-radius: 8px;">
+          <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--gray-700);">ACCURACY</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--gray-700);">Reduce errors by 88%</div>
+          <div style="font-size: 11px; color: var(--gray-500);">Smart data validation</div>
+        </div>
+        
+        <div style="padding: 12px; background: var(--gray-50); border-radius: 8px;">
+          <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--gray-700);">SPEED</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--gray-700);">10x faster formulas</div>
+          <div style="font-size: 11px; color: var(--gray-500);">AI-powered builder</div>
+        </div>
+        
+        <div style="padding: 12px; background: var(--gray-50); border-radius: 8px;">
+          <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--gray-700);">POWER</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--gray-700);">Excel migration</div>
+          <div style="font-size: 11px; color: var(--gray-500);">Fix all import issues</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <div class="footer-content">
+        <p style="margin-bottom: 8px;">All plans include automatic updates and new features</p>
+        <p style="font-size: 11px; color: var(--gray-400);">Cancel anytime • Secure payment via Stripe</p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function backToMain() {
+      google.script.run.showCellPilotSidebar();
+    }
+    
+    function subscribeToPlan(plan) {
+      // Track the plan selection
+      google.script.run
+        .withSuccessHandler(function() {
+          window.open('https://cellpilot.co.uk/subscribe?plan=' + plan, '_blank');
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error:', error);
+          window.open('https://cellpilot.co.uk/pricing', '_blank');
+        })
+        .trackPlanSelection(plan);
+    }
+    
+    function contactSales() {
+      window.open('https://cellpilot.co.uk/contact?type=enterprise', '_blank');
+    }
+  </script>
+</body>
+</html>
