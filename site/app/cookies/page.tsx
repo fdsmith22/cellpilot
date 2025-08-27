@@ -10,12 +10,12 @@ export default function CookiePolicy() {
   return (
     <main className="min-h-screen relative">
       {/* Background decoration matching main site */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{zIndex: 0}}>
         <div className="absolute top-0 left-1/2 w-96 h-96 bg-pastel-mint/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 right-1/3 w-96 h-96 bg-pastel-sky/10 rounded-full blur-3xl"></div>
       </div>
       
-      <div className="container-wrapper relative z-10 pt-[100px] sm:pt-32 md:pt-28 pb-20">
+      <div className="container-wrapper relative pt-[100px] sm:pt-32 md:pt-28 pb-20" style={{zIndex: 10}}>
         <div className="max-w-4xl mx-auto">
           {/* Back link */}
           <Link href="/" className="inline-flex items-center text-primary-600 hover:text-primary-700 transition-colors mb-8">

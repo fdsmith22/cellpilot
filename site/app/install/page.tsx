@@ -12,12 +12,12 @@ export default function InstallPage() {
   return (
     <main className="min-h-screen relative">
       {/* Background decoration matching main site */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{zIndex: 0}}>
         <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-gradient-to-l from-pastel-sky/20 via-pastel-mint/10 to-transparent rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/4 left-0 w-[500px] h-[500px] bg-gradient-to-r from-pastel-lavender/20 via-pastel-peach/10 to-transparent rounded-full blur-3xl"></div>
       </div>
       
-      <div className="container mx-auto px-4 pt-[100px] sm:pt-32 md:pt-28 pb-16 sm:px-6 lg:px-8 relative z-10">
+      <div className="container mx-auto px-4 pt-[100px] sm:pt-32 md:pt-28 pb-16 sm:px-6 lg:px-8 relative" style={{zIndex: 10}}>
         <div className="max-w-4xl mx-auto">
           <ScrollObserver className="text-center mb-12">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-neutral-900 mb-4">

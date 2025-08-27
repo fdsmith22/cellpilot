@@ -92,8 +92,8 @@
 
   .grid-pattern {
     background-image: 
-      linear-gradient(rgba(94, 124, 226, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(94, 124, 226, 0.05) 1px, transparent 1px);
+      linear-gradient(rgba(94, 124, 226, 0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(94, 124, 226, 0.15) 1px, transparent 1px);
     background-size: 80px 35px;
   }
 

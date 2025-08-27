@@ -100,11 +100,11 @@ export default function PricingPage() {
   return (
     <main className="min-h-screen relative">
       {/* Background decoration matching main site */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{zIndex: 0}}>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-pastel-peach/20 to-pastel-lavender/20 rounded-full blur-3xl"></div>
       </div>
       
-      <div className="container mx-auto px-4 pt-[100px] sm:pt-32 md:pt-28 pb-16 sm:px-6 lg:px-8 relative z-10">
+      <div className="container mx-auto px-4 pt-[100px] sm:pt-32 md:pt-28 pb-16 sm:px-6 lg:px-8 relative" style={{zIndex: 10}}>
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-neutral-900 sm:text-5xl">
             Simple, transparent pricing
