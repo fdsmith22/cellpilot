@@ -149,25 +149,25 @@ const Pricing = () => {
           ))}
         </div>
 
-        <div className="mt-16 text-center">
-          <div className="inline-flex items-center space-x-8 p-6 rounded-2xl glass-card">
+        <div className="mt-12 sm:mt-16 text-center px-4">
+          <div className="inline-flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 p-4 sm:p-6 rounded-xl sm:rounded-2xl glass-card">
             <div className="flex items-center">
-              <svg className="w-5 h-5 text-accent-teal mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-4 sm:w-5 h-4 sm:h-5 text-accent-teal mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span className="text-neutral-700 font-medium">No credit card required</span>
+              <span className="text-sm sm:text-base text-neutral-700 font-medium">No credit card required</span>
             </div>
             <div className="flex items-center">
-              <svg className="w-5 h-5 text-accent-teal mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-4 sm:w-5 h-4 sm:h-5 text-accent-teal mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span className="text-neutral-700 font-medium">Cancel anytime</span>
+              <span className="text-sm sm:text-base text-neutral-700 font-medium">Cancel anytime</span>
             </div>
             <div className="flex items-center">
-              <svg className="w-5 h-5 text-accent-teal mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-4 sm:w-5 h-4 sm:h-5 text-accent-teal mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span className="text-neutral-700 font-medium">Secure payments</span>
+              <span className="text-sm sm:text-base text-neutral-700 font-medium">Secure payments</span>
             </div>
           </div>
         </div>
