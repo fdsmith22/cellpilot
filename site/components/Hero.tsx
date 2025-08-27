@@ -57,7 +57,7 @@ const Hero = () => {
       {/* Grid pattern overlay */}
       <div className="absolute inset-0 grid-pattern opacity-30"></div>
       
-      <div className="container-wrapper relative z-10 pt-32 sm:pt-28 md:pt-28">
+      <div className="container-wrapper relative z-10 pt-40 sm:pt-32 md:pt-28">
         <div className="max-w-5xl mx-auto">
           
           {/* Heading */}
@@ -204,10 +204,10 @@ const Hero = () => {
                         <span className="text-blue-600 font-mono font-semibold">=AVG(D:D)</span>
                       </div>
                       <div className="h-8 sm:h-10 bg-white flex items-center justify-center border-r border-neutral-200/60">
-                        <span className="text-orange-600 font-semibold">Validate</span>
+                        <span className="text-orange-600 font-semibold text-[10px] sm:text-xs">Validate</span>
                       </div>
                       <div className="h-8 sm:h-10 bg-white flex items-center justify-center border-r border-neutral-200/60">
-                        <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded font-medium text-xs">Active</span>
+                        <span className="px-1 sm:px-2 py-0.5 bg-green-100 text-green-700 rounded font-medium text-[10px] sm:text-xs">Active</span>
                       </div>
                       <div className="h-8 sm:h-10 bg-white flex items-center justify-center text-[10px] sm:text-xs">
                         <span className="text-primary-600 font-semibold">Remove Dupes</span>
@@ -227,10 +227,10 @@ const Hero = () => {
                         <span className="text-blue-600 font-mono font-semibold">=SUM(D2:D10)</span>
                       </div>
                       <div className="h-8 sm:h-10 bg-white flex items-center justify-center border-r border-neutral-200/60">
-                        <span className="text-green-600 font-semibold">Auto-backup</span>
+                        <span className="text-green-600 font-semibold text-[10px] sm:text-xs">Auto-backup</span>
                       </div>
                       <div className="h-8 sm:h-10 bg-white flex items-center justify-center border-r border-neutral-200/60">
-                        <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded font-medium text-xs">Pending</span>
+                        <span className="px-1 sm:px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded font-medium text-[10px] sm:text-xs">Pending</span>
                       </div>
                       <div className="h-8 sm:h-10 bg-white flex items-center justify-center text-[10px] sm:text-xs">
                         <span className="text-accent-teal font-semibold">Email Alert</span>
@@ -239,10 +239,10 @@ const Hero = () => {
                   </div>
                   
                   {/* Status bar */}
-                  <div className="flex items-center justify-between mt-3 text-xs text-neutral-500">
+                  <div className="flex items-center justify-between mt-2 sm:mt-3 text-[10px] sm:text-xs text-neutral-500">
                     <span>4 operations available</span>
                     <span className="flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 animate-pulse"></span>
                       Auto-saved
                     </span>
                   </div>

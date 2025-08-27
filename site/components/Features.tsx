@@ -61,7 +61,7 @@ const features = [
 
 const Features = () => {
   return (
-    <section id="features" className="min-h-screen flex items-center relative overflow-hidden pt-20 sm:pt-24 md:pt-28 pb-16 sm:pb-20">
+    <section id="features" className="min-h-screen flex items-center relative overflow-hidden pt-24 sm:pt-24 md:pt-28 pb-20 sm:pb-20">
       {/* Background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-pastel-sky/10 rounded-full blur-3xl"></div>
