@@ -57,7 +57,7 @@ const Hero = () => {
       {/* Grid pattern overlay */}
       <div className="absolute inset-0 grid-pattern opacity-30"></div>
       
-      <div className="container-wrapper relative z-10 pt-20 sm:pt-24 md:pt-28">
+      <div className="container-wrapper relative z-10 pt-24 sm:pt-26 md:pt-28">
         <div className="max-w-5xl mx-auto">
           
           {/* Heading */}
