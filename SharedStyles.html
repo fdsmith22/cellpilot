@@ -230,9 +230,9 @@
   }
   
   .card:hover {
-    box-shadow: var(--elevation-3);
-    transform: translateY(-1px);
-    border-color: var(--primary-200);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    border-color: var(--primary-300);
   }
   
   .card-interactive {
@@ -1205,12 +1205,14 @@
   .dropdown-header:hover {
     transform: translateY(-1px);
     box-shadow: var(--elevation-2);
-    filter: brightness(1.05);
+    border-color: var(--primary-300);
+    background: var(--gray-50);
   }
   
   .dropdown-header.active {
     box-shadow: var(--elevation-2);
-    filter: brightness(1.02);
+    border-color: var(--primary-400);
+    background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
   }
   
   .dropdown-arrow {

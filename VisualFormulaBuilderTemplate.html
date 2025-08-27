@@ -1350,7 +1350,7 @@
       if (analysis && context) {
         let analysisHtml = '';
         
-        analysisHtml += '<div class="analysis-item"><strong>Selection:</strong> ' + context.range + ' (' + context.rowCount + ' rows, ' + context.columnCount + ' cols)</div>';
+        analysisHtml += '<div class="analysis-item"><strong>Selection:</strong> ' + context.range + ' (' + context.rowCount + '×' + context.columnCount + ')</div>';
         
         if (context.hasHeaders) {
           analysisHtml += '<div class="analysis-item"><strong>Headers:</strong> ' + context.headers.join(', ') + '</div>';

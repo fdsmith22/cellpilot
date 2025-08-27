@@ -790,6 +790,63 @@ return CellPilot.showMultiTabRelationshipMapper();
 }
 
 /**
+* Show smart formula debugger interface
+*/
+function showSmartFormulaDebugger() {
+return CellPilot.showSmartFormulaDebugger();
+}
+
+/**
+* Debug the active cell formula
+* @return {Object} Debug analysis results
+*/
+function debugActiveFormula() {
+return CellPilot.debugActiveFormula();
+}
+
+/**
+* Debug all formulas in selection
+* @return {Object} Debug analysis results for selection
+*/
+function debugSelectionFormulas() {
+return CellPilot.debugSelectionFormulas();
+}
+
+/**
+* Debug all formulas in the sheet
+* @return {Object} Debug analysis results for entire sheet
+*/
+function debugAllSheetFormulas() {
+return CellPilot.debugAllSheetFormulas();
+}
+
+/**
+* Apply a formula fix to a cell
+* @param {string} cellRef - Cell reference (e.g., "A1")
+* @param {string} formula - New formula to apply
+* @return {Object} Result of fix application
+*/
+function applyFormulaFix(cellRef, formula) {
+return CellPilot.applyFormulaFix(cellRef, formula);
+}
+
+/**
+* Analyze formula dependencies
+* @return {Object} Dependency analysis results
+*/
+function analyzeDependencies() {
+return CellPilot.analyzeDependencies();
+}
+
+/**
+* Analyze formula performance
+* @return {Object} Performance analysis results
+*/
+function analyzeFormulaPerformance() {
+return CellPilot.analyzeFormulaPerformance();
+}
+
+/**
 * ================================
 * END OF PROXY FUNCTIONS
 * ================================

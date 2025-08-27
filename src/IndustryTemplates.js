@@ -16,6 +16,7 @@ const IndustryTemplates = {
       const createdSheets = [];
       
       switch(templateType) {
+        // Real Estate Templates
         case 'commission-tracker':
           createdSheets.push(...this.createRealEstateCommissionTracker(spreadsheet));
           break;
@@ -24,26 +25,132 @@ const IndustryTemplates = {
           createdSheets.push(...this.createPropertyManager(spreadsheet));
           break;
           
+        case 'investment-analyzer':
+          // For now, create a simplified version or reuse commission tracker
+          createdSheets.push(...this.createRealEstateCommissionTracker(spreadsheet));
+          break;
+          
+        case 'lead-pipeline':
+          // Create just the pipeline part from commission tracker
+          const pipelineSheet = spreadsheet.insertSheet('Lead Pipeline');
+          this.setupLeadPipelineSheet(pipelineSheet);
+          createdSheets.push(pipelineSheet.getName());
+          break;
+          
+        // Construction Templates
         case 'cost-estimator':
           createdSheets.push(...this.createConstructionEstimator(spreadsheet));
           break;
           
-        case 'campaign-dashboard':
-          createdSheets.push(...this.createMarketingDashboard(spreadsheet));
+        case 'material-tracker':
+          // Create a material-focused subset
+          const materialSheet = spreadsheet.insertSheet('Material Tracker');
+          this.setupMaterialTrackerSheet(materialSheet);
+          createdSheets.push(materialSheet.getName());
           break;
           
+        case 'labor-manager':
+          // Create a labor-focused subset
+          const laborSheet = spreadsheet.insertSheet('Labor Manager');
+          this.setupLaborManagerSheet(laborSheet);
+          createdSheets.push(laborSheet.getName());
+          break;
+          
+        case 'change-orders':
+          // Create change order tracking
+          const changeSheet = spreadsheet.insertSheet('Change Orders');
+          this.setupChangeOrderSheet(changeSheet);
+          createdSheets.push(changeSheet.getName());
+          break;
+          
+        // Healthcare Templates
         case 'insurance-verifier':
           createdSheets.push(...this.createHealthcareVerifier(spreadsheet));
           break;
           
+        case 'prior-auth-tracker':
+          const priorAuthSheet = spreadsheet.insertSheet('Prior Auth Tracker');
+          this.setupPriorAuthSheet(priorAuthSheet);
+          createdSheets.push(priorAuthSheet.getName());
+          break;
+          
+        case 'revenue-cycle':
+          const revenueSheet = spreadsheet.insertSheet('Revenue Cycle');
+          this.setupRevenueCycleSheet(revenueSheet);
+          createdSheets.push(revenueSheet.getName());
+          break;
+          
+        case 'denial-analytics':
+          const denialSheet = spreadsheet.insertSheet('Denial Analytics');
+          this.setupDenialAnalyticsSheet(denialSheet);
+          createdSheets.push(denialSheet.getName());
+          break;
+          
+        // Marketing Templates
+        case 'campaign-dashboard':
+          createdSheets.push(...this.createMarketingDashboard(spreadsheet));
+          break;
+          
+        case 'lead-scoring-system':
+          const leadScoringSheet = spreadsheet.insertSheet('Lead Scoring');
+          this.setupLeadScoringSheet(leadScoringSheet);
+          createdSheets.push(leadScoringSheet.getName());
+          break;
+          
+        case 'content-performance':
+          const contentSheet = spreadsheet.insertSheet('Content Performance');
+          this.setupContentPerformanceSheet(contentSheet);
+          createdSheets.push(contentSheet.getName());
+          break;
+          
+        case 'customer-journey':
+          const journeySheet = spreadsheet.insertSheet('Customer Journey');
+          this.setupCustomerJourneySheet(journeySheet);
+          createdSheets.push(journeySheet.getName());
+          break;
+          
+        // E-Commerce Templates
+        case 'ecommerce-inventory':
+          createdSheets.push(...this.createEcommerceInventory(spreadsheet));
+          break;
+          
+        case 'profitability-analyzer':
+          const profitSheet = spreadsheet.insertSheet('Profitability Analysis');
+          this.setupProfitabilitySheet(profitSheet);
+          createdSheets.push(profitSheet.getName());
+          break;
+          
+        case 'sales-forecasting':
+          const forecastSheet = spreadsheet.insertSheet('Sales Forecast');
+          this.setupSalesForecastSheet(forecastSheet);
+          createdSheets.push(forecastSheet.getName());
+          break;
+          
+        // Consulting Templates
+        case 'time-billing-tracker':
+          createdSheets.push(...this.createConsultingTracker(spreadsheet));
+          break;
+          
+        case 'project-profitability':
+          const projectSheet = spreadsheet.insertSheet('Project Profitability');
+          this.setupProjectProfitabilitySheet(projectSheet);
+          createdSheets.push(projectSheet.getName());
+          break;
+          
+        case 'client-dashboard':
+          const clientSheet = spreadsheet.insertSheet('Client Dashboard');
+          this.setupClientDashboardSheet(clientSheet);
+          createdSheets.push(clientSheet.getName());
+          break;
+          
         default:
-          return { success: false, error: 'Unknown template type' };
+          return { success: false, error: 'Unknown template type: ' + templateType };
       }
       
       return {
         success: true,
         sheets: createdSheets,
-        message: `Created ${createdSheets.length} sheets with pre-built formulas`
+        message: `Created ${createdSheets.length} sheet(s) for ${templateType}`
       };
       
     } catch (error) {
@@ -1500,5 +1607,402 @@ const IndustryTemplates = {
     profitDashboard.setColumnWidth(5, 150);
     
     return sheets;
+  },
+
+  // Individual template setup functions
+  setupLeadPipelineSheet: function(sheet) {
+    // Headers
+    const headers = ['Lead ID', 'Company', 'Contact Name', 'Email', 'Phone', 'Lead Source', 
+                     'Status', 'Lead Score', 'Assigned To', 'Created Date', 'Last Contact', 
+                     'Next Action', 'Deal Value', 'Probability %', 'Expected Close', 'Notes'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    
+    // Apply formatting
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#2C3E50');
+    headerRange.setFontColor('#FFFFFF');
+    headerRange.setFontWeight('bold');
+    
+    // Add sample data
+    const sampleData = [
+      ['L001', 'TechCorp', 'John Smith', 'john@techcorp.com', '555-0101', 'Website', 
+       'Qualified', 85, 'Sarah Johnson', new Date(), new Date(), 'Demo scheduled', 
+       50000, 60, new Date(Date.now() + 30*24*60*60*1000), 'High interest in product'],
+      ['L002', 'DataSoft', 'Jane Doe', 'jane@datasoft.com', '555-0102', 'Referral', 
+       'New', 65, 'Mike Chen', new Date(), '', 'Initial call', 
+       75000, 30, new Date(Date.now() + 45*24*60*60*1000), 'Evaluating options']
+    ];
+    sheet.getRange(2, 1, sampleData.length, headers.length).setValues(sampleData);
+    
+    // Add data validation for Status
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['New', 'Contacted', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'])
+      .build();
+    sheet.getRange(2, 7, 100, 1).setDataValidation(statusRule);
+    
+    // Add conditional formatting for Lead Score
+    const scoreRange = sheet.getRange(2, 8, 100, 1);
+    const highScoreRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberGreaterThanOrEqualTo(80)
+      .setBackground('#27AE60')
+      .setRanges([scoreRange])
+      .build();
+    const medScoreRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberBetween(50, 79)
+      .setBackground('#F39C12')
+      .setRanges([scoreRange])
+      .build();
+    sheet.setConditionalFormatRules([highScoreRule, medScoreRule]);
+    
+    // Set column widths
+    sheet.setColumnWidth(2, 150);
+    sheet.setColumnWidth(3, 150);
+    sheet.setColumnWidth(4, 200);
+    sheet.setColumnWidth(16, 300);
+  },
+
+  setupKanbanBoardSheet: function(sheet) {
+    // Create Kanban board layout
+    const headers = ['Task ID', 'Task', 'Assigned To', 'Priority', 'Status', 'Due Date', 'Tags', 'Description'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    
+    // Style headers
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#34495E');
+    headerRange.setFontColor('#FFFFFF');
+    headerRange.setFontWeight('bold');
+    
+    // Add sample tasks
+    const sampleTasks = [
+      ['T001', 'Design homepage mockup', 'Alice Brown', 'High', 'In Progress', new Date(Date.now() + 3*24*60*60*1000), 'Design, UI', 'Create responsive mockup'],
+      ['T002', 'API integration', 'Bob Wilson', 'Medium', 'To Do', new Date(Date.now() + 7*24*60*60*1000), 'Backend, API', 'Connect to payment gateway'],
+      ['T003', 'User testing', 'Carol Davis', 'High', 'Review', new Date(Date.now() + 5*24*60*60*1000), 'Testing, UX', 'Conduct usability tests'],
+      ['T004', 'Documentation update', 'David Lee', 'Low', 'Done', new Date(), 'Docs', 'Update API documentation']
+    ];
+    sheet.getRange(2, 1, sampleTasks.length, headers.length).setValues(sampleTasks);
+    
+    // Add status validation
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['To Do', 'In Progress', 'Review', 'Done', 'Blocked'])
+      .build();
+    sheet.getRange(2, 5, 100, 1).setDataValidation(statusRule);
+    
+    // Add priority validation
+    const priorityRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Low', 'Medium', 'High', 'Critical'])
+      .build();
+    sheet.getRange(2, 4, 100, 1).setDataValidation(priorityRule);
+    
+    // Conditional formatting for priority
+    const priorityRange = sheet.getRange(2, 4, 100, 1);
+    const criticalRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Critical')
+      .setBackground('#E74C3C')
+      .setFontColor('#FFFFFF')
+      .setRanges([priorityRange])
+      .build();
+    const highRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('High')
+      .setBackground('#F39C12')
+      .setRanges([priorityRange])
+      .build();
+    sheet.setConditionalFormatRules([criticalRule, highRule]);
+    
+    // Set column widths
+    sheet.setColumnWidth(2, 250);
+    sheet.setColumnWidth(8, 300);
+  },
+
+  setupBudgetPlannerSheet: function(sheet) {
+    // Headers
+    const headers = ['Category', 'Subcategory', 'Planned Amount', 'Actual Amount', 
+                     'Variance', 'Variance %', 'Month', 'Year', 'Notes'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    
+    // Style headers
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#27AE60');
+    headerRange.setFontColor('#FFFFFF');
+    headerRange.setFontWeight('bold');
+    
+    // Add sample budget data
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+    const sampleData = [
+      ['Income', 'Salary', 5000, 5000, '=D2-C2', '=E2/C2', currentMonth, currentYear, 'Monthly salary'],
+      ['Income', 'Freelance', 1000, 800, '=D3-C3', '=E3/C3', currentMonth, currentYear, 'Side projects'],
+      ['Housing', 'Rent', 1500, 1500, '=D4-C4', '=E4/C4', currentMonth, currentYear, 'Monthly rent'],
+      ['Housing', 'Utilities', 200, 180, '=D5-C5', '=E5/C5', currentMonth, currentYear, 'Electric, water, gas'],
+      ['Transportation', 'Gas', 150, 120, '=D6-C6', '=E6/C6', currentMonth, currentYear, 'Fuel costs'],
+      ['Food', 'Groceries', 400, 450, '=D7-C7', '=E7/C7', currentMonth, currentYear, 'Weekly shopping'],
+      ['Food', 'Dining Out', 200, 250, '=D8-C8', '=E8/C8', currentMonth, currentYear, 'Restaurants'],
+      ['Entertainment', 'Streaming', 50, 50, '=D9-C9', '=E9/C9', currentMonth, currentYear, 'Netflix, Spotify'],
+      ['Savings', 'Emergency Fund', 500, 500, '=D10-C10', '=E10/C10', currentMonth, currentYear, '10% of income']
+    ];
+    sheet.getRange(2, 1, sampleData.length, headers.length).setValues(sampleData);
+    
+    // Format currency columns
+    sheet.getRange(2, 3, 100, 2).setNumberFormat('$#,##0.00');
+    sheet.getRange(2, 5, 100, 1).setNumberFormat('$#,##0.00;[Red]-$#,##0.00');
+    sheet.getRange(2, 6, 100, 1).setNumberFormat('0.00%');
+    
+    // Add category validation
+    const categoryRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Income', 'Housing', 'Transportation', 'Food', 'Entertainment', 'Healthcare', 'Savings', 'Other'])
+      .build();
+    sheet.getRange(2, 1, 100, 1).setDataValidation(categoryRule);
+    
+    // Conditional formatting for variance
+    const varianceRange = sheet.getRange(2, 5, 100, 1);
+    const positiveRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberGreaterThan(0)
+      .setFontColor('#27AE60')
+      .setRanges([varianceRange])
+      .build();
+    const negativeRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberLessThan(0)
+      .setFontColor('#E74C3C')
+      .setRanges([varianceRange])
+      .build();
+    sheet.setConditionalFormatRules([positiveRule, negativeRule]);
+    
+    // Add summary section
+    sheet.getRange(12, 1).setValue('SUMMARY');
+    sheet.getRange(12, 1).setFontWeight('bold');
+    sheet.getRange(13, 1).setValue('Total Income:');
+    sheet.getRange(13, 3).setFormula('=SUMIF(A2:A10,"Income",C2:C10)');
+    sheet.getRange(13, 4).setFormula('=SUMIF(A2:A10,"Income",D2:D10)');
+    sheet.getRange(14, 1).setValue('Total Expenses:');
+    sheet.getRange(14, 3).setFormula('=SUMIF(A2:A10,"<>Income",C2:C10)');
+    sheet.getRange(14, 4).setFormula('=SUMIF(A2:A10,"<>Income",D2:D10)');
+    sheet.getRange(15, 1).setValue('Net Savings:');
+    sheet.getRange(15, 3).setFormula('=C13-C14');
+    sheet.getRange(15, 4).setFormula('=D13-D14');
+    sheet.getRange(13, 3, 3, 2).setNumberFormat('$#,##0.00');
+    
+    // Set column widths
+    sheet.setColumnWidth(1, 150);
+    sheet.setColumnWidth(2, 150);
+    sheet.setColumnWidth(9, 250);
+  },
+
+  setupSocialMediaTrackerSheet: function(sheet) {
+    // Headers
+    const headers = ['Date', 'Platform', 'Post Type', 'Content Title', 'Impressions', 
+                     'Reach', 'Engagement', 'Clicks', 'Shares', 'Comments', 'Likes', 
+                     'Conversion Rate', 'ROI', 'Campaign', 'Hashtags'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    
+    // Style headers
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#3498DB');
+    headerRange.setFontColor('#FFFFFF');
+    headerRange.setFontWeight('bold');
+    
+    // Add sample data
+    const sampleData = [
+      [new Date(), 'Instagram', 'Photo', 'Product Launch', 5000, 3500, 450, 120, 50, 30, 370, '=H2/E2', '=M2*100', 'Summer Sale', '#newproduct #launch'],
+      [new Date(), 'Facebook', 'Video', 'Tutorial Video', 8000, 6000, 800, 250, 100, 60, 640, '=H3/E3', '=M3*100', 'Educational', '#howto #tutorial'],
+      [new Date(), 'Twitter', 'Tweet', 'Industry News', 2000, 1500, 150, 50, 30, 20, 100, '=H4/E4', '=M4*100', 'News', '#industry #update'],
+      [new Date(), 'LinkedIn', 'Article', 'Thought Leadership', 3000, 2500, 350, 180, 80, 40, 230, '=H5/E5', '=M5*100', 'B2B', '#business #leadership']
+    ];
+    sheet.getRange(2, 1, sampleData.length, headers.length).setValues(sampleData);
+    
+    // Format columns
+    sheet.getRange(2, 1, 100, 1).setNumberFormat('MM/dd/yyyy');
+    sheet.getRange(2, 12, 100, 1).setNumberFormat('0.00%');
+    sheet.getRange(2, 13, 100, 1).setNumberFormat('0.00%');
+    
+    // Add platform validation
+    const platformRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Facebook', 'Instagram', 'Twitter', 'LinkedIn', 'YouTube', 'TikTok', 'Pinterest'])
+      .build();
+    sheet.getRange(2, 2, 100, 1).setDataValidation(platformRule);
+    
+    // Add post type validation
+    const postTypeRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Photo', 'Video', 'Story', 'Reel', 'Tweet', 'Article', 'Live'])
+      .build();
+    sheet.getRange(2, 3, 100, 1).setDataValidation(postTypeRule);
+    
+    // Conditional formatting for engagement rate
+    const engagementRange = sheet.getRange(2, 7, 100, 1);
+    const highEngagementRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberGreaterThanOrEqualTo(500)
+      .setBackground('#27AE60')
+      .setRanges([engagementRange])
+      .build();
+    sheet.setConditionalFormatRules([highEngagementRule]);
+    
+    // Set column widths
+    sheet.setColumnWidth(4, 200);
+    sheet.setColumnWidth(15, 250);
+  },
+
+  setupStudentGradeTrackerSheet: function(sheet) {
+    // Headers
+    const headers = ['Student ID', 'First Name', 'Last Name', 'Course', 'Assignment', 
+                     'Type', 'Points Possible', 'Points Earned', 'Percentage', 'Grade', 
+                     'Due Date', 'Submitted Date', 'Late', 'Comments'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    
+    // Style headers
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#8E44AD');
+    headerRange.setFontColor('#FFFFFF');
+    headerRange.setFontWeight('bold');
+    
+    // Add sample data
+    const sampleData = [
+      ['S001', 'Emma', 'Johnson', 'Math 101', 'Midterm Exam', 'Exam', 100, 85, '=H2/G2', '=IF(I2>=0.9,"A",IF(I2>=0.8,"B",IF(I2>=0.7,"C",IF(I2>=0.6,"D","F"))))', new Date(), new Date(), '=IF(L2>K2,"Yes","No")', 'Good work'],
+      ['S001', 'Emma', 'Johnson', 'Math 101', 'Homework 1', 'Homework', 20, 18, '=H3/G3', '=IF(I3>=0.9,"A",IF(I3>=0.8,"B",IF(I3>=0.7,"C",IF(I3>=0.6,"D","F"))))', new Date(Date.now() - 7*24*60*60*1000), new Date(Date.now() - 7*24*60*60*1000), '=IF(L3>K3,"Yes","No")', 'Complete'],
+      ['S002', 'Michael', 'Chen', 'Math 101', 'Midterm Exam', 'Exam', 100, 92, '=H4/G4', '=IF(I4>=0.9,"A",IF(I4>=0.8,"B",IF(I4>=0.7,"C",IF(I4>=0.6,"D","F"))))', new Date(), new Date(), '=IF(L4>K4,"Yes","No")', 'Excellent'],
+      ['S002', 'Michael', 'Chen', 'Math 101', 'Homework 1', 'Homework', 20, 20, '=H5/G5', '=IF(I5>=0.9,"A",IF(I5>=0.8,"B",IF(I5>=0.7,"C",IF(I5>=0.6,"D","F"))))', new Date(Date.now() - 7*24*60*60*1000), new Date(Date.now() - 8*24*60*60*1000), '=IF(L5>K5,"Yes","No")', 'Perfect']
+    ];
+    sheet.getRange(2, 1, sampleData.length, headers.length).setValues(sampleData);
+    
+    // Format columns
+    sheet.getRange(2, 9, 100, 1).setNumberFormat('0.00%');
+    sheet.getRange(2, 11, 100, 2).setNumberFormat('MM/dd/yyyy');
+    
+    // Add type validation
+    const typeRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Homework', 'Quiz', 'Exam', 'Project', 'Participation', 'Extra Credit'])
+      .build();
+    sheet.getRange(2, 6, 100, 1).setDataValidation(typeRule);
+    
+    // Conditional formatting for grades
+    const gradeRange = sheet.getRange(2, 10, 100, 1);
+    const aGradeRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('A')
+      .setBackground('#27AE60')
+      .setRanges([gradeRange])
+      .build();
+    const fGradeRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('F')
+      .setBackground('#E74C3C')
+      .setFontColor('#FFFFFF')
+      .setRanges([gradeRange])
+      .build();
+    sheet.setConditionalFormatRules([aGradeRule, fGradeRule]);
+    
+    // Add grade summary
+    sheet.getRange(7, 1).setValue('GRADE SUMMARY');
+    sheet.getRange(7, 1).setFontWeight('bold');
+    sheet.getRange(8, 1).setValue('Student');
+    sheet.getRange(8, 2).setValue('Course Average');
+    sheet.getRange(8, 3).setValue('Letter Grade');
+    sheet.getRange(9, 1).setValue('Emma Johnson');
+    sheet.getRange(9, 2).setFormula('=AVERAGE(I2:I3)');
+    sheet.getRange(9, 3).setFormula('=IF(B9>=0.9,"A",IF(B9>=0.8,"B",IF(B9>=0.7,"C",IF(B9>=0.6,"D","F"))))');
+    sheet.getRange(10, 1).setValue('Michael Chen');
+    sheet.getRange(10, 2).setFormula('=AVERAGE(I4:I5)');
+    sheet.getRange(10, 3).setFormula('=IF(B10>=0.9,"A",IF(B10>=0.8,"B",IF(B10>=0.7,"C",IF(B10>=0.6,"D","F"))))');
+    sheet.getRange(9, 2, 2, 1).setNumberFormat('0.00%');
+    
+    // Set column widths
+    sheet.setColumnWidth(5, 150);
+    sheet.setColumnWidth(14, 250);
+  },
+
+  setupCustomerFeedbackSheet: function(sheet) {
+    // Headers
+    const headers = ['Feedback ID', 'Date', 'Customer Name', 'Email', 'Product/Service', 
+                     'Rating', 'NPS Score', 'Category', 'Feedback', 'Sentiment', 
+                     'Priority', 'Status', 'Assigned To', 'Resolution', 'Follow-up Date'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    
+    // Style headers
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#E67E22');
+    headerRange.setFontColor('#FFFFFF');
+    headerRange.setFontWeight('bold');
+    
+    // Add sample data
+    const sampleData = [
+      ['FB001', new Date(), 'Sarah Williams', 'sarah@email.com', 'Premium Plan', 5, 9, 'Service', 'Excellent customer support!', 'Positive', 'Low', 'Resolved', 'Support Team', 'Thanked customer', new Date(Date.now() + 7*24*60*60*1000)],
+      ['FB002', new Date(Date.now() - 1*24*60*60*1000), 'James Brown', 'james@email.com', 'Basic Plan', 3, 6, 'Feature Request', 'Need more customization options', 'Neutral', 'Medium', 'In Progress', 'Product Team', 'Evaluating request', new Date(Date.now() + 14*24*60*60*1000)],
+      ['FB003', new Date(Date.now() - 2*24*60*60*1000), 'Lisa Garcia', 'lisa@email.com', 'Enterprise', 2, 3, 'Bug', 'Login issues on mobile app', 'Negative', 'High', 'Open', 'Dev Team', '', new Date(Date.now() + 3*24*60*60*1000)],
+      ['FB004', new Date(Date.now() - 3*24*60*60*1000), 'Robert Taylor', 'robert@email.com', 'Premium Plan', 4, 8, 'Pricing', 'Good value for money', 'Positive', 'Low', 'Resolved', 'Sales Team', 'Offered loyalty discount', '']
+    ];
+    sheet.getRange(2, 1, sampleData.length, headers.length).setValues(sampleData);
+    
+    // Format columns
+    sheet.getRange(2, 2, 100, 1).setNumberFormat('MM/dd/yyyy');
+    sheet.getRange(2, 15, 100, 1).setNumberFormat('MM/dd/yyyy');
+    
+    // Add rating validation (1-5 stars)
+    const ratingRule = SpreadsheetApp.newDataValidation()
+      .requireNumberBetween(1, 5)
+      .build();
+    sheet.getRange(2, 6, 100, 1).setDataValidation(ratingRule);
+    
+    // Add NPS validation (0-10)
+    const npsRule = SpreadsheetApp.newDataValidation()
+      .requireNumberBetween(0, 10)
+      .build();
+    sheet.getRange(2, 7, 100, 1).setDataValidation(npsRule);
+    
+    // Add category validation
+    const categoryRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Service', 'Product', 'Feature Request', 'Bug', 'Pricing', 'Other'])
+      .build();
+    sheet.getRange(2, 8, 100, 1).setDataValidation(categoryRule);
+    
+    // Add sentiment validation
+    const sentimentRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Positive', 'Neutral', 'Negative'])
+      .build();
+    sheet.getRange(2, 10, 100, 1).setDataValidation(sentimentRule);
+    
+    // Add priority validation
+    const priorityRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Low', 'Medium', 'High', 'Critical'])
+      .build();
+    sheet.getRange(2, 11, 100, 1).setDataValidation(priorityRule);
+    
+    // Add status validation
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Open', 'In Progress', 'Resolved', 'Closed'])
+      .build();
+    sheet.getRange(2, 12, 100, 1).setDataValidation(statusRule);
+    
+    // Conditional formatting for sentiment
+    const sentimentRange = sheet.getRange(2, 10, 100, 1);
+    const positiveRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Positive')
+      .setBackground('#27AE60')
+      .setFontColor('#FFFFFF')
+      .setRanges([sentimentRange])
+      .build();
+    const negativeRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Negative')
+      .setBackground('#E74C3C')
+      .setFontColor('#FFFFFF')
+      .setRanges([sentimentRange])
+      .build();
+    
+    // Conditional formatting for priority
+    const priorityRange = sheet.getRange(2, 11, 100, 1);
+    const criticalPriorityRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Critical')
+      .setBackground('#C0392B')
+      .setFontColor('#FFFFFF')
+      .setRanges([priorityRange])
+      .build();
+    const highPriorityRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('High')
+      .setBackground('#E74C3C')
+      .setFontColor('#FFFFFF')
+      .setRanges([priorityRange])
+      .build();
+    
+    sheet.setConditionalFormatRules([positiveRule, negativeRule, criticalPriorityRule, highPriorityRule]);
+    
+    // Set column widths
+    sheet.setColumnWidth(3, 150);
+    sheet.setColumnWidth(4, 200);
+    sheet.setColumnWidth(9, 300);
+    sheet.setColumnWidth(14, 250);
   }
 };

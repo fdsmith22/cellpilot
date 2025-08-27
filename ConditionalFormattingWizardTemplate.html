@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('SharedStyles'); ?>
+  <style>
+    .formatting-wizard {
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    }
+
+    .wizard-header {
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .wizard-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+
+    .wizard-subtitle {
+      color: #7f8c8d;
+      font-size: 14px;
+    }
+
+    .step-indicators {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      padding: 0 20px;
+    }
+
+    .step-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      flex: 1;
+    }
+
+    .step-indicator::after {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: #e0e0e0;
+      z-index: -1;
+    }
+
+    .step-indicator:last-child::after {
+      display: none;
+    }
+
+    .step-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      color: #95a5a6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 8px;
+      z-index: 1;
+    }
+
+    .step-indicator.active .step-circle {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .step-indicator.completed .step-circle {
+      background: #27ae60;
+      color: white;
+    }
+
+    .step-label {
+      font-size: 12px;
+      color: #7f8c8d;
+      text-align: center;
+    }
+
+    .step-indicator.active .step-label {
+      color: #2c3e50;
+      font-weight: 600;
+    }
+
+    .wizard-content {
+      min-height: 400px;
+    }
+
+    .step-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .step-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .rule-type-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .rule-type-card {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .rule-type-card:hover {
+      border-color: #3498db;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+
+    .rule-type-card.selected {
+      border-color: #667eea;
+      background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+    }
+
+    .rule-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .rule-title {
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+
+    .rule-description {
+      font-size: 12px;
+      color: #7f8c8d;
+    }
+
+    .condition-builder {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .condition-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 150px;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+
+    .condition-select {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: white;
+      font-size: 14px;
+    }
+
+    .condition-input {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: white;
+      font-size: 14px;
+    }
+
+    .remove-condition {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .remove-condition:hover {
+      background: #c0392b;
+    }
+
+    .add-condition-btn {
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .add-condition-btn:hover {
+      background: #2980b9;
+    }
+
+    .format-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .format-group {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 15px;
+    }
+
+    .format-label {
+      font-size: 12px;
+      color: #7f8c8d;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .color-picker-container {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .color-picker {
+      width: 60px;
+      height: 40px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .color-input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .preset-colors {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .preset-color {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .preset-color:hover {
+      border-color: #3498db;
+      transform: scale(1.1);
+    }
+
+    .style-options {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .style-btn {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .style-btn.active {
+      background: #3498db;
+      color: white;
+      border-color: #3498db;
+    }
+
+    .preview-section {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .preview-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #34495e;
+      margin-bottom: 15px;
+    }
+
+    .preview-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .preview-table td {
+      padding: 10px;
+      border: 1px solid #e0e0e0;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .preview-table .formatted {
+      transition: all 0.3s;
+    }
+
+    .range-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-label {
+      font-size: 12px;
+      color: #7f8c8d;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-field {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .nav-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .back-btn {
+      background: #95a5a6;
+      color: white;
+    }
+
+    .back-btn:hover {
+      background: #7f8c8d;
+    }
+
+    .next-btn, .apply-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .next-btn:hover, .apply-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .rule-list {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .rule-item {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .rule-info {
+      flex: 1;
+    }
+
+    .rule-name {
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 4px;
+    }
+
+    .rule-details {
+      font-size: 12px;
+      color: #7f8c8d;
+    }
+
+    .rule-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .rule-action-btn {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .edit-rule-btn {
+      background: #3498db;
+      color: white;
+    }
+
+    .delete-rule-btn {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .success-message {
+      display: none;
+      background: #27ae60;
+      color: white;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 15px;
+      text-align: center;
+      animation: slideIn 0.3s ease;
+    }
+
+    .error-message {
+      display: none;
+      background: #e74c3c;
+      color: white;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .gradient-picker {
+      margin-top: 15px;
+    }
+
+    .gradient-stops {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .gradient-stop {
+      flex: 1;
+    }
+
+    .gradient-preview {
+      height: 40px;
+      border-radius: 6px;
+      margin-top: 10px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="formatting-wizard">
+    <div class="wizard-header">
+      <div class="wizard-title">Conditional Formatting Wizard</div>
+      <div class="wizard-subtitle">Create dynamic formatting rules to visualize your data patterns</div>
+    </div>
+
+    <!-- Step Indicators -->
+    <div class="step-indicators">
+      <div class="step-indicator active" id="step1-indicator">
+        <div class="step-circle">1</div>
+        <div class="step-label">Rule Type</div>
+      </div>
+      <div class="step-indicator" id="step2-indicator">
+        <div class="step-circle">2</div>
+        <div class="step-label">Conditions</div>
+      </div>
+      <div class="step-indicator" id="step3-indicator">
+        <div class="step-circle">3</div>
+        <div class="step-label">Format</div>
+      </div>
+      <div class="step-indicator" id="step4-indicator">
+        <div class="step-circle">4</div>
+        <div class="step-label">Apply</div>
+      </div>
+    </div>
+
+    <!-- Wizard Content -->
+    <div class="wizard-content">
+      
+      <!-- Step 1: Rule Type -->
+      <div class="step-content active" id="step1">
+        <h3 style="margin-bottom: 20px; color: #2c3e50;">Select Rule Type</h3>
+        <div class="rule-type-grid">
+          <div class="rule-type-card" data-type="value" onclick="selectRuleType('value')">
+            <div class="rule-icon">🎯</div>
+            <div class="rule-title">Cell Value</div>
+            <div class="rule-description">Format based on cell values</div>
+          </div>
+          <div class="rule-type-card" data-type="text" onclick="selectRuleType('text')">
+            <div class="rule-icon">📝</div>
+            <div class="rule-title">Text Contains</div>
+            <div class="rule-description">Format cells containing text</div>
+          </div>
+          <div class="rule-type-card" data-type="date" onclick="selectRuleType('date')">
+            <div class="rule-icon">📅</div>
+            <div class="rule-title">Date Range</div>
+            <div class="rule-description">Format dates in range</div>
+          </div>
+          <div class="rule-type-card" data-type="duplicate" onclick="selectRuleType('duplicate')">
+            <div class="rule-icon">👥</div>
+            <div class="rule-title">Duplicates</div>
+            <div class="rule-description">Highlight duplicate values</div>
+          </div>
+          <div class="rule-type-card" data-type="scale" onclick="selectRuleType('scale')">
+            <div class="rule-icon">🌈</div>
+            <div class="rule-title">Color Scale</div>
+            <div class="rule-description">Gradient based on values</div>
+          </div>
+          <div class="rule-type-card" data-type="databar" onclick="selectRuleType('databar')">
+            <div class="rule-icon">📊</div>
+            <div class="rule-title">Data Bars</div>
+            <div class="rule-description">In-cell bar charts</div>
+          </div>
+          <div class="rule-type-card" data-type="formula" onclick="selectRuleType('formula')">
+            <div class="rule-icon">🔢</div>
+            <div class="rule-title">Custom Formula</div>
+            <div class="rule-description">Use custom formulas</div>
+          </div>
+          <div class="rule-type-card" data-type="top" onclick="selectRuleType('top')">
+            <div class="rule-icon">🔝</div>
+            <div class="rule-title">Top/Bottom</div>
+            <div class="rule-description">Format top or bottom values</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Conditions -->
+      <div class="step-content" id="step2">
+        <h3 style="margin-bottom: 20px; color: #2c3e50;">Define Conditions</h3>
+        
+        <div class="range-selector">
+          <div class="input-group">
+            <label class="input-label">Apply to Range</label>
+            <input type="text" id="formatRange" class="input-field" placeholder="e.g., A1:A100">
+          </div>
+          <div class="input-group">
+            <label class="input-label">&nbsp;</label>
+            <button class="nav-btn next-btn" onclick="useCurrentSelection()" style="width: 100%;">
+              Use Current Selection
+            </button>
+          </div>
+        </div>
+
+        <div class="condition-builder" id="conditionBuilder">
+          <!-- Dynamic conditions will be inserted here -->
+        </div>
+      </div>
+
+      <!-- Step 3: Format -->
+      <div class="step-content" id="step3">
+        <h3 style="margin-bottom: 20px; color: #2c3e50;">Choose Formatting</h3>
+        
+        <div class="format-options">
+          <div class="format-group">
+            <div class="format-label">Background Color</div>
+            <div class="color-picker-container">
+              <input type="color" id="bgColor" class="color-picker" value="#FFE5B4">
+              <input type="text" id="bgColorText" class="color-input" value="#FFE5B4" placeholder="#FFFFFF">
+            </div>
+            <div class="preset-colors">
+              <div class="preset-color" style="background: #FFE5B4;" onclick="setColor('bg', '#FFE5B4')"></div>
+              <div class="preset-color" style="background: #B4E5FF;" onclick="setColor('bg', '#B4E5FF')"></div>
+              <div class="preset-color" style="background: #B4FFB4;" onclick="setColor('bg', '#B4FFB4')"></div>
+              <div class="preset-color" style="background: #FFB4B4;" onclick="setColor('bg', '#FFB4B4')"></div>
+              <div class="preset-color" style="background: #E5B4FF;" onclick="setColor('bg', '#E5B4FF')"></div>
+              <div class="preset-color" style="background: #FFFF99;" onclick="setColor('bg', '#FFFF99')"></div>
+            </div>
+          </div>
+
+          <div class="format-group">
+            <div class="format-label">Text Color</div>
+            <div class="color-picker-container">
+              <input type="color" id="textColor" class="color-picker" value="#000000">
+              <input type="text" id="textColorText" class="color-input" value="#000000" placeholder="#000000">
+            </div>
+            <div class="preset-colors">
+              <div class="preset-color" style="background: #000000;" onclick="setColor('text', '#000000')"></div>
+              <div class="preset-color" style="background: #FFFFFF; border: 1px solid #ddd;" onclick="setColor('text', '#FFFFFF')"></div>
+              <div class="preset-color" style="background: #FF0000;" onclick="setColor('text', '#FF0000')"></div>
+              <div class="preset-color" style="background: #00FF00;" onclick="setColor('text', '#00FF00')"></div>
+              <div class="preset-color" style="background: #0000FF;" onclick="setColor('text', '#0000FF')"></div>
+              <div class="preset-color" style="background: #808080;" onclick="setColor('text', '#808080')"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="format-group">
+          <div class="format-label">Text Style</div>
+          <div class="style-options">
+            <button class="style-btn" id="boldBtn" onclick="toggleStyle('bold')">
+              <strong>B</strong>
+            </button>
+            <button class="style-btn" id="italicBtn" onclick="toggleStyle('italic')">
+              <em>I</em>
+            </button>
+            <button class="style-btn" id="underlineBtn" onclick="toggleStyle('underline')">
+              <u>U</u>
+            </button>
+            <button class="style-btn" id="strikeBtn" onclick="toggleStyle('strikethrough')">
+              <s>S</s>
+            </button>
+          </div>
+        </div>
+
+        <div class="preview-section">
+          <div class="preview-title">Preview</div>
+          <table class="preview-table">
+            <tr>
+              <td>Normal Cell</td>
+              <td id="previewCell" class="formatted">Formatted Cell</td>
+              <td>Normal Cell</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Step 4: Apply -->
+      <div class="step-content" id="step4">
+        <h3 style="margin-bottom: 20px; color: #2c3e50;">Review and Apply</h3>
+        
+        <div class="preview-section">
+          <div class="preview-title">Rule Summary</div>
+          <div id="ruleSummary" style="padding: 15px; font-size: 14px; line-height: 1.6;">
+            <!-- Summary will be inserted here -->
+          </div>
+        </div>
+
+        <div class="rule-list">
+          <div class="preview-title">Existing Rules</div>
+          <div id="existingRules">
+            <p style="color: #95a5a6; text-align: center;">No existing rules in selected range</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="navigation-buttons">
+      <button class="nav-btn back-btn" id="backBtn" onclick="previousStep()" style="display: none;">
+        Back
+      </button>
+      <button class="nav-btn next-btn" id="nextBtn" onclick="nextStep()">
+        Next
+      </button>
+      <button class="nav-btn apply-btn" id="applyBtn" onclick="applyFormatting()" style="display: none;">
+        Apply Formatting
+      </button>
+    </div>
+
+    <!-- Messages -->
+    <div class="success-message" id="successMessage"></div>
+    <div class="error-message" id="errorMessage"></div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    let selectedRuleType = null;
+    let formattingRule = {
+      type: null,
+      conditions: [],
+      format: {
+        backgroundColor: '#FFE5B4',
+        textColor: '#000000',
+        bold: false,
+        italic: false,
+        underline: false,
+        strikethrough: false
+      },
+      range: null
+    };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      // Color picker listeners
+      document.getElementById('bgColor').addEventListener('input', function(e) {
+        document.getElementById('bgColorText').value = e.target.value;
+        updatePreview();
+      });
+      
+      document.getElementById('textColor').addEventListener('input', function(e) {
+        document.getElementById('textColorText').value = e.target.value;
+        updatePreview();
+      });
+      
+      document.getElementById('bgColorText').addEventListener('input', function(e) {
+        document.getElementById('bgColor').value = e.target.value;
+        updatePreview();
+      });
+      
+      document.getElementById('textColorText').addEventListener('input', function(e) {
+        document.getElementById('textColor').value = e.target.value;
+        updatePreview();
+      });
+    });
+
+    function selectRuleType(type) {
+      selectedRuleType = type;
+      formattingRule.type = type;
+      
+      // Update UI
+      document.querySelectorAll('.rule-type-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      document.querySelector(`.rule-type-card[data-type="${type}"]`).classList.add('selected');
+      
+      // Enable next button
+      document.getElementById('nextBtn').disabled = false;
+    }
+
+    function nextStep() {
+      if (currentStep < 4) {
+        // Mark current step as completed
+        document.getElementById(`step${currentStep}-indicator`).classList.add('completed');
+        document.getElementById(`step${currentStep}-indicator`).classList.remove('active');
+        
+        // Move to next step
+        currentStep++;
+        
+        // Update step indicators
+        document.getElementById(`step${currentStep}-indicator`).classList.add('active');
+        
+        // Update content
+        document.querySelectorAll('.step-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        document.getElementById(`step${currentStep}`).classList.add('active');
+        
+        // Setup step content
+        if (currentStep === 2) {
+          setupConditionBuilder();
+        } else if (currentStep === 3) {
+          updatePreview();
+        } else if (currentStep === 4) {
+          showRuleSummary();
+        }
+        
+        // Update navigation buttons
+        updateNavigationButtons();
+      }
+    }
+
+    function previousStep() {
+      if (currentStep > 1) {
+        // Remove completed status from current step
+        document.getElementById(`step${currentStep}-indicator`).classList.remove('active');
+        
+        // Move to previous step
+        currentStep--;
+        
+        // Update step indicators
+        document.getElementById(`step${currentStep}-indicator`).classList.add('active');
+        document.getElementById(`step${currentStep}-indicator`).classList.remove('completed');
+        
+        // Update content
+        document.querySelectorAll('.step-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        document.getElementById(`step${currentStep}`).classList.add('active');
+        
+        // Update navigation buttons
+        updateNavigationButtons();
+      }
+    }
+
+    function updateNavigationButtons() {
+      const backBtn = document.getElementById('backBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const applyBtn = document.getElementById('applyBtn');
+      
+      // Show/hide back button
+      backBtn.style.display = currentStep > 1 ? 'block' : 'none';
+      
+      // Show/hide next and apply buttons
+      if (currentStep === 4) {
+        nextBtn.style.display = 'none';
+        applyBtn.style.display = 'block';
+      } else {
+        nextBtn.style.display = 'block';
+        applyBtn.style.display = 'none';
+      }
+    }
+
+    function setupConditionBuilder() {
+      const builder = document.getElementById('conditionBuilder');
+      let html = '';
+      
+      switch(selectedRuleType) {
+        case 'value':
+          html = `
+            <div class="condition-row">
+              <select class="condition-select" id="valueOperator">
+                <option value="equal">Equal to</option>
+                <option value="notEqual">Not equal to</option>
+                <option value="greater">Greater than</option>
+                <option value="greaterEqual">Greater than or equal</option>
+                <option value="less">Less than</option>
+                <option value="lessEqual">Less than or equal</option>
+                <option value="between">Between</option>
+                <option value="notBetween">Not between</option>
+              </select>
+              <input type="text" class="condition-input" id="value1" placeholder="Enter value">
+              <input type="text" class="condition-input" id="value2" placeholder="Enter second value" style="display: none;">
+            </div>
+          `;
+          break;
+          
+        case 'text':
+          html = `
+            <div class="condition-row">
+              <select class="condition-select" id="textOperator">
+                <option value="contains">Contains</option>
+                <option value="notContains">Does not contain</option>
+                <option value="startsWith">Starts with</option>
+                <option value="endsWith">Ends with</option>
+                <option value="exact">Exactly</option>
+              </select>
+              <input type="text" class="condition-input" id="textValue" placeholder="Enter text">
+              <div></div>
+            </div>
+            <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+              <input type="checkbox" id="caseSensitive">
+              <span>Case sensitive</span>
+            </label>
+          `;
+          break;
+          
+        case 'date':
+          html = `
+            <div class="condition-row">
+              <select class="condition-select" id="dateOperator">
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="tomorrow">Tomorrow</option>
+                <option value="thisWeek">This week</option>
+                <option value="lastWeek">Last week</option>
+                <option value="thisMonth">This month</option>
+                <option value="lastMonth">Last month</option>
+                <option value="between">Between dates</option>
+                <option value="before">Before</option>
+                <option value="after">After</option>
+              </select>
+              <input type="date" class="condition-input" id="date1" style="display: none;">
+              <input type="date" class="condition-input" id="date2" style="display: none;">
+            </div>
+          `;
+          break;
+          
+        case 'duplicate':
+          html = `
+            <div style="padding: 20px; background: white; border-radius: 8px; text-align: center;">
+              <p>This rule will highlight all duplicate values in the selected range.</p>
+              <label style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px;">
+                <input type="checkbox" id="firstOccurrence" checked>
+                <span>Include first occurrence</span>
+              </label>
+            </div>
+          `;
+          break;
+          
+        case 'scale':
+          html = `
+            <div style="padding: 20px; background: white; border-radius: 8px;">
+              <div class="gradient-picker">
+                <div class="format-label">Color Scale Type</div>
+                <select class="condition-select" id="scaleType" onchange="updateGradientPicker()" style="width: 100%; margin-bottom: 15px;">
+                  <option value="2color">2-Color Scale</option>
+                  <option value="3color">3-Color Scale</option>
+                </select>
+                <div class="gradient-stops">
+                  <div class="gradient-stop">
+                    <label class="input-label">Minimum</label>
+                    <input type="color" id="minColor" value="#FFFFFF" onchange="updateGradientPreview()">
+                  </div>
+                  <div class="gradient-stop" id="midColorStop" style="display: none;">
+                    <label class="input-label">Midpoint</label>
+                    <input type="color" id="midColor" value="#FFFF00" onchange="updateGradientPreview()">
+                  </div>
+                  <div class="gradient-stop">
+                    <label class="input-label">Maximum</label>
+                    <input type="color" id="maxColor" value="#FF0000" onchange="updateGradientPreview()">
+                  </div>
+                </div>
+                <div class="gradient-preview" id="gradientPreview"></div>
+              </div>
+            </div>
+          `;
+          break;
+          
+        case 'databar':
+          html = `
+            <div style="padding: 20px; background: white; border-radius: 8px;">
+              <div class="format-group">
+                <label class="input-label">Bar Color</label>
+                <input type="color" id="barColor" value="#3498DB" style="width: 100%; height: 40px;">
+              </div>
+              <div class="format-group">
+                <label class="input-label">Bar Style</label>
+                <select class="condition-select" id="barStyle" style="width: 100%;">
+                  <option value="gradient">Gradient</option>
+                  <option value="solid">Solid</option>
+                </select>
+              </div>
+              <label style="display: flex; align-items: center; gap: 8px; margin-top: 15px;">
+                <input type="checkbox" id="showValue" checked>
+                <span>Show cell value</span>
+              </label>
+            </div>
+          `;
+          break;
+          
+        case 'formula':
+          html = `
+            <div style="padding: 20px; background: white; border-radius: 8px;">
+              <label class="input-label">Custom Formula</label>
+              <textarea class="condition-input" id="customFormula" rows="4" placeholder="e.g., =$A1>100" style="width: 100%; margin-top: 10px;"></textarea>
+              <p style="font-size: 12px; color: #7f8c8d; margin-top: 10px;">
+                Use relative references (A1) for rules that apply to each cell individually.
+                Formula should return TRUE to apply formatting.
+              </p>
+            </div>
+          `;
+          break;
+          
+        case 'top':
+          html = `
+            <div class="condition-row">
+              <select class="condition-select" id="topOperator">
+                <option value="top">Top</option>
+                <option value="bottom">Bottom</option>
+              </select>
+              <input type="number" class="condition-input" id="topCount" placeholder="10" value="10" min="1">
+              <select class="condition-select" id="topType">
+                <option value="items">Items</option>
+                <option value="percent">Percent</option>
+              </select>
+            </div>
+          `;
+          break;
+      }
+      
+      builder.innerHTML = html;
+      
+      // Add change listeners for between operators
+      if (selectedRuleType === 'value') {
+        document.getElementById('valueOperator').addEventListener('change', function(e) {
+          const value2 = document.getElementById('value2');
+          if (e.target.value === 'between' || e.target.value === 'notBetween') {
+            value2.style.display = 'block';
+          } else {
+            value2.style.display = 'none';
+          }
+        });
+      }
+      
+      if (selectedRuleType === 'date') {
+        document.getElementById('dateOperator').addEventListener('change', function(e) {
+          const date1 = document.getElementById('date1');
+          const date2 = document.getElementById('date2');
+          
+          if (e.target.value === 'between') {
+            date1.style.display = 'block';
+            date2.style.display = 'block';
+          } else if (e.target.value === 'before' || e.target.value === 'after') {
+            date1.style.display = 'block';
+            date2.style.display = 'none';
+          } else {
+            date1.style.display = 'none';
+            date2.style.display = 'none';
+          }
+        });
+      }
+      
+      if (selectedRuleType === 'scale') {
+        updateGradientPreview();
+      }
+    }
+
+    function updateGradientPicker() {
+      const scaleType = document.getElementById('scaleType').value;
+      const midColorStop = document.getElementById('midColorStop');
+      
+      if (scaleType === '3color') {
+        midColorStop.style.display = 'block';
+      } else {
+        midColorStop.style.display = 'none';
+      }
+      
+      updateGradientPreview();
+    }
+
+    function updateGradientPreview() {
+      const preview = document.getElementById('gradientPreview');
+      if (!preview) return;
+      
+      const scaleType = document.getElementById('scaleType').value;
+      const minColor = document.getElementById('minColor').value;
+      const maxColor = document.getElementById('maxColor').value;
+      
+      if (scaleType === '3color') {
+        const midColor = document.getElementById('midColor').value;
+        preview.style.background = `linear-gradient(to right, ${minColor}, ${midColor}, ${maxColor})`;
+      } else {
+        preview.style.background = `linear-gradient(to right, ${minColor}, ${maxColor})`;
+      }
+    }
+
+    function setColor(type, color) {
+      if (type === 'bg') {
+        document.getElementById('bgColor').value = color;
+        document.getElementById('bgColorText').value = color;
+      } else {
+        document.getElementById('textColor').value = color;
+        document.getElementById('textColorText').value = color;
+      }
+      updatePreview();
+    }
+
+    function toggleStyle(style) {
+      const btn = document.getElementById(style + 'Btn');
+      btn.classList.toggle('active');
+      formattingRule.format[style] = btn.classList.contains('active');
+      updatePreview();
+    }
+
+    function updatePreview() {
+      const preview = document.getElementById('previewCell');
+      if (!preview) return;
+      
+      const bgColor = document.getElementById('bgColor').value;
+      const textColor = document.getElementById('textColor').value;
+      
+      preview.style.backgroundColor = bgColor;
+      preview.style.color = textColor;
+      
+      let textDecoration = [];
+      if (document.getElementById('underlineBtn').classList.contains('active')) {
+        textDecoration.push('underline');
+      }
+      if (document.getElementById('strikeBtn').classList.contains('active')) {
+        textDecoration.push('line-through');
+      }
+      preview.style.textDecoration = textDecoration.join(' ') || 'none';
+      
+      preview.style.fontWeight = document.getElementById('boldBtn').classList.contains('active') ? 'bold' : 'normal';
+      preview.style.fontStyle = document.getElementById('italicBtn').classList.contains('active') ? 'italic' : 'normal';
+      
+      // Update rule object
+      formattingRule.format.backgroundColor = bgColor;
+      formattingRule.format.textColor = textColor;
+    }
+
+    function useCurrentSelection() {
+      google.script.run
+        .withSuccessHandler(function(selection) {
+          if (selection) {
+            document.getElementById('formatRange').value = selection.range;
+            formattingRule.range = selection.range;
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error getting selection:', error);
+        })
+        .getCurrentSelectionForFormatting();
+    }
+
+    function showRuleSummary() {
+      const summary = document.getElementById('ruleSummary');
+      let html = '<strong>Rule Type:</strong> ' + getRuleTypeName(selectedRuleType) + '<br><br>';
+      
+      html += '<strong>Range:</strong> ' + (document.getElementById('formatRange').value || 'Not specified') + '<br><br>';
+      
+      html += '<strong>Conditions:</strong><br>';
+      html += getConditionSummary() + '<br><br>';
+      
+      html += '<strong>Format:</strong><br>';
+      html += '• Background: ' + formattingRule.format.backgroundColor + '<br>';
+      html += '• Text Color: ' + formattingRule.format.textColor + '<br>';
+      
+      let styles = [];
+      if (formattingRule.format.bold) styles.push('Bold');
+      if (formattingRule.format.italic) styles.push('Italic');
+      if (formattingRule.format.underline) styles.push('Underline');
+      if (formattingRule.format.strikethrough) styles.push('Strikethrough');
+      if (styles.length > 0) {
+        html += '• Styles: ' + styles.join(', ');
+      }
+      
+      summary.innerHTML = html;
+      
+      // Load existing rules
+      loadExistingRules();
+    }
+
+    function getRuleTypeName(type) {
+      const names = {
+        'value': 'Cell Value',
+        'text': 'Text Contains',
+        'date': 'Date Range',
+        'duplicate': 'Duplicates',
+        'scale': 'Color Scale',
+        'databar': 'Data Bars',
+        'formula': 'Custom Formula',
+        'top': 'Top/Bottom Values'
+      };
+      return names[type] || type;
+    }
+
+    function getConditionSummary() {
+      let summary = '';
+      
+      switch(selectedRuleType) {
+        case 'value':
+          const valueOp = document.getElementById('valueOperator').value;
+          const val1 = document.getElementById('value1').value;
+          const val2 = document.getElementById('value2').value;
+          summary = `Cell value ${valueOp} ${val1}`;
+          if (valueOp === 'between' || valueOp === 'notBetween') {
+            summary += ` and ${val2}`;
+          }
+          break;
+          
+        case 'text':
+          const textOp = document.getElementById('textOperator').value;
+          const textVal = document.getElementById('textValue').value;
+          const caseSens = document.getElementById('caseSensitive').checked;
+          summary = `Text ${textOp} "${textVal}"`;
+          if (caseSens) summary += ' (case sensitive)';
+          break;
+          
+        case 'duplicate':
+          const firstOcc = document.getElementById('firstOccurrence').checked;
+          summary = firstOcc ? 'All duplicate values' : 'Duplicate values (excluding first)';
+          break;
+          
+        case 'scale':
+          const scaleType = document.getElementById('scaleType').value;
+          summary = scaleType === '3color' ? '3-color gradient scale' : '2-color gradient scale';
+          break;
+          
+        case 'formula':
+          const formula = document.getElementById('customFormula').value;
+          summary = `Custom formula: ${formula}`;
+          break;
+          
+        default:
+          summary = 'Conditions configured';
+      }
+      
+      return summary;
+    }
+
+    function buildFormattingRule() {
+      formattingRule.range = document.getElementById('formatRange').value;
+      
+      // Build conditions based on rule type
+      switch(selectedRuleType) {
+        case 'value':
+          formattingRule.conditions = {
+            operator: document.getElementById('valueOperator').value,
+            value1: document.getElementById('value1').value,
+            value2: document.getElementById('value2').value
+          };
+          break;
+          
+        case 'text':
+          formattingRule.conditions = {
+            operator: document.getElementById('textOperator').value,
+            value: document.getElementById('textValue').value,
+            caseSensitive: document.getElementById('caseSensitive').checked
+          };
+          break;
+          
+        case 'date':
+          formattingRule.conditions = {
+            operator: document.getElementById('dateOperator').value,
+            date1: document.getElementById('date1').value,
+            date2: document.getElementById('date2').value
+          };
+          break;
+          
+        case 'duplicate':
+          formattingRule.conditions = {
+            includeFirst: document.getElementById('firstOccurrence').checked
+          };
+          break;
+          
+        case 'scale':
+          formattingRule.conditions = {
+            type: document.getElementById('scaleType').value,
+            minColor: document.getElementById('minColor').value,
+            midColor: document.getElementById('midColor').value,
+            maxColor: document.getElementById('maxColor').value
+          };
+          break;
+          
+        case 'databar':
+          formattingRule.conditions = {
+            color: document.getElementById('barColor').value,
+            style: document.getElementById('barStyle').value,
+            showValue: document.getElementById('showValue').checked
+          };
+          break;
+          
+        case 'formula':
+          formattingRule.conditions = {
+            formula: document.getElementById('customFormula').value
+          };
+          break;
+          
+        case 'top':
+          formattingRule.conditions = {
+            operator: document.getElementById('topOperator').value,
+            count: document.getElementById('topCount').value,
+            type: document.getElementById('topType').value
+          };
+          break;
+      }
+      
+      return formattingRule;
+    }
+
+    function applyFormatting() {
+      const rule = buildFormattingRule();
+      
+      if (!rule.range) {
+        showError('Please specify a range for the formatting rule');
+        return;
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showSuccess('Formatting rule applied successfully!');
+            setTimeout(() => {
+              // Reset wizard
+              currentStep = 1;
+              updateStepIndicators();
+              updateNavigationButtons();
+            }, 2000);
+          } else {
+            showError(result.error || 'Failed to apply formatting rule');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showError('Error: ' + error.toString());
+        })
+        .applyConditionalFormatting(rule);
+    }
+
+    function updateStepIndicators() {
+      for (let i = 1; i <= 4; i++) {
+        const indicator = document.getElementById(`step${i}-indicator`);
+        indicator.classList.remove('active', 'completed');
+        
+        if (i < currentStep) {
+          indicator.classList.add('completed');
+        } else if (i === currentStep) {
+          indicator.classList.add('active');
+        }
+      }
+      
+      document.querySelectorAll('.step-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`step${currentStep}`).classList.add('active');
+    }
+
+    function loadExistingRules() {
+      const range = document.getElementById('formatRange').value;
+      if (!range) return;
+      
+      google.script.run
+        .withSuccessHandler(function(rules) {
+          const container = document.getElementById('existingRules');
+          if (rules && rules.length > 0) {
+            let html = '';
+            rules.forEach((rule, index) => {
+              html += `
+                <div class="rule-item">
+                  <div class="rule-info">
+                    <div class="rule-name">Rule ${index + 1}: ${rule.type}</div>
+                    <div class="rule-details">${rule.description}</div>
+                  </div>
+                  <div class="rule-actions">
+                    <button class="rule-action-btn delete-rule-btn" onclick="deleteRule(${index})">Delete</button>
+                  </div>
+                </div>
+              `;
+            });
+            container.innerHTML = html;
+          } else {
+            container.innerHTML = '<p style="color: #95a5a6; text-align: center;">No existing rules in selected range</p>';
+          }
+        })
+        .getExistingFormattingRules(range);
+    }
+
+    function deleteRule(index) {
+      const range = document.getElementById('formatRange').value;
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showSuccess('Rule deleted successfully');
+            loadExistingRules();
+          }
+        })
+        .deleteFormattingRule(range, index);
+    }
+
+    function showSuccess(message) {
+      const elem = document.getElementById('successMessage');
+      elem.textContent = message;
+      elem.style.display = 'block';
+      setTimeout(() => {
+        elem.style.display = 'none';
+      }, 3000);
+    }
+
+    function showError(message) {
+      const elem = document.getElementById('errorMessage');
+      elem.textContent = message;
+      elem.style.display = 'block';
+      setTimeout(() => {
+        elem.style.display = 'none';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

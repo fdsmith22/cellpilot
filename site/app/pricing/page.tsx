@@ -147,11 +147,11 @@ export default function PricingPage() {
                 </div>
               )}
 
-              <div className="p-6">
+              <div className="p-4">
                 <h3 className="text-xl font-semibold text-neutral-900">{plan.name}</h3>
-                <p className="mt-2 text-sm text-neutral-600">{plan.description}</p>
+                <p className="mt-1 text-sm text-neutral-600">{plan.description}</p>
                 
-                <div className="mt-4 flex items-baseline">
+                <div className="mt-3 flex items-baseline">
                   <span className="text-4xl font-bold text-neutral-900">
                     {plan.currency}{plan.price}
                   </span>
@@ -160,7 +160,7 @@ export default function PricingPage() {
 
                 <Link
                   href={plan.ctaLink}
-                  className={`mt-6 block w-full py-3 px-4 rounded-lg text-center font-semibold transition-colors ${
+                  className={`mt-4 block w-full py-2.5 px-4 rounded-lg text-center font-semibold transition-colors ${
                     plan.popular
                       ? 'bg-primary-600 text-white hover:bg-primary-700'
                       : 'glass-card text-neutral-900 hover:bg-gray-200'
@@ -169,11 +169,11 @@ export default function PricingPage() {
                   {plan.cta}
                 </Link>
 
-                <div className="mt-6">
-                  <h4 className="text-sm font-semibold text-neutral-900 mb-3">
+                <div className="mt-4">
+                  <h4 className="text-sm font-semibold text-neutral-900 mb-2">
                     What&apos;s included:
                   </h4>
-                  <ul className="space-y-2">
+                  <ul className="space-y-1.5">
                     {plan.features.map((feature, index) => (
                       <li key={index} className="flex items-start">
                         <svg
@@ -194,8 +194,8 @@ export default function PricingPage() {
 
                   {plan.limitations.length > 0 && (
                     <>
-                      <div className="mt-4 pt-4 border-t border-gray-200">
-                        <ul className="space-y-2">
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <ul className="space-y-1.5">
                           {plan.limitations.map((limitation, index) => (
                             <li key={index} className="flex items-start">
                               <svg
@@ -229,7 +229,7 @@ export default function PricingPage() {
           </h2>
           
           <div className="space-y-6">
-            <div className="bg-white rounded-lg p-6 shadow-sm">
+            <div className="bg-white rounded-lg p-5 shadow-sm">
               <h3 className="font-semibold text-neutral-900 mb-2">
                 Can I change plans anytime?
               </h3>
@@ -239,7 +239,7 @@ export default function PricingPage() {
               </p>
             </div>
 
-            <div className="bg-white rounded-lg p-6 shadow-sm">
+            <div className="bg-white rounded-lg p-5 shadow-sm">
               <h3 className="font-semibold text-neutral-900 mb-2">
                 Do you offer refunds?
               </h3>
@@ -249,7 +249,7 @@ export default function PricingPage() {
               </p>
             </div>
 
-            <div className="bg-white rounded-lg p-6 shadow-sm">
+            <div className="bg-white rounded-lg p-5 shadow-sm">
               <h3 className="font-semibold text-neutral-900 mb-2">
                 What happens when I reach my operation limit?
               </h3>
@@ -259,7 +259,7 @@ export default function PricingPage() {
               </p>
             </div>
 
-            <div className="bg-white rounded-lg p-6 shadow-sm">
+            <div className="bg-white rounded-lg p-5 shadow-sm">
               <h3 className="font-semibold text-neutral-900 mb-2">
                 Is my data secure?
               </h3>

@@ -117,7 +117,7 @@
     
     .search-input {
       width: 100%;
-      padding: 12px 40px 12px 12px;
+      padding: 12px;
       border: 1.5px solid var(--gray-200);
       border-radius: 8px;
       font-size: 13px;
@@ -130,13 +130,6 @@
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
     
-    .search-icon {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--gray-400);
-    }
     
     /* Search Suggestions */
     .search-suggestions {
@@ -386,7 +379,6 @@
       <input type="text" id="smartSearch" class="search-input" 
              placeholder="Type what you want to do (e.g., 'add up sales', 'find highest value')"
              oninput="handleSmartSearch(this.value)">
-      <span class="search-icon">🔍</span>
       
       <div id="searchSuggestions" class="search-suggestions">
         <!-- Suggestions appear here -->
@@ -395,23 +387,13 @@
     
     <!-- Data Context (if selection exists) -->
     <div id="dataContext" class="data-context" style="display: none;">
-      <div class="context-title">Your Current Selection</div>
+      <div class="context-title">Selected</div>
       <div class="context-info">
         <div class="context-item">
-          <span class="context-label">Range:</span>
           <span id="contextRange">A1:A10</span>
         </div>
         <div class="context-item">
-          <span class="context-label">Type:</span>
-          <span id="contextType">Numbers</span>
-        </div>
-        <div class="context-item">
-          <span class="context-label">Rows:</span>
-          <span id="contextRows">10</span>
-        </div>
-        <div class="context-item">
-          <span class="context-label">Columns:</span>
-          <span id="contextCols">1</span>
+          <span id="contextRows">10</span>×<span id="contextCols">1</span> <span id="contextType">Numbers</span>
         </div>
       </div>
     </div>
@@ -590,6 +572,8 @@
     // Load data context on startup
     window.onload = function() {
       loadDataContext();
+      // Start periodic update for real-time selection changes
+      setInterval(loadDataContext, 2000); // Update every 2 seconds
     };
     
     function backToMain() {
@@ -599,13 +583,19 @@
     function loadDataContext() {
       google.script.run
         .withSuccessHandler(function(context) {
-          if (context && context.hasSelection) {
+          // Only update if context has changed
+          if (JSON.stringify(context) !== JSON.stringify(currentContext)) {
             currentContext = context;
-            document.getElementById('dataContext').style.display = 'block';
-            document.getElementById('contextRange').textContent = context.range;
-            document.getElementById('contextType').textContent = context.dataType;
-            document.getElementById('contextRows').textContent = context.rows;
-            document.getElementById('contextCols').textContent = context.columns;
+            
+            if (context && context.hasSelection) {
+              document.getElementById('dataContext').style.display = 'block';
+              document.getElementById('contextRange').textContent = context.range;
+              document.getElementById('contextType').textContent = context.dataType;
+              document.getElementById('contextRows').textContent = context.rows;
+              document.getElementById('contextCols').textContent = context.columns;
+            } else {
+              document.getElementById('dataContext').style.display = 'none';
+            }
           }
         })
         .withFailureHandler(function(error) {

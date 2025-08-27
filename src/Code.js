@@ -172,7 +172,7 @@ function buildMainCard(context) {
     const contextSection = CardService.newCardSection()
       .setHeader('Current Selection')
       .addWidget(CardService.newTextParagraph()
-        .setText(`Selected: ${context.rowCount} rows × ${context.colCount} columns\nData type: ${context.dataType}`));
+        .setText(`${context.rowCount}×${context.colCount} ${context.dataType}`));
     card.addSection(contextSection);
   } else {
     const infoSection = CardService.newCardSection()
@@ -735,26 +735,20 @@ function createMainSidebarHtml(context) {
     </div>
     
     <div class="container">
-      <? if (!context.hasSelection) { ?>
-        <div class="alert alert-warning">
-          Select cells in your spreadsheet to enable all features
-        </div>
-      <? } else { ?>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-value"><?= context.rowCount ?></div>
-            <div class="stat-label">Rows</div>
+      <div id="selectionInfo">
+        <? if (!context.hasSelection) { ?>
+          <div class="alert alert-warning" id="noSelectionAlert">
+            Select cells in your spreadsheet to enable all features
           </div>
-          <div class="stat-card">
-            <div class="stat-value"><?= context.colCount ?></div>
-            <div class="stat-label">Columns</div>
+        <? } else { ?>
+          <div class="card" style="padding: 12px; margin-bottom: 16px;" id="selectionCard">
+            <div style="font-size: 11px; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Current Selection</div>
+            <div style="font-size: 13px; color: var(--gray-800);" id="selectionDetails">
+              <span id="currentRange"><?= context.range ?></span> • <span id="currentRows"><?= context.rowCount ?></span>×<span id="currentCols"><?= context.colCount ?></span> <span id="currentType"><?= context.dataType ?></span>
+            </div>
           </div>
-          <div class="stat-card">
-            <div class="stat-value"><?= context.dataType ?></div>
-            <div class="stat-label">Type</div>
-          </div>
-        </div>
-      <? } ?>
+        <? } ?>
+      </div>
       
       <!-- Quick Actions Grid -->
       <div style="margin-bottom: 16px;">
@@ -866,6 +860,66 @@ function createMainSidebarHtml(context) {
     </div>
     
     <script>
+      let currentContext = null;
+      
+      // Initialize real-time updates
+      window.onload = function() {
+        // Start periodic update for real-time selection changes
+        setInterval(updateSelectionInfo, 2000); // Update every 2 seconds
+      };
+      
+      function updateSelectionInfo() {
+        google.script.run
+          .withSuccessHandler(function(context) {
+            // Only update if context has changed
+            if (JSON.stringify(context) !== JSON.stringify(currentContext)) {
+              currentContext = context;
+              
+              if (context && context.hasSelection) {
+                // Show selection card, hide no selection alert
+                const selectionCard = document.getElementById('selectionCard');
+                const noSelectionAlert = document.getElementById('noSelectionAlert');
+                const selectionInfo = document.getElementById('selectionInfo');
+                
+                if (!selectionCard && noSelectionAlert) {
+                  // Create selection card from no selection state
+                  selectionInfo.innerHTML = \`
+                    <div class="card" style="padding: 12px; margin-bottom: 16px;" id="selectionCard">
+                      <div style="font-size: 11px; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Current Selection</div>
+                      <div style="font-size: 13px; color: var(--gray-800);" id="selectionDetails">
+                        <span id="currentRange"></span> • <span id="currentRows"></span>×<span id="currentCols"></span> <span id="currentType"></span>
+                      </div>
+                    </div>
+                  \`;
+                }
+                
+                // Update the selection details
+                document.getElementById('currentRange').textContent = context.range;
+                document.getElementById('currentRows').textContent = context.rowCount;
+                document.getElementById('currentCols').textContent = context.colCount;
+                document.getElementById('currentType').textContent = context.dataType;
+                
+              } else {
+                // Show no selection alert, hide selection card
+                const selectionCard = document.getElementById('selectionCard');
+                const selectionInfo = document.getElementById('selectionInfo');
+                
+                if (selectionCard) {
+                  selectionInfo.innerHTML = \`
+                    <div class="alert alert-warning" id="noSelectionAlert">
+                      Select cells in your spreadsheet to enable all features
+                    </div>
+                  \`;
+                }
+              }
+            }
+          })
+          .withFailureHandler(function(error) {
+            console.error('Error updating selection info:', error);
+          })
+          .getCurrentUserContext();
+      }
+      
       // Check for available undo on load
       google.script.run
         .withSuccessHandler(function(info) {
@@ -2109,7 +2163,7 @@ function getCurrentUserContext() {
 
     return {
       sheet: sheet,
-      range: range,
+      range: range.getA1Notation(),
       hasSelection: range.getNumRows() > 1 || range.getNumColumns() > 1,
       dataType: Utils.detectDataType(range.getValues()),
       rowCount: range.getNumRows(),
@@ -2365,54 +2419,7 @@ function insertSmartFormula(formula) {
  */
 function applyIndustryTemplate(templateType) {
   try {
-    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    
-    // Map template types to their corresponding functions
-    const templateMap = {
-      // Real Estate
-      'commission-tracker': 'createRealEstateCommissionTracker',
-      'property-manager': 'createPropertyManager',
-      'investment-analyzer': 'createRealEstateCommissionTracker',
-      'lead-pipeline': 'createRealEstateCommissionTracker',
-      
-      // Construction
-      'cost-estimator': 'createConstructionEstimator',
-      'material-tracker': 'createConstructionEstimator',
-      'labor-manager': 'createConstructionEstimator',
-      'change-orders': 'createConstructionEstimator',
-      
-      // Healthcare
-      'insurance-verifier': 'createHealthcareVerifier',
-      'prior-auth-tracker': 'createHealthcareVerifier',
-      'revenue-cycle': 'createHealthcareVerifier',
-      'denial-analytics': 'createHealthcareVerifier',
-      
-      // Marketing
-      'campaign-dashboard': 'createMarketingDashboard',
-      'lead-scoring-system': 'createMarketingDashboard',
-      'content-performance': 'createMarketingDashboard',
-      'customer-journey': 'createMarketingDashboard',
-      
-      // E-Commerce
-      'ecommerce-inventory': 'createEcommerceInventory',
-      'profitability-analyzer': 'createEcommerceInventory',
-      'sales-forecasting': 'createEcommerceInventory',
-      
-      // Consulting
-      'time-billing-tracker': 'createConsultingTracker',
-      'project-profitability': 'createConsultingTracker',
-      'client-dashboard': 'createConsultingTracker'
-    };
-    
-    const functionName = templateMap[templateType];
-    if (!functionName) {
-      return {
-        success: false,
-        error: `Unknown template type: ${templateType}`
-      };
-    }
-    
-    // Check if IndustryTemplates is available
+    // Use the IndustryTemplates.applyTemplate method which properly handles individual templates
     if (typeof IndustryTemplates === 'undefined') {
       return {
         success: false,
@@ -2420,22 +2427,10 @@ function applyIndustryTemplate(templateType) {
       };
     }
     
-    // Call the appropriate template function
-    const templateFunction = IndustryTemplates[functionName];
-    if (typeof templateFunction !== 'function') {
-      return {
-        success: false,
-        error: `Template function ${functionName} not found`
-      };
-    }
+    // Call the applyTemplate method which handles template selection properly
+    const result = IndustryTemplates.applyTemplate(templateType);
     
-    const createdSheets = templateFunction.call(IndustryTemplates, spreadsheet);
-    
-    return {
-      success: true,
-      sheets: createdSheets,
-      message: `Successfully applied ${templateType} template`
-    };
+    return result;
     
   } catch (error) {
     console.error('Error applying industry template:', error);
@@ -2657,6 +2652,55 @@ function showMultiTabRelationshipMapper() {
   }
 }
 
+/**
+ * Show smart formula debugger
+ */
+function showSmartFormulaDebugger() {
+  return FormulaDebugger.showSmartFormulaDebugger();
+}
+
+/**
+ * Debug the active cell formula
+ */
+function debugActiveFormula() {
+  return FormulaDebugger.debugActiveFormula();
+}
+
+/**
+ * Debug all formulas in selection
+ */
+function debugSelectionFormulas() {
+  return FormulaDebugger.debugSelectionFormulas();
+}
+
+/**
+ * Debug all formulas in the sheet
+ */
+function debugAllSheetFormulas() {
+  return FormulaDebugger.debugAllSheetFormulas();
+}
+
+/**
+ * Apply a formula fix
+ */
+function applyFormulaFix(cellRef, formula) {
+  return FormulaDebugger.applyFormulaFix(cellRef, formula);
+}
+
+/**
+ * Analyze formula dependencies
+ */
+function analyzeDependencies() {
+  return FormulaDebugger.analyzeDependencies();
+}
+
+/**
+ * Analyze formula performance
+ */
+function analyzeFormulaPerformance() {
+  return FormulaDebugger.analyzeFormulaPerformance();
+}
+
 function navigateToSheet(sheetName) {
   try {
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
@@ -2670,4 +2714,58 @@ function navigateToSheet(sheetName) {
     console.error('Error navigating to sheet:', error);
     return false;
   }
+}
+
+// Data Validation Generator proxy functions
+function getCurrentSelection() {
+  return DataValidationGenerator.getCurrentSelection();
+}
+
+function applyDataValidation(rule) {
+  return DataValidationGenerator.applyDataValidation(rule);
+}
+
+function testDataValidation(rule, testValue) {
+  return DataValidationGenerator.testDataValidation(rule, testValue);
+}
+
+function clearDataValidation(startCell, endCell) {
+  return DataValidationGenerator.clearDataValidation(startCell, endCell);
+}
+
+function getExistingValidation(rangeA1) {
+  return DataValidationGenerator.getExistingValidation(rangeA1);
+}
+
+function createFromTemplate(templateName, range) {
+  return DataValidationGenerator.createFromTemplate(templateName, range);
+}
+
+function suggestValidation(rangeA1) {
+  return DataValidationGenerator.suggestValidation(rangeA1);
+}
+
+// Conditional Formatting Wizard proxy functions
+function getCurrentSelectionForFormatting() {
+  return ConditionalFormattingWizard.getCurrentSelectionForFormatting();
+}
+
+function applyConditionalFormatting(rule) {
+  return ConditionalFormattingWizard.applyConditionalFormatting(rule);
+}
+
+function getExistingFormattingRules(rangeA1) {
+  return ConditionalFormattingWizard.getExistingFormattingRules(rangeA1);
+}
+
+function deleteFormattingRule(rangeA1, index) {
+  return ConditionalFormattingWizard.deleteFormattingRule(rangeA1, index);
+}
+
+function clearFormattingRules(rangeA1) {
+  return ConditionalFormattingWizard.clearFormattingRules(rangeA1);
+}
+
+function applyPresetFormatting(preset, rangeA1) {
+  return ConditionalFormattingWizard.applyPresetFormatting(preset, rangeA1);
 }
