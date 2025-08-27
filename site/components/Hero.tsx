@@ -60,13 +60,13 @@ const Hero = () => {
         <div className="max-w-5xl mx-auto">
           
           {/* Heading */}
-          <h1 className={`text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center mb-4 sm:mb-6 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <span className="block text-neutral-900 mb-2 sm:mb-4">Spreadsheets</span>
+          <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center mb-4 sm:mb-6 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            <span className="block text-neutral-900 mb-3 sm:mb-4">Spreadsheets</span>
             <div className="inline-flex gap-1 sm:gap-2 items-center justify-center flex-wrap">
               {['R', 'e', 'i', 'm', 'a', 'g', 'i', 'n', 'e', 'd'].map((letter, index) => (
                 <span
                   key={index}
-                  className="inline-block px-2 sm:px-3 md:px-4 py-1 sm:py-2 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm border border-primary-200/50 rounded-lg shadow-sm hover:shadow-lg hover:scale-110 hover:-translate-y-1 text-sm sm:text-base"
+                  className="inline-block px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm border border-primary-200/50 rounded-lg shadow-sm hover:shadow-lg hover:scale-110 hover:-translate-y-1 text-base sm:text-lg md:text-xl"
                   style={{
                     opacity: 0,
                     animation: mounted ? `letterPop 0.6s ease-out ${800 + (index * 150)}ms forwards` : 'none',

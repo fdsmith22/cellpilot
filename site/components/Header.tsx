@@ -27,6 +27,9 @@ const Header = () => {
         ? 'bg-gradient-to-b from-white/95 via-white/85 to-transparent backdrop-blur-xl border-b border-neutral-200/20' 
         : 'bg-gradient-to-b from-white/70 via-white/50 to-transparent backdrop-blur-lg'
     }`}>
+      {/* Grid pattern that fades into header */}
+      <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" 
+           style={{maskImage: 'linear-gradient(to bottom, black, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, black, transparent)'}}></div>
       <nav className="relative py-2 md:py-3">
         <div className="flex items-center justify-between">
           {/* Logo - positioned in top left */}
