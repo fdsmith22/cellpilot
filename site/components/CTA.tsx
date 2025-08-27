@@ -1,43 +1,73 @@
 import Link from 'next/link'
+import ScrollObserver from './ScrollObserver'
 
 const CTA = () => {
   return (
-    <section className="py-20 bg-primary-600">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-3xl font-bold text-white sm:text-4xl">
-          Ready to transform your Google Sheets workflow?
-        </h2>
-        <p className="mt-4 text-xl text-primary-100">
-          Join thousands of users saving hours every week with CellPilot
-        </p>
-        
-        <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/install"
-            className="inline-block rounded-lg bg-white px-8 py-3 text-primary-600 font-semibold hover:bg-gray-100 transition-colors"
-          >
-            Get Started Free
-          </Link>
-          <Link
-            href="/docs"
-            className="inline-block rounded-lg border-2 border-white px-8 py-3 text-white font-semibold hover:bg-primary-700 transition-colors"
-          >
-            View Documentation
-          </Link>
-        </div>
-
-        <div className="mt-8 flex items-center justify-center gap-6 text-white/90">
-          <div className="flex items-center gap-2">
-            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-            <span>4.8/5 rating</span>
+    <section className="min-h-[50vh] flex items-center relative overflow-hidden pt-28 pb-20">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-20 w-64 h-64 bg-pastel-sky/20 rounded-full blur-2xl animate-blob"></div>
+        <div className="absolute bottom-20 right-20 w-64 h-64 bg-pastel-mint/20 rounded-full blur-2xl animate-blob animation-delay-4000"></div>
+      </div>
+      
+      {/* Seamless transition */}
+      <div className="absolute inset-0 bg-gradient-to-b from-neutral-50/80 via-primary-50/10 to-white/90"></div>
+      
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 grid-pattern opacity-20"></div>
+      
+      <div className="container-wrapper relative z-10">
+        <ScrollObserver className="max-w-3xl mx-auto text-center">
+          <h2 className="text-4xl sm:text-5xl font-bold text-neutral-900 mb-6">
+            Ready to Get Started?
+          </h2>
+          
+          <p className="text-xl text-neutral-600 mb-10 leading-relaxed">
+            Try CellPilot free and see how it can help streamline your Google Sheets workflow.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/install"
+              className="btn-primary"
+            >
+              <span>Install Free Add-on</span>
+              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </Link>
+            <Link
+              href="/docs"
+              className="btn-secondary"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              <span>Read Documentation</span>
+            </Link>
           </div>
-          <div>|</div>
-          <div>10,000+ active users</div>
-          <div>|</div>
-          <div>2M+ operations processed</div>
-        </div>
+
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-neutral-600">
+            <div className="flex items-center">
+              <svg className="w-4 h-4 text-primary-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>Works with all Google accounts</span>
+            </div>
+            <div className="flex items-center">
+              <svg className="w-4 h-4 text-primary-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>No installation required</span>
+            </div>
+            <div className="flex items-center">
+              <svg className="w-4 h-4 text-primary-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>25 free operations monthly</span>
+            </div>
+          </div>
+        </ScrollObserver>
       </div>
     </section>
   )

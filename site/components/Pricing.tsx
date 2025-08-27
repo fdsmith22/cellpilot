@@ -1,18 +1,21 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import ScrollObserver from './ScrollObserver'
 
 const plans = [
   {
     name: 'Free',
     price: '£0',
     period: 'forever',
-    description: 'Perfect for trying out CellPilot',
+    description: 'Get started with basic features',
     features: [
       '25 operations per month',
-      'Basic duplicate removal',
-      'Text standardization',
-      'Community support',
+      'Duplicate removal',
+      'Text cleaning',
+      'Basic formulas',
+      'Email support',
     ],
     cta: 'Get Started',
     ctaLink: '/install',
@@ -22,15 +25,16 @@ const plans = [
     name: 'Starter',
     price: '£5.99',
     period: 'per month',
-    description: 'For individuals and small teams',
+    description: 'For regular spreadsheet users',
     features: [
       '500 operations per month',
-      'All data cleaning tools',
-      'Formula builder',
-      'Email support',
+      'All cleaning tools',
+      'Advanced formulas',
       'Automatic backups',
+      'Priority support',
+      'Usage analytics',
     ],
-    cta: 'Start Free Trial',
+    cta: 'Try Free for 7 Days',
     ctaLink: '/install?plan=starter',
     popular: true,
   },
@@ -38,64 +42,83 @@ const plans = [
     name: 'Professional',
     price: '£11.99',
     period: 'per month',
-    description: 'For power users and growing teams',
+    description: 'For power users and teams',
     features: [
       'Unlimited operations',
       'All features included',
       'Email automation',
       'Calendar integration',
-      'Priority support',
-      'Advanced analytics',
+      'API access',
+      'Dedicated support',
     ],
-    cta: 'Start Free Trial',
+    cta: 'Try Free for 7 Days',
     ctaLink: '/install?plan=professional',
     popular: false,
   },
 ]
 
 const Pricing = () => {
+  const [selectedPlan, setSelectedPlan] = useState<string>('Starter')
+  
   return (
-    <section id="pricing" className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-            Simple, transparent pricing
+    <section id="pricing" className="min-h-screen flex items-center relative overflow-hidden pt-28 pb-20">
+      {/* Background decoration */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-pastel-peach/20 to-pastel-lavender/20 rounded-full blur-3xl"></div>
+      </div>
+      
+      {/* Seamless transition */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-neutral-50/90 to-neutral-50/90"></div>
+      
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 grid-pattern opacity-20"></div>
+      
+      <div className="container-wrapper relative z-10">
+        <ScrollObserver className="text-center max-w-3xl mx-auto mb-12">
+          <h2 className="text-4xl sm:text-5xl font-bold text-neutral-900 mb-4">
+            Simple Pricing
           </h2>
-          <p className="mt-4 text-lg text-gray-600">
-            Choose the plan that fits your needs. Upgrade or downgrade anytime.
+          <p className="text-lg text-neutral-600 leading-relaxed">
+            Start free and upgrade when you need more. Cancel anytime.
           </p>
-        </div>
+        </ScrollObserver>
 
-        <div className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {plans.map((plan) => (
-            <div
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+          {plans.map((plan, index) => (
+            <ScrollObserver
               key={plan.name}
-              className={`relative bg-white rounded-lg shadow-sm ${
-                plan.popular ? 'ring-2 ring-primary-500' : 'border border-gray-200'
-              }`}
+              className={`scroll-observer-delay-${index * 100}`}
             >
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-primary-500 text-white px-3 py-1 text-sm font-medium rounded-full">
-                    Most Popular
+              <div
+                onClick={() => setSelectedPlan(plan.name)}
+                className={`glass-card rounded-2xl overflow-hidden h-full cursor-pointer transition-all duration-300 ${
+                  selectedPlan === plan.name 
+                    ? 'ring-2 ring-primary-500 scale-105 shadow-2xl bg-white/90' 
+                    : 'hover:scale-102 hover:shadow-xl'
+                }`}
+              >
+              {(selectedPlan === plan.name || (plan.popular && !selectedPlan)) && (
+                <div className="bg-gradient-to-r from-primary-500 to-accent-teal px-4 py-2 text-center">
+                  <span className="text-white text-sm font-medium">
+                    {selectedPlan === plan.name ? 'Selected Plan' : 'Most Popular'}
                   </span>
                 </div>
               )}
-
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900">{plan.name}</h3>
-                <p className="mt-2 text-gray-600">{plan.description}</p>
+              
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-neutral-900 mb-2">{plan.name}</h3>
+                <p className="text-neutral-600 mb-6">{plan.description}</p>
                 
-                <div className="mt-4">
-                  <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                  <span className="text-gray-600 ml-2">{plan.period}</span>
+                <div className="mb-8">
+                  <span className="text-4xl font-bold text-neutral-900">{plan.price}</span>
+                  <span className="text-neutral-600 ml-2">/{plan.period}</span>
                 </div>
 
-                <ul className="mt-6 space-y-3">
+                <ul className="space-y-3 mb-8">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start">
                       <svg
-                        className="h-5 w-5 text-green-500 mt-0.5 mr-3 flex-shrink-0"
+                        className="h-5 w-5 text-accent-teal mt-0.5 mr-3 flex-shrink-0"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -105,34 +128,48 @@ const Pricing = () => {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span className="text-gray-700">{feature}</span>
+                      <span className="text-neutral-700">{feature}</span>
                     </li>
                   ))}
                 </ul>
 
                 <Link
                   href={plan.ctaLink}
-                  className={`mt-8 block w-full py-3 px-4 rounded-lg text-center font-semibold transition-colors ${
+                  className={`block w-full py-3 px-6 rounded-full text-center font-medium transition-all ${
                     plan.popular
-                      ? 'bg-primary-600 text-white hover:bg-primary-700'
-                      : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                      ? 'btn-primary'
+                      : 'bg-white border border-neutral-300 text-neutral-700 hover:bg-neutral-100'
                   }`}
                 >
                   {plan.cta}
                 </Link>
               </div>
-            </div>
+              </div>
+            </ScrollObserver>
           ))}
         </div>
 
-        <div className="mt-12 text-center text-sm text-gray-600">
-          <p>All plans include a 14-day free trial. No credit card required.</p>
-          <p className="mt-2">
-            Need a custom plan?{' '}
-            <Link href="/contact" className="text-primary-600 hover:text-primary-700 font-medium">
-              Contact us
-            </Link>
-          </p>
+        <div className="mt-16 text-center">
+          <div className="inline-flex items-center space-x-8 p-6 rounded-2xl glass-card">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 text-accent-teal mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-neutral-700 font-medium">No credit card required</span>
+            </div>
+            <div className="flex items-center">
+              <svg className="w-5 h-5 text-accent-teal mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-neutral-700 font-medium">Cancel anytime</span>
+            </div>
+            <div className="flex items-center">
+              <svg className="w-5 h-5 text-accent-teal mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-neutral-700 font-medium">Secure payments</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>

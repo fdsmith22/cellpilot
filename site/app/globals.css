@@ -1,39 +1,195 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 255, 255, 255;
-    --background-end-rgb: 255, 255, 255;
+    --gradient-angle: 0deg;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --foreground-rgb: 255, 255, 255;
-      --background-start-rgb: 0, 0, 0;
-      --background-end-rgb: 0, 0, 0;
-    }
+  html {
+    @apply scroll-smooth antialiased;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
   }
 
   body {
-    color: rgb(var(--foreground-rgb));
-    background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+    @apply bg-neutral-50 text-neutral-800;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
+  
+  section {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  ::selection {
+    @apply bg-pastel-sky/40 text-primary-900;
+  }
+  
+  ::-moz-selection {
+    @apply bg-pastel-sky/40 text-primary-900;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-['Space_Grotesk'] tracking-tight font-medium;
+  }
+}
+
+@layer components {
+  .container-wrapper {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-20 sm:py-24 lg:py-32;
+  }
+
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-xl border border-white/50 shadow-lg;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-7 py-3 text-sm font-medium text-white bg-gradient-to-r from-primary-500 to-primary-600 rounded-full hover:from-primary-600 hover:to-primary-700 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-7 py-3 text-sm font-medium text-primary-700 bg-white/80 backdrop-blur-sm border border-primary-200 rounded-full hover:bg-white hover:border-primary-300 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text text-transparent;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl;
+  }
+
+  .blob-shape {
+    @apply absolute rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob;
   }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .animation-delay-2000 {
+    animation-delay: 2s;
   }
   
-  .gradient-text {
-    @apply bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent;
+  .animation-delay-4000 {
+    animation-delay: 4s;
   }
+
+  .grid-pattern {
+    background-image: 
+      linear-gradient(rgba(94, 124, 226, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(94, 124, 226, 0.05) 1px, transparent 1px);
+    background-size: 80px 35px;
+  }
+
+  .grid-fade {
+    mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+  }
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+  66% {
+    transform: translateY(5px) rotate(-1deg);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    --gradient-angle: 0deg;
+  }
+  100% {
+    --gradient-angle: 360deg;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes letterPop {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animate-gradient {
+  animation: gradient-shift 8s linear infinite;
+  background: conic-gradient(from var(--gradient-angle), #e0e9ff, #c3e9ff, #b8e6d3, #e4d4f4, #ffd6cc, #e0e9ff);
+}
+
+/* Scroll Observer Animations */
+.scroll-observer {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-observer.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-observer-delay-100 {
+  transition-delay: 100ms;
+}
+
+.scroll-observer-delay-200 {
+  transition-delay: 200ms;
+}
+
+.scroll-observer-delay-300 {
+  transition-delay: 300ms;
 }

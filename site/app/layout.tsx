@@ -1,20 +1,56 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'CellPilot - Google Sheets Automation Made Simple',
-  description: 'Transform your Google Sheets workflow with powerful automation tools, data cleaning, and formula generation.',
-  keywords: 'Google Sheets, automation, spreadsheet, data cleaning, formula builder, add-on',
-  authors: [{ name: 'CellPilot Team' }],
+  title: 'CellPilot - Spreadsheets Reimagined',
+  description: 'Take control of your spreadsheet data simply and quickly with smart automation tools for Google Sheets.',
+  keywords: 'Google Sheets, automation, spreadsheet, data cleaning, formula builder, add-on, remove duplicates, email alerts',
+  authors: [{ name: 'CellPilot Ltd' }],
+  metadataBase: new URL('https://cellpilot.app'),
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    apple: '/apple-touch-icon.png',
+    other: [
+      {
+        rel: 'android-chrome-192x192',
+        url: '/android-chrome-192x192.png',
+      },
+      {
+        rel: 'android-chrome-512x512',
+        url: '/android-chrome-512x512.png',
+      },
+    ],
+  },
+  manifest: '/site.webmanifest',
+  themeColor: '#2563eb',
   openGraph: {
-    title: 'CellPilot - Google Sheets Automation',
-    description: 'Transform your Google Sheets workflow with powerful automation tools',
-    url: 'https://cellpilot.io',
+    title: 'CellPilot - Spreadsheets Reimagined',
+    description: 'Take control of your spreadsheet data simply and quickly with smart automation tools',
+    url: 'https://cellpilot.app',
     siteName: 'CellPilot',
     type: 'website',
+    images: [
+      {
+        url: '/logo/combined/horizontal-standard-200x60.svg',
+        width: 200,
+        height: 60,
+        alt: 'CellPilot Logo',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'CellPilot - Spreadsheets Reimagined',
+    description: 'Take control of your spreadsheet data simply and quickly with smart automation tools',
+    images: ['/logo/combined/horizontal-standard-200x60.svg'],
   },
 }
 
@@ -24,8 +60,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" className="scroll-smooth">
+      <body className={inter.className}>
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   )
 }
