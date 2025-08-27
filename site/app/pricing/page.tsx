@@ -98,24 +98,29 @@ const plans = [
 
 export default function PricingPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
+    <main className="min-h-screen relative">
+      {/* Background decoration matching main site */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-pastel-peach/20 to-pastel-lavender/20 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div className="container mx-auto px-4 pt-[100px] sm:pt-32 md:pt-28 pb-16 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
+          <h1 className="text-4xl font-bold text-neutral-900 sm:text-5xl">
             Simple, transparent pricing
           </h1>
-          <p className="mt-4 text-xl text-gray-600">
+          <p className="mt-4 text-xl text-neutral-600">
             Choose the plan that fits your needs. Upgrade or downgrade anytime.
           </p>
         </div>
 
         {/* Billing Toggle */}
         <div className="flex justify-center mb-12">
-          <div className="bg-gray-100 p-1 rounded-lg flex">
-            <button className="px-4 py-2 bg-white rounded-md text-gray-900 font-medium">
+          <div className="glass-card p-1 rounded-lg flex">
+            <button className="px-4 py-2 bg-white rounded-md text-neutral-900 font-medium">
               Monthly
             </button>
-            <button className="px-4 py-2 text-gray-600 font-medium">
+            <button className="px-4 py-2 text-neutral-600 font-medium">
               Annual (Save 20%)
             </button>
           </div>
@@ -141,14 +146,14 @@ export default function PricingPage() {
               )}
 
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900">{plan.name}</h3>
-                <p className="mt-2 text-sm text-gray-600">{plan.description}</p>
+                <h3 className="text-xl font-semibold text-neutral-900">{plan.name}</h3>
+                <p className="mt-2 text-sm text-neutral-600">{plan.description}</p>
                 
                 <div className="mt-4 flex items-baseline">
-                  <span className="text-4xl font-bold text-gray-900">
+                  <span className="text-4xl font-bold text-neutral-900">
                     {plan.currency}{plan.price}
                   </span>
-                  <span className="ml-2 text-gray-600">{plan.period}</span>
+                  <span className="ml-2 text-neutral-600">{plan.period}</span>
                 </div>
 
                 <Link
@@ -156,14 +161,14 @@ export default function PricingPage() {
                   className={`mt-6 block w-full py-3 px-4 rounded-lg text-center font-semibold transition-colors ${
                     plan.popular
                       ? 'bg-primary-600 text-white hover:bg-primary-700'
-                      : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                      : 'glass-card text-neutral-900 hover:bg-gray-200'
                   }`}
                 >
                   {plan.cta}
                 </Link>
 
                 <div className="mt-6">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-3">
+                  <h4 className="text-sm font-semibold text-neutral-900 mb-3">
                     What&apos;s included:
                   </h4>
                   <ul className="space-y-2">
@@ -217,46 +222,46 @@ export default function PricingPage() {
 
         {/* FAQ Section */}
         <div className="mt-20 max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
+          <h2 className="text-2xl font-bold text-neutral-900 text-center mb-8">
             Frequently Asked Questions
           </h2>
           
           <div className="space-y-6">
             <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="font-semibold text-gray-900 mb-2">
+              <h3 className="font-semibold text-neutral-900 mb-2">
                 Can I change plans anytime?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-neutral-600">
                 Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, 
                 and we&apos;ll prorate any payments.
               </p>
             </div>
 
             <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="font-semibold text-gray-900 mb-2">
+              <h3 className="font-semibold text-neutral-900 mb-2">
                 Do you offer refunds?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-neutral-600">
                 We offer a 14-day money-back guarantee on all paid plans. If you&apos;re not satisfied, 
                 contact support for a full refund.
               </p>
             </div>
 
             <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="font-semibold text-gray-900 mb-2">
+              <h3 className="font-semibold text-neutral-900 mb-2">
                 What happens when I reach my operation limit?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-neutral-600">
                 You&apos;ll receive a notification when you reach 80% of your limit. Once you hit 100%, 
                 you can either wait for the next billing cycle or upgrade your plan for immediate access.
               </p>
             </div>
 
             <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="font-semibold text-gray-900 mb-2">
+              <h3 className="font-semibold text-neutral-900 mb-2">
                 Is my data secure?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-neutral-600">
                 Absolutely. CellPilot only accesses the spreadsheets you explicitly work with. 
                 We never store your spreadsheet data on our servers, and all operations happen 
                 directly in your Google account.
@@ -267,10 +272,10 @@ export default function PricingPage() {
 
         {/* CTA Section */}
         <div className="mt-20 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl font-bold text-neutral-900 mb-4">
             Ready to get started?
           </h2>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-lg text-neutral-600 mb-8">
             Try CellPilot free for 14 days. No credit card required.
           </p>
           <Link
