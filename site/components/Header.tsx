@@ -16,8 +16,8 @@ const Header = () => {
   }, [])
 
   const navItems = [
-    { name: 'Features', href: '#features' },
-    { name: 'Pricing', href: '#pricing' },
+    { name: 'Features', href: '/#features' },
+    { name: 'Pricing', href: '/#pricing' },
     { name: 'Documentation', href: '/docs' },
   ]
 
@@ -25,19 +25,19 @@ const Header = () => {
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       scrolled 
         ? 'bg-gradient-to-b from-white/95 via-white/85 to-transparent backdrop-blur-xl border-b border-neutral-200/20' 
-        : 'bg-gradient-to-b from-white/70 via-white/50 to-transparent backdrop-blur-lg'
+        : 'bg-gradient-to-b from-white/80 via-white/60 to-transparent backdrop-blur-lg'
     }`}>
       {/* Grid pattern that fades into header */}
       <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" 
            style={{maskImage: 'linear-gradient(to bottom, black, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, black, transparent)'}}></div>
-      <nav className="relative py-2 md:py-3">
-        <div className="flex items-center justify-between">
+      <nav className="relative py-3 md:py-3">
+        <div className="flex items-center justify-between min-h-[72px]">
           {/* Logo - positioned in top left */}
           <Link href="/" className="flex items-center pl-4 md:pl-6 lg:pl-8">
             <img 
               src="/logo/combined/horizontal-standard-200x60.svg" 
               alt="CellPilot" 
-              className="h-14 md:h-16 lg:h-20 w-auto"
+              className="h-12 sm:h-14 md:h-16 lg:h-20 w-auto"
             />
           </Link>
 
@@ -58,10 +58,14 @@ const Header = () => {
                     href={item.href}
                     className={`block px-4 py-2 bg-gradient-to-br ${colors[index]} backdrop-blur-md border rounded-lg hover:shadow-lg hover:scale-105 transition-all text-sm font-medium text-neutral-700 hover:text-primary-700`}
                     onClick={(e) => {
-                      if (item.href.startsWith('#')) {
-                        e.preventDefault()
-                        const element = document.querySelector(item.href)
-                        element?.scrollIntoView({ behavior: 'smooth' })
+                      if (item.href.startsWith('/#')) {
+                        // If on home page, just scroll
+                        if (window.location.pathname === '/') {
+                          e.preventDefault()
+                          const element = document.querySelector(item.href.substring(1))
+                          element?.scrollIntoView({ behavior: 'smooth' })
+                        }
+                        // Otherwise, let the browser navigate to home page with hash
                       }
                     }}
                   >
@@ -85,7 +89,7 @@ const Header = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-neutral-100 transition-colors"
+            className="md:hidden p-2 mr-4 rounded-lg hover:bg-neutral-100 transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <svg className="w-6 h-6 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,10 +121,14 @@ const Header = () => {
                       href={item.href}
                       className={`block px-4 py-3 bg-gradient-to-br ${colors[index]} backdrop-blur-sm border rounded-lg transition-all text-sm font-medium text-neutral-700`}
                       onClick={(e) => {
-                        if (item.href.startsWith('#')) {
-                          e.preventDefault()
-                          const element = document.querySelector(item.href)
-                          element?.scrollIntoView({ behavior: 'smooth' })
+                        if (item.href.startsWith('/#')) {
+                          // If on home page, just scroll
+                          if (window.location.pathname === '/') {
+                            e.preventDefault()
+                            const element = document.querySelector(item.href.substring(1))
+                            element?.scrollIntoView({ behavior: 'smooth' })
+                          }
+                          // Otherwise, let the browser navigate to home page with hash
                         }
                         setMobileMenuOpen(false)
                       }}

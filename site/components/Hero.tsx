@@ -56,7 +56,7 @@ const Hero = () => {
 
       {/* Removed grid pattern - now using global grid */}
       
-      <div className="container-wrapper relative z-10 pt-48 sm:pt-32 md:pt-28">
+      <div className="container-wrapper relative z-10 pt-[100px] sm:pt-32 md:pt-28">
         <div className="max-w-5xl mx-auto">
           
           {/* Heading */}

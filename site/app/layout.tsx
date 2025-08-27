@@ -62,8 +62,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={inter.className}>
+        {/* Global animated cell background for all pages */}
+        <div className="fixed inset-0 grid-pattern opacity-20 z-0" style={{top: '-100px'}}></div>
         <Header />
-        {children}
+        <div className="relative z-10">
+          {children}
+        </div>
         <Footer />
       </body>
     </html>

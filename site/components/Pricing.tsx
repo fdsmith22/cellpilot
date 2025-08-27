@@ -61,7 +61,7 @@ const Pricing = () => {
   const [selectedPlan, setSelectedPlan] = useState<string>('Starter')
   
   return (
-    <section id="pricing" className="min-h-screen flex items-center relative overflow-hidden pt-24 sm:pt-24 md:pt-28 pb-20 sm:pb-20 bg-transparent">
+    <section id="pricing" className="min-h-screen flex items-center relative overflow-hidden pt-20 sm:pt-24 md:pt-28 pb-16 sm:pb-20 bg-transparent">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] bg-gradient-to-r from-pastel-peach/20 to-pastel-lavender/20 rounded-full blur-3xl"></div>
