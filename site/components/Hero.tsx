@@ -46,7 +46,7 @@ const Hero = () => {
   }, [])
 
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative h-screen flex items-center justify-center overflow-hidden bg-transparent">
       {/* Animated blobs */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="blob-shape w-96 h-96 bg-pastel-mint top-0 -left-48"></div>
@@ -54,10 +54,9 @@ const Hero = () => {
         <div className="blob-shape w-96 h-96 bg-pastel-sky bottom-0 left-1/2 animation-delay-4000"></div>
       </div>
 
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 grid-pattern opacity-30"></div>
+      {/* Removed grid pattern - now using global grid */}
       
-      <div className="container-wrapper relative z-10 pt-40 sm:pt-32 md:pt-28">
+      <div className="container-wrapper relative z-10 pt-44 sm:pt-32 md:pt-28">
         <div className="max-w-5xl mx-auto">
           
           {/* Heading */}
@@ -153,7 +152,7 @@ const Hero = () => {
           </div>
 
           {/* Preview Window */}
-          <div className={`mt-8 sm:mt-12 mb-6 sm:mb-8 transition-all duration-700 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <div className={`mt-8 sm:mt-12 mb-12 sm:mb-16 transition-all duration-700 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <div className="relative mx-auto max-w-6xl px-2 sm:px-4">
               <div className="bg-white/85 backdrop-blur-md rounded-xl sm:rounded-2xl p-0.5 sm:p-1 animate-float shadow-xl sm:shadow-2xl border border-neutral-400/40">
                 <div className="bg-gradient-to-br from-white to-neutral-50/50 rounded-lg sm:rounded-xl p-3 sm:p-5">

@@ -61,7 +61,7 @@ const features = [
 
 const Features = () => {
   return (
-    <section id="features" className="min-h-screen flex items-center relative overflow-hidden pt-24 sm:pt-24 md:pt-28 pb-20 sm:pb-20">
+    <section id="features" className="min-h-screen flex items-center relative overflow-hidden pt-24 sm:pt-24 md:pt-28 pb-20 sm:pb-20 bg-transparent">
       {/* Background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-pastel-sky/10 rounded-full blur-3xl"></div>
@@ -69,10 +69,9 @@ const Features = () => {
       </div>
       
       {/* Seamless transition from hero */}
-      <div className="absolute inset-0 bg-gradient-to-b from-neutral-50/0 via-white/80 to-white/90"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white/60"></div>
       
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 grid-pattern opacity-20"></div>
+      {/* Removed grid pattern - using global grid */}
       
       <div className="container-wrapper relative z-10">
         <ScrollObserver className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4">

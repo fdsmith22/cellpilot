@@ -3,7 +3,7 @@ import ScrollObserver from './ScrollObserver'
 
 const CTA = () => {
   return (
-    <section className="min-h-[50vh] flex items-center relative overflow-hidden pt-28 pb-20">
+    <section className="min-h-[50vh] flex items-center relative overflow-hidden pt-28 pb-20 bg-transparent">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-64 h-64 bg-pastel-sky/20 rounded-full blur-2xl animate-blob"></div>
@@ -11,10 +11,9 @@ const CTA = () => {
       </div>
       
       {/* Seamless transition */}
-      <div className="absolute inset-0 bg-gradient-to-b from-neutral-50/80 via-primary-50/10 to-white/90"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-primary-50/20 to-white/90"></div>
       
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 grid-pattern opacity-20"></div>
+      {/* Removed grid pattern - using global grid */}
       
       <div className="container-wrapper relative z-10">
         <ScrollObserver className="max-w-3xl mx-auto text-center px-4">

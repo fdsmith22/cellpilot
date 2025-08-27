@@ -61,17 +61,16 @@ const Pricing = () => {
   const [selectedPlan, setSelectedPlan] = useState<string>('Starter')
   
   return (
-    <section id="pricing" className="min-h-screen flex items-center relative overflow-hidden pt-24 sm:pt-24 md:pt-28 pb-20 sm:pb-20">
+    <section id="pricing" className="min-h-screen flex items-center relative overflow-hidden pt-24 sm:pt-24 md:pt-28 pb-20 sm:pb-20 bg-transparent">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] bg-gradient-to-r from-pastel-peach/20 to-pastel-lavender/20 rounded-full blur-3xl"></div>
       </div>
       
       {/* Seamless transition */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-neutral-50/90 to-neutral-50/90"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/70 to-white/80"></div>
       
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 grid-pattern opacity-20"></div>
+      {/* Removed grid pattern - using global grid */}
       
       <div className="container-wrapper relative z-10">
         <ScrollObserver className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4">
