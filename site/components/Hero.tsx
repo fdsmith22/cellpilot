@@ -56,12 +56,12 @@ const Hero = () => {
 
       {/* Removed grid pattern - now using global grid */}
       
-      <div className="container-wrapper relative z-10 pt-44 sm:pt-32 md:pt-28">
+      <div className="container-wrapper relative z-10 pt-48 sm:pt-32 md:pt-28">
         <div className="max-w-5xl mx-auto">
           
           {/* Heading */}
           <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center mb-4 sm:mb-6 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <span className="block text-neutral-900 mb-3 sm:mb-4">Spreadsheets</span>
+            <span className="block text-neutral-900 mb-2 sm:mb-3">Spreadsheets</span>
             <div className="inline-flex gap-1 sm:gap-2 items-center justify-center flex-wrap">
               {['R', 'e', 'i', 'm', 'a', 'g', 'i', 'n', 'e', 'd'].map((letter, index) => (
                 <span
