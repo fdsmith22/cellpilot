@@ -4,36 +4,106 @@
   <base target="_top">
   <?!= include('SharedStyles'); ?>
   <style>
+    /* Prevent horizontal scrolling */
+    body {
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+    
+    .container {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+    
     .parse-option {
       background: white;
-      border: 2px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 8px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all var(--transition-fast);
+      max-width: 100%;
+      box-sizing: border-box;
+      position: relative;
     }
     
     .parse-option:hover {
-      border-color: #6366f1;
-      background: #f9fafb;
+      border-color: var(--primary-300);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.02), rgba(99, 102, 241, 0.05));
+      transform: translateY(-1px);
+      box-shadow: var(--elevation-1);
     }
     
     .parse-option.selected {
-      border-color: #6366f1;
-      background: #eff6ff;
+      border-color: var(--primary-500);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(99, 102, 241, 0.10));
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    .parse-option.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      width: 20px;
+      height: 20px;
+      background: var(--primary-500);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .smart-option {
+      border: 1.5px solid var(--success-400);
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.03), rgba(34, 197, 94, 0.06));
+    }
+    
+    .smart-option:hover {
+      border-color: var(--success-500);
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(34, 197, 94, 0.08));
+    }
+    
+    .smart-option.selected {
+      border-color: var(--success-500);
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(34, 197, 94, 0.12));
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+    }
+    
+    .smart-option.selected::after {
+      background: var(--success-500);
+      top: 10px;
+      right: auto;
+      left: 12px;
+    }
+    
+    .recommended-badge {
+      position: absolute;
+      top: -8px;
+      right: 16px;
+      background: var(--success-500);
+      color: white;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
     }
     
     .parse-method-title {
       font-weight: 600;
       font-size: 13px;
-      color: #1f2937;
+      color: var(--gray-700);
       margin-bottom: 4px;
     }
     
     .parse-method-desc {
       font-size: 11px;
-      color: #6b7280;
+      color: var(--gray-500);
     }
     
     .preview-table {
@@ -47,16 +117,16 @@
     }
     
     .preview-table th {
-      background: #f3f4f6;
+      background: var(--gray-100);
       padding: 8px;
       text-align: left;
       font-weight: 600;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--gray-200);
     }
     
     .preview-table td {
       padding: 6px 8px;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--gray-200);
       max-width: 150px;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -76,26 +146,31 @@
       }
     }
     
-    .delimiter-btn {
-      padding: 8px;
-      border: 1px solid #e5e7eb;
-      border-radius: 6px;
+    .form-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
       background: white;
+      font-size: 13px;
+      color: var(--gray-700);
       cursor: pointer;
-      font-size: 12px;
-      text-align: center;
-      transition: all 0.2s ease;
+      transition: all var(--transition-fast);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
     }
     
-    .delimiter-btn:hover {
-      background: #f9fafb;
-      border-color: #6366f1;
+    .form-select:hover {
+      border-color: var(--primary-300);
     }
     
-    .delimiter-btn.active {
-      background: #6366f1;
-      color: white;
-      border-color: #6366f1;
+    .form-select:focus {
+      outline: none;
+      border-color: var(--primary-500);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
     
     .custom-delimiter-input {
@@ -106,7 +181,7 @@
     .column-adjuster {
       margin-top: 12px;
       padding: 12px;
-      background: #f9fafb;
+      background: var(--gray-50);
       border-radius: 6px;
     }
     
@@ -120,7 +195,7 @@
     .column-width-input {
       width: 60px;
       padding: 4px 6px;
-      border: 1px solid #d1d5db;
+      border: 1px solid var(--gray-300);
       border-radius: 4px;
       font-size: 12px;
     }
@@ -155,16 +230,17 @@
         
         <div id="delimiterSection" style="display: none;">
           <div class="form-group">
-            <label class="form-label">Select Delimiter</label>
-            <div class="delimiter-options">
-              <button class="delimiter-btn" data-delimiter="comma">Comma (,)</button>
-              <button class="delimiter-btn" data-delimiter="tab">Tab</button>
-              <button class="delimiter-btn" data-delimiter="space">Space</button>
-              <button class="delimiter-btn" data-delimiter="pipe">Pipe (|)</button>
-              <button class="delimiter-btn" data-delimiter="semicolon">Semicolon (;)</button>
-              <button class="delimiter-btn" data-delimiter="custom">Custom...</button>
-            </div>
-            <div class="custom-delimiter-input">
+            <label class="form-label">Choose Delimiter</label>
+            <select id="delimiterSelect" class="form-select" onchange="handleDelimiterChange(this.value)">
+              <option value="comma">Comma (,)</option>
+              <option value="tab">Tab</option>
+              <option value="space">Space</option>
+              <option value="pipe">Pipe (|)</option>
+              <option value="semicolon">Semicolon (;)</option>
+              <option value="colon">Colon (:)</option>
+              <option value="custom">Custom...</option>
+            </select>
+            <div id="customDelimiterInput" style="display: none; margin-top: 8px;">
               <input type="text" id="customDelimiter" class="form-input" placeholder="Enter custom delimiter" maxlength="5">
             </div>
           </div>
@@ -228,10 +304,45 @@
     let columnWidths = [10, 10, 10];
     let previewData = null;
     
-    // Analyze data on load
+    // Wait for proper initialization before analyzing
     window.onload = function() {
-      analyzeData();
+      // Small delay to ensure sheet context is ready
+      setTimeout(function() {
+        checkAndAnalyze();
+      }, 500);
     };
+    
+    function checkAndAnalyze() {
+      // First check if there's actually a selection
+      google.script.run
+        .withSuccessHandler(function(hasSelection) {
+          if (hasSelection) {
+            analyzeData();
+          } else {
+            document.getElementById('analysisSection').style.display = 'none';
+            showStatus('Please select data in your spreadsheet first', 'warning');
+            // Show a helpful instruction card
+            document.getElementById('optionsSection').innerHTML = `
+              <div class="card">
+                <div class="card-title">No Data Selected</div>
+                <div class="card-description">To use Tableize:</div>
+                <ol style="margin: 12px 0; padding-left: 20px; font-size: 12px; color: var(--gray-600);">
+                  <li>Select the data you want to structure</li>
+                  <li>Open CellPilot from the Extensions menu</li>
+                  <li>Click on Tableize Data</li>
+                </ol>
+                <button class="btn btn-primary btn-block" onclick="backToMain()">Back to Main Menu</button>
+              </div>
+            `;
+            document.getElementById('optionsSection').style.display = 'block';
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Failed to check selection:', error);
+          analyzeData(); // Fallback to regular analysis
+        })
+        .hasDataSelection();
+    }
     
     function backToMain() {
       google.script.run.showCellPilotSidebar();
@@ -269,27 +380,17 @@
       const timeoutId = setTimeout(function() {
         clearInterval(progressInterval);
         console.error('Analysis timed out');
-        showStatus('Analysis timed out. Using default options.', 'warning');
-        
-        // Use default options if analysis fails
-        const defaultResult = {
-          hasData: true,
-          rowCount: 1,
-          suggestedDelimiter: 'space',
-          delimiters: {
-            space: { char: ' ', count: 2, consistent: true },
-            comma: { char: ',', count: 0, consistent: true }
-          },
-          patterns: {},
-          hasHeaders: true,
-          estimatedColumns: 3
-        };
-        
-        analysisResult = defaultResult;
-        displayOptions(defaultResult);
+        progressBar.style.width = '100%';
         document.getElementById('analysisSection').style.display = 'none';
+        
+        // Show manual options when analysis times out
+        showStatus('Analysis is taking longer than expected. You can proceed with manual configuration.', 'warning');
+        
+        // Show simplified options
+        analysisResult = { hasData: true, manual: true };
+        displayManualOptions();
         document.getElementById('optionsSection').style.display = 'block';
-      }, 5000); // 5 second timeout
+      }, 8000); // 8 second timeout - give more time for large datasets
       
       google.script.run
         .withSuccessHandler(function(result) {
@@ -321,10 +422,29 @@
     function displayOptions(analysis) {
       const optionsHtml = [];
       
-      // Delimiter option
-      if (analysis.suggestedDelimiter) {
+      // Check if data is already in columns
+      if (analysis.hasMultipleColumns) {
         optionsHtml.push(`
-          <div class="parse-option selected" onclick="selectMethod('delimiter', this)">
+          <div class="alert alert-info" style="margin-bottom: 16px;">
+            <strong>Data already in ${analysis.columnCount} columns</strong><br>
+            Your data appears to already be structured. You can clean it up or reorganize it below.
+          </div>
+        `);
+        
+        optionsHtml.push(`
+          <div class="parse-option selected" onclick="selectMethod('preserve', this)">
+            <div class="parse-method-title">Clean & Preserve Current Structure</div>
+            <div class="parse-method-desc">
+              Keep the existing ${analysis.columnCount} columns, just clean up formatting
+            </div>
+          </div>
+        `);
+      }
+      
+      // Delimiter option (always show, even for multi-column data)
+      if (analysis.suggestedDelimiter && analysis.suggestedDelimiter !== 'none') {
+        optionsHtml.push(`
+          <div class="parse-option ${!analysis.hasMultipleColumns ? 'selected' : ''}" onclick="selectMethod('delimiter', this)">
             <div class="parse-method-title">Split by Delimiter</div>
             <div class="parse-method-desc">
               Detected: ${analysis.suggestedDelimiter} delimiter 
@@ -333,7 +453,7 @@
           </div>
         `);
         currentDelimiter = analysis.suggestedDelimiter;
-      } else {
+      } else if (!analysis.hasMultipleColumns) {
         optionsHtml.push(`
           <div class="parse-option" onclick="selectMethod('delimiter', this)">
             <div class="parse-method-title">Split by Delimiter</div>
@@ -360,11 +480,12 @@
         </div>
       `);
       
-      // Smart detection option - make it prominent
+      // Smart detection option - make it prominent with badge
       optionsHtml.push(`
-        <div class="parse-option" onclick="selectMethod('smart', this)" style="border: 2px solid #10b981; background: #f0fdf4;">
-          <div class="parse-method-title" style="color: #059669;">
-            Smart Detection (Recommended)
+        <div class="parse-option smart-option" onclick="selectMethod('smart', this)">
+          <span class="recommended-badge">RECOMMENDED</span>
+          <div class="parse-method-title">
+            Smart Detection
           </div>
           <div class="parse-method-desc">
             Intelligently groups multi-word names, detects regions and numbers
@@ -375,18 +496,16 @@
       document.getElementById('parseOptions').innerHTML = optionsHtml.join('');
       
       // Show delimiter section by default if delimiter detected
-      if (analysis.suggestedDelimiter) {
-        // Find the delimiter option element and select it
-        const delimiterOption = document.querySelector('.parse-option.selected');
-        selectMethod('delimiter', delimiterOption);
+      if (analysis.suggestedDelimiter && analysis.suggestedDelimiter !== 'none') {
+        currentMethod = 'delimiter';
+        document.getElementById('delimiterSection').style.display = 'block';
         
-        // Highlight suggested delimiter
-        setTimeout(function() {
-          const delimiterBtn = document.querySelector(`[data-delimiter="${analysis.suggestedDelimiter}"]`);
-          if (delimiterBtn) {
-            delimiterBtn.classList.add('active');
-          }
-        }, 100);
+        // Set the dropdown to the suggested delimiter
+        const delimiterSelect = document.getElementById('delimiterSelect');
+        if (delimiterSelect) {
+          delimiterSelect.value = analysis.suggestedDelimiter;
+          currentDelimiter = analysis.suggestedDelimiter;
+        }
       }
       
       // Set headers checkbox based on detection
@@ -405,33 +524,55 @@
         targetElement.classList.add('selected');
       }
       
-      // Show/hide relevant sections
+      // Show/hide relevant sections based on method
       document.getElementById('delimiterSection').style.display = 
         method === 'delimiter' ? 'block' : 'none';
       document.getElementById('fixedWidthSection').style.display = 
         method === 'fixedwidth' ? 'block' : 'none';
+        
+      // For preserve method, hide both sections
+      if (method === 'preserve') {
+        document.getElementById('delimiterSection').style.display = 'none';
+        document.getElementById('fixedWidthSection').style.display = 'none';
+      }
         
       if (method === 'fixedwidth') {
         setupColumnWidthControls();
       }
     }
     
-    // Delimiter selection
-    document.addEventListener('click', function(e) {
-      if (e.target.classList.contains('delimiter-btn')) {
-        document.querySelectorAll('.delimiter-btn').forEach(btn => btn.classList.remove('active'));
-        e.target.classList.add('active');
-        
-        const delimiter = e.target.dataset.delimiter;
-        if (delimiter === 'custom') {
-          document.querySelector('.custom-delimiter-input').style.display = 'block';
-          document.getElementById('customDelimiter').focus();
-        } else {
-          document.querySelector('.custom-delimiter-input').style.display = 'none';
-          currentDelimiter = delimiter;
-        }
+    function handleDelimiterChange(value) {
+      currentDelimiter = value;
+      if (value === 'custom') {
+        document.getElementById('customDelimiterInput').style.display = 'block';
+        document.getElementById('customDelimiter').focus();
+        document.getElementById('customDelimiter').addEventListener('input', function(e) {
+          currentDelimiter = e.target.value || 'custom';
+        });
+      } else {
+        document.getElementById('customDelimiterInput').style.display = 'none';
       }
-    });
+    }
+    
+    function displayManualOptions() {
+      const optionsHtml = `
+        <div class="parse-option selected" onclick="selectMethod('delimiter', this)">
+          <div class="parse-method-title">Split by Delimiter</div>
+          <div class="parse-method-desc">Choose a character to split columns</div>
+        </div>
+        <div class="parse-option" onclick="selectMethod('smart', this)">
+          <div class="parse-method-title" style="color: var(--success-600);">Smart Detection</div>
+          <div class="parse-method-desc">Intelligently detect and structure your data</div>
+        </div>
+        <div class="parse-option" onclick="selectMethod('fixedwidth', this)">
+          <div class="parse-method-title">Fixed Width Columns</div>
+          <div class="parse-method-desc">Split at specific character positions</div>
+        </div>
+      `;
+      
+      document.getElementById('parseOptions').innerHTML = optionsHtml;
+      document.getElementById('delimiterSection').style.display = 'block';
+    }
     
     function setupColumnWidthControls() {
       const container = document.getElementById('columnWidthControls');
@@ -477,7 +618,8 @@
                   document.getElementById('customDelimiter').value : currentDelimiter,
         hasHeaders: document.getElementById('hasHeaders').checked,
         trimSpaces: document.getElementById('trimSpaces').checked,
-        columnWidths: columnWidths
+        columnWidths: columnWidths,
+        preserveColumns: currentMethod === 'preserve'
       };
       
       google.script.run
@@ -520,7 +662,7 @@
         // For smart detection, always show the first row as headers
         if (method === 'smart' || hasHeaders) {
           data[0].forEach(header => {
-            html += `<th style="background: #6366f1; color: white; font-weight: 600;">${escapeHtml(header)}</th>`;
+            html += `<th style="background: var(--primary-500); color: white; font-weight: 600;">${escapeHtml(header)}</th>`;
           });
         } else {
           // Create generic headers
@@ -547,11 +689,11 @@
           if (method === 'smart' && cell) {
             // Check if it's a number
             if (!isNaN(cell) || /^[$£€¥]?[\d,]+\.?\d*$/.test(cell)) {
-              cellStyle = 'style="background: #fef3c7; font-weight: 600;"';
+              cellStyle = 'style="background: rgba(251, 191, 36, 0.1); font-weight: 600;"';
             }
             // Check if it might be a region
             else if (/north|south|east|west|central/i.test(cell)) {
-              cellStyle = 'style="background: #dbeafe;"';
+              cellStyle = 'style="background: rgba(99, 102, 241, 0.08);"';
             }
           }
           
@@ -561,7 +703,7 @@
       }
       
       if (data.length > startRow + maxRows) {
-        html += `<tr><td colspan="${columns}" style="text-align: center; font-style: italic; color: #6b7280;">
+        html += `<tr><td colspan="${columns}" style="text-align: center; font-style: italic; color: var(--gray-500);">
                  ... and ${data.length - startRow - maxRows} more rows</td></tr>`;
       }
       

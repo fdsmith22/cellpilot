@@ -171,6 +171,11 @@ const UndoManager = {
       const state = JSON.parse(stateString);
       const ageMinutes = Math.floor((Date.now() - state.timestamp) / (1000 * 60));
       
+      // Return null if undo has expired (over 30 minutes)
+      if (ageMinutes > 30) {
+        return null;
+      }
+      
       return {
         operationType: state.operationType,
         ageMinutes: ageMinutes,

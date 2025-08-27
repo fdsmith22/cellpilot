@@ -362,7 +362,7 @@ const UIComponents = {
     // Contact section
     const contactSection = CardService.newCardSection()
       .addWidget(CardService.newTextParagraph()
-        .setText('Visit <b>cellpilot.co.uk</b> to upgrade your plan'));
+        .setText('Visit <b>cellpilot.io</b> to upgrade your plan'));
     
     card.addSection(contactSection);
     

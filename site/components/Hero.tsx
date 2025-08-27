@@ -66,7 +66,7 @@ const Hero = () => {
               {['R', 'e', 'i', 'm', 'a', 'g', 'i', 'n', 'e', 'd'].map((letter, index) => (
                 <span
                   key={index}
-                  className="inline-block px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm border border-primary-200/50 rounded-lg shadow-sm hover:shadow-lg hover:scale-110 hover:-translate-y-1 text-base sm:text-lg md:text-xl"
+                  className="inline-block px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm border border-primary-200/50 rounded-lg shadow-sm hover:shadow-lg hover:scale-110 hover:-translate-y-1 text-lg sm:text-xl md:text-2xl"
                   style={{
                     opacity: 0,
                     animation: mounted ? `letterPop 0.6s ease-out ${800 + (index * 150)}ms forwards` : 'none',

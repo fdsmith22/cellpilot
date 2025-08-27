@@ -5,7 +5,7 @@
 
 const ApiIntegration = {
   // API configuration
-  API_URL: 'https://api.cellpilot.co.uk', // Update in production
+  API_URL: 'https://api.cellpilot.io', // Update in production
   API_KEY: PropertiesService.getScriptProperties().getProperty('CELLPILOT_API_KEY') || 'dev-key',
   
   /**

@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('SharedStyles'); ?>
+  <style>
+    /* Smart Formula Assistant Styles */
+    .assistant-header {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1));
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .assistant-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary-700);
+      margin-bottom: 4px;
+    }
+    
+    .assistant-subtitle {
+      font-size: 12px;
+      color: var(--gray-600);
+    }
+    
+    /* Goal-Based Categories */
+    .goal-categories {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .goal-category {
+      background: white;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .goal-category:hover {
+      border-color: var(--primary-400);
+      background: var(--gray-50);
+      transform: translateX(4px);
+    }
+    
+    .goal-category.expanded {
+      border-color: var(--primary-500);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.02), rgba(99, 102, 241, 0.05));
+    }
+    
+    .goal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .goal-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+    
+    .goal-arrow {
+      color: var(--gray-400);
+      transition: transform var(--transition-fast);
+      font-size: 12px;
+    }
+    
+    .goal-category.expanded .goal-arrow {
+      transform: rotate(90deg);
+    }
+    
+    .goal-examples {
+      font-size: 11px;
+      color: var(--gray-500);
+      margin-top: 4px;
+    }
+    
+    /* Sub-goals */
+    .sub-goals {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--gray-200);
+    }
+    
+    .goal-category.expanded .sub-goals {
+      display: block;
+    }
+    
+    .sub-goal {
+      padding: 8px 12px;
+      margin: 4px 0;
+      background: var(--gray-50);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: 12px;
+      color: var(--gray-700);
+    }
+    
+    .sub-goal:hover {
+      background: var(--primary-50);
+      color: var(--primary-700);
+      padding-left: 16px;
+    }
+    
+    /* Smart Search */
+    .smart-search {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 12px 40px 12px 12px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: 13px;
+      transition: all var(--transition-fast);
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-500);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    .search-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+    }
+    
+    /* Search Suggestions */
+    .search-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      margin-top: 4px;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+      z-index: 100;
+      box-shadow: var(--elevation-2);
+    }
+    
+    .search-suggestions.show {
+      display: block;
+    }
+    
+    .suggestion-item {
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: background var(--transition-fast);
+      border-bottom: 1px solid var(--gray-100);
+    }
+    
+    .suggestion-item:last-child {
+      border-bottom: none;
+    }
+    
+    .suggestion-item:hover {
+      background: var(--primary-50);
+    }
+    
+    .suggestion-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-800);
+    }
+    
+    .suggestion-desc {
+      font-size: 10px;
+      color: var(--gray-500);
+      margin-top: 2px;
+    }
+    
+    /* Formula Solution Card */
+    .solution-card {
+      display: none;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(34, 197, 94, 0.1));
+      border: 1.5px solid var(--success-400);
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    
+    .solution-card.show {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .solution-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .solution-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--success-500);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      font-size: 16px;
+    }
+    
+    .solution-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--success-700);
+    }
+    
+    .formula-display {
+      background: var(--gray-900);
+      color: var(--success-400);
+      padding: 12px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      margin: 12px 0;
+      word-break: break-all;
+    }
+    
+    .solution-explanation {
+      font-size: 12px;
+      color: var(--gray-700);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    
+    .solution-example {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+    
+    .example-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    
+    .example-content {
+      font-size: 11px;
+      color: var(--gray-700);
+      font-family: 'Courier New', monospace;
+    }
+    
+    /* Common Tasks */
+    .common-tasks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .task-chip {
+      padding: 8px 10px;
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 20px;
+      font-size: 11px;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .task-chip:hover {
+      border-color: var(--primary-400);
+      background: var(--primary-50);
+      transform: scale(1.02);
+    }
+    
+    /* Data Context Panel */
+    .data-context {
+      background: var(--gray-50);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .context-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 8px;
+    }
+    
+    .context-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 10px;
+      color: var(--gray-600);
+    }
+    
+    .context-item {
+      display: flex;
+      align-items: center;
+    }
+    
+    .context-label {
+      font-weight: 600;
+      margin-right: 4px;
+    }
+    
+    /* Alternative Solutions */
+    .alternatives {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--gray-200);
+    }
+    
+    .alternatives-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 8px;
+    }
+    
+    .alternative-option {
+      padding: 8px;
+      background: var(--gray-50);
+      border-radius: 6px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: 11px;
+    }
+    
+    .alternative-option:hover {
+      background: var(--primary-50);
+      padding-left: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-header">
+    <button class="nav-back" onclick="backToMain()">←</button>
+    <div class="nav-title">
+      <h2>Smart Formula Assistant</h2>
+      <p>Tell us what you want to do</p>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div id="statusMessage" style="display: none;"></div>
+    
+    <!-- Smart Search -->
+    <div class="smart-search">
+      <input type="text" id="smartSearch" class="search-input" 
+             placeholder="Type what you want to do (e.g., 'add up sales', 'find highest value')"
+             oninput="handleSmartSearch(this.value)">
+      <span class="search-icon">🔍</span>
+      
+      <div id="searchSuggestions" class="search-suggestions">
+        <!-- Suggestions appear here -->
+      </div>
+    </div>
+    
+    <!-- Data Context (if selection exists) -->
+    <div id="dataContext" class="data-context" style="display: none;">
+      <div class="context-title">Your Current Selection</div>
+      <div class="context-info">
+        <div class="context-item">
+          <span class="context-label">Range:</span>
+          <span id="contextRange">A1:A10</span>
+        </div>
+        <div class="context-item">
+          <span class="context-label">Type:</span>
+          <span id="contextType">Numbers</span>
+        </div>
+        <div class="context-item">
+          <span class="context-label">Rows:</span>
+          <span id="contextRows">10</span>
+        </div>
+        <div class="context-item">
+          <span class="context-label">Columns:</span>
+          <span id="contextCols">1</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Common Quick Actions -->
+    <div class="card">
+      <div class="card-title">Common Tasks</div>
+      <div class="common-tasks">
+        <div class="task-chip" onclick="selectTask('sum')">Add up numbers</div>
+        <div class="task-chip" onclick="selectTask('average')">Calculate average</div>
+        <div class="task-chip" onclick="selectTask('count')">Count items</div>
+        <div class="task-chip" onclick="selectTask('max')">Find highest</div>
+        <div class="task-chip" onclick="selectTask('min')">Find lowest</div>
+        <div class="task-chip" onclick="selectTask('lookup')">Find value</div>
+        <div class="task-chip" onclick="selectTask('if')">Check condition</div>
+        <div class="task-chip" onclick="selectTask('combine')">Combine text</div>
+      </div>
+    </div>
+    
+    <!-- Goal-Based Categories -->
+    <div class="card">
+      <div class="card-title">What do you want to do?</div>
+      
+      <div class="goal-categories">
+        <div class="goal-category" onclick="toggleGoal(this)">
+          <div class="goal-header">
+            <div>
+              <div class="goal-title">Calculate & Analyze Numbers</div>
+              <div class="goal-examples">Add, average, count, percentages, growth rates</div>
+            </div>
+            <span class="goal-arrow">▶</span>
+          </div>
+          <div class="sub-goals">
+            <div class="sub-goal" onclick="selectSubGoal('sum-all', event)">Add up all numbers in a range</div>
+            <div class="sub-goal" onclick="selectSubGoal('sum-condition', event)">Add numbers that meet a condition</div>
+            <div class="sub-goal" onclick="selectSubGoal('average-all', event)">Find the average of numbers</div>
+            <div class="sub-goal" onclick="selectSubGoal('average-condition', event)">Average with conditions</div>
+            <div class="sub-goal" onclick="selectSubGoal('percentage', event)">Calculate percentage of total</div>
+            <div class="sub-goal" onclick="selectSubGoal('growth', event)">Calculate growth or change rate</div>
+            <div class="sub-goal" onclick="selectSubGoal('running-total', event)">Keep a running total</div>
+          </div>
+        </div>
+        
+        <div class="goal-category" onclick="toggleGoal(this)">
+          <div class="goal-header">
+            <div>
+              <div class="goal-title">Find & Match Information</div>
+              <div class="goal-examples">Lookup values, find matches, search data</div>
+            </div>
+            <span class="goal-arrow">▶</span>
+          </div>
+          <div class="sub-goals">
+            <div class="sub-goal" onclick="selectSubGoal('lookup-value', event)">Find value in another table</div>
+            <div class="sub-goal" onclick="selectSubGoal('match-exact', event)">Find exact match</div>
+            <div class="sub-goal" onclick="selectSubGoal('match-closest', event)">Find closest match</div>
+            <div class="sub-goal" onclick="selectSubGoal('check-exists', event)">Check if value exists</div>
+            <div class="sub-goal" onclick="selectSubGoal('find-position', event)">Find position of item</div>
+            <div class="sub-goal" onclick="selectSubGoal('cross-reference', event)">Cross-reference two lists</div>
+          </div>
+        </div>
+        
+        <div class="goal-category" onclick="toggleGoal(this)">
+          <div class="goal-header">
+            <div>
+              <div class="goal-title">Count & Filter Data</div>
+              <div class="goal-examples">Count occurrences, filter results, unique values</div>
+            </div>
+            <span class="goal-arrow">▶</span>
+          </div>
+          <div class="sub-goals">
+            <div class="sub-goal" onclick="selectSubGoal('count-all', event)">Count all non-empty cells</div>
+            <div class="sub-goal" onclick="selectSubGoal('count-condition', event)">Count cells that meet condition</div>
+            <div class="sub-goal" onclick="selectSubGoal('count-unique', event)">Count unique values</div>
+            <div class="sub-goal" onclick="selectSubGoal('filter-criteria', event)">Filter by criteria</div>
+            <div class="sub-goal" onclick="selectSubGoal('remove-duplicates', event)">Identify duplicates</div>
+            <div class="sub-goal" onclick="selectSubGoal('rank-values', event)">Rank values</div>
+          </div>
+        </div>
+        
+        <div class="goal-category" onclick="toggleGoal(this)">
+          <div class="goal-header">
+            <div>
+              <div class="goal-title">Work with Text</div>
+              <div class="goal-examples">Combine, split, extract, clean text</div>
+            </div>
+            <span class="goal-arrow">▶</span>
+          </div>
+          <div class="sub-goals">
+            <div class="sub-goal" onclick="selectSubGoal('combine-text', event)">Combine text from cells</div>
+            <div class="sub-goal" onclick="selectSubGoal('split-text', event)">Split text into parts</div>
+            <div class="sub-goal" onclick="selectSubGoal('extract-first', event)">Extract first/last name</div>
+            <div class="sub-goal" onclick="selectSubGoal('clean-text', event)">Clean up messy text</div>
+            <div class="sub-goal" onclick="selectSubGoal('change-case', event)">Change text case</div>
+            <div class="sub-goal" onclick="selectSubGoal('replace-text', event)">Find and replace text</div>
+          </div>
+        </div>
+        
+        <div class="goal-category" onclick="toggleGoal(this)">
+          <div class="goal-header">
+            <div>
+              <div class="goal-title">Work with Dates & Time</div>
+              <div class="goal-examples">Calculate age, days between, format dates</div>
+            </div>
+            <span class="goal-arrow">▶</span>
+          </div>
+          <div class="sub-goals">
+            <div class="sub-goal" onclick="selectSubGoal('days-between', event)">Calculate days between dates</div>
+            <div class="sub-goal" onclick="selectSubGoal('add-days', event)">Add days to a date</div>
+            <div class="sub-goal" onclick="selectSubGoal('calculate-age', event)">Calculate age</div>
+            <div class="sub-goal" onclick="selectSubGoal('extract-month', event)">Extract month/year from date</div>
+            <div class="sub-goal" onclick="selectSubGoal('workdays', event)">Calculate working days</div>
+            <div class="sub-goal" onclick="selectSubGoal('format-date', event)">Format date display</div>
+          </div>
+        </div>
+        
+        <div class="goal-category" onclick="toggleGoal(this)">
+          <div class="goal-header">
+            <div>
+              <div class="goal-title">Make Decisions</div>
+              <div class="goal-examples">If/then logic, conditions, comparisons</div>
+            </div>
+            <span class="goal-arrow">▶</span>
+          </div>
+          <div class="sub-goals">
+            <div class="sub-goal" onclick="selectSubGoal('if-then', event)">If this then that</div>
+            <div class="sub-goal" onclick="selectSubGoal('multiple-conditions', event)">Check multiple conditions</div>
+            <div class="sub-goal" onclick="selectSubGoal('nested-if', event)">Nested decisions</div>
+            <div class="sub-goal" onclick="selectSubGoal('error-handling', event)">Handle errors gracefully</div>
+            <div class="sub-goal" onclick="selectSubGoal('categorize', event)">Categorize based on value</div>
+            <div class="sub-goal" onclick="selectSubGoal('status-check', event)">Create status indicators</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Solution Card (Hidden initially) -->
+    <div id="solutionCard" class="solution-card">
+      <div class="solution-header">
+        <div class="solution-icon">✓</div>
+        <div class="solution-title" id="solutionTitle">Here's your formula!</div>
+      </div>
+      
+      <div class="formula-display" id="formulaDisplay">
+        =SUM(A1:A10)
+      </div>
+      
+      <div class="solution-explanation" id="solutionExplanation">
+        This formula adds up all the numbers in the selected range.
+      </div>
+      
+      <div class="solution-example">
+        <div class="example-label">Example with your data:</div>
+        <div class="example-content" id="exampleContent">
+          If A1:A10 contains [10, 20, 30...], result will be 550
+        </div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="copySolution()">Copy Formula</button>
+        <button class="btn btn-success" onclick="insertSolution()">Insert to Cell</button>
+      </div>
+      
+      <div class="alternatives">
+        <div class="alternatives-title">Alternative approaches:</div>
+        <div id="alternativesList">
+          <!-- Alternatives appear here -->
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let currentContext = null;
+    let selectedGoal = null;
+    
+    // Load data context on startup
+    window.onload = function() {
+      loadDataContext();
+    };
+    
+    function backToMain() {
+      google.script.run.showCellPilotSidebar();
+    }
+    
+    function loadDataContext() {
+      google.script.run
+        .withSuccessHandler(function(context) {
+          if (context && context.hasSelection) {
+            currentContext = context;
+            document.getElementById('dataContext').style.display = 'block';
+            document.getElementById('contextRange').textContent = context.range;
+            document.getElementById('contextType').textContent = context.dataType;
+            document.getElementById('contextRows').textContent = context.rows;
+            document.getElementById('contextCols').textContent = context.columns;
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error loading context:', error);
+        })
+        .getSmartFormulaContext();
+    }
+    
+    function handleSmartSearch(query) {
+      if (query.length < 2) {
+        document.getElementById('searchSuggestions').classList.remove('show');
+        return;
+      }
+      
+      // Show suggestions based on query
+      const suggestions = getSmartSuggestions(query.toLowerCase());
+      displaySuggestions(suggestions);
+    }
+    
+    function getSmartSuggestions(query) {
+      const allSuggestions = [
+        { id: 'sum', title: 'Add up numbers', desc: 'Sum all values in a range', keywords: ['add', 'sum', 'total', 'plus'] },
+        { id: 'average', title: 'Calculate average', desc: 'Find the mean value', keywords: ['average', 'mean', 'avg'] },
+        { id: 'count', title: 'Count items', desc: 'Count non-empty cells', keywords: ['count', 'how many', 'number of'] },
+        { id: 'max', title: 'Find highest value', desc: 'Get maximum number', keywords: ['max', 'highest', 'largest', 'biggest'] },
+        { id: 'min', title: 'Find lowest value', desc: 'Get minimum number', keywords: ['min', 'lowest', 'smallest', 'least'] },
+        { id: 'lookup', title: 'Look up value', desc: 'Find data in another table', keywords: ['find', 'lookup', 'search', 'match'] },
+        { id: 'if', title: 'Check condition', desc: 'If-then logic', keywords: ['if', 'when', 'condition', 'check'] },
+        { id: 'combine', title: 'Combine text', desc: 'Join text together', keywords: ['combine', 'join', 'merge', 'concatenate'] },
+        { id: 'percentage', title: 'Calculate percentage', desc: 'Find percentage of total', keywords: ['percent', 'percentage', 'proportion', 'ratio'] },
+        { id: 'days', title: 'Days between dates', desc: 'Calculate date difference', keywords: ['days', 'date', 'between', 'difference'] }
+      ];
+      
+      return allSuggestions.filter(suggestion => {
+        return suggestion.keywords.some(keyword => keyword.includes(query)) ||
+               suggestion.title.toLowerCase().includes(query) ||
+               suggestion.desc.toLowerCase().includes(query);
+      }).slice(0, 5);
+    }
+    
+    function displaySuggestions(suggestions) {
+      const container = document.getElementById('searchSuggestions');
+      
+      if (suggestions.length === 0) {
+        container.classList.remove('show');
+        return;
+      }
+      
+      container.innerHTML = suggestions.map(s => `
+        <div class="suggestion-item" onclick="selectSuggestion('${s.id}')">
+          <div class="suggestion-title">${s.title}</div>
+          <div class="suggestion-desc">${s.desc}</div>
+        </div>
+      `).join('');
+      
+      container.classList.add('show');
+    }
+    
+    function selectSuggestion(id) {
+      document.getElementById('searchSuggestions').classList.remove('show');
+      selectTask(id);
+    }
+    
+    function toggleGoal(element) {
+      // Close other categories
+      document.querySelectorAll('.goal-category').forEach(cat => {
+        if (cat !== element) {
+          cat.classList.remove('expanded');
+        }
+      });
+      
+      element.classList.toggle('expanded');
+    }
+    
+    function selectSubGoal(goalId, event) {
+      event.stopPropagation();
+      selectedGoal = goalId;
+      showSolution(goalId);
+    }
+    
+    function selectTask(taskId) {
+      selectedGoal = taskId;
+      showSolution(taskId);
+    }
+    
+    function showSolution(goalId) {
+      const solutions = {
+        'sum': {
+          formula: '=SUM(range)',
+          explanation: 'Adds up all numbers in the specified range.',
+          example: 'If A1:A10 contains numbers, =SUM(A1:A10) gives their total',
+          alternatives: ['SUMIF for conditional sums', 'SUMPRODUCT for arrays']
+        },
+        'sum-all': {
+          formula: '=SUM(A:A)',
+          explanation: 'Adds all numbers in an entire column.',
+          example: '=SUM(A:A) adds everything in column A',
+          alternatives: ['SUM(A1:A100) for specific range', 'SUBTOTAL for filtered data']
+        },
+        'sum-condition': {
+          formula: '=SUMIF(range, criteria, sum_range)',
+          explanation: 'Adds numbers only when a condition is met.',
+          example: '=SUMIF(B:B, "Sales", C:C) adds column C where B says "Sales"',
+          alternatives: ['SUMIFS for multiple conditions', 'QUERY for complex criteria']
+        },
+        'average': {
+          formula: '=AVERAGE(range)',
+          explanation: 'Calculates the mean of numbers.',
+          example: '=AVERAGE(A1:A10) finds the average of those cells',
+          alternatives: ['MEDIAN for middle value', 'MODE for most common']
+        },
+        'average-condition': {
+          formula: '=AVERAGEIF(range, criteria, average_range)',
+          explanation: 'Averages numbers that meet a condition.',
+          example: '=AVERAGEIF(A:A, ">100", B:B) averages B where A is over 100',
+          alternatives: ['AVERAGEIFS for multiple conditions']
+        },
+        'count': {
+          formula: '=COUNTA(range)',
+          explanation: 'Counts all non-empty cells.',
+          example: '=COUNTA(A1:A10) counts filled cells',
+          alternatives: ['COUNT for numbers only', 'COUNTBLANK for empty cells']
+        },
+        'count-condition': {
+          formula: '=COUNTIF(range, criteria)',
+          explanation: 'Counts cells meeting a condition.',
+          example: '=COUNTIF(A:A, "Complete") counts "Complete" entries',
+          alternatives: ['COUNTIFS for multiple conditions']
+        },
+        'max': {
+          formula: '=MAX(range)',
+          explanation: 'Finds the highest number.',
+          example: '=MAX(A1:A10) returns the largest value',
+          alternatives: ['LARGE(range, 2) for 2nd highest']
+        },
+        'min': {
+          formula: '=MIN(range)',
+          explanation: 'Finds the lowest number.',
+          example: '=MIN(A1:A10) returns the smallest value',
+          alternatives: ['SMALL(range, 2) for 2nd lowest']
+        },
+        'lookup': {
+          formula: '=VLOOKUP(lookup_value, table, column, FALSE)',
+          explanation: 'Finds a value in a table and returns related data.',
+          example: '=VLOOKUP(A2, B:D, 3, FALSE) finds A2 in column B, returns from D',
+          alternatives: ['INDEX/MATCH for flexibility', 'XLOOKUP in newer versions']
+        },
+        'lookup-value': {
+          formula: '=VLOOKUP(search_key, range, index, FALSE)',
+          explanation: 'Searches for a value and returns corresponding data.',
+          example: '=VLOOKUP("Product123", A:C, 3, FALSE) finds product, returns price',
+          alternatives: ['INDEX/MATCH for left lookups', 'FILTER for multiple matches']
+        },
+        'if': {
+          formula: '=IF(condition, value_if_true, value_if_false)',
+          explanation: 'Returns different values based on a condition.',
+          example: '=IF(A1>100, "High", "Low") shows High if A1 exceeds 100',
+          alternatives: ['IFS for multiple conditions', 'SWITCH for multiple values']
+        },
+        'if-then': {
+          formula: '=IF(logical_test, value_if_true, value_if_false)',
+          explanation: 'Basic decision making in spreadsheets.',
+          example: '=IF(B2="Yes", "Approved", "Pending")',
+          alternatives: ['Nested IFs for complex logic']
+        },
+        'combine': {
+          formula: '=CONCATENATE(text1, text2)',
+          explanation: 'Joins text from multiple cells.',
+          example: '=CONCATENATE(A1, " ", B1) combines with space',
+          alternatives: ['& operator like A1&" "&B1', 'TEXTJOIN for ranges']
+        },
+        'combine-text': {
+          formula: '=A1&" "&B1',
+          explanation: 'Simple way to join text together.',
+          example: 'First name in A1, last in B1 gives full name',
+          alternatives: ['CONCATENATE function', 'TEXTJOIN with delimiter']
+        },
+        'percentage': {
+          formula: '=value/total*100',
+          explanation: 'Calculates what percentage one value is of another.',
+          example: '=A1/SUM(A:A)*100 shows A1 as percentage of column total',
+          alternatives: ['Format as percentage instead of *100']
+        },
+        'growth': {
+          formula: '=(new-old)/old*100',
+          explanation: 'Calculates percentage change between values.',
+          example: '=(B2-A2)/A2*100 shows growth from A2 to B2',
+          alternatives: ['Year-over-year: (THIS_YEAR-LAST_YEAR)/LAST_YEAR']
+        },
+        'days': {
+          formula: '=DAYS(end_date, start_date)',
+          explanation: 'Calculates days between two dates.',
+          example: '=DAYS(B1, A1) gives days from A1 to B1',
+          alternatives: ['DATEDIF for years/months', 'NETWORKDAYS for workdays']
+        },
+        'days-between': {
+          formula: '=DAYS(later_date, earlier_date)',
+          explanation: 'Number of days between two dates.',
+          example: '=DAYS(TODAY(), A1) shows days since date in A1',
+          alternatives: ['DATEDIF(A1, B1, "D") also works']
+        },
+        'calculate-age': {
+          formula: '=DATEDIF(birthdate, TODAY(), "Y")',
+          explanation: 'Calculates age in years from birthdate.',
+          example: '=DATEDIF(A1, TODAY(), "Y") where A1 has birthdate',
+          alternatives: ['Add &" years " for text', 'Use "M" for months']
+        },
+        'running-total': {
+          formula: '=SUM($A$2:A2)',
+          explanation: 'Creates a cumulative sum that grows with each row.',
+          example: 'In B2: =SUM($A$2:A2), then copy down',
+          alternatives: ['Use SCAN function for arrays']
+        },
+        'count-unique': {
+          formula: '=COUNTUNIQUE(range)',
+          explanation: 'Counts distinct values in a range.',
+          example: '=COUNTUNIQUE(A:A) counts unique entries in column A',
+          alternatives: ['UNIQUE to list them', 'Remove duplicates feature']
+        },
+        'filter-criteria': {
+          formula: '=FILTER(range, condition)',
+          explanation: 'Shows only rows meeting criteria.',
+          example: '=FILTER(A:C, B:B="Active") shows active rows',
+          alternatives: ['QUERY for SQL-like filtering']
+        }
+      };
+      
+      const solution = solutions[goalId] || solutions['sum'];
+      
+      document.getElementById('solutionTitle').textContent = 'Here\'s your formula!';
+      document.getElementById('formulaDisplay').textContent = solution.formula;
+      document.getElementById('solutionExplanation').textContent = solution.explanation;
+      document.getElementById('exampleContent').textContent = solution.example;
+      
+      // Show alternatives
+      const altHtml = solution.alternatives.map(alt => 
+        `<div class="alternative-option" onclick="learnMore('${alt}')">${alt}</div>`
+      ).join('');
+      document.getElementById('alternativesList').innerHTML = altHtml;
+      
+      // Show solution card
+      document.getElementById('solutionCard').classList.add('show');
+      
+      // Smooth scroll to solution
+      document.getElementById('solutionCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    function copySolution() {
+      const formula = document.getElementById('formulaDisplay').textContent;
+      navigator.clipboard.writeText(formula).then(() => {
+        showStatus('Formula copied to clipboard!', 'success');
+      });
+    }
+    
+    function insertSolution() {
+      const formula = document.getElementById('formulaDisplay').textContent;
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          showStatus('Formula inserted in cell ' + result.cell, 'success');
+        })
+        .withFailureHandler(function(error) {
+          showStatus('Failed to insert formula', 'error');
+        })
+        .insertSmartFormula(formula);
+    }
+    
+    function learnMore(topic) {
+      showStatus('Loading more information about: ' + topic, 'info');
+    }
+    
+    function showStatus(message, type) {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.className = 'alert alert-' + type;
+      statusDiv.textContent = message;
+      statusDiv.style.display = 'block';
+      
+      if (type === 'success') {
+        setTimeout(() => {
+          statusDiv.style.display = 'none';
+        }, 3000);
+      }
+    }
+  </script>
+</body>
+</html>

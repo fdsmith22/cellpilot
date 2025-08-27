@@ -173,5 +173,5 @@ If you want to modify CellPilot code directly:
 
 For issues or questions:
 - Check the logs in Apps Script editor
-- Visit https://cellpilot.co.uk/docs
-- Contact support@cellpilot.co.uk
+- Visit https://www.cellpilot.io/docs
+- Contact support@cellpilot.io

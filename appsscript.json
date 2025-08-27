@@ -26,7 +26,8 @@
     "https://www.googleapis.com/auth/script.container.ui"
   ],
   "urlFetchWhitelist": [
-    "https://cellpilot.co.uk/*",
-    "https://api.cellpilot.co.uk/*"
+    "https://www.cellpilot.io/*",
+    "https://cellpilot.io/*",
+    "https://api.cellpilot.io/*"
   ]
 }

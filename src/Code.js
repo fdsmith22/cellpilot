@@ -47,7 +47,7 @@ function buildHomepage(e) {
         .setTitle('CellPilot')
         .setSubtitle('Smart Spreadsheet Assistant')
         .setImageStyle(CardService.ImageStyle.SQUARE)
-        .setImageUrl('https://www.gstatic.com/images/branding/product/2x/sheets_48dp.png'))
+        .setImageUrl('https://www.cellpilot.io/logo/icon-64x64.png')) // TODO: Update with hosted logo URL
       .addSection(CardService.newCardSection()
         .addWidget(CardService.newTextButton()
           .setText('Launch CellPilot Dashboard')
@@ -66,10 +66,10 @@ function buildHomepage(e) {
             .setFunctionName('launchTableizeFromAddon')))
         .addWidget(CardService.newDecoratedText()
           .setTopLabel('Data Cleaning')
-          .setText('Remove Duplicates')
-          .setBottomLabel('Clean duplicate entries from your data')
+          .setText('Clean & Standardize')
+          .setBottomLabel('Remove duplicates, fix text, format dates')
           .setOnClickAction(CardService.newAction()
-            .setFunctionName('launchDuplicatesFromAddon')))
+            .setFunctionName('launchDataCleaningFromAddon')))
         .addWidget(CardService.newDecoratedText()
           .setTopLabel('Formulas')
           .setText('Formula Builder')
@@ -108,12 +108,17 @@ function launchTableizeFromAddon() {
     .build();
 }
 
-function launchDuplicatesFromAddon() {
-  showDuplicateRemoval();
+function launchDataCleaningFromAddon() {
+  showDataCleaning();
   return CardService.newActionResponseBuilder()
     .setNotification(CardService.newNotification()
       .setText('Opening Data Cleaning...'))
     .build();
+}
+
+// Legacy support
+function launchDuplicatesFromAddon() {
+  return launchDataCleaningFromAddon();
 }
 
 function launchFormulasFromAddon() {
@@ -136,12 +141,12 @@ function createCellPilotMenu() {
     ui.createMenu('CellPilot')
       .addItem('Open CellPilot', prefix + 'showCellPilotSidebar')
       .addSeparator()
-      .addSubMenu(ui.createMenu('Data Cleaning')
-        .addItem('Remove Duplicates', prefix + 'showDuplicateRemoval')
-        .addItem('Standardize Text', prefix + 'showTextStandardization')
-        .addItem('Fix Dates', prefix + 'showDateFormatting'))
+      .addItem('Data Cleaning', prefix + 'showDataCleaning')
+      .addItem('Tableize Data', prefix + 'showTableize')
       .addSubMenu(ui.createMenu('Formula Builder')
+        .addItem('Smart Formula Assistant', prefix + 'showSmartFormulaAssistant')
         .addItem('Natural Language Builder', prefix + 'showFormulaBuilder')
+        .addItem('Visual Formula Builder', prefix + 'showVisualFormulaBuilder')
         .addItem('Formula Templates', prefix + 'showFormulaTemplates'))
       .addSeparator()
       .addItem('Settings', prefix + 'showSettings')
@@ -160,7 +165,7 @@ function buildMainCard(context) {
     .setHeader(CardService.newCardHeader()
       .setTitle('CellPilot')
       .setSubtitle('Spreadsheet Automation Made Simple')
-      .setImageUrl('https://developers.google.com/apps-script/images/logo.png'));
+      .setImageUrl('https://www.cellpilot.io/logo/icon-64x64.png')); // TODO: Update with hosted logo URL
 
   // Context info section
   if (context && context.hasSelection) {
@@ -348,7 +353,7 @@ function showUpgradeCard() {
       .addWidget(CardService.newTextButton()
         .setText('Visit CellPilot.co.uk')
         .setOpenLink(CardService.newOpenLink()
-          .setUrl('https://cellpilot.co.uk')
+          .setUrl('https://www.cellpilot.io')
           .setOpenAs(CardService.OpenAs.FULL_SIZE))))
     .build();
 
@@ -687,10 +692,34 @@ function createMainSidebarHtml(context) {
       }
     </style>
     
-    <div class="nav-header">
-      <div class="nav-title">
-        <h2>CellPilot</h2>
-        <p>Smart Spreadsheet Assistant</p>
+    <div class="nav-header" style="padding: 12px 16px; border-bottom: 1px solid var(--gray-200);">
+      <div style="display: flex; align-items: center; justify-content: center;">
+        <svg viewBox="0 0 160 50" width="140" height="44" xmlns="http://www.w3.org/2000/svg">
+          <g transform="translate(6, 6)">
+            <path d="M4 4 Q4 0 8 0 L30 0 Q34 0 34 4 L34 30 Q34 34 30 34 L8 34 Q4 34 4 30 Z" 
+                  fill="none" stroke="#2563eb" stroke-width="2"/>
+            <line x1="19" y1="0" x2="19" y2="34" stroke="#60a5fa" stroke-width="0.8"/>
+            <line x1="4" y1="17" x2="34" y2="17" stroke="#60a5fa" stroke-width="0.8"/>
+            <g transform="translate(7, 7)">
+              <rect x="0" y="0" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
+              <rect x="5" y="0" width="5" height="5" fill="#3b82f6" opacity="0.3"/>
+              <rect x="10" y="0" width="5" height="5" fill="#60a5fa" opacity="0.2"/>
+              <rect x="15" y="0" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
+              <rect x="0" y="5" width="5" height="5" fill="#60a5fa" opacity="0.2"/>
+              <rect x="5" y="5" width="5" height="5" fill="#3b82f6"/>
+              <rect x="10" y="5" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
+              <rect x="15" y="5" width="5" height="5" fill="#60a5fa" opacity="0.3"/>
+            </g>
+            <g transform="translate(19, 17)">
+              <circle r="2.5" fill="none" stroke="#2563eb" stroke-width="1.2"/>
+              <line x1="-5" y1="0" x2="5" y2="0" stroke="#2563eb" stroke-width="0.8"/>
+              <line x1="0" y1="-5" x2="0" y2="5" stroke="#2563eb" stroke-width="0.8"/>
+            </g>
+          </g>
+          <text x="48" y="32" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="600" fill="#1f2937">
+            Cell<tspan fill="#2563eb">Pilot</tspan>
+          </text>
+        </svg>
       </div>
     </div>
     
@@ -731,24 +760,20 @@ function createMainSidebarHtml(context) {
       <div style="margin-bottom: 16px;">
         <h3 style="font-size: 12px; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Quick Actions</h3>
         <div class="quick-actions-grid">
-          <div class="quick-action-btn" onclick="google.script.run.showTableize()">
-            <div class="quick-action-icon" style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e;">TZ</div>
-            <div class="quick-action-label">Tableize Data</div>
+          <div class="quick-action-btn" onclick="google.script.run.showTableize()" style="background: white; border-color: var(--gray-200);">
+            <div class="quick-action-label" style="color: var(--gray-700); font-weight: 600;">Tableize Data</div>
           </div>
           
-          <div class="quick-action-btn" onclick="google.script.run.showDuplicateRemoval()">
-            <div class="quick-action-icon" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); color: #2563eb;">DC</div>
-            <div class="quick-action-label">Remove Duplicates</div>
+          <div class="quick-action-btn" onclick="google.script.run.showDataCleaning()" style="background: white; border-color: var(--gray-200);">
+            <div class="quick-action-label" style="color: var(--gray-700); font-weight: 600;">Data Cleaning</div>
           </div>
           
-          <div class="quick-action-btn" onclick="google.script.run.showFormulaBuilder()">
-            <div class="quick-action-icon" style="background: linear-gradient(135deg, #f0fdf4, #d1fae5); color: #16a34a;">FB</div>
-            <div class="quick-action-label">Formula Builder</div>
+          <div class="quick-action-btn" onclick="google.script.run.showSmartFormulaAssistant()" style="background: white; border-color: var(--gray-200);">
+            <div class="quick-action-label" style="color: var(--gray-700); font-weight: 600;">Smart Formulas</div>
           </div>
           
-          <div class="quick-action-btn" onclick="google.script.run.showAutomation()">
-            <div class="quick-action-icon" style="background: linear-gradient(135deg, #faf5ff, #e9d5ff); color: #7c3aed;">AI</div>
-            <div class="quick-action-label">Automation</div>
+          <div class="quick-action-btn" onclick="google.script.run.showAutomation()" style="background: white; border-color: var(--gray-200);">
+            <div class="quick-action-label" style="color: var(--gray-700); font-weight: 600;">Automation</div>
           </div>
         </div>
       </div>
@@ -757,10 +782,9 @@ function createMainSidebarHtml(context) {
       <div class="dropdown-section">
         <div class="dropdown-header" onclick="toggleDropdown('industry')">
           <div class="dropdown-title">
-            <div class="dropdown-icon" style="background: linear-gradient(135deg, #fef3c7, #fed7aa); color: #92400e;">IT</div>
             <div class="dropdown-text">
               <div class="dropdown-label">Industry Templates</div>
-              <div class="dropdown-sublabel">Pre-built solutions saving 20+ hrs/week</div>
+              <div class="dropdown-sublabel">Pre-built solutions for your business</div>
             </div>
           </div>
           <div class="dropdown-arrow">→</div>
@@ -797,7 +821,6 @@ function createMainSidebarHtml(context) {
       <div class="dropdown-section">
         <div class="dropdown-header" onclick="toggleDropdown('advanced')">
           <div class="dropdown-title">
-            <div class="dropdown-icon" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4f46e5;">AT</div>
             <div class="dropdown-text">
               <div class="dropdown-label">Advanced Tools</div>
               <div class="dropdown-sublabel">Power features for complex tasks</div>
@@ -822,18 +845,23 @@ function createMainSidebarHtml(context) {
       </div>
       
       <!-- Upgrade Card -->
-      <div class="card" style="background: linear-gradient(135deg, #faf5ff, #f3e8ff); border-color: #e9d5ff; margin-top: 16px;">
-        <div class="card-title">Upgrade to Pro</div>
-        <div class="card-description">Unlock unlimited operations and advanced features</div>
-        <button class="btn btn-primary btn-block" onclick="google.script.run.showUpgradeOptions()">
-          View Premium Plans
-        </button>
+      <div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1)); border: 1px solid var(--primary-200); margin-top: 16px; padding: 16px; overflow: hidden;">
+        <div style="text-align: center;">
+          <div style="font-size: 15px; font-weight: 600; color: var(--primary-700); margin-bottom: 8px;">Upgrade to Professional</div>
+          <div style="font-size: 11px; color: var(--gray-600); margin-bottom: 12px; line-height: 1.5;">
+            Unlimited operations • Advanced features<br>
+            Priority support • Industry templates
+          </div>
+          <button class="btn btn-primary btn-no-ripple" style="width: 100%; padding: 8px; font-size: 12px; font-weight: 600;" onclick="event.stopPropagation(); google.script.run.showUpgradeOptions()">
+            View Plans
+          </button>
+        </div>
       </div>
       
       <div class="footer">
         <a href="#" onclick="google.script.run.showSettings()">Settings</a> • 
         <a href="#" onclick="google.script.run.showHelp()">Help</a> • 
-        <a href="https://cellpilot.co.uk" target="_blank">Website</a>
+        <a href="https://www.cellpilot.io" target="_blank">Website</a>
       </div>
     </div>
     
@@ -914,29 +942,36 @@ function performUndo() {
 }
 
 /**
- * Show duplicate removal interface
+ * Show data cleaning interface (main entry point)
  */
-function showDuplicateRemoval() {
+function showDataCleaning() {
   try {
     const range = SpreadsheetApp.getActiveRange();
     const data = range.getValues();
 
     if (data.length === 0) {
-      showErrorDialog('No Data Selected', 'Please select a range with data to remove duplicates.');
+      showErrorDialog('No Data Selected', 'Please select a range with data to clean.');
       return;
     }
 
     const html = HtmlService.createTemplateFromFile('DuplicateRemovalTemplate')
       .evaluate()
-      .setTitle('Remove Duplicates')
+      .setTitle('Data Cleaning')
       .setWidth(400)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 
     SpreadsheetApp.getUi().showSidebar(html);
 
   } catch (error) {
-    showErrorDialog('Error', 'Failed to load duplicate removal: ' + error.message);
+    showErrorDialog('Error', 'Failed to load data cleaning: ' + error.message);
   }
+}
+
+/**
+ * Show duplicate removal interface (legacy - redirects to data cleaning)
+ */
+function showDuplicateRemoval() {
+  showDataCleaning();
 }
 
 /**
@@ -945,12 +980,22 @@ function showDuplicateRemoval() {
 function removeDuplicatesProcess(options) {
   try {
     const range = SpreadsheetApp.getActiveRange();
+    const totalRows = range.getNumRows();
+    
+    // For large datasets, process in batches
+    const isLargeDataset = totalRows > 1000;
+    
+    if (isLargeDataset) {
+      // Process large datasets efficiently
+      return processLargeDuplicateRemoval(range, options);
+    }
+    
+    // Standard processing for smaller datasets
     const data = range.getValues();
-
     if (data.length === 0) {
       return { success: false, error: 'No data selected' };
     }
-
+    
     // Check usage limits
     const usageCheck = UsageTracker.track('operations');
     if (!usageCheck.allowed) {
@@ -960,34 +1005,139 @@ function removeDuplicatesProcess(options) {
         showUpgrade: true
       };
     }
-
+    
     // Save state for undo
     UndoManager.saveState(range, 'Duplicate Removal');
-
+    
+    // Enhanced duplicate detection with messy data handling
+    const processedData = data.map(row => row.map(cell => {
+      // Clean messy data before comparison
+      return Utils.cleanMessyData(cell, {
+        handleMissingData: true,
+        missingDataReplacement: '',
+        removeInvisibleChars: true,
+        fixEncoding: true
+      });
+    }));
+    
     const threshold = options.threshold || 0.85;
     const caseSensitive = options.caseSensitive || false;
-
-    const duplicates = DataCleaner.findDuplicates(data, { threshold, caseSensitive });
+    const duplicates = DataCleaner.findDuplicates(processedData, { threshold, caseSensitive });
     const cleanedData = DataCleaner.removeDuplicates(data, duplicates);
-
+    
     // Apply changes
     range.clearContent();
     if (cleanedData.length > 0) {
       range.getSheet().getRange(range.getRow(), range.getColumn(),
         cleanedData.length, cleanedData[0].length).setValues(cleanedData);
     }
-
+    
     const removedCount = data.length - cleanedData.length;
-
     return {
       success: true,
       message: `Successfully removed ${removedCount} duplicate rows`,
       details: `Processed ${data.length} rows, kept ${cleanedData.length} unique rows`,
       removedCount: removedCount
     };
-
   } catch (error) {
     console.error('Error removing duplicates:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Process large duplicate removal in batches
+ */
+function processLargeDuplicateRemoval(range, options) {
+  try {
+    const sheet = range.getSheet();
+    const startRow = range.getRow();
+    const startCol = range.getColumn();
+    const totalRows = range.getNumRows();
+    const totalCols = range.getNumColumns();
+    
+    // Check usage limits
+    const usageCheck = UsageTracker.track('operations');
+    if (!usageCheck.allowed) {
+      return {
+        success: false,
+        error: 'Usage limit reached. Please upgrade your plan.',
+        showUpgrade: true
+      };
+    }
+    
+    // Save state for undo
+    UndoManager.saveState(range, 'Large Duplicate Removal');
+    
+    const uniqueRows = new Map();
+    const batchSize = 500;
+    let processedRows = 0;
+    
+    // Process in batches to avoid timeout
+    for (let batchStart = 0; batchStart < totalRows; batchStart += batchSize) {
+      const numRows = Math.min(batchSize, totalRows - batchStart);
+      const batchRange = sheet.getRange(startRow + batchStart, startCol, numRows, totalCols);
+      const batchData = batchRange.getValues();
+      
+      // Process each row in the batch
+      batchData.forEach((row, index) => {
+        const cleanedRow = row.map(cell => 
+          Utils.cleanMessyData(cell, {
+            handleMissingData: true,
+            removeInvisibleChars: true
+          })
+        );
+        
+        // Create key for duplicate detection
+        const key = options.caseSensitive ? 
+          cleanedRow.join('|') : 
+          cleanedRow.join('|').toLowerCase();
+        
+        // Store only unique rows
+        if (!uniqueRows.has(key)) {
+          uniqueRows.set(key, row);
+        }
+      });
+      
+      processedRows += numRows;
+      Utils.showProgress(processedRows, totalRows, 'Analyzing duplicates');
+      
+      // Prevent timeout
+      if (batchStart % (batchSize * 5) === 0 && batchStart > 0) {
+        Utilities.sleep(100);
+      }
+    }
+    
+    // Convert unique rows back to array
+    const cleanedData = Array.from(uniqueRows.values());
+    
+    // Clear original range and write cleaned data
+    range.clearContent();
+    if (cleanedData.length > 0) {
+      const outputRange = sheet.getRange(startRow, startCol, 
+        cleanedData.length, cleanedData[0].length);
+      
+      // Write in batches to avoid memory issues
+      for (let i = 0; i < cleanedData.length; i += batchSize) {
+        const batch = cleanedData.slice(i, Math.min(i + batchSize, cleanedData.length));
+        const batchRange = sheet.getRange(startRow + i, startCol, batch.length, batch[0].length);
+        batchRange.setValues(batch);
+        
+        Utils.showProgress(i + batch.length, cleanedData.length, 'Writing cleaned data');
+      }
+    }
+    
+    const removedCount = totalRows - cleanedData.length;
+    return {
+      success: true,
+      message: `Successfully removed ${removedCount} duplicate rows from large dataset`,
+      details: `Processed ${totalRows} rows, kept ${cleanedData.length} unique rows`,
+      removedCount: removedCount,
+      isLargeDataset: true
+    };
+    
+  } catch (error) {
+    console.error('Error in large duplicate removal:', error);
     return { success: false, error: error.message };
   }
 }
@@ -1266,28 +1416,109 @@ function showTableize() {
   }
 }
 
+function hasDataSelection() {
+  try {
+    const sheet = SpreadsheetApp.getActiveSheet();
+    const range = sheet.getActiveRange();
+    
+    if (!range) {
+      return false;
+    }
+    
+    // Check if the selection has actual content
+    const values = range.getValues();
+    if (values.length === 0 || values[0].length === 0) {
+      return false;
+    }
+    
+    // Check if at least one cell has content
+    for (let row of values) {
+      for (let cell of row) {
+        if (cell !== null && cell !== undefined && String(cell).trim() !== '') {
+          return true;
+        }
+      }
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('Error checking selection:', error);
+    return false;
+  }
+}
+
 function analyzeDataForTableize() {
-  // Super simple version to test if function is even being called
   console.log('analyzeDataForTableize called');
   
   try {
-    // Just return a basic response immediately
+    const range = SpreadsheetApp.getActiveRange();
+    const data = range.getValues();
+    
+    if (!data || data.length === 0) {
+      return { hasData: false, error: 'No data selected' };
+    }
+    
+    // Check if data is already in multiple columns
+    const currentColumns = data[0].length;
+    const hasMultipleColumns = currentColumns > 1 && 
+      data.some(row => row.filter(cell => cell !== '' && cell !== null).length > 1);
+    
+    // Analyze delimiters in first column (for single column data)
+    const delimiters = {
+      space: { char: ' ', count: 0, consistent: true },
+      comma: { char: ',', count: 0, consistent: true },
+      tab: { char: '\t', count: 0, consistent: true },
+      pipe: { char: '|', count: 0, consistent: true },
+      semicolon: { char: ';', count: 0, consistent: true },
+      doubleSpace: { char: '  ', count: 0, consistent: true }
+    };
+    
+    let suggestedDelimiter = 'none';
+    let needsTableize = !hasMultipleColumns;
+    
+    if (!hasMultipleColumns) {
+      // Analyze first column for delimiters
+      data.forEach(row => {
+        const cellValue = String(row[0] || '');
+        if (cellValue) {
+          if (cellValue.includes(',')) delimiters.comma.count++;
+          if (cellValue.includes('\t')) delimiters.tab.count++;
+          if (cellValue.includes('|')) delimiters.pipe.count++;
+          if (cellValue.includes(';')) delimiters.semicolon.count++;
+          if (cellValue.includes('  ')) delimiters.doubleSpace.count++;
+          if (cellValue.split(' ').length > 1) delimiters.space.count++;
+        }
+      });
+      
+      // Find most common delimiter
+      let maxCount = 0;
+      Object.entries(delimiters).forEach(([key, value]) => {
+        if (value.count > maxCount) {
+          maxCount = value.count;
+          suggestedDelimiter = key;
+        }
+      });
+    }
+    
+    // Get first row sample
+    const firstRowSample = data[0].map(cell => String(cell || '')).join(' | ').substring(0, 100);
+    
     return {
       hasData: true,
-      rowCount: 3,
-      suggestedDelimiter: 'space',
-      delimiters: {
-        space: { char: ' ', count: 2, consistent: true },
-        comma: { char: ',', count: 0, consistent: true },
-        tab: { char: '\t', count: 0, consistent: true },
-        pipe: { char: '|', count: 0, consistent: true },
-        semicolon: { char: ';', count: 0, consistent: true },
-        doubleSpace: { char: '  ', count: 0, consistent: true }
+      rowCount: data.length,
+      columnCount: currentColumns,
+      hasMultipleColumns: hasMultipleColumns,
+      needsTableize: needsTableize,
+      suggestedDelimiter: suggestedDelimiter,
+      delimiters: delimiters,
+      patterns: { 
+        csvLike: delimiters.comma.count > data.length * 0.5,
+        keyValue: false 
       },
-      patterns: { csvLike: false, keyValue: false },
       hasHeaders: true,
-      firstRowSample: 'Test data',
-      estimatedColumns: 3
+      firstRowSample: firstRowSample,
+      estimatedColumns: hasMultipleColumns ? currentColumns : 
+        (suggestedDelimiter !== 'none' ? 3 : 1)
     };
     
   } catch (error) {
@@ -1302,56 +1533,113 @@ function previewTableize(options) {
     const data = range.getValues();
     
     console.log('Preview tableize with options:', options);
+    console.log('Data dimensions:', data.length, 'rows x', data[0].length, 'columns');
     
     let parsedData = [];
     
-    if (options.method === 'smart') {
-      // Use smart parser for intelligent grouping
-      console.log('Using smart parser');
+    // Check if data is already in multiple columns
+    const currentColumns = data[0].length;
+    const hasMultipleColumns = currentColumns > 1 && 
+      data.some(row => row.filter(cell => cell !== '' && cell !== null).length > 1);
+    
+    if (hasMultipleColumns && options.preserveColumns !== false) {
+      // Data is already in columns - preserve it
+      console.log('Data already in columns, preserving structure');
+      
+      parsedData = data.map(row => 
+        row.map(cell => String(cell || '').trim())
+      );
+      
+      // Remove empty trailing columns
+      if (parsedData.length > 0) {
+        const maxNonEmptyCol = parsedData.reduce((max, row) => {
+          for (let i = row.length - 1; i >= 0; i--) {
+            if (row[i]) return Math.max(max, i);
+          }
+          return max;
+        }, 0);
+        
+        parsedData = parsedData.map(row => row.slice(0, maxNonEmptyCol + 1));
+      }
+      
+    } else if (options.method === 'smart') {
+      // Use smart parser for single column data
+      console.log('Using smart parser for single column data');
       parsedData = SmartTableParser.smartParse(data, options);
       
       // Add suggested headers if first row isn't headers
       if (!options.hasHeaders && parsedData.length > 0) {
-        // Detect likely column types and add headers
         const firstRow = parsedData[0];
         const headers = [];
         
         if (firstRow.length >= 3) {
-          // Likely pattern: Name, Region, Sales
           headers.push('Name', 'Region', 'Sales');
         } else if (firstRow.length === 2) {
           headers.push('Name', 'Value');
         } else {
-          // Generic headers
           for (let i = 0; i < firstRow.length; i++) {
             headers.push('Column ' + (i + 1));
           }
         }
         
-        // Insert headers at beginning
         parsedData.unshift(headers);
       }
       
     } else {
-      // Original simple parsing
+      // Simple delimiter splitting for single column data
+      console.log('Using delimiter splitting');
+      
       for (let i = 0; i < data.length; i++) {
-        const cellValue = String(data[i][0] || '');
-        
-        if (cellValue.trim()) {
-          let columns;
-          
-          // Simple delimiter splitting
-          if (options.delimiter === 'space') {
-            columns = cellValue.split(/\s+/).filter(c => c);
-          } else if (options.delimiter === 'comma') {
-            columns = cellValue.split(',').map(c => c.trim());
-          } else if (options.delimiter === 'tab') {
-            columns = cellValue.split('\t').map(c => c.trim());
-          } else {
-            columns = cellValue.split(/\s+/).filter(c => c);
+        if (hasMultipleColumns) {
+          // Join all columns then split by delimiter
+          const rowText = data[i].map(cell => String(cell || '')).join(' ').trim();
+          if (rowText) {
+            let columns;
+            
+            if (options.delimiter === 'space') {
+              columns = rowText.split(/\s+/).filter(c => c);
+            } else if (options.delimiter === 'comma') {
+              columns = rowText.split(',').map(c => c.trim());
+            } else if (options.delimiter === 'tab') {
+              columns = rowText.split('\t').map(c => c.trim());
+            } else if (options.delimiter === 'pipe') {
+              columns = rowText.split('|').map(c => c.trim());
+            } else if (options.delimiter === 'semicolon') {
+              columns = rowText.split(';').map(c => c.trim());
+            } else {
+              // No delimiter - keep as is
+              columns = data[i].map(cell => String(cell || '').trim()).filter(c => c);
+            }
+            
+            if (columns.length > 0) {
+              parsedData.push(columns);
+            }
           }
+        } else {
+          // Single column data - split first column only
+          const cellValue = String(data[i][0] || '').trim();
           
-          parsedData.push(columns);
+          if (cellValue) {
+            let columns;
+            
+            if (options.delimiter === 'space') {
+              columns = cellValue.split(/\s+/).filter(c => c);
+            } else if (options.delimiter === 'comma') {
+              columns = cellValue.split(',').map(c => c.trim());
+            } else if (options.delimiter === 'tab') {
+              columns = cellValue.split('\t').map(c => c.trim());
+            } else if (options.delimiter === 'pipe') {
+              columns = cellValue.split('|').map(c => c.trim());
+            } else if (options.delimiter === 'semicolon') {
+              columns = cellValue.split(';').map(c => c.trim());
+            } else {
+              columns = [cellValue];
+            }
+            
+            if (columns.length > 0) {
+              parsedData.push(columns);
+            }
+          }
         }
       }
     }
@@ -1520,7 +1808,55 @@ function standardizeText(options) {
     // Save state for undo
     UndoManager.saveState(range, 'Text Standardization');
 
-    const standardizedData = DataCleaner.standardizeTextData(data, options);
+    // Map UI options to cleanText options
+    const cleanOptions = {
+      case: options.textCase !== 'none' ? options.textCase : null,
+      removeExtraSpaces: options.removeExtraSpaces,
+      trim: options.trimCells !== false,
+      removeLineBreaks: options.removeLineBreaks,
+      fixPunctuation: options.fixPunctuation,
+      removeCurrencySymbols: options.removeCurrencySymbols,
+      removeSpecialChars: options.removeSpecialChars
+    };
+
+    // Process the data with enhanced messy data handling
+    const standardizedData = data.map(row => {
+      return row.map(cell => {
+        // First handle messy data issues
+        let cleaned = Utils.cleanMessyData(cell, {
+          handleMissingData: options.handleMissingData,
+          missingDataReplacement: options.missingDataReplacement || '',
+          fixEncoding: options.fixEncoding,
+          decodeHtml: options.decodeHtml,
+          fixOcrErrors: options.fixOcrErrors,
+          normalizeDataType: options.normalizeDataType
+        });
+        
+        // Handle numbers separately if standardizeNumbers is checked
+        if (options.standardizeNumbers) {
+          // Use the new standardizeNumber function with appropriate options
+          const standardized = Utils.standardizeNumber(cleaned, {
+            removeCurrencySymbols: options.removeCurrencySymbols,
+            decimals: options.numberDecimals !== undefined ? options.numberDecimals : 2,
+            useCommas: options.useThousandSeparators !== false,
+            keepOriginalFormat: options.keepOriginalNumberFormat
+          });
+          
+          // If it was successfully standardized as a number, return it
+          if (standardized !== cleaned) {
+            return standardized;
+          }
+        }
+        
+        // Apply text cleaning to string values
+        if (cleaned !== null && cleaned !== '') {
+          return Utils.cleanText(cleaned, cleanOptions);
+        }
+        
+        return cleaned;
+      });
+    });
+
     range.setValues(standardizedData);
 
     return {
@@ -1530,6 +1866,196 @@ function standardizeText(options) {
 
   } catch (error) {
     console.error('Error standardizing text:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Preview text standardization changes
+ */
+function previewStandardization(options) {
+  try {
+    const range = SpreadsheetApp.getActiveRange();
+    const data = range.getValues();
+    
+    if (data.length === 0) {
+      return { success: false, error: 'No data selected' };
+    }
+    
+    // Map UI options to cleanText options
+    const cleanOptions = {
+      case: options.textCase !== 'none' ? options.textCase : null,
+      removeExtraSpaces: options.removeExtraSpaces,
+      trim: options.trimCells !== false,
+      removeLineBreaks: options.removeLineBreaks,
+      fixPunctuation: options.fixPunctuation,
+      removeCurrencySymbols: options.removeCurrencySymbols,
+      removeSpecialChars: options.removeSpecialChars
+    };
+    
+    // Collect preview samples (max 10 changes)
+    const changes = [];
+    const maxSamples = 10;
+    
+    for (let i = 0; i < data.length && changes.length < maxSamples; i++) {
+      for (let j = 0; j < data[i].length && changes.length < maxSamples; j++) {
+        const original = data[i][j];
+        if (original === null || original === '') continue;
+        
+        let processed;
+        
+        // Handle numbers if standardizeNumbers is checked
+        if (options.standardizeNumbers) {
+          // Try to standardize as number first
+          const standardized = Utils.standardizeNumber(original, {
+            removeCurrencySymbols: options.removeCurrencySymbols,
+            decimals: options.numberDecimals !== undefined ? options.numberDecimals : 2,
+            useCommas: options.useThousandSeparators !== false,
+            keepOriginalFormat: options.keepOriginalNumberFormat
+          });
+          
+          // If it was successfully standardized as a number, use that
+          if (standardized !== original) {
+            processed = standardized;
+          } else {
+            processed = Utils.cleanText(String(original), cleanOptions);
+          }
+        } else {
+          processed = Utils.cleanText(String(original), cleanOptions);
+        }
+        
+        if (String(original) !== processed) {
+          changes.push({
+            row: i + 1,
+            col: j + 1,
+            before: String(original),
+            after: processed
+          });
+        }
+      }
+    }
+    
+    return {
+      success: true,
+      changes: changes,
+      totalCells: data.length * (data[0] ? data[0].length : 0),
+      affectedCells: changes.length
+    };
+    
+  } catch (error) {
+    console.error('Error previewing standardization:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Preview date formatting changes
+ */
+function previewDateFormatting(options) {
+  try {
+    const range = SpreadsheetApp.getActiveRange();
+    const data = range.getValues();
+    
+    if (data.length === 0) {
+      return { success: false, error: 'No data selected' };
+    }
+    
+    const sourceFormat = options.sourceFormat || 'auto';
+    const targetFormat = options.targetFormat || 'ISO';
+    
+    // Collect preview samples (max 10 changes)
+    const changes = [];
+    const maxSamples = 10;
+    let totalDates = 0;
+    
+    for (let i = 0; i < data.length && changes.length < maxSamples; i++) {
+      for (let j = 0; j < data[i].length && changes.length < maxSamples; j++) {
+        const original = data[i][j];
+        if (original === null || original === '') continue;
+        
+        // Try to parse as date
+        const parsedDate = Utils.parseDate(String(original), sourceFormat);
+        if (parsedDate) {
+          totalDates++;
+          const formatted = Utils.formatDate(parsedDate, targetFormat);
+          
+          if (String(original) !== formatted) {
+            changes.push({
+              row: i + 1,
+              col: j + 1,
+              cell: String.fromCharCode(65 + j) + (i + 1),
+              before: String(original),
+              after: formatted
+            });
+          }
+        }
+      }
+    }
+    
+    return {
+      success: true,
+      changes: changes,
+      totalDates: totalDates,
+      totalCells: data.length * data[0].length
+    };
+    
+  } catch (error) {
+    console.error('Error previewing date formatting:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Apply date formatting to selected range
+ */
+function formatDates(options) {
+  try {
+    const range = SpreadsheetApp.getActiveRange();
+    const data = range.getValues();
+    
+    if (data.length === 0) {
+      return { success: false, error: 'No data selected' };
+    }
+    
+    // Check usage
+    const usageCheck = UsageTracker.track('operations');
+    if (!usageCheck.allowed) {
+      return { success: false, error: 'Usage limit reached. Please upgrade.' };
+    }
+    
+    // Save state for undo
+    UndoManager.saveState(range, 'Date Formatting');
+    
+    const sourceFormat = options.sourceFormat || 'auto';
+    const targetFormat = options.targetFormat || 'ISO';
+    let formattedCount = 0;
+    
+    // Process the data
+    const formattedData = data.map(row => {
+      return row.map(cell => {
+        if (cell === null || cell === '') return cell;
+        
+        // Try to parse as date
+        const parsedDate = Utils.parseDate(String(cell), sourceFormat);
+        if (parsedDate) {
+          formattedCount++;
+          return Utils.formatDate(parsedDate, targetFormat);
+        }
+        
+        return cell;
+      });
+    });
+    
+    range.setValues(formattedData);
+    
+    return {
+      success: true,
+      message: `Successfully formatted ${formattedCount} date values`,
+      formattedCount: formattedCount
+    };
+    
+  } catch (error) {
+    console.error('Error formatting dates:', error);
     return { success: false, error: error.message };
   }
 }
@@ -1666,6 +2192,482 @@ function showSettings() {
   SpreadsheetApp.getUi().alert('Settings', 'Settings panel coming soon!', SpreadsheetApp.getUi().ButtonSet.OK); 
 }
 function showHelp() { 
-  SpreadsheetApp.getUi().alert('Help', 'Visit cellpilot.co.uk for documentation and support!', SpreadsheetApp.getUi().ButtonSet.OK); 
+  try {
+    const html = HtmlService.createTemplateFromFile('HelpFeedbackTemplate')
+      .evaluate()
+      .setTitle('Help & Feedback')
+      .setWidth(400);
+    
+    SpreadsheetApp.getUi().showSidebar(html);
+  } catch (error) {
+    SpreadsheetApp.getUi().alert('Help', 'Visit www.cellpilot.io for documentation and support!', SpreadsheetApp.getUi().ButtonSet.OK);
+  }
+}
+
+/**
+ * Submit user feedback to backend
+ */
+function submitFeedback(data) {
+  try {
+    // Add user info
+    data.userEmail = Session.getActiveUser().getEmail();
+    data.spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().getId();
+    data.spreadsheetName = SpreadsheetApp.getActiveSpreadsheet().getName();
+    
+    // Store in Properties for now (in production, send to API)
+    const feedbackStore = PropertiesService.getScriptProperties();
+    const feedbackKey = 'feedback_' + new Date().getTime();
+    feedbackStore.setProperty(feedbackKey, JSON.stringify(data));
+    
+    // Log for debugging
+    console.log('Feedback submitted:', data);
+    
+    // In production, send to API endpoint
+    // UrlFetchApp.fetch('https://api.cellpilot.io/feedback', {
+    //   method: 'post',
+    //   contentType: 'application/json',
+    //   payload: JSON.stringify(data)
+    // });
+    
+    // Track in analytics
+    if (data.type === 'bug') {
+      // Track bug report
+      console.log('Bug report:', data.title);
+    } else if (data.type === 'feature') {
+      // Track feature request
+      console.log('Feature request:', data.title);
+    }
+    
+    return {
+      success: true,
+      message: 'Feedback submitted successfully'
+    };
+    
+  } catch (error) {
+    console.error('Error submitting feedback:', error);
+    throw new Error('Failed to submit feedback');
+  }
 }
 function showUpgradeOptions() { showUpgradeDialog(); }
+
+/**
+ * Visual Formula Builder with drag-and-drop interface
+ */
+function showVisualFormulaBuilder() {
+  VisualFormulaBuilder.showVisualFormulaBuilder();
+}
+
+// Visual Formula Builder support functions
+function suggestFormulaBasedOnData() {
+  return VisualFormulaBuilder.suggestFormulaBasedOnData();
+}
+
+function validateVisualFormula(formula) {
+  return VisualFormulaBuilder.validateVisualFormula(formula);
+}
+
+function optimizeVisualFormula(formula) {
+  return VisualFormulaBuilder.optimizeVisualFormula(formula);
+}
+
+function testVisualFormula(formula) {
+  return VisualFormulaBuilder.testVisualFormula(formula);
+}
+
+function insertVisualFormula(formula) {
+  return VisualFormulaBuilder.insertVisualFormula(formula);
+}
+
+/**
+ * Smart Formula Assistant - outcome-focused formula discovery
+ */
+function showSmartFormulaAssistant() {
+  try {
+    const html = HtmlService.createTemplateFromFile('SmartFormulaAssistantTemplate')
+      .evaluate()
+      .setTitle('Smart Formula Assistant')
+      .setWidth(400);
+    
+    SpreadsheetApp.getUi().showSidebar(html);
+  } catch (error) {
+    console.error('Error showing smart formula assistant:', error);
+    showErrorDialog('Error', 'Failed to load Smart Formula Assistant');
+  }
+}
+
+function getSmartFormulaContext() {
+  try {
+    const sheet = SpreadsheetApp.getActiveSheet();
+    const range = sheet.getActiveRange();
+    
+    if (!range) {
+      return { hasSelection: false };
+    }
+    
+    const values = range.getValues();
+    const context = {
+      hasSelection: true,
+      range: range.getA1Notation(),
+      rows: range.getNumRows(),
+      columns: range.getNumColumns(),
+      dataType: detectDataType(values),
+      sheet: sheet.getName()
+    };
+    
+    return context;
+  } catch (error) {
+    console.error('Error getting context:', error);
+    return { hasSelection: false };
+  }
+}
+
+function detectDataType(values) {
+  let hasNumbers = false;
+  let hasText = false;
+  let hasDates = false;
+  
+  for (let row of values) {
+    for (let cell of row) {
+      if (cell !== null && cell !== '') {
+        if (typeof cell === 'number') hasNumbers = true;
+        else if (cell instanceof Date) hasDates = true;
+        else if (typeof cell === 'string') hasText = true;
+      }
+    }
+  }
+  
+  if (hasDates) return 'Dates';
+  if (hasNumbers && !hasText) return 'Numbers';
+  if (hasText && !hasNumbers) return 'Text';
+  if (hasNumbers && hasText) return 'Mixed';
+  return 'Empty';
+}
+
+function insertSmartFormula(formula) {
+  try {
+    const cell = SpreadsheetApp.getActiveCell();
+    cell.setFormula(formula);
+    
+    return {
+      success: true,
+      cell: cell.getA1Notation()
+    };
+  } catch (error) {
+    console.error('Error inserting formula:', error);
+    throw new Error('Failed to insert formula');
+  }
+}
+
+/**
+ * Apply an industry template to the current spreadsheet
+ * @param {string} templateType - The type of template to apply
+ * @return {Object} Result object with success status and details
+ */
+function applyIndustryTemplate(templateType) {
+  try {
+    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    
+    // Map template types to their corresponding functions
+    const templateMap = {
+      // Real Estate
+      'commission-tracker': 'createRealEstateCommissionTracker',
+      'property-manager': 'createPropertyManager',
+      'investment-analyzer': 'createRealEstateCommissionTracker',
+      'lead-pipeline': 'createRealEstateCommissionTracker',
+      
+      // Construction
+      'cost-estimator': 'createConstructionEstimator',
+      'material-tracker': 'createConstructionEstimator',
+      'labor-manager': 'createConstructionEstimator',
+      'change-orders': 'createConstructionEstimator',
+      
+      // Healthcare
+      'insurance-verifier': 'createHealthcareVerifier',
+      'prior-auth-tracker': 'createHealthcareVerifier',
+      'revenue-cycle': 'createHealthcareVerifier',
+      'denial-analytics': 'createHealthcareVerifier',
+      
+      // Marketing
+      'campaign-dashboard': 'createMarketingDashboard',
+      'lead-scoring-system': 'createMarketingDashboard',
+      'content-performance': 'createMarketingDashboard',
+      'customer-journey': 'createMarketingDashboard',
+      
+      // E-Commerce
+      'ecommerce-inventory': 'createEcommerceInventory',
+      'profitability-analyzer': 'createEcommerceInventory',
+      'sales-forecasting': 'createEcommerceInventory',
+      
+      // Consulting
+      'time-billing-tracker': 'createConsultingTracker',
+      'project-profitability': 'createConsultingTracker',
+      'client-dashboard': 'createConsultingTracker'
+    };
+    
+    const functionName = templateMap[templateType];
+    if (!functionName) {
+      return {
+        success: false,
+        error: `Unknown template type: ${templateType}`
+      };
+    }
+    
+    // Check if IndustryTemplates is available
+    if (typeof IndustryTemplates === 'undefined') {
+      return {
+        success: false,
+        error: 'IndustryTemplates module not available'
+      };
+    }
+    
+    // Call the appropriate template function
+    const templateFunction = IndustryTemplates[functionName];
+    if (typeof templateFunction !== 'function') {
+      return {
+        success: false,
+        error: `Template function ${functionName} not found`
+      };
+    }
+    
+    const createdSheets = templateFunction.call(IndustryTemplates, spreadsheet);
+    
+    return {
+      success: true,
+      sheets: createdSheets,
+      message: `Successfully applied ${templateType} template`
+    };
+    
+  } catch (error) {
+    console.error('Error applying industry template:', error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+/**
+ * Preview an industry template without applying it
+ * @param {string} templateType - The type of template to preview
+ * @returns {Object} Template preview information
+ */
+function previewTemplate(templateType) {
+  try {
+    // Template preview data with descriptions and sheet structures
+    const templatePreviews = {
+      // Real Estate Templates
+      'commission-tracker': {
+        name: 'Commission Tracker',
+        description: 'Track real estate commissions, splits, and payments with automated calculations',
+        sheets: ['Transactions', 'Agents', 'Commission Calculator', 'Dashboard'],
+        keyFeatures: [
+          'Automatic commission calculations based on split percentages',
+          'Agent performance tracking and ranking',
+          'Monthly and quarterly commission reports',
+          'Outstanding payments and collection tracking'
+        ],
+        sampleData: 'Includes 15 sample transactions across different property types'
+      },
+      
+      'property-manager': {
+        name: 'Property Management Suite',
+        description: 'Complete property management with rent tracking, maintenance, and tenant management',
+        sheets: ['Properties', 'Tenants', 'Rent Roll', 'Maintenance', 'Financial Summary'],
+        keyFeatures: [
+          'Automated rent collection tracking',
+          'Maintenance request management',
+          'Tenant screening and lease tracking',
+          'Property performance analytics'
+        ],
+        sampleData: 'Demo portfolio with 25 properties and 40 tenants'
+      },
+      
+      'investment-analyzer': {
+        name: 'Investment Property Analyzer',
+        description: 'Comprehensive property investment analysis with cash flow projections',
+        sheets: ['Investment Analysis', 'Cash Flow', 'Comparables', 'Reports'],
+        keyFeatures: [
+          'Cap rate and ROI calculations',
+          '10-year cash flow projections',
+          'Comparable property analysis',
+          'Investment performance tracking'
+        ],
+        sampleData: 'Sample analysis for residential and commercial properties'
+      },
+      
+      'lead-pipeline': {
+        name: 'Lead Pipeline Manager',
+        description: 'Real estate lead management with conversion tracking and follow-up automation',
+        sheets: ['Leads', 'Pipeline Stages', 'Activities', 'Conversion Analytics'],
+        keyFeatures: [
+          'Lead source tracking and attribution',
+          'Automated follow-up scheduling',
+          'Conversion rate analysis by source',
+          'Sales activity tracking'
+        ],
+        sampleData: '50+ sample leads across different sources and stages'
+      },
+      
+      // Construction Templates
+      'cost-estimator': {
+        name: 'Construction Cost Estimator',
+        description: 'Detailed construction cost estimation with material waste tracking',
+        sheets: ['Project Overview', 'Materials', 'Labor', 'Equipment', 'Cost Summary'],
+        keyFeatures: [
+          'Material quantity calculations with waste factors',
+          'Labor cost estimation by trade',
+          'Equipment rental cost tracking',
+          'Change order management'
+        ],
+        sampleData: 'Sample residential construction project breakdown'
+      },
+      
+      // Healthcare Templates  
+      'insurance-verifier': {
+        name: 'Insurance Verification System',
+        description: 'Streamline insurance verification and billing processes',
+        sheets: ['Patients', 'Insurance Plans', 'Verification Log', 'Billing Dashboard'],
+        keyFeatures: [
+          'Insurance eligibility tracking',
+          'Prior authorization management',
+          'Denial tracking and appeals',
+          'Revenue cycle analytics'
+        ],
+        sampleData: 'Sample patient data and insurance scenarios'
+      },
+      
+      // Marketing Templates
+      'campaign-dashboard': {
+        name: 'Marketing Attribution Dashboard',
+        description: 'Multi-channel marketing attribution with ROI tracking',
+        sheets: ['Campaigns', 'Channels', 'Attribution', 'ROI Analysis'],
+        keyFeatures: [
+          'Cross-channel attribution modeling',
+          'Campaign performance tracking',
+          'Customer acquisition cost analysis',
+          'Lifetime value calculations'
+        ],
+        sampleData: 'Sample marketing campaigns across digital channels'
+      },
+      
+      // E-commerce Templates
+      'ecommerce-inventory': {
+        name: 'Multi-Channel Inventory Manager',
+        description: 'Inventory synchronization across multiple sales channels',
+        sheets: ['Products', 'Inventory Levels', 'Sales Channels', 'Reorder Alerts'],
+        keyFeatures: [
+          'Multi-marketplace inventory sync',
+          'Automated reorder point calculations',
+          'Sales velocity tracking',
+          'Profitability analysis by product'
+        ],
+        sampleData: 'Sample product catalog with inventory levels'
+      },
+      
+      // Consulting Templates
+      'time-billing-tracker': {
+        name: 'Time & Billing Tracker',
+        description: 'Comprehensive time tracking and billing for consultants',
+        sheets: ['Time Entries', 'Projects', 'Clients', 'Invoicing', 'Reports'],
+        keyFeatures: [
+          'Detailed time tracking by project',
+          'Automated invoice generation',
+          'Project profitability analysis',
+          'Utilization rate tracking'
+        ],
+        sampleData: 'Sample consulting projects with time entries'
+      }
+    };
+    
+    const preview = templatePreviews[templateType];
+    if (!preview) {
+      return {
+        success: false,
+        error: `Preview not available for template: ${templateType}`
+      };
+    }
+    
+    return {
+      success: true,
+      preview: preview
+    };
+    
+  } catch (error) {
+    console.error('Error generating template preview:', error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+/**
+ * Navigate to a specific sheet by name
+ * @param {string} sheetName - Name of the sheet to navigate to
+ */
+/**
+ * Get cross-sheet information for visual formula builder
+ */
+function getCrossSheetInfo() {
+  return VisualFormulaBuilder.getCrossSheetInfo();
+}
+
+/**
+ * Preview data from a sheet range for cross-sheet formulas
+ */
+function previewSheetRange(sheetName, range) {
+  return VisualFormulaBuilder.previewSheetRange(sheetName, range);
+}
+
+/**
+ * Get smart formula suggestions based on selected data patterns
+ */
+function getSmartFormulaSuggestions() {
+  return VisualFormulaBuilder.getSmartFormulaSuggestions();
+}
+
+/**
+ * Analyze multi-tab relationships across all sheets
+ */
+function analyzeMultiTabRelationships() {
+  return VisualFormulaBuilder.analyzeMultiTabRelationships();
+}
+
+/**
+ * Generate a detailed relationship report
+ */
+function generateRelationshipReport(relationshipData) {
+  return VisualFormulaBuilder.generateRelationshipReport(relationshipData);
+}
+
+/**
+ * Show multi-tab relationship mapper
+ */
+function showMultiTabRelationshipMapper() {
+  try {
+    const html = HtmlService.createTemplateFromFile('MultiTabRelationshipMapperTemplate')
+      .evaluate()
+      .setTitle('Multi-Tab Relationship Mapper')
+      .setWidth(500);
+    
+    SpreadsheetApp.getUi().showSidebar(html);
+  } catch (error) {
+    console.error('Error showing relationship mapper:', error);
+    SpreadsheetApp.getUi().alert('Failed to open Relationship Mapper: ' + error.message);
+  }
+}
+
+function navigateToSheet(sheetName) {
+  try {
+    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = spreadsheet.getSheetByName(sheetName);
+    if (sheet) {
+      sheet.activate();
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error navigating to sheet:', error);
+    return false;
+  }
+}

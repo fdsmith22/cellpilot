@@ -3,6 +3,163 @@
 <head>
   <base target="_top">
   <?!= include('SharedStyles'); ?>
+  <style>
+    /* Industry template grid - 3x2 layout */
+    .industry-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 20px;
+      padding: 6px;
+      background: var(--gray-50);
+      border-radius: 10px;
+    }
+    
+    .industry-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 4px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      background: white;
+      color: var(--gray-600);
+      font-size: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 50px;
+      text-align: center;
+    }
+    
+    .industry-btn:hover {
+      border-color: var(--primary-300);
+      background: var(--gray-50);
+      transform: translateY(-1px);
+    }
+    
+    .industry-btn.active {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
+      border-color: var(--primary-500);
+      color: var(--primary-700);
+    }
+    
+    .industry-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      margin-bottom: 2px;
+      background: var(--gray-100);
+      color: var(--gray-600);
+    }
+    
+    .industry-btn.active .industry-icon {
+      background: var(--primary-500);
+      color: white;
+    }
+    
+    .industry-label {
+      font-size: 9px;
+      line-height: 1.2;
+    }
+    
+    /* Ensure feature cards don't cause horizontal scroll */
+    .feature-card {
+      max-width: 100%;
+      word-wrap: break-word;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 16px;
+      border: 2px solid var(--gray-200);
+      border-radius: 12px;
+      background: white;
+      margin-bottom: 12px;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+      border-color: var(--primary-300);
+    }
+    
+    .feature-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--gray-900);
+    }
+    
+    .feature-description {
+      font-size: 12px;
+      color: var(--gray-600);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    
+    .feature-benefits {
+      font-size: 11px;
+      color: var(--primary-600);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    
+    .template-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    .btn-preview {
+      flex: 1;
+      padding: 8px 12px;
+      background: var(--gray-100);
+      color: var(--gray-700);
+      border: 1px solid var(--gray-300);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-preview:hover {
+      background: var(--gray-200);
+      border-color: var(--gray-400);
+    }
+    
+    .btn-apply {
+      flex: 2;
+      padding: 8px 12px;
+      background: var(--primary-600);
+      color: white;
+      border: 1px solid var(--primary-600);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-apply:hover {
+      background: var(--primary-700);
+      border-color: var(--primary-700);
+    }
+    
+    .feature-grid {
+      display: block;
+    }
+    
+    .template-item {
+      max-width: 100%;
+      overflow: hidden;
+    }
+  </style>
 </head>
 <body>
   <div class="nav-header">
@@ -17,68 +174,92 @@
     <div id="statusMessage" style="display: none;"></div>
     
     <!-- Stats showing value -->
-    <div class="card" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe);">
+    <div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.04), rgba(99, 102, 241, 0.08)); padding: 8px;">
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-value">250%</div>
-          <div class="stat-label">Average ROI</div>
+        <div class="stat-card" style="padding: 6px 4px;">
+          <div class="stat-value" style="font-size: 18px; margin-bottom: 1px;">250%</div>
+          <div class="stat-label" style="font-size: 9px;">Average ROI</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-value">20 hrs</div>
-          <div class="stat-label">Saved Weekly</div>
+        <div class="stat-card" style="padding: 6px 4px;">
+          <div class="stat-value" style="font-size: 18px; margin-bottom: 1px;">20 hrs</div>
+          <div class="stat-label" style="font-size: 9px;">Saved Weekly</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-value">6-9 mo</div>
-          <div class="stat-label">Payback Period</div>
+        <div class="stat-card" style="padding: 6px 4px;">
+          <div class="stat-value" style="font-size: 18px; margin-bottom: 1px;">6-9 mo</div>
+          <div class="stat-label" style="font-size: 9px;">Payback Period</div>
         </div>
       </div>
     </div>
     
-    <!-- Industry Categories -->
-    <div class="tab-nav">
-      <button class="tab-button active" onclick="switchCategory('real-estate')">
-        Real Estate
+    <!-- Industry Categories Grid -->
+    <div class="industry-grid">
+      <button class="industry-btn active" onclick="switchCategory('real-estate')">
+        <div class="industry-icon">RE</div>
+        <div class="industry-label">Real Estate</div>
       </button>
-      <button class="tab-button" onclick="switchCategory('construction')">
-        Construction
+      <button class="industry-btn" onclick="switchCategory('construction')">
+        <div class="industry-icon">CO</div>
+        <div class="industry-label">Construction</div>
       </button>
-      <button class="tab-button" onclick="switchCategory('healthcare')">
-        Healthcare
+      <button class="industry-btn" onclick="switchCategory('healthcare')">
+        <div class="industry-icon">HC</div>
+        <div class="industry-label">Healthcare</div>
       </button>
-      <button class="tab-button" onclick="switchCategory('marketing')">
-        Marketing
+      <button class="industry-btn" onclick="switchCategory('marketing')">
+        <div class="industry-icon">MK</div>
+        <div class="industry-label">Marketing</div>
+      </button>
+      <button class="industry-btn" onclick="switchCategory('ecommerce')">
+        <div class="industry-icon">EC</div>
+        <div class="industry-label">E-Commerce</div>
+      </button>
+      <button class="industry-btn" onclick="switchCategory('consulting')">
+        <div class="industry-icon">CS</div>
+        <div class="industry-label">Consulting</div>
       </button>
     </div>
     
     <!-- Real Estate Templates -->
     <div id="real-estate" class="category-content">
       <div class="feature-grid">
-        <div class="feature-card" onclick="applyTemplate('commission-tracker')">
-          <div class="feature-icon" style="background: #fef3c7; color: #d97706;">$</div>
-          <div class="feature-title">Commission Tracker</div>
-          <div class="feature-description">GCI tracking with automated splits</div>
-          <div class="text-small text-muted mt-2">Saves 8 hrs/week</div>
+        <div class="feature-card">
+          <div class="feature-title">Commission Tracker & Client Pipeline</div>
+          <div class="feature-description">Complete real estate business management with commission tracking, client pipeline management, and performance analytics. Includes automated commission splits, closing timeline tracking, and lead conversion analysis.</div>
+          <div class="feature-benefits">✓ Saves 8+ hours weekly ✓ Track 25% more deals ✓ Automate commission calculations</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('commission-tracker')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('commission-tracker')">Apply Template</button>
+          </div>
         </div>
         
-        <div class="feature-card" onclick="applyTemplate('property-manager')">
-          <div class="feature-icon" style="background: #dbeafe; color: #2563eb;">PM</div>
-          <div class="feature-title">Property Manager</div>
-          <div class="feature-description">Rent, maintenance, tenant tracking</div>
-          <div class="text-small text-muted mt-2">Saves 12 hrs/week</div>
+        <div class="feature-card">
+          <div class="feature-title">Property Management Suite</div>
+          <div class="feature-description">End-to-end property management system with rent collection tracking, maintenance scheduling, tenant management, and financial reporting. Perfect for landlords and property management companies.</div>
+          <div class="feature-benefits">✓ Saves 12+ hours weekly ✓ Zero missed rent payments ✓ Automated maintenance alerts</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('property-manager')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('property-manager')">Apply Template</button>
+          </div>
         </div>
         
-        <div class="feature-card" onclick="applyTemplate('investment-analyzer')">
-          <div class="feature-icon" style="background: #dcfce7; color: #16a34a;">IA</div>
-          <div class="feature-title">Investment Analyzer</div>
-          <div class="feature-description">ROI, cash flow, cap rate calcs</div>
-          <div class="text-small text-muted mt-2">7%+ returns</div>
+        <div class="feature-card">
+          <div class="feature-title">Investment Analysis Dashboard</div>
+          <div class="feature-description">Professional investment property analysis with cash flow projections, cap rate calculations, ROI analysis, and comparative market analysis tools. Make data-driven investment decisions.</div>
+          <div class="feature-benefits">✓ 7%+ better returns ✓ Risk analysis tools ✓ Market comparison features</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('investment-analyzer')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('investment-analyzer')">Apply Template</button>
+          </div>
         </div>
         
-        <div class="feature-card" onclick="applyTemplate('lead-pipeline')">
-          <div class="feature-icon" style="background: #fce7f3; color: #ec4899;">LP</div>
-          <div class="feature-title">Lead Pipeline</div>
-          <div class="feature-description">Client tracking & follow-up</div>
-          <div class="text-small text-muted mt-2">25% more deals</div>
+        <div class="feature-card">
+          <div class="feature-title">Lead Management & CRM</div>
+          <div class="feature-description">Comprehensive lead tracking system with follow-up scheduling, lead scoring, conversion tracking, and automated nurture campaigns. Turn more leads into closed deals.</div>
+          <div class="feature-benefits">✓ 25% more conversions ✓ Automated follow-ups ✓ Lead scoring system</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('lead-pipeline')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('lead-pipeline')">Apply Template</button>
+          </div>
         </div>
       </div>
       
@@ -97,29 +278,62 @@
     <!-- Construction Templates -->
     <div id="construction" class="category-content" style="display: none;">
       <div class="feature-grid">
-        <div class="feature-card" onclick="applyTemplate('cost-estimator')">
-          <div class="feature-icon" style="background: #fed7aa; color: #ea580c;">CE</div>
-          <div class="feature-title">Cost Estimator</div>
-          <div class="feature-description">Line items with markup calcs</div>
-          <div class="text-small text-muted mt-2">Saves 15 hrs/week</div>
+        <div class="feature-card">
+          <div class="feature-title">Master Construction Estimator</div>
+          <div class="feature-description">Professional construction project estimating system with material waste tracking, labor productivity analysis, subcontractor management, and comprehensive project dashboard with real-time alerts and profitability tracking.</div>
+          <div class="feature-benefits">✓ Save 20+ hours per project ✓ 15-20% waste reduction ✓ Real-time budget alerts</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('cost-estimator')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('cost-estimator')">Apply Template</button>
+          </div>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-title">Material & Inventory Manager</div>
+          <div class="feature-description">Advanced material tracking system with supplier management, purchase order automation, delivery scheduling, and comprehensive waste analysis. Includes automated reorder points and cost variance tracking.</div>
+          <div class="feature-benefits">✓ Reduce material waste 15-20% ✓ Automate purchase orders ✓ Track supplier performance</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('material-tracker')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('material-tracker')">Apply Template</button>
+          </div>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-title">Labor Productivity Suite</div>
+          <div class="feature-description">Complete labor management system with time tracking, productivity analysis, payroll integration, and safety compliance monitoring. Includes overtime calculations and performance benchmarking.</div>
+          <div class="feature-benefits">✓ Track labor productivity ✓ Automate payroll calculations ✓ Monitor safety compliance</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('labor-manager')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('labor-manager')">Apply Template</button>
+          </div>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-title">Change Order Management</div>
+          <div class="feature-description">Professional change order tracking system with cost impact analysis, schedule adjustment calculations, approval workflows, and comprehensive reporting. Control scope creep and maintain profitability.</div>
+          <div class="feature-benefits">✓ Control scope creep ✓ Track cost impacts ✓ Streamline approvals</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('change-orders')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('change-orders')">Apply Template</button>
+          </div>
         </div>
         
         <div class="feature-card" onclick="applyTemplate('project-gantt')">
-          <div class="feature-icon" style="background: #c7d2fe; color: #4f46e5;">GT</div>
+          <div class="feature-icon" style="background: var(--primary-200); color: var(--primary-700);">GT</div>
           <div class="feature-title">Project Gantt Chart</div>
           <div class="feature-description">Milestone & resource tracking</div>
           <div class="text-small text-muted mt-2">25% less delays</div>
         </div>
         
         <div class="feature-card" onclick="applyTemplate('material-tracker')">
-          <div class="feature-icon" style="background: #bbf7d0; color: #059669;">MT</div>
+          <div class="feature-icon" style="background: var(--success-200); color: var(--success-700);">MT</div>
           <div class="feature-title">Material Tracker</div>
           <div class="feature-description">Inventory & waste monitoring</div>
           <div class="text-small text-muted mt-2">20% waste reduction</div>
         </div>
         
         <div class="feature-card" onclick="applyTemplate('timesheet-processor')">
-          <div class="feature-icon" style="background: #e9d5ff; color: #a855f7;">TS</div>
+          <div class="feature-icon" style="background: rgba(168, 85, 247, 0.15); color: rgba(168, 85, 247, 1);">TS</div>
           <div class="feature-title">Timesheet Processor</div>
           <div class="feature-description">Digital timesheets & payroll</div>
           <div class="text-small text-muted mt-2">60% faster</div>
@@ -141,32 +355,40 @@
     <!-- Healthcare Templates -->
     <div id="healthcare" class="category-content" style="display: none;">
       <div class="feature-grid">
-        <div class="feature-card" onclick="applyTemplate('insurance-verifier')">
-          <div class="feature-icon" style="background: #fee2e2; color: #dc2626;">IV</div>
-          <div class="feature-title">Insurance Verifier</div>
-          <div class="feature-description">Eligibility & auth tracking</div>
-          <div class="text-small text-muted mt-2">Save 8.4 hrs/day</div>
+        <div class="feature-card">
+          <div class="feature-title">Advanced Billing Suite</div>
+          <div class="feature-description">Complete revenue cycle management with automated denial handling, appeal tracking, and insurance verification workflows for healthcare practices</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('insurance-verifier')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('insurance-verifier')">Apply Template</button>
+          </div>
         </div>
         
-        <div class="feature-card" onclick="applyTemplate('billing-tracker')">
-          <div class="feature-icon" style="background: #cffafe; color: #0891b2;">BT</div>
-          <div class="feature-title">Billing Tracker</div>
-          <div class="feature-description">Claims & denial management</div>
-          <div class="text-small text-muted mt-2">95% collection rate</div>
+        <div class="feature-card">
+          <div class="feature-title">Prior Authorization Manager</div>
+          <div class="feature-description">Streamlined prior authorization tracking system with automated workflow management and approval status monitoring</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('prior-auth-tracker')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('prior-auth-tracker')">Apply Template</button>
+          </div>
         </div>
         
-        <div class="feature-card" onclick="applyTemplate('patient-scheduler')">
-          <div class="feature-icon" style="background: #f3e8ff; color: #9333ea;">PS</div>
-          <div class="feature-title">Patient Scheduler</div>
-          <div class="feature-description">Appointments & reminders</div>
-          <div class="text-small text-muted mt-2">30% less no-shows</div>
+        <div class="feature-card">
+          <div class="feature-title">Revenue Dashboard</div>
+          <div class="feature-description">Comprehensive KPI tracking with accounts receivable aging, collection metrics, and financial performance analytics</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('revenue-cycle')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('revenue-cycle')">Apply Template</button>
+          </div>
         </div>
         
-        <div class="feature-card" onclick="applyTemplate('inventory-manager')">
-          <div class="feature-icon" style="background: #ffedd5; color: #ea580c;">MI</div>
-          <div class="feature-title">Medical Inventory</div>
-          <div class="feature-description">Supplies & expiration dates</div>
-          <div class="text-small text-muted mt-2">Zero stockouts</div>
+        <div class="feature-card">
+          <div class="feature-title">Denial Analytics System</div>
+          <div class="feature-description">Advanced root cause analysis for claim denials with prevention strategies and trend monitoring to reduce rejection rates</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('denial-analytics')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('denial-analytics')">Apply Template</button>
+          </div>
         </div>
       </div>
       
@@ -185,32 +407,40 @@
     <!-- Marketing Templates -->
     <div id="marketing" class="category-content" style="display: none;">
       <div class="feature-grid">
-        <div class="feature-card" onclick="applyTemplate('campaign-dashboard')">
-          <div class="feature-icon" style="background: #ede9fe; color: #7c3aed;">CD</div>
-          <div class="feature-title">Campaign Dashboard</div>
-          <div class="feature-description">Multi-channel performance</div>
-          <div class="text-small text-muted mt-2">Save 30 hrs/month</div>
+        <div class="feature-card">
+          <div class="feature-title">Multi-Channel Attribution Dashboard</div>
+          <div class="feature-description">Comprehensive attribution modeling with funnel analysis, conversion tracking, and return on investment calculations across all marketing channels</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('campaign-dashboard')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('campaign-dashboard')">Apply Template</button>
+          </div>
         </div>
         
-        <div class="feature-card" onclick="applyTemplate('lead-scorer')">
-          <div class="feature-icon" style="background: #fef9c3; color: #ca8a04;">LS</div>
-          <div class="feature-title">Lead Scoring</div>
-          <div class="feature-description">Automated qualification</div>
-          <div class="text-small text-muted mt-2">73% better conversion</div>
+        <div class="feature-card">
+          <div class="feature-title">Lead Scoring Engine</div>
+          <div class="feature-description">Advanced behavioral and demographic lead scoring system with automated qualification workflows and conversion probability analysis</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('lead-scoring-system')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('lead-scoring-system')">Apply Template</button>
+          </div>
         </div>
         
-        <div class="feature-card" onclick="applyTemplate('client-reporter')">
-          <div class="feature-icon" style="background: #dbeafe; color: #2563eb;">CR</div>
-          <div class="feature-title">Client Reporter</div>
-          <div class="feature-description">Automated monthly reports</div>
-          <div class="text-small text-muted mt-2">2.5 hrs → 15 min</div>
+        <div class="feature-card">
+          <div class="feature-title">Content Performance Analyzer</div>
+          <div class="feature-description">Content marketing performance tracker with engagement metrics, conversion analysis, and optimization recommendations</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('content-performance')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('content-performance')">Apply Template</button>
+          </div>
         </div>
         
-        <div class="feature-card" onclick="applyTemplate('content-calendar')">
-          <div class="feature-icon" style="background: #fce7f3; color: #ec4899;">CC</div>
-          <div class="feature-title">Content Calendar</div>
-          <div class="feature-description">Social & blog scheduling</div>
-          <div class="text-small text-muted mt-2">52% better retention</div>
+        <div class="feature-card">
+          <div class="feature-title">Customer Journey Mapper</div>
+          <div class="feature-description">Complete touchpoint analysis with attribution modeling and customer journey visualization to optimize conversion paths</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('customer-journey')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('customer-journey')">Apply Template</button>
+          </div>
         </div>
       </div>
       
@@ -226,8 +456,94 @@
       </div>
     </div>
     
+    <!-- E-Commerce Templates -->
+    <div id="ecommerce" class="category-content" style="display: none;">
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-title">Multi-Channel Inventory Manager</div>
+          <div class="feature-description">Complete inventory synchronization across Amazon, eBay, Shopify and other marketplaces with automated reorder point management</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('ecommerce-inventory')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('ecommerce-inventory')">Apply Template</button>
+          </div>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-title">Product Profitability Analyzer</div>
+          <div class="feature-description">Advanced SKU profitability analysis with marketplace fees calculation and ABC classification for inventory optimization</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('profitability-analyzer')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('profitability-analyzer')">Apply Template</button>
+          </div>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-title">Sales Forecasting System</div>
+          <div class="feature-description">Intelligent sales velocity tracking with seasonal demand prediction and stock level optimization recommendations</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('sales-forecasting')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('sales-forecasting')">Apply Template</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card mt-3">
+        <div class="card-title">What's Included</div>
+        <ul style="margin-top: 12px; color: var(--gray-700);">
+          <li>Multi-marketplace inventory sync across 8 platforms</li>
+          <li>Automated reorder points with supplier tracking</li>
+          <li>SKU profitability analysis with marketplace fees</li>
+          <li>Sales velocity forecasting with seasonality</li>
+          <li>Returns & refunds tracking by channel</li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- Consulting Templates -->
+    <div id="consulting" class="category-content" style="display: none;">
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-title">Time and Billing Tracker</div>
+          <div class="feature-description">Comprehensive billable hours tracking system with automated invoicing workflows and time allocation analysis for consulting practices</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('time-billing-tracker')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('time-billing-tracker')">Apply Template</button>
+          </div>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-title">Project Profitability Monitor</div>
+          <div class="feature-description">Advanced budget tracking with utilization metrics, performance analysis, and profit margin optimization for consulting projects</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('project-profitability')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('project-profitability')">Apply Template</button>
+          </div>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-title">Client Relationship Dashboard</div>
+          <div class="feature-description">Complete client management system with retainer tracking, outstanding balance monitoring, and relationship performance metrics</div>
+          <div class="template-actions">
+            <button class="btn-preview" onclick="previewTemplate('client-dashboard')">Preview</button>
+            <button class="btn-apply" onclick="applyTemplate('client-dashboard')">Apply Template</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card mt-3">
+        <div class="card-title">What's Included</div>
+        <ul style="margin-top: 12px; color: var(--gray-700);">
+          <li>Automated time tracking with billable/non-billable split</li>
+          <li>Project budget monitoring with completion tracking</li>
+          <li>Utilization rates and consultant performance metrics</li>
+          <li>Client billing with retainer and payment tracking</li>
+          <li>Profitability analysis by project and consultant</li>
+        </ul>
+      </div>
+    </div>
+    
     <!-- Implementation Guide -->
-    <div class="card" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); margin-top: 24px;">
+    <div class="card" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.04), rgba(34, 197, 94, 0.08)); margin-top: 24px;">
       <div class="card-title">Quick Start Guide</div>
       <div class="card-description">Get up and running in minutes</div>
       
@@ -288,17 +604,25 @@
     }
     
     function switchCategory(category) {
-      // Update button states
-      document.querySelectorAll('.tab-button').forEach(btn => {
+      // Update button states for grid layout
+      document.querySelectorAll('.industry-btn').forEach(btn => {
         btn.classList.remove('active');
       });
-      event.target.classList.add('active');
+      
+      // Find and activate the clicked button
+      const clickedBtn = event.target.closest('.industry-btn');
+      if (clickedBtn) {
+        clickedBtn.classList.add('active');
+      }
       
       // Show/hide content
       document.querySelectorAll('.category-content').forEach(content => {
         content.style.display = 'none';
       });
-      document.getElementById(category).style.display = 'block';
+      const categoryEl = document.getElementById(category);
+      if (categoryEl) {
+        categoryEl.style.display = 'block';
+      }
     }
     
     function showStatus(message, type = 'info') {
@@ -314,6 +638,102 @@
       }
     }
     
+    function previewTemplate(templateType) {
+      showStatus('Loading preview for ' + templateType.replace('-', ' ') + '...', 'info');
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showTemplatePreview(result.preview);
+          } else {
+            showStatus(result.error || 'Failed to load preview', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .previewTemplate(templateType);
+    }
+    
+    function showTemplatePreview(preview) {
+      // Create a modal overlay
+      const overlay = document.createElement('div');
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+      
+      // Create modal content
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      `;
+      
+      modal.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h3 style="margin: 0; color: var(--gray-800);">${preview.name}</h3>
+          <button onclick="closeTemplatePreview()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--gray-500);">&times;</button>
+        </div>
+        
+        <p style="color: var(--gray-600); margin-bottom: 16px;">${preview.description}</p>
+        
+        <div style="margin-bottom: 16px;">
+          <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--gray-700);">Sheets Created:</h4>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            ${preview.sheets.map(sheet => `<span style="background: var(--primary-100); color: var(--primary-700); padding: 4px 8px; border-radius: 4px; font-size: 12px;">${sheet}</span>`).join('')}
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+          <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--gray-700);">Key Features:</h4>
+          <ul style="margin: 0; padding-left: 16px; color: var(--gray-600); font-size: 13px;">
+            ${preview.keyFeatures.map(feature => `<li style="margin-bottom: 4px;">${feature}</li>`).join('')}
+          </ul>
+        </div>
+        
+        <div style="margin-bottom: 20px; padding: 12px; background: var(--gray-50); border-radius: 8px;">
+          <h4 style="font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--gray-600);">SAMPLE DATA</h4>
+          <p style="font-size: 12px; color: var(--gray-600); margin: 0;">${preview.sampleData}</p>
+        </div>
+        
+        <div style="display: flex; gap: 12px;">
+          <button onclick="closeTemplatePreview()" style="flex: 1; padding: 10px; border: 1px solid var(--gray-300); background: white; border-radius: 6px; cursor: pointer;">Cancel</button>
+          <button onclick="applyTemplateFromPreview('${preview.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}')" style="flex: 1; padding: 10px; background: var(--primary-600); color: white; border: none; border-radius: 6px; cursor: pointer;">Apply Template</button>
+        </div>
+      `;
+      
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+      overlay.id = 'templatePreviewOverlay';
+    }
+    
+    function closeTemplatePreview() {
+      const overlay = document.getElementById('templatePreviewOverlay');
+      if (overlay) {
+        overlay.remove();
+      }
+    }
+    
+    function applyTemplateFromPreview(templateType) {
+      closeTemplatePreview();
+      applyTemplate(templateType);
+    }
+
     function applyTemplate(templateType) {
       showStatus('Applying ' + templateType.replace('-', ' ') + ' template...', 'info');
       

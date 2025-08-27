@@ -3,6 +3,129 @@
 <head>
   <base target="_top">
   <?!= include('SharedStyles'); ?>
+  <style>
+    /* Fix card spacing and overflow */
+    .card {
+      margin-bottom: 16px;
+      padding: 16px;
+      overflow: visible; /* Allow badge to overflow */
+    }
+    
+    /* Fix the popular badge positioning */
+    .popular-badge {
+      position: absolute;
+      top: -10px;
+      right: 12px;
+      background: var(--success-500);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      z-index: 10;
+    }
+    
+    /* Plan card with badge needs padding-top */
+    .plan-card-popular {
+      position: relative;
+      padding-top: 20px !important;
+      margin-top: 10px;
+    }
+    
+    /* Ensure consistent card heights */
+    .plan-features {
+      min-height: 180px;
+      margin: 16px 0;
+    }
+    
+    /* Price styling */
+    .price-display {
+      font-size: 20px;
+      float: right;
+      font-weight: 600;
+    }
+    
+    .price-period {
+      font-size: 12px;
+      color: var(--gray-500);
+      font-weight: 400;
+    }
+    
+    /* Feature list */
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    
+    .feature-check {
+      color: var(--success-500);
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+    
+    /* Stats grid styling */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    
+    .stat-card {
+      text-align: center;
+      padding: 8px 4px;
+    }
+    
+    .stat-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-600);
+      margin-bottom: 2px;
+    }
+    
+    .stat-label {
+      font-size: 10px;
+      color: var(--gray-600);
+      line-height: 1.2;
+    }
+    
+    /* Why upgrade grid - make it more compact */
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    .benefit-card {
+      padding: 10px;
+      background: var(--gray-50);
+      border-radius: 6px;
+      text-align: center;
+    }
+    
+    .benefit-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 2px;
+      color: var(--gray-700);
+    }
+    
+    .benefit-value {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 2px;
+    }
+    
+    .benefit-desc {
+      font-size: 10px;
+      color: var(--gray-500);
+      line-height: 1.2;
+    }
+  </style>
 </head>
 <body>
   <div class="nav-header">
@@ -75,8 +198,8 @@
       </div>
       
       <!-- Professional Plan (Recommended) -->
-      <div class="card" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(34, 197, 94, 0.1)); border: 2px solid var(--success-500); position: relative;">
-        <span style="position: absolute; top: -12px; right: 20px; background: var(--success-500); color: white; padding: 4px 16px; border-radius: 20px; font-size: 11px; font-weight: 600;">MOST POPULAR</span>
+      <div class="card plan-card-popular" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(34, 197, 94, 0.1)); border: 2px solid var(--success-500);">
+        <span class="popular-badge">MOST POPULAR</span>
         
         <div class="card-header">
           <div class="card-title" style="color: var(--success-600);">
@@ -159,29 +282,29 @@
         <div class="card-title">Why Upgrade?</div>
       </div>
       
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 12px;">
-        <div style="padding: 12px; background: var(--gray-50); border-radius: 8px;">
-          <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--gray-700);">TIME</div>
-          <div style="font-size: 12px; font-weight: 600; color: var(--gray-700);">Save 10+ hours/month</div>
-          <div style="font-size: 11px; color: var(--gray-500);">Automate repetitive tasks</div>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-title">TIME</div>
+          <div class="benefit-value">Save 10+ hrs/mo</div>
+          <div class="benefit-desc">Automate tasks</div>
         </div>
         
-        <div style="padding: 12px; background: var(--gray-50); border-radius: 8px;">
-          <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--gray-700);">ACCURACY</div>
-          <div style="font-size: 12px; font-weight: 600; color: var(--gray-700);">Reduce errors by 88%</div>
-          <div style="font-size: 11px; color: var(--gray-500);">Smart data validation</div>
+        <div class="benefit-card">
+          <div class="benefit-title">ACCURACY</div>
+          <div class="benefit-value">88% fewer errors</div>
+          <div class="benefit-desc">Smart validation</div>
         </div>
         
-        <div style="padding: 12px; background: var(--gray-50); border-radius: 8px;">
-          <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--gray-700);">SPEED</div>
-          <div style="font-size: 12px; font-weight: 600; color: var(--gray-700);">10x faster formulas</div>
-          <div style="font-size: 11px; color: var(--gray-500);">AI-powered builder</div>
+        <div class="benefit-card">
+          <div class="benefit-title">SPEED</div>
+          <div class="benefit-value">10x faster</div>
+          <div class="benefit-desc">AI formulas</div>
         </div>
         
-        <div style="padding: 12px; background: var(--gray-50); border-radius: 8px;">
-          <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--gray-700);">POWER</div>
-          <div style="font-size: 12px; font-weight: 600; color: var(--gray-700);">Excel migration</div>
-          <div style="font-size: 11px; color: var(--gray-500);">Fix all import issues</div>
+        <div class="benefit-card">
+          <div class="benefit-title">POWER</div>
+          <div class="benefit-value">Excel ready</div>
+          <div class="benefit-desc">Fix imports</div>
         </div>
       </div>
     </div>
@@ -203,17 +326,17 @@
       // Track the plan selection
       google.script.run
         .withSuccessHandler(function() {
-          window.open('https://cellpilot.co.uk/subscribe?plan=' + plan, '_blank');
+          window.open('https://www.cellpilot.io/subscribe?plan=' + plan, '_blank');
         })
         .withFailureHandler(function(error) {
           console.error('Error:', error);
-          window.open('https://cellpilot.co.uk/pricing', '_blank');
+          window.open('https://www.cellpilot.io/pricing', '_blank');
         })
         .trackPlanSelection(plan);
     }
     
     function contactSales() {
-      window.open('https://cellpilot.co.uk/contact?type=enterprise', '_blank');
+      window.open('https://www.cellpilot.io/contact?type=enterprise', '_blank');
     }
   </script>
 </body>

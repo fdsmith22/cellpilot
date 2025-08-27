@@ -96,7 +96,7 @@ clasp open
 
 ### For End Users (Coming Soon)
 - Google Workspace Marketplace
-- Direct installation from cellpilot.co.uk
+- Direct installation from cellpilot.io
 
 ## Testing
 
@@ -110,9 +110,9 @@ After pushing changes:
 
 ## Support
 
-- Website: https://cellpilot.co.uk
+- Website: https://www.cellpilot.io
 - Documentation: Coming soon
-- Support: support@cellpilot.co.uk
+- Support: support@cellpilot.io
 
 ## License
 

@@ -161,7 +161,7 @@ const Config = {
   // Feature access by tier
   FEATURE_ACCESS: {
     data_cleaning: ['free', 'starter', 'professional', 'business'],
-    formula_builder: ['starter', 'professional', 'business'],
+    formula_builder: ['free', 'starter', 'professional', 'business'], // Temporarily allow free for testing
     automation: ['professional', 'business'],
     industry_tools: ['professional', 'business'],
     team_features: ['business']
