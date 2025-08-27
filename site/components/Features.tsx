@@ -61,7 +61,7 @@ const features = [
 
 const Features = () => {
   return (
-    <section id="features" className="min-h-screen flex items-center relative overflow-hidden pt-28 pb-20">
+    <section id="features" className="min-h-screen flex items-center relative overflow-hidden pt-20 sm:pt-24 md:pt-28 pb-16 sm:pb-20">
       {/* Background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-pastel-sky/10 rounded-full blur-3xl"></div>
@@ -75,32 +75,32 @@ const Features = () => {
       <div className="absolute inset-0 grid-pattern opacity-20"></div>
       
       <div className="container-wrapper relative z-10">
-        <ScrollObserver className="text-center max-w-3xl mx-auto mb-12">
-          <h2 className="text-4xl sm:text-5xl font-bold text-neutral-900 mb-4">
+        <ScrollObserver className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-3 sm:mb-4">
             Tools That Actually Help
           </h2>
-          <p className="text-lg text-neutral-600 leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-neutral-600 leading-relaxed">
             Simple, practical features to make working with Google Sheets easier. 
             No complicated setup, just tools that work.
           </p>
         </ScrollObserver>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-0">
           {features.map((feature, index) => (
             <ScrollObserver
               key={index}
               className={`scroll-observer-delay-${index * 100}`}
             >
-              <div className="group glass-card rounded-2xl p-8 card-hover h-full">
-              <div className="inline-flex p-3 rounded-xl bg-gradient-to-br from-pastel-lavender/20 to-pastel-sky/20 text-primary-600 mb-4">
+              <div className="group glass-card rounded-xl sm:rounded-2xl p-6 sm:p-8 card-hover h-full">
+              <div className="inline-flex p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-pastel-lavender/20 to-pastel-sky/20 text-primary-600 mb-3 sm:mb-4">
                 {feature.icon}
               </div>
               
-              <h3 className="text-xl font-semibold text-neutral-900 mb-3">
+              <h3 className="text-lg sm:text-xl font-semibold text-neutral-900 mb-2 sm:mb-3">
                 {feature.title}
               </h3>
               
-              <p className="text-neutral-600 leading-relaxed">
+              <p className="text-sm sm:text-base text-neutral-600 leading-relaxed">
                 {feature.description}
               </p>
               </div>

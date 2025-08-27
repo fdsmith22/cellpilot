@@ -17,12 +17,12 @@ const CTA = () => {
       <div className="absolute inset-0 grid-pattern opacity-20"></div>
       
       <div className="container-wrapper relative z-10">
-        <ScrollObserver className="max-w-3xl mx-auto text-center">
-          <h2 className="text-4xl sm:text-5xl font-bold text-neutral-900 mb-6">
+        <ScrollObserver className="max-w-3xl mx-auto text-center px-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-4 sm:mb-6">
             Ready to Get Started?
           </h2>
           
-          <p className="text-xl text-neutral-600 mb-10 leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-neutral-600 mb-6 sm:mb-10 leading-relaxed">
             Try CellPilot free and see how it can help streamline your Google Sheets workflow.
           </p>
           
@@ -47,7 +47,7 @@ const CTA = () => {
             </Link>
           </div>
 
-          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-neutral-600">
+          <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-neutral-600 px-4">
             <div className="flex items-center">
               <svg className="w-4 h-4 text-primary-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />

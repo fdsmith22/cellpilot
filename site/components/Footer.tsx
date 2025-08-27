@@ -130,19 +130,19 @@ const Footer = () => {
         </div>
 
           {/* Bottom Bar */}
-          <div className="pt-8 mt-8 border-t border-neutral-200/50">
-            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-              <p className="text-sm text-neutral-500">
+          <div className="pt-6 sm:pt-8 mt-6 sm:mt-8 border-t border-neutral-200/50">
+            <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
+              <p className="text-xs sm:text-sm text-neutral-500 text-center md:text-left">
                 © {currentYear} CellPilot. All rights reserved.
               </p>
-              <div className="flex items-center space-x-6">
-                <Link href="/privacy" className="text-sm text-neutral-500 hover:text-primary-600 transition-all hover:translate-y-[-1px]">
+              <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 sm:gap-6">
+                <Link href="/privacy" className="text-xs sm:text-sm text-neutral-500 hover:text-primary-600 transition-all hover:translate-y-[-1px]">
                   Privacy Policy
                 </Link>
-                <Link href="/terms" className="text-sm text-neutral-500 hover:text-primary-600 transition-all hover:translate-y-[-1px]">
+                <Link href="/terms" className="text-xs sm:text-sm text-neutral-500 hover:text-primary-600 transition-all hover:translate-y-[-1px]">
                   Terms of Service
                 </Link>
-                <Link href="/cookies" className="text-sm text-neutral-500 hover:text-primary-600 transition-all hover:translate-y-[-1px]">
+                <Link href="/cookies" className="text-xs sm:text-sm text-neutral-500 hover:text-primary-600 transition-all hover:translate-y-[-1px]">
                   Cookie Policy
                 </Link>
               </div>

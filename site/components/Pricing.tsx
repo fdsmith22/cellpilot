@@ -61,7 +61,7 @@ const Pricing = () => {
   const [selectedPlan, setSelectedPlan] = useState<string>('Starter')
   
   return (
-    <section id="pricing" className="min-h-screen flex items-center relative overflow-hidden pt-28 pb-20">
+    <section id="pricing" className="min-h-screen flex items-center relative overflow-hidden pt-20 sm:pt-24 md:pt-28 pb-16 sm:pb-20">
       {/* Background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-pastel-peach/20 to-pastel-lavender/20 rounded-full blur-3xl"></div>
@@ -74,16 +74,16 @@ const Pricing = () => {
       <div className="absolute inset-0 grid-pattern opacity-20"></div>
       
       <div className="container-wrapper relative z-10">
-        <ScrollObserver className="text-center max-w-3xl mx-auto mb-12">
-          <h2 className="text-4xl sm:text-5xl font-bold text-neutral-900 mb-4">
+        <ScrollObserver className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-3 sm:mb-4">
             Simple Pricing
           </h2>
-          <p className="text-lg text-neutral-600 leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-neutral-600 leading-relaxed">
             Start free and upgrade when you need more. Cancel anytime.
           </p>
         </ScrollObserver>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 items-stretch px-4 sm:px-0">
           {plans.map((plan, index) => (
             <ScrollObserver
               key={plan.name}
@@ -91,7 +91,7 @@ const Pricing = () => {
             >
               <div
                 onClick={() => setSelectedPlan(plan.name)}
-                className={`glass-card rounded-2xl overflow-hidden h-full cursor-pointer transition-all duration-300 ${
+                className={`glass-card rounded-xl sm:rounded-2xl overflow-hidden h-full cursor-pointer transition-all duration-300 ${
                   selectedPlan === plan.name 
                     ? 'ring-2 ring-primary-500 scale-105 shadow-2xl bg-white/90' 
                     : 'hover:scale-102 hover:shadow-xl'
@@ -105,16 +105,16 @@ const Pricing = () => {
                 </div>
               )}
               
-              <div className="p-8">
-                <h3 className="text-2xl font-bold text-neutral-900 mb-2">{plan.name}</h3>
-                <p className="text-neutral-600 mb-6">{plan.description}</p>
+              <div className="p-6 sm:p-8">
+                <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-2">{plan.name}</h3>
+                <p className="text-sm sm:text-base text-neutral-600 mb-4 sm:mb-6">{plan.description}</p>
                 
-                <div className="mb-8">
-                  <span className="text-4xl font-bold text-neutral-900">{plan.price}</span>
-                  <span className="text-neutral-600 ml-2">/{plan.period}</span>
+                <div className="mb-6 sm:mb-8">
+                  <span className="text-3xl sm:text-4xl font-bold text-neutral-900">{plan.price}</span>
+                  <span className="text-sm sm:text-base text-neutral-600 ml-1 sm:ml-2">/{plan.period}</span>
                 </div>
 
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start">
                       <svg
@@ -128,7 +128,7 @@ const Pricing = () => {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span className="text-neutral-700">{feature}</span>
+                      <span className="text-sm sm:text-base text-neutral-700">{feature}</span>
                     </li>
                   ))}
                 </ul>
