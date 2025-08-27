@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import ScrollObserver from '@/components/ScrollObserver'
+import GridAnimation from '@/components/GridAnimation'
 
 type InstallMethod = 'marketplace' | 'manual' | null
 
@@ -11,6 +12,7 @@ export default function InstallPage() {
   
   return (
     <main className="min-h-screen relative">
+      <GridAnimation />
       {/* Background decoration matching main site */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{zIndex: 0}}>
         <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-gradient-to-l from-pastel-sky/20 via-pastel-mint/10 to-transparent rounded-full blur-3xl"></div>

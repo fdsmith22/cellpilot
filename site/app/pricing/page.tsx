@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import GridAnimation from '@/components/GridAnimation'
 
 const plans = [
   {
@@ -99,6 +100,7 @@ const plans = [
 export default function PricingPage() {
   return (
     <main className="min-h-screen relative">
+      <GridAnimation />
       {/* Background decoration matching main site */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{zIndex: 0}}>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-pastel-peach/20 to-pastel-lavender/20 rounded-full blur-3xl"></div>

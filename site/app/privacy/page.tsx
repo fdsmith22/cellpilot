@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import GridAnimation from '@/components/GridAnimation'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - CellPilot',
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
 export default function PrivacyPolicy() {
   return (
     <main className="min-h-screen relative">
+      <GridAnimation />
       {/* Background decoration matching main site */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{zIndex: 0}}>
         <div className="absolute top-0 left-0 w-96 h-96 bg-pastel-sky/10 rounded-full blur-3xl"></div>
