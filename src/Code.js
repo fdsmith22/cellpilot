@@ -938,10 +938,6 @@ function createMainSidebarHtml(context) {
             Smart Formula Debugger
             <span class="dropdown-item-badge">ML</span>
           </div>
-          <div class="dropdown-item" onclick="google.script.run.enableMLFeatures()">
-            Enable ML Features
-            <span class="dropdown-item-badge">NEW</span>
-          </div>
         </div>
       </div>
       
@@ -2423,7 +2419,17 @@ function showCalendarIntegration() { showUpgradeDialog(); }
 function showFormulaTemplates() { showUpgradeDialog(); }
 function showFormulaTemplatesCard() { return showUpgradeCard(); }
 function showSettings() { 
-  SpreadsheetApp.getUi().alert('Settings', 'Settings panel coming soon!', SpreadsheetApp.getUi().ButtonSet.OK); 
+  try {
+    const html = HtmlService.createTemplateFromFile('SettingsTemplate')
+      .evaluate()
+      .setTitle('Settings')
+      .setWidth(350);
+    
+    SpreadsheetApp.getUi().showSidebar(html);
+  } catch (error) {
+    console.error('Error showing settings:', error);
+    SpreadsheetApp.getUi().alert('Settings', 'Failed to open settings panel.', SpreadsheetApp.getUi().ButtonSet.OK);
+  }
 }
 function showHelp() { 
   try {
@@ -3052,6 +3058,171 @@ function enableMLFeatures() {
   } catch (error) {
     console.error('Error enabling ML features:', error);
     return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Disable ML features
+ */
+function disableMLFeatures() {
+  try {
+    PropertiesService.getUserProperties().setProperty('cellpilot_ml_enabled', 'false');
+    console.log('ML features disabled');
+    return { success: true, message: 'ML features disabled' };
+  } catch (error) {
+    console.error('Error disabling ML features:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Load user settings from properties
+ */
+function loadUserSettings() {
+  try {
+    const props = PropertiesService.getUserProperties();
+    const settings = {
+      mlEnabled: props.getProperty('cellpilot_ml_enabled') === 'true',
+      personalizedRecs: props.getProperty('cellpilot_personalized_recs') === 'true',
+      predictiveActions: props.getProperty('cellpilot_predictive_actions') === 'true',
+      defaultView: props.getProperty('cellpilot_default_view') || 'dashboard',
+      autoSave: props.getProperty('cellpilot_auto_save') !== 'false',
+      showTips: props.getProperty('cellpilot_show_tips') !== 'false',
+      analytics: props.getProperty('cellpilot_analytics') === 'true'
+    };
+    return settings;
+  } catch (error) {
+    console.error('Error loading settings:', error);
+    return {};
+  }
+}
+
+/**
+ * Save user settings to properties
+ */
+function saveUserSettings(settings) {
+  try {
+    const props = PropertiesService.getUserProperties();
+    
+    if (settings.mlEnabled !== undefined) {
+      props.setProperty('cellpilot_ml_enabled', settings.mlEnabled.toString());
+    }
+    if (settings.personalizedRecs !== undefined) {
+      props.setProperty('cellpilot_personalized_recs', settings.personalizedRecs.toString());
+    }
+    if (settings.predictiveActions !== undefined) {
+      props.setProperty('cellpilot_predictive_actions', settings.predictiveActions.toString());
+    }
+    if (settings.defaultView !== undefined) {
+      props.setProperty('cellpilot_default_view', settings.defaultView);
+    }
+    if (settings.autoSave !== undefined) {
+      props.setProperty('cellpilot_auto_save', settings.autoSave.toString());
+    }
+    if (settings.showTips !== undefined) {
+      props.setProperty('cellpilot_show_tips', settings.showTips.toString());
+    }
+    if (settings.analytics !== undefined) {
+      props.setProperty('cellpilot_analytics', settings.analytics.toString());
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error saving settings:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Get ML storage information
+ */
+function getMLStorageInfo() {
+  try {
+    const props = PropertiesService.getUserProperties();
+    const allProps = props.getProperties();
+    
+    let mlDataSize = 0;
+    for (const key in allProps) {
+      if (key.startsWith('cellpilot_ml_') || key.startsWith('ml_')) {
+        mlDataSize += key.length + allProps[key].length;
+      }
+    }
+    
+    return {
+      used: mlDataSize,
+      total: 500000 // 500KB limit for properties
+    };
+  } catch (error) {
+    console.error('Error getting ML storage info:', error);
+    return null;
+  }
+}
+
+/**
+ * Clear ML data
+ */
+function clearMLData() {
+  try {
+    const props = PropertiesService.getUserProperties();
+    const allProps = props.getProperties();
+    
+    for (const key in allProps) {
+      if (key.startsWith('cellpilot_ml_') || key.startsWith('ml_') || key.includes('_history') || key.includes('_patterns')) {
+        props.deleteProperty(key);
+      }
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error clearing ML data:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Reset settings to defaults
+ */
+function resetSettings() {
+  try {
+    const props = PropertiesService.getUserProperties();
+    
+    // Clear all cellpilot settings
+    const allProps = props.getProperties();
+    for (const key in allProps) {
+      if (key.startsWith('cellpilot_')) {
+        props.deleteProperty(key);
+      }
+    }
+    
+    // Set defaults
+    props.setProperty('cellpilot_auto_save', 'true');
+    props.setProperty('cellpilot_show_tips', 'true');
+    props.setProperty('cellpilot_default_view', 'dashboard');
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error resetting settings:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Export user settings
+ */
+function exportUserSettings() {
+  try {
+    const settings = loadUserSettings();
+    const mlInfo = getMLStorageInfo();
+    
+    return {
+      settings: settings,
+      mlStorage: mlInfo,
+      exportDate: new Date().toISOString(),
+      version: '1.0'
+    };
+  } catch (error) {
+    console.error('Error exporting settings:', error);
+    return null;
   }
 }
 

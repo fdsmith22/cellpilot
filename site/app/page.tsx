@@ -17,16 +17,16 @@ const GridAnimation = dynamic(() => import('@/components/GridAnimation'), {
 export default function Home() {
   return (
     <ViewportProvider>
-      <main className="relative">
+      <div className="relative">
         <GridAnimation />
-        <div className="relative z-elevated">
+        <main className="relative z-elevated">
           <Hero />
           <Features />
           <Pricing />
           <CTA />
-          <Footer />
-        </div>
-      </main>
+        </main>
+        <Footer />
+      </div>
     </ViewportProvider>
   )
 }

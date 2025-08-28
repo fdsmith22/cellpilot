@@ -370,6 +370,56 @@ CellPilot.showSettings();
 }
 
 /**
+* Load user settings
+*/
+function loadUserSettings() {
+return CellPilot.loadUserSettings();
+}
+
+/**
+* Save user settings
+* @param {Object} settings - Settings object
+*/
+function saveUserSettings(settings) {
+return CellPilot.saveUserSettings(settings);
+}
+
+/**
+* Get ML storage information
+*/
+function getMLStorageInfo() {
+return CellPilot.getMLStorageInfo();
+}
+
+/**
+* Clear ML data
+*/
+function clearMLData() {
+return CellPilot.clearMLData();
+}
+
+/**
+* Reset settings to defaults
+*/
+function resetSettings() {
+return CellPilot.resetSettings();
+}
+
+/**
+* Export user settings
+*/
+function exportUserSettings() {
+return CellPilot.exportUserSettings();
+}
+
+/**
+* Disable ML features
+*/
+function disableMLFeatures() {
+return CellPilot.disableMLFeatures();
+}
+
+/**
 * Show help documentation
 */
 function showHelp() {
