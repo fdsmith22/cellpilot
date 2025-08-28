@@ -63,22 +63,22 @@
   @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
     html {
       scroll-snap-type: y mandatory;
-      scroll-padding-top: 72px; /* Exact header height */
+      scroll-padding-top: var(--header-height); /* Use CSS variable */
     }
     
     section.snap-section {
       scroll-snap-align: start;
       scroll-snap-stop: always;
       height: 100vh;
-      padding-top: 72px; /* Push content below header */
+      padding-top: var(--header-height); /* Push content below header */
     }
     
-    /* First section doesn't need padding */
+    /* Hero section needs proper padding to show content below header */
     section.snap-section:first-of-type {
-      padding-top: 0;
+      padding-top: var(--header-height);
     }
     
-    /* Footer should not snap */
+    /* Footer should not snap and allow natural scrolling */
     footer {
       scroll-snap-align: none;
       scroll-snap-stop: normal;
@@ -93,14 +93,16 @@
     
     section.snap-section {
       scroll-snap-align: none !important;
-      min-height: 100vh;
+      min-height: calc(100vh - var(--header-height-mobile));
       height: auto;
-      padding-top: 72px;
+      padding-top: var(--header-height-mobile);
+      padding-bottom: 2rem; /* Extra bottom padding for better spacing */
     }
     
-    /* First section on mobile */
+    /* Hero section on mobile - ensure content is visible */
     section.snap-section:first-of-type {
-      padding-top: 72px;
+      padding-top: var(--header-height-mobile);
+      min-height: 100vh;
     }
   }
   
@@ -221,6 +223,26 @@
   /* Notch device adjustments */
   .has-notch .pt-header-total {
     padding-top: calc(var(--header-height) + var(--safe-top) + 12px);
+  }
+  
+  /* Mobile scroll improvements */
+  @media (max-width: 1023px) {
+    /* Ensure smooth scrolling on mobile */
+    html {
+      -webkit-overflow-scrolling: touch;
+      overflow-scrolling: touch;
+    }
+    
+    /* Mobile footer fixes */
+    footer {
+      margin-top: 2rem;
+      scroll-margin-bottom: 0;
+    }
+    
+    /* Better mobile section spacing */
+    section.snap-section + section.snap-section {
+      margin-top: -1px; /* Prevent gaps between sections */
+    }
   }
   
   .animation-delay-2000 {

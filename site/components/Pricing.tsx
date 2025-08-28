@@ -72,7 +72,7 @@ const Pricing = () => {
       
       {/* Removed grid pattern - using global grid */}
       
-      <div className="container-wrapper relative z-10 h-full flex flex-col justify-center">
+      <div className="container-wrapper relative z-10 h-full flex flex-col justify-center py-8 sm:py-12">
         <div className="w-full">
         <ScrollObserver className="text-center max-w-3xl mx-auto mb-6 sm:mb-8 px-4">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-3 sm:mb-4">
@@ -83,7 +83,7 @@ const Pricing = () => {
           </p>
         </ScrollObserver>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 items-stretch px-4 sm:px-0">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 items-stretch px-4 sm:px-0 mb-6 sm:mb-8">
           {plans.map((plan, index) => (
             <ScrollObserver
               key={plan.name}

@@ -34,7 +34,7 @@ const Footer = () => {
   }
 
   return (
-    <footer className="relative overflow-hidden">
+    <footer className="relative overflow-hidden" style={{scrollSnapAlign: 'none', scrollSnapStop: 'normal'}}>
       {/* Subtle animated background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-pastel-lavender/10 rounded-full blur-3xl"></div>

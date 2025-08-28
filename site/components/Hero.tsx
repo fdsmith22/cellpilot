@@ -56,7 +56,7 @@ const Hero = () => {
 
       {/* Removed grid pattern - now using global grid */}
       
-      <div className="container-wrapper relative z-10 h-full flex items-center justify-center">
+      <div className="container-wrapper relative z-10 h-full flex items-center justify-center py-8 sm:py-12">
         <div className="max-w-5xl mx-auto">
           
           {/* Heading */}

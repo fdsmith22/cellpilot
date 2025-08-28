@@ -157,7 +157,6 @@ function createCellPilotMenu() {
         .addItem('Multi-Tab Relationship Mapper', prefix + 'showMultiTabRelationshipMapper')
         .addItem('Smart Formula Debugger', prefix + 'showSmartFormulaDebugger'))
       .addSeparator()
-      .addItem('Enable ML Features', prefix + 'enableMLFeatures')
       .addItem('Settings', prefix + 'showSettings')
       .addItem('Help', prefix + 'showHelp')
       .addToUi();
