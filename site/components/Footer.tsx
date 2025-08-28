@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -53,11 +54,14 @@ const Footer = () => {
             {/* Brand Column */}
             <div className="col-span-2 md:col-span-1">
               <Link href="/" className="inline-block mb-6">
-                <img 
-                  src="/logo/combined/horizontal-standard-200x60.svg" 
-                  alt="CellPilot" 
-                  className="h-12 w-auto"
-                />
+                <div className="relative h-12 w-[160px]">
+                  <Image 
+                    src="/logo/combined/horizontal-standard-200x60.svg" 
+                    alt="CellPilot - Google Sheets Automation" 
+                    fill
+                    className="object-contain object-left"
+                  />
+                </div>
               </Link>
               <p className="text-sm text-neutral-600 mb-6 leading-relaxed">
                 Transform your spreadsheet workflow with intelligent automation.

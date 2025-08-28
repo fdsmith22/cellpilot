@@ -46,7 +46,7 @@ const Hero = () => {
   }, [])
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-transparent pt-[76px] sm:pt-[88px] md:pt-[96px] lg:pt-[104px]">
+    <section className="relative min-h-screen overflow-hidden bg-transparent pt-[104px]">
       {/* Animated blobs */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="blob-shape w-96 h-96 bg-pastel-mint top-0 -left-48"></div>
@@ -56,7 +56,7 @@ const Hero = () => {
 
       {/* Removed grid pattern - now using global grid */}
       
-      <div className="container-wrapper relative z-10 py-12 sm:py-16 md:py-20">
+      <div className="container-wrapper relative z-10 flex items-center justify-center min-h-[calc(100vh-104px)]">
         <div className="max-w-5xl mx-auto">
           
           {/* Heading */}

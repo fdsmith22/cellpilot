@@ -141,19 +141,16 @@ const IndustryTemplates = {
         const dashboardSheet = spreadsheet.insertSheet(prefix + 'Dashboard');
         sheets.push(commissionSheet.getName(), pipelineSheet.getName(), dashboardSheet.getName());
         
-        if (!isPreview) {
-          this.setupCommissionTrackerSheet(commissionSheet);
-          this.setupPipelineSheet(pipelineSheet);
-          this.setupDashboardSheet(dashboardSheet);
-        }
+        // Always setup sheets to show data in preview
+        this.setupCommissionTrackerSheet(commissionSheet);
+        this.setupPipelineSheet(pipelineSheet);
+        this.setupDashboardSheet(dashboardSheet);
         break;
         
       case 'lead-pipeline':
         const leadSheet = spreadsheet.insertSheet(prefix + 'Lead Pipeline');
         sheets.push(leadSheet.getName());
-        if (!isPreview) {
-          this.setupLeadPipelineSheet(leadSheet);
-        }
+        this.setupLeadPipelineSheet(leadSheet);
         break;
         
       case 'property-manager':
@@ -162,12 +159,10 @@ const IndustryTemplates = {
         const maintenanceSheet = spreadsheet.insertSheet(prefix + 'Maintenance');
         sheets.push(propertySheet.getName(), tenantSheet.getName(), maintenanceSheet.getName());
         
-        if (!isPreview) {
-          // Basic setup for property manager sheets
-          this.setupPropertySheet(propertySheet);
-          this.setupTenantSheet(tenantSheet);
-          this.setupMaintenanceSheet(maintenanceSheet);
-        }
+        // Basic setup for property manager sheets
+        this.setupPropertySheet(propertySheet);
+        this.setupTenantSheet(tenantSheet);
+        this.setupMaintenanceSheet(maintenanceSheet);
         break;
         
       case 'investment-analyzer':
@@ -176,11 +171,9 @@ const IndustryTemplates = {
         const roiSheet = spreadsheet.insertSheet(prefix + 'ROI Calculator');
         sheets.push(investmentSheet.getName(), cashFlowSheet.getName(), roiSheet.getName());
         
-        if (!isPreview) {
-          this.setupInvestmentSheet(investmentSheet);
-          this.setupCashFlowSheet(cashFlowSheet);
-          this.setupROISheet(roiSheet);
-        }
+        this.setupInvestmentSheet(investmentSheet);
+        this.setupCashFlowSheet(cashFlowSheet);
+        this.setupROISheet(roiSheet);
         break;
     }
     
@@ -198,33 +191,25 @@ const IndustryTemplates = {
       case 'material-tracker':
         const materialSheet = spreadsheet.insertSheet(prefix + 'Material Tracker');
         sheets.push(materialSheet.getName());
-        if (!isPreview) {
-          this.setupMaterialTrackerSheet(materialSheet);
-        }
+        this.setupMaterialTrackerSheet(materialSheet);
         break;
         
       case 'labor-manager':
         const laborSheet = spreadsheet.insertSheet(prefix + 'Labor Manager');
         sheets.push(laborSheet.getName());
-        if (!isPreview) {
-          this.setupLaborManagerSheet(laborSheet);
-        }
+        this.setupLaborManagerSheet(laborSheet);
         break;
         
       case 'change-orders':
         const changeSheet = spreadsheet.insertSheet(prefix + 'Change Orders');
         sheets.push(changeSheet.getName());
-        if (!isPreview) {
-          this.setupChangeOrderSheet(changeSheet);
-        }
+        this.setupChangeOrderSheet(changeSheet);
         break;
         
       case 'cost-estimator':
         const estimateSheet = spreadsheet.insertSheet(prefix + 'Cost Estimator');
         sheets.push(estimateSheet.getName());
-        if (!isPreview) {
-          this.setupCostEstimatorSheet(estimateSheet);
-        }
+        this.setupCostEstimatorSheet(estimateSheet);
         break;
     }
     
@@ -242,33 +227,25 @@ const IndustryTemplates = {
       case 'prior-auth-tracker':
         const priorAuthSheet = spreadsheet.insertSheet(prefix + 'Prior Auth');
         sheets.push(priorAuthSheet.getName());
-        if (!isPreview) {
-          this.setupPriorAuthSheet(priorAuthSheet);
-        }
+        this.setupPriorAuthSheet(priorAuthSheet);
         break;
         
       case 'revenue-cycle':
         const revenueSheet = spreadsheet.insertSheet(prefix + 'Revenue Cycle');
         sheets.push(revenueSheet.getName());
-        if (!isPreview) {
-          this.setupRevenueCycleSheet(revenueSheet);
-        }
+        this.setupRevenueCycleSheet(revenueSheet);
         break;
         
       case 'denial-analytics':
         const denialSheet = spreadsheet.insertSheet(prefix + 'Denial Analytics');
         sheets.push(denialSheet.getName());
-        if (!isPreview) {
-          this.setupDenialAnalyticsSheet(denialSheet);
-        }
+        this.setupDenialAnalyticsSheet(denialSheet);
         break;
         
       case 'insurance-verifier':
         const insuranceSheet = spreadsheet.insertSheet(prefix + 'Insurance Verification');
         sheets.push(insuranceSheet.getName());
-        if (!isPreview) {
-          this.setupInsuranceVerifierSheet(insuranceSheet);
-        }
+        this.setupInsuranceVerifierSheet(insuranceSheet);
         break;
     }
     
@@ -286,33 +263,25 @@ const IndustryTemplates = {
       case 'lead-scoring-system':
         const leadScoringSheet = spreadsheet.insertSheet(prefix + 'Lead Scoring');
         sheets.push(leadScoringSheet.getName());
-        if (!isPreview) {
-          this.setupLeadScoringSheet(leadScoringSheet);
-        }
+        this.setupLeadScoringSheet(leadScoringSheet);
         break;
         
       case 'content-performance':
         const contentSheet = spreadsheet.insertSheet(prefix + 'Content Performance');
         sheets.push(contentSheet.getName());
-        if (!isPreview) {
-          this.setupContentPerformanceSheet(contentSheet);
-        }
+        this.setupContentPerformanceSheet(contentSheet);
         break;
         
       case 'customer-journey':
         const journeySheet = spreadsheet.insertSheet(prefix + 'Customer Journey');
         sheets.push(journeySheet.getName());
-        if (!isPreview) {
-          this.setupCustomerJourneySheet(journeySheet);
-        }
+        this.setupCustomerJourneySheet(journeySheet);
         break;
         
       case 'campaign-dashboard':
         const campaignSheet = spreadsheet.insertSheet(prefix + 'Campaign Dashboard');
         sheets.push(campaignSheet.getName());
-        if (!isPreview) {
-          this.setupCampaignDashboardSheet(campaignSheet);
-        }
+        this.setupCampaignDashboardSheet(campaignSheet);
         break;
     }
     
@@ -330,25 +299,19 @@ const IndustryTemplates = {
       case 'profitability-analyzer':
         const profitSheet = spreadsheet.insertSheet(prefix + 'Profitability');
         sheets.push(profitSheet.getName());
-        if (!isPreview) {
-          this.setupProfitabilitySheet(profitSheet);
-        }
+        this.setupProfitabilitySheet(profitSheet);
         break;
         
       case 'sales-forecasting':
         const forecastSheet = spreadsheet.insertSheet(prefix + 'Sales Forecast');
         sheets.push(forecastSheet.getName());
-        if (!isPreview) {
-          this.setupSalesForecastSheet(forecastSheet);
-        }
+        this.setupSalesForecastSheet(forecastSheet);
         break;
         
       case 'ecommerce-inventory':
         const inventorySheet = spreadsheet.insertSheet(prefix + 'Inventory Manager');
         sheets.push(inventorySheet.getName());
-        if (!isPreview) {
-          this.setupInventorySheet(inventorySheet);
-        }
+        this.setupInventorySheet(inventorySheet);
         break;
     }
     
@@ -366,25 +329,19 @@ const IndustryTemplates = {
       case 'project-profitability':
         const projectSheet = spreadsheet.insertSheet(prefix + 'Project Profitability');
         sheets.push(projectSheet.getName());
-        if (!isPreview) {
-          this.setupProjectProfitabilitySheet(projectSheet);
-        }
+        this.setupProjectProfitabilitySheet(projectSheet);
         break;
         
       case 'client-dashboard':
         const clientSheet = spreadsheet.insertSheet(prefix + 'Client Dashboard');
         sheets.push(clientSheet.getName());
-        if (!isPreview) {
-          this.setupClientDashboardSheet(clientSheet);
-        }
+        this.setupClientDashboardSheet(clientSheet);
         break;
         
       case 'time-billing-tracker':
         const billingSheet = spreadsheet.insertSheet(prefix + 'Time & Billing');
         sheets.push(billingSheet.getName());
-        if (!isPreview) {
-          this.setupTimeBillingSheet(billingSheet);
-        }
+        this.setupTimeBillingSheet(billingSheet);
         break;
     }
     

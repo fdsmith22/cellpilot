@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false)
@@ -34,11 +35,15 @@ const Header = () => {
         <div className="flex items-center justify-between min-h-[72px] max-sm:min-h-[60px]">
           {/* Logo - positioned in top left */}
           <Link href="/" className="flex items-center pl-4 md:pl-6 lg:pl-8">
-            <img 
-              src="/logo/combined/horizontal-standard-200x60.svg" 
-              alt="CellPilot" 
-              className="h-20 lg:h-16 md:h-14 sm:h-12 max-sm:h-10 w-auto"
-            />
+            <div className="relative h-20 lg:h-16 md:h-14 sm:h-12 max-sm:h-10 w-[200px] lg:w-[160px] md:w-[140px] sm:w-[120px] max-sm:w-[100px]">
+              <Image 
+                src="/logo/combined/horizontal-standard-200x60.svg" 
+                alt="CellPilot - Google Sheets Automation" 
+                fill
+                className="object-contain object-left"
+                priority
+              />
+            </div>
           </Link>
 
           {/* Desktop Navigation */}

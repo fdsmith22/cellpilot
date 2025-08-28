@@ -73,7 +73,9 @@ const GridAnimation = () => {
       })
 
       // Draw connections - slightly more visible
-      ctx.strokeStyle = 'rgba(94, 124, 226, 0.1)'
+      // Use CSS variable for consistent theming
+      const rootStyles = getComputedStyle(document.documentElement)
+      ctx.strokeStyle = rootStyles.getPropertyValue('--cell-stroke') || 'rgba(94, 124, 226, 0.1)'
       ctx.lineWidth = 1
 
       const cols = Math.ceil(canvas.width / gridSizeX) + 2

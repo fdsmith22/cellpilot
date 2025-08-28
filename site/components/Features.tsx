@@ -61,7 +61,7 @@ const features = [
 
 const Features = () => {
   return (
-    <section id="features" className="min-h-screen relative overflow-hidden pt-32 pb-20 sm:pt-36 sm:pb-24 bg-transparent flex items-center">
+    <section id="features" className="min-h-screen relative overflow-hidden pt-[104px] bg-transparent">
       {/* Background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-pastel-sky/10 rounded-full blur-3xl"></div>
@@ -73,8 +73,9 @@ const Features = () => {
       
       {/* Removed grid pattern - using global grid */}
       
-      <div className="container-wrapper relative z-10">
-        <ScrollObserver className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4">
+      <div className="container-wrapper relative z-10 flex items-center justify-center min-h-[calc(100vh-104px)] py-20">
+        <div className="w-full">
+          <ScrollObserver className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-3 sm:mb-4">
             Tools That Actually Help
           </h2>
@@ -105,6 +106,7 @@ const Features = () => {
               </div>
             </ScrollObserver>
           ))}
+          </div>
         </div>
       </div>
     </section>

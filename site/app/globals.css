@@ -7,6 +7,24 @@
 @layer base {
   :root {
     --gradient-angle: 0deg;
+    
+    /* Grid Pattern Colors */
+    --grid-color: rgba(94, 124, 226, 0.15);
+    --grid-size-x: 80px;
+    --grid-size-y: 35px;
+    
+    /* Canvas Animation Colors */
+    --cell-stroke: rgba(99, 102, 241, 0.15);
+    --cell-fill-hover: rgba(99, 102, 241, 0.08);
+    --cell-text: rgba(99, 102, 241, 0.3);
+    
+    /* Theme Colors */
+    --theme-color: #6366f1;
+    
+    /* Transition Speeds */
+    --transition-fast: 200ms;
+    --transition-normal: 300ms;
+    --transition-slow: 500ms;
   }
 
   html {
@@ -93,9 +111,9 @@
 
   .grid-pattern {
     background-image: 
-      linear-gradient(rgba(94, 124, 226, 0.15) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(94, 124, 226, 0.15) 1px, transparent 1px);
-    background-size: 80px 35px;
+      linear-gradient(var(--grid-color) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: var(--grid-size-x) var(--grid-size-y);
   }
 
   .grid-fade {
