@@ -146,7 +146,6 @@ function createCellPilotMenu() {
       .addSubMenu(ui.createMenu('Formula Builder')
         .addItem('Smart Formula Assistant', prefix + 'showSmartFormulaAssistant')
         .addItem('Natural Language Builder', prefix + 'showFormulaBuilder')
-        .addItem('Visual Formula Builder', prefix + 'showVisualFormulaBuilder')
         .addItem('Cross-Sheet Formula Builder', prefix + 'showCrossSheetFormulaBuilder')
         .addItem('Formula Performance Optimizer', prefix + 'showFormulaPerformanceOptimizer')
         .addItem('Formula Templates', prefix + 'showFormulaTemplates'))
@@ -939,9 +938,6 @@ function createMainSidebarHtml(context) {
           <div class="dropdown-item" onclick="google.script.run.showSmartFormulaDebugger()">
             Smart Formula Debugger
             <span class="dropdown-item-badge">ML</span>
-          </div>
-          <div class="dropdown-item" onclick="google.script.run.showVisualFormulaBuilder()">
-            Visual Formula Builder
           </div>
           <div class="dropdown-item" onclick="google.script.run.enableMLFeatures()">
             Enable ML Features
@@ -2489,33 +2485,7 @@ function submitFeedback(data) {
 }
 function showUpgradeOptions() { showUpgradeDialog(); }
 
-/**
- * Visual Formula Builder with drag-and-drop interface
- */
-function showVisualFormulaBuilder() {
-  VisualFormulaBuilder.showVisualFormulaBuilder();
-}
 
-// Visual Formula Builder support functions
-function suggestFormulaBasedOnData() {
-  return VisualFormulaBuilder.suggestFormulaBasedOnData();
-}
-
-function validateVisualFormula(formula) {
-  return VisualFormulaBuilder.validateVisualFormula(formula);
-}
-
-function optimizeVisualFormula(formula) {
-  return VisualFormulaBuilder.optimizeVisualFormula(formula);
-}
-
-function testVisualFormula(formula) {
-  return VisualFormulaBuilder.testVisualFormula(formula);
-}
-
-function insertVisualFormula(formula) {
-  return VisualFormulaBuilder.insertVisualFormula(formula);
-}
 
 /**
  * Smart Formula Assistant - outcome-focused formula discovery
@@ -3490,8 +3460,7 @@ function clearPipelineHistory() {
  */
 function showCrossSheetFormulaBuilder() {
   try {
-    // Use Visual Formula Builder template with cross-sheet focus
-    const html = HtmlService.createTemplateFromFile('VisualFormulaBuilderTemplate');
+    const html = HtmlService.createTemplateFromFile('CrossSheetFormulaBuilderTemplate');
     const ui = HtmlService.createHtmlOutput(html.evaluate())
       .setTitle('Cross-Sheet Formula Builder')
       .setWidth(350);
@@ -3499,6 +3468,20 @@ function showCrossSheetFormulaBuilder() {
     SpreadsheetApp.getUi().showSidebar(ui);
   } catch (error) {
     showErrorDialog('Failed to load Cross-Sheet Formula Builder', error.message);
+  }
+}
+
+/**
+ * Get names of all sheets in the current spreadsheet
+ * Used by Cross-Sheet Formula Builder
+ */
+function getSheetNames() {
+  try {
+    const sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+    return sheets.map(sheet => sheet.getName());
+  } catch (error) {
+    console.error('Error getting sheet names:', error);
+    return [];
   }
 }
 

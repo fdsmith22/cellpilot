@@ -47,7 +47,7 @@
     --safe-bottom: env(safe-area-inset-bottom, 0px);
     --safe-left: env(safe-area-inset-left, 0px);
     
-    /* Header Heights */
+    /* Header Heights - Fixed at 72px desktop */
     --header-height: 72px;
     --header-height-mobile: 60px;
     --header-total: calc(var(--header-height) + var(--safe-top));
@@ -59,22 +59,23 @@
     scroll-behavior: smooth;
   }
   
-  /* Desktop-only scroll snap */
+  /* Desktop-only scroll snap with proper alignment */
   @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
     html {
-      scroll-snap-type: y proximity;
-      scroll-padding-top: 104px;
+      scroll-snap-type: y mandatory;
+      scroll-padding-top: 72px; /* Exact header height */
     }
     
     section.snap-section {
       scroll-snap-align: start;
-      scroll-snap-stop: normal;
-      min-height: 100vh;
+      scroll-snap-stop: always;
+      height: 100vh;
+      padding-top: 72px; /* Push content below header */
     }
     
-    /* Last section before footer needs special handling */
-    section.snap-section:last-of-type {
-      margin-bottom: 0;
+    /* First section doesn't need padding */
+    section.snap-section:first-of-type {
+      padding-top: 0;
     }
     
     /* Footer should not snap */
@@ -92,7 +93,14 @@
     
     section.snap-section {
       scroll-snap-align: none !important;
-      min-height: auto;
+      min-height: 100vh;
+      height: auto;
+      padding-top: 72px;
+    }
+    
+    /* First section on mobile */
+    section.snap-section:first-of-type {
+      padding-top: 72px;
     }
   }
   

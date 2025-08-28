@@ -7,7 +7,7 @@ import ScrollObserver from './ScrollObserver'
 const CTA = () => {
   const [hoveredStat, setHoveredStat] = useState<number | null>(null)
   return (
-    <section className="snap-section h-screen relative overflow-hidden bg-transparent">
+    <section className="snap-section relative overflow-hidden bg-transparent">
       {/* Enhanced animated background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 -left-32 w-96 h-96 bg-gradient-to-br from-pastel-sky/30 to-pastel-lavender/20 rounded-full blur-3xl animate-blob"></div>
@@ -20,7 +20,7 @@ const CTA = () => {
       
       {/* Removed grid pattern - using global grid */}
       
-      <div className="container-wrapper relative z-10 pt-[104px] pb-4 flex items-center justify-center">
+      <div className="container-wrapper relative z-10 h-full flex items-center justify-center">
         <ScrollObserver className="max-w-4xl mx-auto text-center px-4">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
             <span className="text-gradient">Transform</span>

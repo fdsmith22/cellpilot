@@ -1036,6 +1036,20 @@ function validateCrossSheetFormula(formula) {
 return CellPilot.validateCrossSheetFormula(formula);
 }
 
+/**
+* Get names of all sheets in the current spreadsheet
+* @return {Array<string>} Array of sheet names
+*/
+function getSheetNames() {
+  try {
+    const sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+    return sheets.map(sheet => sheet.getName());
+  } catch (error) {
+    console.error('Error getting sheet names:', error);
+    return [];
+  }
+}
+
 // ============================================
 // FORMULA PERFORMANCE OPTIMIZER
 // ============================================
