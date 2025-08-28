@@ -4,15 +4,16 @@
   <base target="_top">
   <?!= include('SharedStyles'); ?>
   <style>
-    /* Industry template grid - 3x2 layout */
+    /* Industry template grid - cleaner 3x2 layout */
     .industry-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
+      gap: 8px;
       margin-bottom: 20px;
-      padding: 6px;
+      padding: 8px;
       background: var(--gray-50);
       border-radius: 10px;
+      border: 1px solid var(--gray-100);
     }
     
     .industry-btn {
@@ -20,47 +21,50 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 8px 4px;
+      padding: 10px 6px;
       border: 1px solid var(--gray-200);
       border-radius: 8px;
       background: white;
-      color: var(--gray-600);
+      color: var(--gray-700);
       font-size: 10px;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.2s ease;
-      min-height: 50px;
+      min-height: 54px;
       text-align: center;
     }
     
     .industry-btn:hover {
-      border-color: var(--primary-300);
-      background: var(--gray-50);
+      border-color: var(--primary-200);
+      background: var(--primary-50);
       transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
     
     .industry-btn.active {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
-      border-color: var(--primary-500);
-      color: var(--primary-700);
+      background: white;
+      border-color: var(--primary-400);
+      color: var(--primary-600);
+      box-shadow: 0 2px 6px rgba(99, 102, 241, 0.15);
     }
     
     .industry-icon {
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
+      width: 22px;
+      height: 22px;
+      border-radius: 5px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 9px;
-      font-weight: 700;
-      margin-bottom: 2px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-bottom: 4px;
       background: var(--gray-100);
-      color: var(--gray-600);
+      color: var(--gray-700);
+      letter-spacing: -0.5px;
     }
     
     .industry-btn.active .industry-icon {
-      background: var(--primary-500);
+      background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
       color: white;
     }
     
@@ -69,44 +73,49 @@
       line-height: 1.2;
     }
     
-    /* Ensure feature cards don't cause horizontal scroll */
+    /* Feature cards - more refined design */
     .feature-card {
       max-width: 100%;
       word-wrap: break-word;
       cursor: pointer;
       transition: all 0.2s ease;
-      padding: 16px;
-      border: 2px solid var(--gray-200);
-      border-radius: 12px;
+      padding: 18px;
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
       background: white;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
     
     .feature-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-      border-color: var(--primary-300);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: var(--primary-200);
     }
     
     .feature-title {
       font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 6px;
+      font-weight: 600;
+      margin-bottom: 8px;
       color: var(--gray-900);
     }
     
     .feature-description {
       font-size: 12px;
       color: var(--gray-600);
-      margin-bottom: 8px;
-      line-height: 1.4;
+      margin-bottom: 10px;
+      line-height: 1.5;
     }
     
     .feature-benefits {
       font-size: 11px;
       color: var(--primary-600);
-      font-weight: 600;
-      margin-bottom: 12px;
+      font-weight: 500;
+      margin-bottom: 14px;
+      padding: 8px;
+      background: var(--primary-50);
+      border-radius: 6px;
+      border-left: 3px solid var(--primary-400);
     }
     
     .template-actions {

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import ScrollObserver from '@/components/ScrollObserver'
 import GridAnimation from '@/components/GridAnimation'
+import Footer from '@/components/Footer'
 
 type InstallMethod = 'marketplace' | 'manual' | null
 
@@ -267,6 +268,7 @@ export default function InstallContent() {
           </ScrollObserver>
         </div>
       </div>
+      <Footer />
     </main>
   )
 }

@@ -6,14 +6,15 @@
   <style>
     /* Smart Formula Assistant Styles */
     .assistant-header {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1));
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.03), rgba(99, 102, 241, 0.06));
       padding: 16px;
-      border-radius: 12px;
+      border-radius: 10px;
       margin-bottom: 16px;
+      border: 1px solid var(--primary-100);
     }
     
     .assistant-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: var(--primary-700);
       margin-bottom: 4px;
@@ -34,22 +35,22 @@
     
     .goal-category {
       background: white;
-      border: 1.5px solid var(--gray-200);
-      border-radius: 10px;
-      padding: 12px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 14px;
       cursor: pointer;
-      transition: all var(--transition-fast);
+      transition: all 0.2s ease;
     }
     
     .goal-category:hover {
-      border-color: var(--primary-400);
-      background: var(--gray-50);
-      transform: translateX(4px);
+      border-color: var(--primary-300);
+      background: var(--primary-50);
+      transform: translateX(2px);
     }
     
     .goal-category.expanded {
-      border-color: var(--primary-500);
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.02), rgba(99, 102, 241, 0.05));
+      border-color: var(--primary-400);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.02), rgba(99, 102, 241, 0.04));
     }
     
     .goal-header {
@@ -93,41 +94,44 @@
     }
     
     .sub-goal {
-      padding: 8px 12px;
+      padding: 10px 12px;
       margin: 4px 0;
       background: var(--gray-50);
       border-radius: 6px;
       cursor: pointer;
-      transition: all var(--transition-fast);
+      transition: all 0.2s ease;
       font-size: 12px;
       color: var(--gray-700);
+      border: 1px solid transparent;
     }
     
     .sub-goal:hover {
-      background: var(--primary-50);
-      color: var(--primary-700);
-      padding-left: 16px;
+      background: white;
+      border-color: var(--primary-200);
+      color: var(--primary-600);
+      transform: translateX(4px);
     }
     
     /* Smart Search */
     .smart-search {
       position: relative;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
     
     .search-input {
       width: 100%;
-      padding: 12px;
-      border: 1.5px solid var(--gray-200);
+      padding: 14px 16px;
+      border: 1px solid var(--gray-200);
       border-radius: 8px;
       font-size: 13px;
-      transition: all var(--transition-fast);
+      transition: all 0.2s ease;
+      background: white;
     }
     
     .search-input:focus {
       outline: none;
-      border-color: var(--primary-500);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      border-color: var(--primary-400);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
     }
     
     

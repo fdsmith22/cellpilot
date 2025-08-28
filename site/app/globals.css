@@ -62,18 +62,25 @@
   /* Desktop scroll snap with proper header offset */
   @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
     html {
-      scroll-snap-type: y mandatory;
-      scroll-padding-top: var(--header-total);
+      scroll-snap-type: y proximity;
+      scroll-padding-top: 104px;
     }
     
     section.snap-section {
       scroll-snap-align: start;
-      scroll-snap-stop: normal; /* Allow skipping sections */
+      scroll-snap-stop: normal;
+      min-height: 100vh;
+    }
+    
+    /* Last section before footer needs special handling */
+    section.snap-section:last-of-type {
+      margin-bottom: 0;
     }
     
     /* Footer should not snap */
     footer {
       scroll-snap-align: none;
+      scroll-snap-stop: normal;
     }
   }
   

@@ -61,7 +61,7 @@ const Pricing = () => {
   const [selectedPlan, setSelectedPlan] = useState<string>('Starter')
   
   return (
-    <section id="pricing" className="snap-section h-screen-vh md:h-screen relative overflow-hidden bg-transparent">
+    <section id="pricing" className="snap-section h-screen relative overflow-hidden bg-transparent">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] bg-gradient-to-r from-pastel-peach/20 to-pastel-lavender/20 rounded-full blur-3xl"></div>
@@ -72,8 +72,8 @@ const Pricing = () => {
       
       {/* Removed grid pattern - using global grid */}
       
-      <div className="container-wrapper relative z-elevated h-screen-vh md:h-screen pt-header-total-mobile md:pt-header-total pb-safe-bottom md:pb-4 flex flex-col justify-center">
-        <div className="w-full max-h-full overflow-y-auto">
+      <div className="container-wrapper relative z-10 pt-[104px] pb-4 flex flex-col justify-center">
+        <div className="w-full">
         <ScrollObserver className="text-center max-w-3xl mx-auto mb-6 sm:mb-8 px-4">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-3 sm:mb-4">
             Simple Pricing
@@ -105,20 +105,20 @@ const Pricing = () => {
                 </div>
               )}
               
-              <div className="p-4 sm:p-6">
-                <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-2">{plan.name}</h3>
-                <p className="text-sm sm:text-base text-neutral-600 mb-4 sm:mb-6">{plan.description}</p>
+              <div className="p-3 sm:p-4">
+                <h3 className="text-lg sm:text-xl font-bold text-neutral-900 mb-1">{plan.name}</h3>
+                <p className="text-xs sm:text-sm text-neutral-600 mb-3">{plan.description}</p>
                 
-                <div className="mb-6 sm:mb-8">
-                  <span className="text-3xl sm:text-4xl font-bold text-neutral-900">{plan.price}</span>
-                  <span className="text-sm sm:text-base text-neutral-600 ml-1 sm:ml-2">/{plan.period}</span>
+                <div className="mb-4">
+                  <span className="text-2xl sm:text-3xl font-bold text-neutral-900">{plan.price}</span>
+                  <span className="text-xs sm:text-sm text-neutral-600 ml-1">/{plan.period}</span>
                 </div>
 
-                <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+                <ul className="space-y-1.5 mb-4">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start">
                       <svg
-                        className="h-5 w-5 text-accent-teal mt-0.5 mr-3 flex-shrink-0"
+                        className="h-4 w-4 text-accent-teal mt-0.5 mr-2 flex-shrink-0"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -128,14 +128,14 @@ const Pricing = () => {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span className="text-sm sm:text-base text-neutral-700">{feature}</span>
+                      <span className="text-xs sm:text-sm text-neutral-700">{feature}</span>
                     </li>
                   ))}
                 </ul>
 
                 <Link
                   href={plan.ctaLink}
-                  className={`block w-full py-3 px-6 rounded-full text-center font-medium transition-all ${
+                  className={`block w-full py-2.5 px-5 rounded-full text-center text-sm font-medium transition-all ${
                     plan.popular
                       ? 'btn-primary'
                       : 'bg-white border border-neutral-300 text-neutral-700 hover:bg-neutral-100'

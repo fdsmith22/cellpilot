@@ -4,126 +4,168 @@
   <base target="_top">
   <?!= include('SharedStyles'); ?>
   <style>
-    /* Fix card spacing and overflow */
+    /* Premium card design */
     .card {
       margin-bottom: 16px;
-      padding: 16px;
-      overflow: visible; /* Allow badge to overflow */
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--gray-200);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
+      overflow: visible;
     }
     
-    /* Fix the popular badge positioning */
+    /* Popular badge - more elegant */
     .popular-badge {
       position: absolute;
-      top: -10px;
-      right: 12px;
-      background: var(--success-500);
+      top: -12px;
+      right: 20px;
+      background: linear-gradient(135deg, var(--success-500), var(--success-600));
       color: white;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 10px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
       z-index: 10;
     }
     
-    /* Plan card with badge needs padding-top */
+    /* Popular plan card - subtle glow effect */
     .plan-card-popular {
       position: relative;
-      padding-top: 20px !important;
-      margin-top: 10px;
+      padding-top: 28px !important;
+      margin-top: 12px;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.02), rgba(34, 197, 94, 0.05));
+      border: 2px solid var(--success-400);
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
     }
     
-    /* Ensure consistent card heights */
-    .plan-features {
-      min-height: 180px;
-      margin: 16px 0;
-    }
-    
-    /* Price styling */
+    /* Price styling - more prominent */
     .price-display {
-      font-size: 20px;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--gray-900);
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
       float: right;
-      font-weight: 600;
     }
     
     .price-period {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--gray-500);
       font-weight: 400;
     }
     
-    /* Feature list */
+    /* Feature list - cleaner design */
+    .feature-list {
+      margin: 20px 0;
+      padding: 0;
+    }
+    
     .feature-item {
       display: flex;
-      align-items: flex-start;
-      margin-bottom: 8px;
-      font-size: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: var(--gray-700);
     }
     
     .feature-check {
       color: var(--success-500);
-      margin-right: 8px;
+      margin-right: 10px;
+      font-size: 16px;
       flex-shrink: 0;
     }
     
-    /* Stats grid styling */
+    /* Stats grid - more modern */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      gap: 12px;
+      padding: 16px 0;
+      border-radius: 8px;
+      background: var(--gray-50);
     }
     
     .stat-card {
       text-align: center;
-      padding: 8px 4px;
+      padding: 8px;
     }
     
     .stat-value {
-      font-size: 18px;
+      font-size: 24px;
       font-weight: 700;
-      color: var(--primary-600);
-      margin-bottom: 2px;
+      background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
     }
     
     .stat-label {
-      font-size: 10px;
+      font-size: 11px;
       color: var(--gray-600);
-      line-height: 1.2;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
-    /* Why upgrade grid - make it more compact */
+    /* Benefits grid - cleaner cards */
     .benefits-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-top: 12px;
+      gap: 12px;
+      margin-top: 16px;
     }
     
     .benefit-card {
-      padding: 10px;
-      background: var(--gray-50);
-      border-radius: 6px;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--gray-50), white);
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
       text-align: center;
+      transition: all 0.2s ease;
     }
     
-    .benefit-title {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 2px;
-      color: var(--gray-700);
+    .benefit-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: var(--primary-200);
     }
     
     .benefit-value {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--gray-700);
-      margin-bottom: 2px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 4px;
     }
     
     .benefit-desc {
-      font-size: 10px;
-      color: var(--gray-500);
-      line-height: 1.2;
+      font-size: 11px;
+      color: var(--gray-600);
+      line-height: 1.4;
+    }
+    
+    /* Plan cards hover effect */
+    .plan-card {
+      transition: all 0.3s ease;
+    }
+    
+    .plan-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Section headers */
+    .section-header {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
   </style>
 </head>
@@ -161,34 +203,34 @@
 
     <!-- Plans -->
     <div style="margin: 24px 0;">
-      <h3 style="font-size: 14px; color: var(--gray-700); margin-bottom: 16px;">Available Plans</h3>
+      <h3 class="section-header">Available Plans</h3>
       
       <!-- Starter Plan -->
-      <div class="card" style="border: 2px solid var(--primary-300); position: relative;">
+      <div class="card plan-card">
         <div class="card-header">
           <div class="card-title" style="color: var(--primary-600);">
             Starter Plan
-            <span style="font-size: 20px; float: right;">£5.99<span style="font-size: 12px; color: var(--gray-500);">/mo</span></span>
+            <span class="price-display">£5.99<span class="price-period">/mo</span></span>
           </div>
           <div class="card-description">Perfect for individuals and freelancers</div>
         </div>
         
-        <div style="margin: 16px 0;">
-          <div style="display: flex; align-items: center; margin-bottom: 8px;">
-            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
-            <span style="font-size: 13px;">500 operations per month (5x more)</span>
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>500 operations per month (5x more)</span>
           </div>
-          <div style="display: flex; align-items: center; margin-bottom: 8px;">
-            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
-            <span style="font-size: 13px;">AI-powered formula builder</span>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>AI-powered formula builder</span>
           </div>
-          <div style="display: flex; align-items: center; margin-bottom: 8px;">
-            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
-            <span style="font-size: 13px;">Basic automation features</span>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Basic automation features</span>
           </div>
-          <div style="display: flex; align-items: center; margin-bottom: 8px;">
-            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
-            <span style="font-size: 13px;">Email support</span>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Email support</span>
           </div>
         </div>
         
@@ -198,41 +240,41 @@
       </div>
       
       <!-- Professional Plan (Recommended) -->
-      <div class="card plan-card-popular" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(34, 197, 94, 0.1)); border: 2px solid var(--success-500);">
+      <div class="card plan-card plan-card-popular">
         <span class="popular-badge">MOST POPULAR</span>
         
         <div class="card-header">
           <div class="card-title" style="color: var(--success-600);">
             Professional Plan
-            <span style="font-size: 20px; float: right;">£11.99<span style="font-size: 12px; color: var(--gray-500);">/mo</span></span>
+            <span class="price-display">£11.99<span class="price-period">/mo</span></span>
           </div>
           <div class="card-description">Best for teams and growing businesses</div>
         </div>
         
-        <div style="margin: 16px 0;">
-          <div style="display: flex; align-items: center; margin-bottom: 8px;">
-            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
-            <span style="font-size: 13px; font-weight: 600;">Unlimited operations</span>
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span style="font-weight: 600;">Unlimited operations</span>
           </div>
-          <div style="display: flex; align-items: center; margin-bottom: 8px;">
-            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
-            <span style="font-size: 13px;">Everything in Starter, plus:</span>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Everything in Starter, plus:</span>
           </div>
-          <div style="display: flex; align-items: center; margin-bottom: 8px;">
-            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
-            <span style="font-size: 13px;">Excel migration assistant</span>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Excel migration assistant</span>
           </div>
-          <div style="display: flex; align-items: center; margin-bottom: 8px;">
-            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
-            <span style="font-size: 13px;">Advanced automation workflows</span>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Advanced automation workflows</span>
           </div>
-          <div style="display: flex; align-items: center; margin-bottom: 8px;">
-            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
-            <span style="font-size: 13px;">Industry-specific templates</span>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Industry-specific templates</span>
           </div>
-          <div style="display: flex; align-items: center; margin-bottom: 8px;">
-            <span style="color: var(--success-500); margin-right: 8px;">✓</span>
-            <span style="font-size: 13px;">Priority support & training</span>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Priority support & training</span>
           </div>
         </div>
         
@@ -242,31 +284,31 @@
       </div>
       
       <!-- Enterprise Plan -->
-      <div class="card">
+      <div class="card plan-card">
         <div class="card-header">
           <div class="card-title">
             Enterprise Plan
-            <span style="font-size: 16px; float: right; color: var(--gray-600);">Custom</span>
+            <span style="font-size: 18px; float: right; color: var(--gray-600);">Custom</span>
           </div>
           <div class="card-description">For large organizations with custom needs</div>
         </div>
         
-        <div style="margin: 16px 0;">
-          <div style="display: flex; align-items: center; margin-bottom: 8px;">
-            <span style="color: var(--primary-500); margin-right: 8px;">✓</span>
-            <span style="font-size: 13px;">Everything in Professional</span>
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Everything in Professional</span>
           </div>
-          <div style="display: flex; align-items: center; margin-bottom: 8px;">
-            <span style="color: var(--primary-500); margin-right: 8px;">✓</span>
-            <span style="font-size: 13px;">Connect with your business tools</span>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Connect with your business tools</span>
           </div>
-          <div style="display: flex; align-items: center; margin-bottom: 8px;">
-            <span style="color: var(--primary-500); margin-right: 8px;">✓</span>
-            <span style="font-size: 13px;">Dedicated account manager</span>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Dedicated account manager</span>
           </div>
-          <div style="display: flex; align-items: center; margin-bottom: 8px;">
-            <span style="color: var(--primary-500); margin-right: 8px;">✓</span>
-            <span style="font-size: 13px;">On-premise deployment option</span>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>On-premise deployment option</span>
           </div>
         </div>
         
@@ -276,7 +318,7 @@
       </div>
     </div>
     
-    <!-- Features Comparison -->
+    <!-- Why Upgrade Section -->
     <div class="card">
       <div class="card-header">
         <div class="card-title">Why Upgrade?</div>
@@ -284,27 +326,23 @@
       
       <div class="benefits-grid">
         <div class="benefit-card">
-          <div class="benefit-title">TIME</div>
           <div class="benefit-value">Save 10+ hrs/mo</div>
-          <div class="benefit-desc">Automate tasks</div>
+          <div class="benefit-desc">Automate repetitive tasks</div>
         </div>
         
         <div class="benefit-card">
-          <div class="benefit-title">ACCURACY</div>
           <div class="benefit-value">88% fewer errors</div>
-          <div class="benefit-desc">Smart validation</div>
+          <div class="benefit-desc">Smart validation built-in</div>
         </div>
         
         <div class="benefit-card">
-          <div class="benefit-title">SPEED</div>
           <div class="benefit-value">10x faster</div>
-          <div class="benefit-desc">AI formulas</div>
+          <div class="benefit-desc">AI-powered formulas</div>
         </div>
         
         <div class="benefit-card">
-          <div class="benefit-title">POWER</div>
           <div class="benefit-value">Excel ready</div>
-          <div class="benefit-desc">Fix imports</div>
+          <div class="benefit-desc">Seamless migration</div>
         </div>
       </div>
     </div>
