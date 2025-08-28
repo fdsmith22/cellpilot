@@ -561,10 +561,15 @@
     <? } ?>
     
     function backToMain() {
+      // Clean up preview sheets before going back
+      cleanupPreviews();
       google.script.run.showCellPilotSidebar();
     }
     
     function switchCategory(category) {
+      // Clean up any preview sheets when switching categories
+      cleanupPreviews();
+      
       // Update button states for grid layout
       document.querySelectorAll('.industry-btn').forEach(btn => {
         btn.classList.remove('active');

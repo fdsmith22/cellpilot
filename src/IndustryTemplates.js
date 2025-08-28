@@ -12,6 +12,9 @@ const IndustryTemplates = {
    */
   previewTemplate: function(templateType) {
     try {
+      // First clean up any existing preview sheets
+      this.cleanupPreviewSheets();
+      
       const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
       const createdSheets = [];
       
@@ -108,19 +111,47 @@ const IndustryTemplates = {
    */
   cleanupPreviewSheets: function() {
     try {
-      const scriptProperties = PropertiesService.getScriptProperties();
-      const previewSheets = JSON.parse(scriptProperties.getProperty('previewSheets') || '[]');
       const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+      const allSheets = spreadsheet.getSheets();
+      let deletedCount = 0;
       
-      previewSheets.forEach(sheetName => {
-        const sheet = spreadsheet.getSheetByName(sheetName);
-        if (sheet && sheetName.startsWith('[PREVIEW]')) {
-          spreadsheet.deleteSheet(sheet);
+      // First try to clean up from script properties
+      try {
+        const scriptProperties = PropertiesService.getScriptProperties();
+        const storedPreviewSheets = JSON.parse(scriptProperties.getProperty('previewSheets') || '[]');
+        
+        storedPreviewSheets.forEach(sheetName => {
+          try {
+            const sheet = spreadsheet.getSheetByName(sheetName);
+            if (sheet) {
+              spreadsheet.deleteSheet(sheet);
+              deletedCount++;
+            }
+          } catch (e) {
+            console.log('Could not delete sheet:', sheetName, e.toString());
+          }
+        });
+        
+        // Clear the property after cleanup
+        scriptProperties.deleteProperty('previewSheets');
+      } catch (e) {
+        console.log('Error with script properties cleanup:', e.toString());
+      }
+      
+      // Also do a general cleanup of any sheets starting with [PREVIEW]
+      allSheets.forEach(sheet => {
+        const sheetName = sheet.getName();
+        if (sheetName.startsWith('[PREVIEW]')) {
+          try {
+            spreadsheet.deleteSheet(sheet);
+            deletedCount++;
+          } catch (e) {
+            console.log('Could not delete preview sheet:', sheetName, e.toString());
+          }
         }
       });
       
-      scriptProperties.deleteProperty('previewSheets');
-      return { success: true };
+      return { success: true, deletedCount: deletedCount };
     } catch (error) {
       console.error('Error cleaning up preview sheets:', error);
       return { success: false, error: error.toString() };

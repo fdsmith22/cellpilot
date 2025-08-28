@@ -3,7 +3,7 @@ import ScrollObserver from './ScrollObserver'
 
 const CTA = () => {
   return (
-    <section className="min-h-[50vh] flex items-center relative overflow-hidden pt-28 pb-20 bg-transparent">
+    <section className="snap-section h-screen flex items-center relative overflow-hidden bg-transparent">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-64 h-64 bg-pastel-sky/20 rounded-full blur-2xl animate-blob"></div>
