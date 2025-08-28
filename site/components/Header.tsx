@@ -23,7 +23,7 @@ const Header = () => {
   ]
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <header className={`fixed top-0 left-0 right-0 z-header transition-all duration-300 pt-safe-top ${
       scrolled 
         ? 'bg-gradient-to-b from-white/95 via-white/85 to-transparent backdrop-blur-xl border-b border-neutral-200/20' 
         : 'bg-gradient-to-b from-white/80 via-white/60 to-transparent backdrop-blur-lg'

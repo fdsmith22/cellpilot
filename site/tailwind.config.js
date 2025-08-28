@@ -10,6 +10,33 @@ module.exports = {
       scale: {
         '102': '1.02',
       },
+      height: {
+        'screen-vh': 'calc(var(--vh, 1vh) * 100)',
+        'screen-dvh': ['100vh', '100dvh'],
+        'screen-safe': 'calc(100vh - var(--safe-top) - var(--safe-bottom))',
+        'header': 'var(--header-height)',
+        'header-mobile': 'var(--header-height-mobile)',
+        'header-total': 'var(--header-total)',
+        'header-total-mobile': 'var(--header-total-mobile)',
+      },
+      spacing: {
+        'safe-top': 'var(--safe-top)',
+        'safe-right': 'var(--safe-right)',
+        'safe-bottom': 'var(--safe-bottom)',
+        'safe-left': 'var(--safe-left)',
+        'header': 'var(--header-height)',
+        'header-mobile': 'var(--header-height-mobile)',
+      },
+      zIndex: {
+        'behind': 'var(--z-behind)',
+        'base': 'var(--z-base)',
+        'elevated': 'var(--z-elevated)',
+        'sticky': 'var(--z-sticky)',
+        'overlay': 'var(--z-overlay)',
+        'modal': 'var(--z-modal)',
+        'header': 'var(--z-header)',
+        'toast': 'var(--z-toast)',
+      },
       colors: {
         primary: {
           50: '#f0f4ff',

@@ -47,7 +47,7 @@ const Footer = () => {
       {/* Grid pattern overlay */}
       <div className="absolute inset-0 grid-pattern opacity-15"></div>
       
-      <div className="relative z-10">
+      <div className="relative z-elevated">
         <div className="container-wrapper py-16 lg:py-20">
           {/* Main Footer Content */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">

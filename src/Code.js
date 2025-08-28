@@ -542,23 +542,26 @@ function createMainSidebarHtml(context) {
       .quick-action-btn {
         background: white;
         border: 1px solid var(--gray-200);
-        border-radius: 10px;
-        padding: 14px 10px;
+        border-radius: 8px;
+        padding: 12px;
         cursor: pointer;
-        transition: var(--transition-base);
+        transition: all 0.2s ease;
         text-align: center;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 8px;
+        justify-content: center;
+        gap: 0;
         position: relative;
         overflow: visible;
+        min-height: 54px;
       }
       
       .quick-action-btn:hover {
-        border-color: var(--primary-500);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        border-color: var(--primary-400);
+        background: var(--primary-50);
         transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
       }
       
       .quick-action-icon {
@@ -573,10 +576,11 @@ function createMainSidebarHtml(context) {
       }
       
       .quick-action-label {
-        font-size: 12px;
-        font-weight: 600;
+        font-size: 11px;
+        font-weight: 500;
         color: var(--gray-700);
-        line-height: 1.2;
+        line-height: 1.3;
+        letter-spacing: 0.01em;
       }
       
       .quick-badge {
@@ -611,18 +615,19 @@ function createMainSidebarHtml(context) {
       .dropdown-header {
         background: white;
         border: 1px solid var(--gray-200);
-        border-radius: 10px;
-        padding: 14px 16px;
+        border-radius: 8px;
+        padding: 12px 14px;
         cursor: pointer;
-        transition: var(--transition-base);
+        transition: all 0.2s ease;
         display: flex;
         align-items: center;
         justify-content: space-between;
       }
       
       .dropdown-header:hover {
-        border-color: var(--primary-500);
-        background: var(--gray-50);
+        border-color: var(--primary-400);
+        background: var(--primary-50);
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
       }
       
       .dropdown-header.active {
@@ -726,36 +731,74 @@ function createMainSidebarHtml(context) {
         background: var(--primary-200);
         color: var(--primary-700);
       }
+      
+      /* Footer Styles */
+      .footer {
+        margin-top: 24px;
+        padding: 12px 16px;
+        background: var(--gray-50);
+        border-top: 1px solid var(--gray-200);
+        text-align: center;
+        font-size: 12px;
+      }
+      
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+      }
+      
+      .footer-link {
+        color: var(--gray-600);
+        text-decoration: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+      }
+      
+      .footer-link:hover {
+        color: var(--primary-600);
+        background: var(--primary-50);
+      }
+      
+      .footer-divider {
+        color: var(--gray-400);
+        font-size: 10px;
+      }
     </style>
     
     <div class="nav-header" style="padding: 12px 16px; border-bottom: 1px solid var(--gray-200);">
       <div style="display: flex; align-items: center; justify-content: center;">
-        <svg viewBox="0 0 160 50" width="140" height="44" xmlns="http://www.w3.org/2000/svg">
-          <g transform="translate(6, 6)">
-            <path d="M4 4 Q4 0 8 0 L30 0 Q34 0 34 4 L34 30 Q34 34 30 34 L8 34 Q4 34 4 30 Z" 
-                  fill="none" stroke="#2563eb" stroke-width="2"/>
-            <line x1="19" y1="0" x2="19" y2="34" stroke="#60a5fa" stroke-width="0.8"/>
-            <line x1="4" y1="17" x2="34" y2="17" stroke="#60a5fa" stroke-width="0.8"/>
-            <g transform="translate(7, 7)">
-              <rect x="0" y="0" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
-              <rect x="5" y="0" width="5" height="5" fill="#3b82f6" opacity="0.3"/>
-              <rect x="10" y="0" width="5" height="5" fill="#60a5fa" opacity="0.2"/>
-              <rect x="15" y="0" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
-              <rect x="0" y="5" width="5" height="5" fill="#60a5fa" opacity="0.2"/>
-              <rect x="5" y="5" width="5" height="5" fill="#3b82f6"/>
-              <rect x="10" y="5" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
-              <rect x="15" y="5" width="5" height="5" fill="#60a5fa" opacity="0.3"/>
+        <a href="https://www.cellpilot.io" target="_blank" style="text-decoration: none;">
+          <svg viewBox="0 0 160 50" width="140" height="44" xmlns="http://www.w3.org/2000/svg" style="cursor: pointer;">
+            <g transform="translate(6, 6)">
+              <path d="M4 4 Q4 0 8 0 L30 0 Q34 0 34 4 L34 30 Q34 34 30 34 L8 34 Q4 34 4 30 Z" 
+                    fill="none" stroke="#2563eb" stroke-width="2"/>
+              <line x1="19" y1="0" x2="19" y2="34" stroke="#60a5fa" stroke-width="0.8"/>
+              <line x1="4" y1="17" x2="34" y2="17" stroke="#60a5fa" stroke-width="0.8"/>
+              <g transform="translate(7, 7)">
+                <rect x="0" y="0" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
+                <rect x="5" y="0" width="5" height="5" fill="#3b82f6" opacity="0.3"/>
+                <rect x="10" y="0" width="5" height="5" fill="#60a5fa" opacity="0.2"/>
+                <rect x="15" y="0" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
+                <rect x="0" y="5" width="5" height="5" fill="#60a5fa" opacity="0.2"/>
+                <rect x="5" y="5" width="5" height="5" fill="#3b82f6"/>
+                <rect x="10" y="5" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
+                <rect x="15" y="5" width="5" height="5" fill="#60a5fa" opacity="0.3"/>
+              </g>
+              <g transform="translate(19, 17)">
+                <circle r="2.5" fill="none" stroke="#2563eb" stroke-width="1.2"/>
+                <line x1="-5" y1="0" x2="5" y2="0" stroke="#2563eb" stroke-width="0.8"/>
+                <line x1="0" y1="-5" x2="0" y2="5" stroke="#2563eb" stroke-width="0.8"/>
+              </g>
             </g>
-            <g transform="translate(19, 17)">
-              <circle r="2.5" fill="none" stroke="#2563eb" stroke-width="1.2"/>
-              <line x1="-5" y1="0" x2="5" y2="0" stroke="#2563eb" stroke-width="0.8"/>
-              <line x1="0" y1="-5" x2="0" y2="5" stroke="#2563eb" stroke-width="0.8"/>
-            </g>
-          </g>
-          <text x="48" y="32" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="600" fill="#1f2937">
-            Cell<tspan fill="#2563eb">Pilot</tspan>
-          </text>
-        </svg>
+            <text x="48" y="32" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="600" fill="#1f2937">
+              Cell<tspan fill="#2563eb">Pilot</tspan>
+            </text>
+          </svg>
+        </a>
       </div>
     </div>
     
@@ -922,9 +965,13 @@ function createMainSidebarHtml(context) {
       </div>
       
       <div class="footer">
-        <a href="#" onclick="google.script.run.showSettings()">Settings</a> • 
-        <a href="#" onclick="google.script.run.showHelp()">Help</a> • 
-        <a href="https://www.cellpilot.io" target="_blank">Website</a>
+        <div class="footer-links">
+          <a href="#" class="footer-link" onclick="google.script.run.showUserSettings(); return false;">Settings</a>
+          <span class="footer-divider">•</span>
+          <a href="#" class="footer-link" onclick="google.script.run.showHelp(); return false;">Help</a>
+          <span class="footer-divider">•</span>
+          <a href="https://www.cellpilot.io" target="_blank" class="footer-link">Website</a>
+        </div>
       </div>
     </div>
     

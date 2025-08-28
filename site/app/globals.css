@@ -25,6 +25,33 @@
     --transition-fast: 200ms;
     --transition-normal: 300ms;
     --transition-slow: 500ms;
+    
+    /* Dynamic Viewport Units */
+    --vh: 1vh;
+    --vw: 100vw;
+    --vh-real: 100vh;
+    
+    /* Z-Index Scale */
+    --z-behind: -1;
+    --z-base: 0;
+    --z-elevated: 10;
+    --z-sticky: 20;
+    --z-overlay: 30;
+    --z-modal: 40;
+    --z-header: 50;
+    --z-toast: 60;
+    
+    /* Safe Area Insets */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    
+    /* Header Heights */
+    --header-height: 72px;
+    --header-height-mobile: 60px;
+    --header-total: calc(var(--header-height) + var(--safe-top));
+    --header-total-mobile: calc(var(--header-height-mobile) + var(--safe-top));
   }
 
   html {
@@ -32,22 +59,30 @@
     scroll-behavior: smooth;
   }
   
-  /* Only apply scroll snap on desktop */
-  @media (min-width: 768px) {
+  /* Desktop scroll snap with proper header offset */
+  @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
     html {
-      scroll-snap-type: y proximity; /* Use proximity for better control */
-      scroll-padding-top: 104px; /* Account for fixed header */
+      scroll-snap-type: y mandatory;
+      scroll-padding-top: var(--header-total);
     }
     
     section.snap-section {
       scroll-snap-align: start;
-      scroll-snap-stop: always;
-      /* Remove scroll-margin-top as we're using scroll-padding-top */
+      scroll-snap-stop: normal; /* Allow skipping sections */
     }
     
     /* Footer should not snap */
     footer {
       scroll-snap-align: none;
+    }
+  }
+  
+  /* Mobile viewport height fix */
+  @supports (-webkit-touch-callout: none) {
+    /* iOS Safari specific fixes */
+    .h-screen-ios {
+      height: -webkit-fill-available;
+      min-height: -webkit-fill-available;
     }
   }
 
@@ -107,6 +142,60 @@
 }
 
 @layer utilities {
+  /* Responsive height utilities */
+  .h-screen-vh {
+    height: calc(var(--vh, 1vh) * 100);
+  }
+  
+  .min-h-screen-vh {
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+  
+  /* Safe area utilities */
+  .pt-safe-top {
+    padding-top: var(--safe-top);
+  }
+  
+  .pb-safe-bottom {
+    padding-bottom: var(--safe-bottom);
+  }
+  
+  .px-safe {
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+  }
+  
+  /* Header offset utilities */
+  .pt-header-total {
+    padding-top: var(--header-total);
+  }
+  
+  .pt-header-total-mobile {
+    padding-top: var(--header-total-mobile);
+  }
+  
+  /* iOS specific fixes */
+  @supports (-webkit-touch-callout: none) {
+    .h-screen-ios {
+      height: -webkit-fill-available;
+    }
+    
+    .min-h-screen-ios {
+      min-height: -webkit-fill-available;
+    }
+  }
+  
+  /* Android specific fixes */
+  .is-android .h-screen-vh {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+  }
+  
+  /* Notch device adjustments */
+  .has-notch .pt-header-total {
+    padding-top: calc(var(--header-height) + var(--safe-top) + 12px);
+  }
+  
   .animation-delay-2000 {
     animation-delay: 2s;
   }
