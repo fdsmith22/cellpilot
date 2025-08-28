@@ -18,11 +18,34 @@
 // ============================================
 
 /**
+* Test function to verify CellPilot library is loaded
+*/
+function testCellPilotConnection() {
+  try {
+    // Test if CellPilot is available
+    if (typeof CellPilot === 'undefined') {
+      return { success: false, error: 'CellPilot library not found. Please add the library.' };
+    }
+    
+    // Test a simple function
+    const context = CellPilot.getCurrentUserContext();
+    return { success: true, message: 'CellPilot library connected successfully!', context: context };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
+}
+
+/**
 * Triggered when the spreadsheet is opened
 * Creates the CellPilot menu and initializes features
 */
 function onOpen() {
-CellPilot.onOpen();
+  try {
+    CellPilot.onOpen();
+  } catch (e) {
+    SpreadsheetApp.getUi().alert('CellPilot library not loaded properly. Please check library setup.');
+    console.error('CellPilot error:', e);
+  }
 }
 
 /**
@@ -844,6 +867,636 @@ return CellPilot.analyzeDependencies();
 */
 function analyzeFormulaPerformance() {
 return CellPilot.analyzeFormulaPerformance();
+}
+
+// ============================================
+// ML-POWERED FEATURES
+// ============================================
+
+/**
+* Get user learning profile for ML features
+* @return {Object} User's ML learning profile with preferences and history
+*/
+function getUserLearningProfile() {
+return CellPilot.getUserLearningProfile();
+}
+
+/**
+* Save user learning profile for ML features
+* @param {Object} profile - ML profile to save
+* @return {boolean} Success status
+*/
+function saveUserLearningProfile(profile) {
+return CellPilot.saveUserLearningProfile(profile);
+}
+
+/**
+* Track ML feedback for continuous learning
+* @param {string} operation - Type of operation (formulaSelection, columnType, etc.)
+* @param {*} prediction - What ML predicted
+* @param {*} userAction - What the user actually chose
+* @param {Object} metadata - Additional context
+* @return {boolean} Success status
+*/
+function trackMLFeedback(operation, prediction, userAction, metadata) {
+return CellPilot.trackMLFeedback(operation, prediction, userAction, metadata);
+}
+
+/**
+* Enable ML features for the current user
+* @return {Object} ML status and capabilities
+*/
+function enableMLFeatures() {
+return CellPilot.enableMLFeatures();
+}
+
+/**
+* Get ML feature status
+* @return {Object} Current ML status and model information
+*/
+function getMLStatus() {
+return CellPilot.getMLStatus();
+}
+
+// ============================================
+// DATA VALIDATION & CONDITIONAL FORMATTING
+// ============================================
+
+/**
+* Show data validation generator interface
+*/
+function showDataValidationGenerator() {
+return CellPilot.showDataValidationGenerator();
+}
+
+/**
+* Apply data validation rule
+* @param {Object} rule - Validation rule configuration
+* @return {Object} Result with success status
+*/
+function applyValidationRule(rule) {
+return CellPilot.applyValidationRule(rule);
+}
+
+/**
+* Generate data validation rules from data patterns
+* @return {Object} Suggested validation rules
+*/
+function generateValidationRules() {
+return CellPilot.generateValidationRules();
+}
+
+/**
+* Show conditional formatting wizard interface
+*/
+function showConditionalFormattingWizard() {
+return CellPilot.showConditionalFormattingWizard();
+}
+
+/**
+* Apply conditional formatting rule
+* @param {Object} rule - Formatting rule configuration
+* @return {Object} Result with success status
+*/
+function applyConditionalFormat(rule) {
+return CellPilot.applyConditionalFormat(rule);
+}
+
+/**
+* Generate conditional formatting suggestions
+* @return {Object} Suggested formatting rules
+*/
+function generateFormatSuggestions() {
+return CellPilot.generateFormatSuggestions();
+}
+
+// ============================================
+// FORMULA DISCOVERY & PATTERN DETECTION
+// ============================================
+
+/**
+* Discover formula patterns in current sheet
+* @return {Object} Discovered patterns and suggestions
+*/
+function discoverFormulaPatterns() {
+return CellPilot.discoverFormulaPatterns();
+}
+
+/**
+* Get commonly used formulas in sheet
+* @return {Array} List of common formulas with usage stats
+*/
+function getCommonFormulas() {
+return CellPilot.getCommonFormulas();
+}
+
+/**
+* Suggest formulas based on current context
+* @param {string} description - Natural language description
+* @return {Array} ML-powered formula suggestions
+*/
+function suggestFormulasML(description) {
+return CellPilot.suggestFormulasML(description);
+}
+
+// ============================================
+// CROSS-SHEET FORMULA BUILDER
+// ============================================
+
+/**
+* Show cross-sheet formula builder interface
+*/
+function showCrossSheetFormulaBuilder() {
+return CellPilot.showCrossSheetFormulaBuilder();
+}
+
+/**
+* Build cross-sheet reference formula
+* @param {Object} config - Cross-sheet reference configuration
+* @return {string} Generated formula
+*/
+function buildCrossSheetFormula(config) {
+return CellPilot.buildCrossSheetFormula(config);
+}
+
+/**
+* Validate cross-sheet references
+* @param {string} formula - Formula with cross-sheet references
+* @return {Object} Validation result
+*/
+function validateCrossSheetFormula(formula) {
+return CellPilot.validateCrossSheetFormula(formula);
+}
+
+// ============================================
+// FORMULA PERFORMANCE OPTIMIZER
+// ============================================
+
+/**
+* Show formula performance optimizer interface
+*/
+function showFormulaPerformanceOptimizer() {
+return CellPilot.showFormulaPerformanceOptimizer();
+}
+
+/**
+* Optimize formula for performance
+* @param {string} formula - Formula to optimize
+* @return {Object} Optimized formula with performance metrics
+*/
+function optimizeFormulaPerformance(formula) {
+return CellPilot.optimizeFormulaPerformance(formula);
+}
+
+/**
+* Get formula performance metrics
+* @param {string} formula - Formula to analyze
+* @return {Object} Performance metrics
+*/
+function getFormulaPerformanceMetrics(formula) {
+return CellPilot.getFormulaPerformanceMetrics(formula);
+}
+
+// ============================================
+// TEMPLATE PREVIEW & APPLICATION
+// ============================================
+
+/**
+* Get available template categories
+* @return {Array} List of template categories
+*/
+function getTemplateCategories() {
+return CellPilot.getTemplateCategories();
+}
+
+/**
+* Get templates for a specific category
+* @param {string} category - Template category
+* @return {Array} List of templates in category
+*/
+function getTemplatesByCategory(category) {
+return CellPilot.getTemplatesByCategory(category);
+}
+
+/**
+* Apply selected template to spreadsheet
+* @param {string} templateId - ID of template to apply
+* @param {Object} options - Application options
+* @return {Object} Result with created sheets
+*/
+function applyTemplate(templateId, options) {
+return CellPilot.applyTemplate(templateId, options);
+}
+
+// ============================================
+// ADVANCED PARSING & SMART TABLE
+// ============================================
+
+/**
+* Parse data using ML-enhanced smart parser
+* @param {Array} data - Data to parse
+* @param {Object} options - Parsing options
+* @return {Array} Parsed data with ML confidence scores
+*/
+function smartParseML(data, options) {
+return CellPilot.smartParseML(data, options);
+}
+
+/**
+* Detect column types using ML
+* @param {Array} data - Data to analyze
+* @param {Array} headers - Column headers
+* @return {Array} Detected column types with confidence
+*/
+function detectColumnTypesML(data, headers) {
+return CellPilot.detectColumnTypesML(data, headers);
+}
+
+/**
+* Learn from parsing corrections
+* @param {number} columnIndex - Column that was corrected
+* @param {string} correctType - Correct column type
+* @param {Object} context - Additional context
+* @return {boolean} Success status
+*/
+function learnFromParsingCorrection(columnIndex, correctType, context) {
+return CellPilot.learnFromParsingCorrection(columnIndex, correctType, context);
+}
+
+// ============================================
+// ADAPTIVE DUPLICATE DETECTION
+// ============================================
+
+/**
+* Detect duplicates using ML-enhanced detection
+* @param {Object} options - Detection options
+* @return {Object} Detected duplicates with ML confidence
+*/
+function detectDuplicatesML(options) {
+return CellPilot.detectDuplicatesML(options);
+}
+
+/**
+* Learn from duplicate feedback
+* @param {Array} acceptedDuplicates - User-confirmed duplicates
+* @param {Array} rejectedDuplicates - User-rejected duplicates
+* @param {number} threshold - Current threshold
+* @return {Object} Updated threshold and learning status
+*/
+function learnFromDuplicateFeedback(acceptedDuplicates, rejectedDuplicates, threshold) {
+return CellPilot.learnFromDuplicateFeedback(acceptedDuplicates, rejectedDuplicates, threshold);
+}
+
+/**
+* Get adaptive duplicate threshold
+* @return {number} Current adaptive threshold
+*/
+function getAdaptiveDuplicateThreshold() {
+  return CellPilot.getAdaptiveDuplicateThreshold();
+}
+
+// ============================================
+// FORMULA LEARNING & SUGGESTIONS
+// ============================================
+
+/**
+* Learn from formula selection
+* @param {string} selectedFormula - Formula user selected
+* @param {string} description - Original description
+* @param {boolean} wasSuccessful - Whether formula worked
+* @return {boolean} Success status
+*/
+function learnFromFormulaSelection(selectedFormula, description, wasSuccessful) {
+return CellPilot.learnFromFormulaSelection(selectedFormula, description, wasSuccessful);
+}
+
+/**
+* Get personalized formula recommendations
+* @return {Array} Personalized formula suggestions
+*/
+function getPersonalizedFormulas() {
+return CellPilot.getPersonalizedFormulas();
+}
+
+/**
+* Predict next formula based on context
+* @return {Object} Predicted formula with confidence
+*/
+function predictNextFormula() {
+return CellPilot.predictNextFormula();
+}
+
+/**
+* Record formula feedback for ML learning
+* @param {Object} params - Feedback parameters
+* @return {Card} Success confirmation
+*/
+function recordFormulaFeedback(params) {
+return CellPilot.recordFormulaFeedback(params);
+}
+
+/**
+* Insert formula with ML tracking
+* @param {Object} params - Formula and tracking parameters
+* @return {Card} Success confirmation with tracking
+*/
+function insertFormulaWithTracking(params) {
+return CellPilot.insertFormulaWithTracking(params);
+}
+
+/**
+* ================================
+* PIVOT TABLE ASSISTANT FUNCTIONS
+* ================================
+*/
+
+/**
+* Show Pivot Table Assistant interface
+*/
+function showPivotTableAssistant() {
+  return CellPilot.showPivotTableAssistant();
+}
+
+/**
+* Analyze data for pivot table opportunities
+*/
+function analyzePivotData(range) {
+  return CellPilot.analyzePivotData(range);
+}
+
+/**
+* Create pivot table from suggestion
+*/
+function createPivotFromSuggestion(suggestion) {
+  return CellPilot.createPivotFromSuggestion(suggestion);
+}
+
+/**
+* Apply pivot table template
+*/
+function applyPivotTemplate(templateName) {
+  return CellPilot.applyPivotTemplate(templateName);
+}
+
+/**
+* Get pivot table templates
+*/
+function getPivotTemplates() {
+  return CellPilot.getPivotTemplates();
+}
+
+/**
+* Get pivot table statistics
+*/
+function getPivotStats() {
+  return CellPilot.getPivotStats();
+}
+
+/**
+* ================================
+* DATA PIPELINE MANAGER FUNCTIONS
+* ================================
+*/
+
+/**
+* Show Data Pipeline Manager interface
+*/
+function showDataPipelineManager() {
+  return CellPilot.showDataPipelineManager();
+}
+
+/**
+* Import data through pipeline
+*/
+function importPipelineData(config) {
+  return CellPilot.importPipelineData(config);
+}
+
+/**
+* Export data through pipeline
+*/
+function exportPipelineData(options) {
+  return CellPilot.exportPipelineData(options);
+}
+
+/**
+* Get pipeline import history
+*/
+function getPipelineHistory() {
+  return CellPilot.getPipelineHistory();
+}
+
+/**
+* Get pipeline statistics
+*/
+function getPipelineStats() {
+  return CellPilot.getPipelineStats();
+}
+
+/**
+* Clear pipeline history
+*/
+function clearPipelineHistory() {
+  return CellPilot.clearPipelineHistory();
+}
+
+/**
+* ================================
+* USER PREFERENCE LEARNING FUNCTIONS
+* ================================
+*/
+
+/**
+* Initialize user preferences
+*/
+function initializeUserPreferences() {
+  return CellPilot.initializeUserPreferences();
+}
+
+/**
+* Track user action for ML learning
+*/
+function trackUserAction(action, context) {
+  return CellPilot.trackUserAction(action, context);
+}
+
+/**
+* Get user preference summary
+*/
+function getUserPreferenceSummary() {
+  return CellPilot.getUserPreferenceSummary();
+}
+
+/**
+* Get feature recommendations based on usage
+*/
+function getFeatureRecommendations() {
+  return CellPilot.getFeatureRecommendations();
+}
+
+/**
+* Get workflow suggestions
+*/
+function getWorkflowSuggestions() {
+  return CellPilot.getWorkflowSuggestions();
+}
+
+/**
+* Get preferred settings for a feature
+*/
+function getPreferredSettings(feature) {
+  return CellPilot.getPreferredSettings(feature);
+}
+
+/**
+* Predict next user action
+*/
+function predictNextAction(currentAction) {
+  return CellPilot.predictNextAction(currentAction);
+}
+
+/**
+* Check if action should be automated
+*/
+function shouldAutomate(action, context) {
+  return CellPilot.shouldAutomate(action, context);
+}
+
+/**
+* Learn from error occurrence
+*/
+function learnFromError(error, action, context) {
+  return CellPilot.learnFromError(error, action, context);
+}
+
+/**
+* Learn from successful completion
+*/
+function learnFromSuccess(action, context, duration) {
+  return CellPilot.learnFromSuccess(action, context, duration);
+}
+
+/**
+* Export user preferences
+*/
+function exportUserPreferences() {
+  return CellPilot.exportUserPreferences();
+}
+
+/**
+* Reset user preferences
+*/
+function resetUserPreferences() {
+  return CellPilot.resetUserPreferences();
+}
+
+/**
+* ================================
+* ML PERFORMANCE FUNCTIONS
+* ================================
+*/
+
+/**
+* Get ML performance statistics
+*/
+function getMLPerformanceStats() {
+  return CellPilot.getMLPerformanceStats();
+}
+
+/**
+* Optimize ML performance
+*/
+function optimizeMLPerformance() {
+  return CellPilot.optimizeMLPerformance();
+}
+
+/**
+* Enable ML features
+*/
+function enableMLFeatures() {
+  return CellPilot.enableMLFeatures();
+}
+
+/**
+* Get ML feedback history
+*/
+function getMLFeedbackHistory() {
+  return CellPilot.getMLFeedbackHistory();
+}
+
+/**
+* Track ML feedback
+*/
+function trackMLFeedback(operation, prediction, userAction, metadata) {
+  return CellPilot.trackMLFeedback(operation, prediction, userAction, metadata);
+}
+
+/**
+* ================================
+* CONDITIONAL FORMATTING & VALIDATION
+* ================================
+*/
+
+/**
+* Show Data Validation Generator
+*/
+function showDataValidationGenerator() {
+  return CellPilot.showDataValidationGenerator();
+}
+
+/**
+* Show Conditional Formatting Wizard
+*/
+function showConditionalFormattingWizard() {
+  return CellPilot.showConditionalFormattingWizard();
+}
+
+/**
+* ================================
+* PREVIEW & VALIDATION FUNCTIONS
+* ================================
+*/
+
+/**
+* Generate pivot table preview
+*/
+function generatePivotPreview(config) {
+  return CellPilot.generatePivotPreview(config);
+}
+
+/**
+* Generate import preview for data pipeline
+*/
+function generateImportPreview(config) {
+  return CellPilot.generateImportPreview(config);
+}
+
+/**
+* Generate export preview for data pipeline
+*/
+function generateExportPreview(config) {
+  return CellPilot.generateExportPreview(config);
+}
+
+/**
+* Get pipeline history
+*/
+function getPipelineHistory() {
+  return CellPilot.getPipelineHistory();
+}
+
+/**
+* Add to pipeline history
+*/
+function addToPipelineHistory(item) {
+  return CellPilot.addToPipelineHistory(item);
+}
+
+/**
+* Clear pipeline history
+*/
+function clearPipelineHistory() {
+  return CellPilot.clearPipelineHistory();
 }
 
 /**

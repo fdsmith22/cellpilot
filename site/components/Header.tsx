@@ -30,14 +30,14 @@ const Header = () => {
       {/* Grid pattern that fades into header */}
       <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" 
            style={{maskImage: 'linear-gradient(to bottom, black, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, black, transparent)'}}></div>
-      <nav className="relative py-3 md:py-3">
-        <div className="flex items-center justify-between min-h-[72px]">
+      <nav className="relative py-3 max-sm:py-2">
+        <div className="flex items-center justify-between min-h-[72px] max-sm:min-h-[60px]">
           {/* Logo - positioned in top left */}
           <Link href="/" className="flex items-center pl-4 md:pl-6 lg:pl-8">
             <img 
               src="/logo/combined/horizontal-standard-200x60.svg" 
               alt="CellPilot" 
-              className="h-12 sm:h-14 md:h-16 lg:h-20 w-auto"
+              className="h-20 lg:h-16 md:h-14 sm:h-12 max-sm:h-10 w-auto"
             />
           </Link>
 

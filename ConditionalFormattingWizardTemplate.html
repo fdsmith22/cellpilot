@@ -4,26 +4,32 @@
   <base target="_top">
   <?!= include('SharedStyles'); ?>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+    
     .formatting-wizard {
-      padding: 20px;
+      padding: 16px;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      max-width: 100%;
+      overflow-x: hidden;
     }
 
     .wizard-header {
       margin-bottom: 25px;
       padding-bottom: 15px;
-      border-bottom: 2px solid #e0e0e0;
+      border-bottom: 2px solid var(--gray-300);
     }
 
     .wizard-title {
       font-size: 24px;
       font-weight: 600;
-      color: #2c3e50;
+      color: var(--gray-900);
       margin-bottom: 8px;
     }
 
     .wizard-subtitle {
-      color: #7f8c8d;
+      color: var(--gray-500);
       font-size: 14px;
     }
 
@@ -49,7 +55,7 @@
       left: 50%;
       width: 100%;
       height: 2px;
-      background: #e0e0e0;
+      background: var(--gray-300);
       z-index: -1;
     }
 
@@ -61,8 +67,8 @@
       width: 30px;
       height: 30px;
       border-radius: 50%;
-      background: #e0e0e0;
-      color: #95a5a6;
+      background: var(--gray-300);
+      color: var(--gray-400);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -73,28 +79,30 @@
     }
 
     .step-indicator.active .step-circle {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--primary-500) 0%, var(--purple-600) 100%);
       color: white;
     }
 
     .step-indicator.completed .step-circle {
-      background: #27ae60;
+      background: var(--success-600);
       color: white;
     }
 
     .step-label {
       font-size: 12px;
-      color: #7f8c8d;
+      color: var(--gray-500);
       text-align: center;
     }
 
     .step-indicator.active .step-label {
-      color: #2c3e50;
+      color: var(--gray-900);
       font-weight: 600;
     }
 
     .wizard-content {
-      min-height: 400px;
+      min-height: 300px;
+      width: 100%;
+      overflow-x: hidden;
     }
 
     .step-content {
@@ -113,14 +121,15 @@
 
     .rule-type-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
       margin-bottom: 20px;
+      width: 100%;
     }
 
     .rule-type-card {
       background: white;
-      border: 2px solid #e0e0e0;
+      border: 2px solid var(--gray-300);
       border-radius: 12px;
       padding: 20px;
       cursor: pointer;
@@ -129,65 +138,83 @@
     }
 
     .rule-type-card:hover {
-      border-color: #3498db;
+      border-color: var(--info-500);
       transform: translateY(-3px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      box-shadow: var(--shadow-lg);
     }
 
     .rule-type-card.selected {
-      border-color: #667eea;
-      background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+      border-color: var(--primary-500);
+      background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(147,51,234,0.1) 100%);
     }
 
     .rule-icon {
-      font-size: 32px;
-      margin-bottom: 10px;
+      width: 32px;
+      height: 32px;
+      background: var(--primary-100);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary-700);
     }
 
     .rule-title {
       font-weight: 600;
-      color: #2c3e50;
+      color: var(--gray-900);
       margin-bottom: 5px;
     }
 
     .rule-description {
       font-size: 12px;
-      color: #7f8c8d;
+      color: var(--gray-500);
     }
 
     .condition-builder {
-      background: #f8f9fa;
+      background: var(--gray-50);
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 20px;
     }
 
     .condition-row {
-      display: grid;
-      grid-template-columns: 150px 1fr 150px;
-      gap: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
       margin-bottom: 12px;
-      align-items: center;
+      width: 100%;
+    }
+    
+    @media (min-width: 360px) {
+      .condition-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
     }
 
-    .condition-select {
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      background: white;
-      font-size: 14px;
-    }
-
+    /* Removed custom styles - now using SharedStyles */
+    
     .condition-input {
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-md);
       background: white;
-      font-size: 14px;
+      font-size: var(--text-sm);
+      transition: var(--transition-all);
+    }
+    
+    .condition-input:focus {
+      outline: none;
+      border-color: var(--primary-500);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
 
     .remove-condition {
-      background: #e74c3c;
+      background: var(--error-500);
       color: white;
       border: none;
       border-radius: 6px;
@@ -197,11 +224,11 @@
     }
 
     .remove-condition:hover {
-      background: #c0392b;
+      background: var(--error-600);
     }
 
     .add-condition-btn {
-      background: #3498db;
+      background: var(--info-500);
       color: white;
       border: none;
       border-radius: 6px;
@@ -212,26 +239,27 @@
     }
 
     .add-condition-btn:hover {
-      background: #2980b9;
+      background: var(--info-600);
     }
 
     .format-options {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
       margin-bottom: 20px;
+      width: 100%;
     }
 
     .format-group {
       background: white;
-      border: 1px solid #e0e0e0;
+      border: 1px solid var(--gray-300);
       border-radius: 8px;
       padding: 15px;
     }
 
     .format-label {
       font-size: 12px;
-      color: #7f8c8d;
+      color: var(--gray-500);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -247,7 +275,7 @@
     .color-picker {
       width: 60px;
       height: 40px;
-      border: 1px solid #ddd;
+      border: 1px solid var(--gray-300);
       border-radius: 6px;
       cursor: pointer;
     }
@@ -255,7 +283,7 @@
     .color-input {
       flex: 1;
       padding: 8px;
-      border: 1px solid #ddd;
+      border: 1px solid var(--gray-300);
       border-radius: 6px;
       font-size: 14px;
     }
@@ -277,7 +305,7 @@
     }
 
     .preset-color:hover {
-      border-color: #3498db;
+      border-color: var(--info-500);
       transform: scale(1.1);
     }
 
@@ -289,7 +317,7 @@
 
     .style-btn {
       padding: 8px 12px;
-      border: 1px solid #ddd;
+      border: 1px solid var(--gray-300);
       background: white;
       border-radius: 6px;
       cursor: pointer;
@@ -298,14 +326,14 @@
     }
 
     .style-btn.active {
-      background: #3498db;
+      background: var(--info-500);
       color: white;
-      border-color: #3498db;
+      border-color: var(--info-500);
     }
 
     .preview-section {
       background: white;
-      border: 2px solid #e0e0e0;
+      border: 2px solid var(--gray-300);
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 20px;
@@ -314,7 +342,7 @@
     .preview-title {
       font-size: 14px;
       font-weight: 600;
-      color: #34495e;
+      color: var(--gray-700);
       margin-bottom: 15px;
     }
 
@@ -325,7 +353,7 @@
 
     .preview-table td {
       padding: 10px;
-      border: 1px solid #e0e0e0;
+      border: 1px solid var(--gray-300);
       text-align: center;
       font-size: 14px;
     }
@@ -335,10 +363,11 @@
     }
 
     .range-selector {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
+      flex-direction: column;
       gap: 12px;
       margin-bottom: 20px;
+      width: 100%;
     }
 
     .input-group {
@@ -349,7 +378,7 @@
 
     .input-label {
       font-size: 12px;
-      color: #7f8c8d;
+      color: var(--gray-500);
       font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -357,14 +386,14 @@
 
     .input-field {
       padding: 10px;
-      border: 1px solid #ddd;
+      border: 1px solid var(--gray-300);
       border-radius: 6px;
       font-size: 14px;
     }
 
     .input-field:focus {
       outline: none;
-      border-color: #3498db;
+      border-color: var(--info-500);
       box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
     }
 
@@ -396,7 +425,7 @@
     }
 
     .next-btn, .apply-btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--primary-500) 0%, var(--purple-600) 100%);
       color: white;
     }
 
@@ -411,7 +440,7 @@
     }
 
     .rule-list {
-      background: #f8f9fa;
+      background: var(--gray-50);
       border-radius: 8px;
       padding: 15px;
       margin-bottom: 20px;
@@ -421,7 +450,7 @@
 
     .rule-item {
       background: white;
-      border: 1px solid #e0e0e0;
+      border: 1px solid var(--gray-300);
       border-radius: 6px;
       padding: 12px;
       margin-bottom: 10px;
@@ -436,13 +465,13 @@
 
     .rule-name {
       font-weight: 600;
-      color: #2c3e50;
+      color: var(--gray-900);
       margin-bottom: 4px;
     }
 
     .rule-details {
       font-size: 12px;
-      color: #7f8c8d;
+      color: var(--gray-500);
     }
 
     .rule-actions {
@@ -459,18 +488,18 @@
     }
 
     .edit-rule-btn {
-      background: #3498db;
+      background: var(--info-500);
       color: white;
     }
 
     .delete-rule-btn {
-      background: #e74c3c;
+      background: var(--error-500);
       color: white;
     }
 
     .success-message {
       display: none;
-      background: #27ae60;
+      background: var(--success-600);
       color: white;
       padding: 12px;
       border-radius: 6px;
@@ -481,7 +510,7 @@
 
     .error-message {
       display: none;
-      background: #e74c3c;
+      background: var(--error-500);
       color: white;
       padding: 12px;
       border-radius: 6px;
@@ -507,12 +536,22 @@
       height: 40px;
       border-radius: 6px;
       margin-top: 10px;
-      border: 1px solid #ddd;
+      border: 1px solid var(--gray-300);
     }
   </style>
 </head>
 <body>
   <div class="formatting-wizard">
+    <!-- Back Navigation -->
+    <div class="nav-header" style="margin-bottom: 16px;">
+      <button class="back-button" onclick="google.script.run.showCellPilotSidebar()" style="padding: 8px 12px; background: var(--gray-100); border: 1px solid var(--gray-300); border-radius: 6px; cursor: pointer; font-size: 12px; color: var(--gray-700); display: flex; align-items: center; gap: 6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Back to CellPilot
+      </button>
+    </div>
+    
     <div class="wizard-header">
       <div class="wizard-title">Conditional Formatting Wizard</div>
       <div class="wizard-subtitle">Create dynamic formatting rules to visualize your data patterns</div>
@@ -546,42 +585,42 @@
         <h3 style="margin-bottom: 20px; color: #2c3e50;">Select Rule Type</h3>
         <div class="rule-type-grid">
           <div class="rule-type-card" data-type="value" onclick="selectRuleType('value')">
-            <div class="rule-icon">🎯</div>
+            <div class="rule-icon">CV</div>
             <div class="rule-title">Cell Value</div>
             <div class="rule-description">Format based on cell values</div>
           </div>
           <div class="rule-type-card" data-type="text" onclick="selectRuleType('text')">
-            <div class="rule-icon">📝</div>
+            <div class="rule-icon">TC</div>
             <div class="rule-title">Text Contains</div>
             <div class="rule-description">Format cells containing text</div>
           </div>
           <div class="rule-type-card" data-type="date" onclick="selectRuleType('date')">
-            <div class="rule-icon">📅</div>
+            <div class="rule-icon">DR</div>
             <div class="rule-title">Date Range</div>
             <div class="rule-description">Format dates in range</div>
           </div>
           <div class="rule-type-card" data-type="duplicate" onclick="selectRuleType('duplicate')">
-            <div class="rule-icon">👥</div>
+            <div class="rule-icon">DD</div>
             <div class="rule-title">Duplicates</div>
             <div class="rule-description">Highlight duplicate values</div>
           </div>
           <div class="rule-type-card" data-type="scale" onclick="selectRuleType('scale')">
-            <div class="rule-icon">🌈</div>
+            <div class="rule-icon">CS</div>
             <div class="rule-title">Color Scale</div>
             <div class="rule-description">Gradient based on values</div>
           </div>
           <div class="rule-type-card" data-type="databar" onclick="selectRuleType('databar')">
-            <div class="rule-icon">📊</div>
+            <div class="rule-icon">DB</div>
             <div class="rule-title">Data Bars</div>
             <div class="rule-description">In-cell bar charts</div>
           </div>
           <div class="rule-type-card" data-type="formula" onclick="selectRuleType('formula')">
-            <div class="rule-icon">🔢</div>
+            <div class="rule-icon">CF</div>
             <div class="rule-title">Custom Formula</div>
             <div class="rule-description">Use custom formulas</div>
           </div>
           <div class="rule-type-card" data-type="top" onclick="selectRuleType('top')">
-            <div class="rule-icon">🔝</div>
+            <div class="rule-icon">TB</div>
             <div class="rule-title">Top/Bottom</div>
             <div class="rule-description">Format top or bottom values</div>
           </div>
@@ -639,7 +678,7 @@
             </div>
             <div class="preset-colors">
               <div class="preset-color" style="background: #000000;" onclick="setColor('text', '#000000')"></div>
-              <div class="preset-color" style="background: #FFFFFF; border: 1px solid #ddd;" onclick="setColor('text', '#FFFFFF')"></div>
+              <div class="preset-color" style="background: #FFFFFF; border: 1px solid var(--gray-300);" onclick="setColor('text', '#FFFFFF')"></div>
               <div class="preset-color" style="background: #FF0000;" onclick="setColor('text', '#FF0000')"></div>
               <div class="preset-color" style="background: #00FF00;" onclick="setColor('text', '#00FF00')"></div>
               <div class="preset-color" style="background: #0000FF;" onclick="setColor('text', '#0000FF')"></div>
@@ -692,7 +731,7 @@
         <div class="rule-list">
           <div class="preview-title">Existing Rules</div>
           <div id="existingRules">
-            <p style="color: #95a5a6; text-align: center;">No existing rules in selected range</p>
+            <p style="color: var(--gray-400); text-align: center;">No existing rules in selected range</p>
           </div>
         </div>
       </div>
@@ -977,7 +1016,7 @@
             <div style="padding: 20px; background: white; border-radius: 8px;">
               <label class="input-label">Custom Formula</label>
               <textarea class="condition-input" id="customFormula" rows="4" placeholder="e.g., =$A1>100" style="width: 100%; margin-top: 10px;"></textarea>
-              <p style="font-size: 12px; color: #7f8c8d; margin-top: 10px;">
+              <p style="font-size: 12px; color: var(--gray-500); margin-top: 10px;">
                 Use relative references (A1) for rules that apply to each cell individually.
                 Formula should return TRUE to apply formatting.
               </p>
@@ -1353,7 +1392,7 @@
             });
             container.innerHTML = html;
           } else {
-            container.innerHTML = '<p style="color: #95a5a6; text-align: center;">No existing rules in selected range</p>';
+            container.innerHTML = '<p style="color: var(--gray-400); text-align: center;">No existing rules in selected range</p>';
           }
         })
         .getExistingFormattingRules(range);

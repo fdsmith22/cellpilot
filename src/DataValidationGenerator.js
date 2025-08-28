@@ -1,5 +1,32 @@
-// Data Validation Generator Module
+// Data Validation Generator Module with ML Pattern Learning
 const DataValidationGenerator = {
+  // ML Enhancement Properties
+  mlEnabled: false,
+  patternHistory: [],
+  validationPredictions: {},
+  confidenceScores: {},
+  userPatternOverrides: {},
+  
+  // Initialize ML features
+  initializeML: function() {
+    try {
+      const mlStatus = PropertiesService.getUserProperties().getProperty('cellpilot_ml_enabled');
+      this.mlEnabled = mlStatus === 'true';
+      
+      if (this.mlEnabled) {
+        // Load pattern history from user properties
+        const savedHistory = PropertiesService.getUserProperties().getProperty('validation_patterns');
+        if (savedHistory) {
+          this.patternHistory = JSON.parse(savedHistory);
+        }
+      }
+      
+      return this.mlEnabled;
+    } catch (error) {
+      console.error('Error initializing ML for validation:', error);
+      return false;
+    }
+  },
   
   // Get current selection in the sheet
   getCurrentSelection: function() {
@@ -439,7 +466,7 @@ const DataValidationGenerator = {
     return this.applyDataValidation(template);
   },
   
-  // Analyze data to suggest validation rules
+  // Analyze data to suggest validation rules with ML enhancement
   suggestValidation: function(rangeA1) {
     try {
       const sheet = SpreadsheetApp.getActiveSheet();
@@ -448,6 +475,12 @@ const DataValidationGenerator = {
       
       if (values.length === 0) {
         return {type: 'none', reason: 'No data found in range'};
+      }
+      
+      // If ML is enabled, get ML predictions first
+      let mlPrediction = null;
+      if (this.mlEnabled) {
+        mlPrediction = this.predictValidationType(values);
       }
       
       // Analyze the data
@@ -461,15 +494,16 @@ const DataValidationGenerator = {
         v === 'Yes' || v === 'No'
       );
       
-      // Suggest based on analysis
+      // Traditional rule-based suggestion
+      let suggestion = null;
       if (isAllBoolean) {
-        return {
+        suggestion = {
           type: 'checkbox',
           reason: 'Data appears to be boolean values',
           confidence: 0.9
         };
       } else if (isAllEmails) {
-        return {
+        suggestion = {
           type: 'email',
           reason: 'Data appears to be email addresses',
           confidence: 0.95
@@ -477,7 +511,7 @@ const DataValidationGenerator = {
       } else if (isAllNumbers) {
         const min = Math.min(...values);
         const max = Math.max(...values);
-        return {
+        suggestion = {
           type: 'number',
           min: min,
           max: max,
@@ -485,25 +519,40 @@ const DataValidationGenerator = {
           confidence: 0.85
         };
       } else if (isAllDates) {
-        return {
+        suggestion = {
           type: 'date',
           reason: 'Data appears to be dates',
           confidence: 0.8
         };
       } else if (uniqueValues.length <= 10 && values.length > uniqueValues.length * 2) {
-        return {
+        suggestion = {
           type: 'list',
           items: uniqueValues,
           reason: `Data has ${uniqueValues.length} unique values, suitable for a dropdown`,
           confidence: 0.75
         };
       } else {
-        return {
+        suggestion = {
           type: 'text',
           reason: 'Data appears to be free-form text',
           confidence: 0.5
         };
       }
+      
+      // Combine with ML prediction if available
+      if (mlPrediction && mlPrediction.confidence > suggestion.confidence) {
+        suggestion.mlEnhanced = true;
+        suggestion.mlType = mlPrediction.type;
+        suggestion.mlConfidence = mlPrediction.confidence;
+        suggestion.mlReason = mlPrediction.reason;
+        
+        // Use ML suggestion if confidence is significantly higher
+        if (mlPrediction.confidence > suggestion.confidence + 0.1) {
+          return mlPrediction;
+        }
+      }
+      
+      return suggestion;
       
     } catch (error) {
       console.error('Error suggesting validation:', error);
@@ -511,6 +560,304 @@ const DataValidationGenerator = {
         type: 'error',
         reason: error.toString()
       };
+    }
+  },
+  
+  // ML-powered pattern analysis
+  analyzeValidationPatterns: function(values) {
+    try {
+      const patterns = {
+        phonePattern: 0,
+        emailPattern: 0,
+        urlPattern: 0,
+        zipCodePattern: 0,
+        ssnPattern: 0,
+        currencyPattern: 0,
+        percentagePattern: 0,
+        alphanumericPattern: 0
+      };
+      
+      // Test each value against patterns
+      values.forEach(value => {
+        const strValue = String(value);
+        
+        // Phone patterns
+        if (/^\+?[1-9]\d{1,14}$/.test(strValue) || 
+            /^\(\d{3}\)\s?\d{3}-\d{4}$/.test(strValue)) {
+          patterns.phonePattern++;
+        }
+        
+        // Email pattern
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(strValue)) {
+          patterns.emailPattern++;
+        }
+        
+        // URL pattern  
+        if (/^https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/.test(strValue)) {
+          patterns.urlPattern++;
+        }
+        
+        // ZIP code patterns
+        if (/^\d{5}(-\d{4})?$/.test(strValue)) {
+          patterns.zipCodePattern++;
+        }
+        
+        // SSN pattern (masked)
+        if (/^\d{3}-\d{2}-\d{4}$/.test(strValue) || /^XXX-XX-\d{4}$/.test(strValue)) {
+          patterns.ssnPattern++;
+        }
+        
+        // Currency pattern
+        if (/^\$?[\d,]+\.?\d{0,2}$/.test(strValue)) {
+          patterns.currencyPattern++;
+        }
+        
+        // Percentage pattern
+        if (/^\d{1,3}\.?\d{0,2}%?$/.test(strValue)) {
+          patterns.percentagePattern++;
+        }
+        
+        // Alphanumeric pattern
+        if (/^[A-Z0-9]{4,}$/i.test(strValue)) {
+          patterns.alphanumericPattern++;
+        }
+      });
+      
+      // Calculate pattern confidence
+      const totalValues = values.length;
+      const patternScores = {};
+      
+      Object.keys(patterns).forEach(pattern => {
+        if (patterns[pattern] > 0) {
+          patternScores[pattern] = patterns[pattern] / totalValues;
+        }
+      });
+      
+      // Store pattern analysis for learning
+      if (this.mlEnabled) {
+        this.patternHistory.push({
+          timestamp: new Date().toISOString(),
+          patterns: patternScores,
+          sampleSize: totalValues
+        });
+        
+        // Keep only recent history
+        if (this.patternHistory.length > 100) {
+          this.patternHistory = this.patternHistory.slice(-100);
+        }
+        
+        // Save to user properties
+        PropertiesService.getUserProperties().setProperty(
+          'validation_patterns',
+          JSON.stringify(this.patternHistory)
+        );
+      }
+      
+      return patternScores;
+      
+    } catch (error) {
+      console.error('Error analyzing patterns:', error);
+      return {};
+    }
+  },
+  
+  // ML prediction for validation type
+  predictValidationType: function(values) {
+    try {
+      if (!this.mlEnabled || values.length === 0) {
+        return null;
+      }
+      
+      // Analyze patterns
+      const patternScores = this.analyzeValidationPatterns(values);
+      
+      // Feature extraction for ML
+      const features = {
+        uniqueRatio: [...new Set(values)].length / values.length,
+        avgLength: values.reduce((sum, v) => sum + String(v).length, 0) / values.length,
+        hasNumbers: values.some(v => /\d/.test(String(v))),
+        hasLetters: values.some(v => /[a-zA-Z]/.test(String(v))),
+        hasSpecialChars: values.some(v => /[^a-zA-Z0-9\s]/.test(String(v))),
+        ...patternScores
+      };
+      
+      // Simple ML-based prediction logic
+      let prediction = {
+        type: 'text',
+        confidence: 0.5,
+        reason: 'Default prediction'
+      };
+      
+      // Check for specific patterns with high confidence
+      if (patternScores.emailPattern > 0.8) {
+        prediction = {
+          type: 'email',
+          confidence: 0.95,
+          reason: 'ML detected email pattern',
+          pattern: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$'
+        };
+      } else if (patternScores.phonePattern > 0.7) {
+        prediction = {
+          type: 'phone',
+          confidence: 0.9,
+          reason: 'ML detected phone number pattern',
+          pattern: '^\\+?[1-9]\\d{1,14}$'
+        };
+      } else if (patternScores.urlPattern > 0.7) {
+        prediction = {
+          type: 'url',
+          confidence: 0.9,
+          reason: 'ML detected URL pattern',
+          pattern: '^https?://[\\w\\-]+(\\.[\\w\\-]+)+[/#?]?.*$'
+        };
+      } else if (patternScores.currencyPattern > 0.8) {
+        prediction = {
+          type: 'currency',
+          confidence: 0.85,
+          reason: 'ML detected currency pattern',
+          pattern: '^\\$?[\\d,]+\\.?\\d{0,2}$'
+        };
+      } else if (patternScores.percentagePattern > 0.7) {
+        prediction = {
+          type: 'percentage',
+          confidence: 0.85,
+          reason: 'ML detected percentage pattern',
+          min: 0,
+          max: 100
+        };
+      } else if (features.uniqueRatio < 0.1 && values.length > 20) {
+        // High repetition suggests categorical data
+        const uniqueValues = [...new Set(values)];
+        prediction = {
+          type: 'list',
+          confidence: 0.8,
+          reason: 'ML detected categorical data with repeated values',
+          items: uniqueValues
+        };
+      }
+      
+      // Store prediction for feedback learning
+      const predictionKey = `prediction_${Date.now()}`;
+      this.validationPredictions[predictionKey] = {
+        features: features,
+        prediction: prediction,
+        timestamp: new Date().toISOString()
+      };
+      
+      return prediction;
+      
+    } catch (error) {
+      console.error('Error in ML prediction:', error);
+      return null;
+    }
+  },
+  
+  // Learn from user feedback
+  learnFromValidationFeedback: function(predictionKey, wasAccepted, actualType) {
+    try {
+      if (!this.mlEnabled || !this.validationPredictions[predictionKey]) {
+        return false;
+      }
+      
+      const prediction = this.validationPredictions[predictionKey];
+      
+      // Record feedback
+      prediction.feedback = {
+        wasAccepted: wasAccepted,
+        actualType: actualType,
+        feedbackTime: new Date().toISOString()
+      };
+      
+      // Adjust confidence based on feedback
+      if (wasAccepted) {
+        // Increase confidence for similar patterns
+        this.confidenceScores[prediction.prediction.type] = 
+          (this.confidenceScores[prediction.prediction.type] || 0.5) * 1.05;
+      } else {
+        // Decrease confidence and learn actual type
+        this.confidenceScores[prediction.prediction.type] = 
+          (this.confidenceScores[prediction.prediction.type] || 0.5) * 0.95;
+        
+        // Remember user preference
+        const patternKey = JSON.stringify(prediction.features);
+        this.userPatternOverrides[patternKey] = actualType;
+      }
+      
+      // Save learning data
+      const learningData = {
+        confidenceScores: this.confidenceScores,
+        userPatternOverrides: this.userPatternOverrides,
+        lastUpdated: new Date().toISOString()
+      };
+      
+      PropertiesService.getUserProperties().setProperty(
+        'validation_ml_learning',
+        JSON.stringify(learningData)
+      );
+      
+      return true;
+      
+    } catch (error) {
+      console.error('Error learning from feedback:', error);
+      return false;
+    }
+  },
+  
+  // Get validation statistics
+  getValidationStats: function() {
+    try {
+      const stats = {
+        totalPredictions: Object.keys(this.validationPredictions).length,
+        acceptedPredictions: 0,
+        rejectedPredictions: 0,
+        patternHistory: this.patternHistory.length,
+        confidenceScores: this.confidenceScores,
+        mostCommonPatterns: {}
+      };
+      
+      // Count accepted/rejected
+      Object.values(this.validationPredictions).forEach(pred => {
+        if (pred.feedback) {
+          if (pred.feedback.wasAccepted) {
+            stats.acceptedPredictions++;
+          } else {
+            stats.rejectedPredictions++;
+          }
+        }
+      });
+      
+      // Calculate accuracy
+      const totalFeedback = stats.acceptedPredictions + stats.rejectedPredictions;
+      if (totalFeedback > 0) {
+        stats.accuracy = (stats.acceptedPredictions / totalFeedback * 100).toFixed(1) + '%';
+      }
+      
+      // Find most common patterns
+      if (this.patternHistory.length > 0) {
+        const patternCounts = {};
+        this.patternHistory.forEach(entry => {
+          Object.keys(entry.patterns).forEach(pattern => {
+            if (entry.patterns[pattern] > 0.5) {
+              patternCounts[pattern] = (patternCounts[pattern] || 0) + 1;
+            }
+          });
+        });
+        
+        // Sort by frequency
+        const sorted = Object.entries(patternCounts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 3);
+        
+        sorted.forEach(([pattern, count]) => {
+          stats.mostCommonPatterns[pattern] = count;
+        });
+      }
+      
+      return stats;
+      
+    } catch (error) {
+      console.error('Error getting validation stats:', error);
+      return null;
     }
   }
 };

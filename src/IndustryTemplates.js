@@ -6,141 +6,470 @@
 const IndustryTemplates = {
   
   /**
+   * Preview an industry-specific template
+   * @param {string} templateType - Type of template to preview
+   * @return {Object} Result with preview data
+   */
+  previewTemplate: function(templateType) {
+    try {
+      const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+      const createdSheets = [];
+      
+      // Store original active sheet to return to it later
+      const originalSheet = spreadsheet.getActiveSheet();
+      
+      // Create the template sheets with [PREVIEW] prefix
+      switch (templateType) {
+        // Real Estate templates
+        case 'commission-tracker':
+        case 'property-manager':
+        case 'investment-analyzer':
+        case 'lead-pipeline':
+          const realEstateResult = this.createRealEstateTemplate(spreadsheet, templateType, true);
+          createdSheets.push(...realEstateResult.sheets);
+          break;
+          
+        // Construction templates
+        case 'cost-estimator':
+        case 'material-tracker':
+        case 'labor-manager':
+        case 'change-orders':
+          const constructionResult = this.createConstructionTemplate(spreadsheet, templateType, true);
+          createdSheets.push(...constructionResult.sheets);
+          break;
+          
+        // Healthcare templates
+        case 'insurance-verifier':
+        case 'prior-auth-tracker':
+        case 'revenue-cycle':
+        case 'denial-analytics':
+          const healthcareResult = this.createHealthcareTemplate(spreadsheet, templateType, true);
+          createdSheets.push(...healthcareResult.sheets);
+          break;
+          
+        // Marketing templates
+        case 'campaign-dashboard':
+        case 'lead-scoring-system':
+        case 'content-performance':
+        case 'customer-journey':
+          const marketingResult = this.createMarketingTemplate(spreadsheet, templateType, true);
+          createdSheets.push(...marketingResult.sheets);
+          break;
+          
+        // E-commerce templates
+        case 'ecommerce-inventory':
+        case 'profitability-analyzer':
+        case 'sales-forecasting':
+          const ecommerceResult = this.createEcommerceTemplate(spreadsheet, templateType, true);
+          createdSheets.push(...ecommerceResult.sheets);
+          break;
+          
+        // Consulting templates
+        case 'time-billing-tracker':
+        case 'project-profitability':
+        case 'client-dashboard':
+          const consultingResult = this.createConsultingTemplate(spreadsheet, templateType, true);
+          createdSheets.push(...consultingResult.sheets);
+          break;
+          
+        default:
+          return { success: false, message: 'Unknown template type: ' + templateType };
+      }
+      
+      // Store preview sheet names in script properties for cleanup
+      const scriptProperties = PropertiesService.getScriptProperties();
+      const existingPreviews = JSON.parse(scriptProperties.getProperty('previewSheets') || '[]');
+      scriptProperties.setProperty('previewSheets', JSON.stringify([...existingPreviews, ...createdSheets]));
+      
+      // Show the first preview sheet
+      if (createdSheets.length > 0) {
+        const firstSheet = spreadsheet.getSheetByName(createdSheets[0]);
+        if (firstSheet) {
+          spreadsheet.setActiveSheet(firstSheet);
+        }
+      }
+      
+      // Show preview notification
+      SpreadsheetApp.getUi().showModalDialog(
+        HtmlService.createHtmlContent(`
+          <div style="padding: 20px;">
+            <h3>Template Preview Created</h3>
+            <p>Preview sheets have been created with [PREVIEW] prefix.</p>
+            <p><strong>Created sheets:</strong></p>
+            <ul>${createdSheets.map(s => `<li>${s}</li>`).join('')}</ul>
+            <p style="color: #666; margin-top: 15px;">
+              These are temporary preview sheets. Click "Apply" in the sidebar to keep them, 
+              or they will be removed when you preview another template or close the sidebar.
+            </p>
+          </div>
+        `).setWidth(400).setHeight(300),
+        'Template Preview'
+      );
+      
+      return {
+        success: true,
+        sheets: createdSheets,
+        message: 'Preview sheets created successfully'
+      };
+    } catch (error) {
+      console.error('Error previewing template:', error);
+      return { success: false, error: error.toString() };
+    }
+  },
+  
+  /**
+   * Clean up preview sheets
+   */
+  cleanupPreviewSheets: function() {
+    try {
+      const scriptProperties = PropertiesService.getScriptProperties();
+      const previewSheets = JSON.parse(scriptProperties.getProperty('previewSheets') || '[]');
+      const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+      
+      previewSheets.forEach(sheetName => {
+        const sheet = spreadsheet.getSheetByName(sheetName);
+        if (sheet && sheetName.startsWith('[PREVIEW]')) {
+          spreadsheet.deleteSheet(sheet);
+        }
+      });
+      
+      scriptProperties.deleteProperty('previewSheets');
+      return { success: true };
+    } catch (error) {
+      console.error('Error cleaning up preview sheets:', error);
+      return { success: false, error: error.toString() };
+    }
+  },
+  
+  /**
+   * Create Real Estate template sheets
+   */
+  createRealEstateTemplate: function(spreadsheet, templateType, isPreview = false) {
+    const sheets = [];
+    const prefix = isPreview ? '[PREVIEW] ' : '';
+    
+    switch (templateType) {
+      case 'commission-tracker':
+        const commissionSheet = spreadsheet.insertSheet(prefix + 'Commission Tracker');
+        const pipelineSheet = spreadsheet.insertSheet(prefix + 'Pipeline');
+        const dashboardSheet = spreadsheet.insertSheet(prefix + 'Dashboard');
+        sheets.push(commissionSheet.getName(), pipelineSheet.getName(), dashboardSheet.getName());
+        
+        if (!isPreview) {
+          this.setupCommissionTrackerSheet(commissionSheet);
+          this.setupPipelineSheet(pipelineSheet);
+          this.setupDashboardSheet(dashboardSheet);
+        }
+        break;
+        
+      case 'lead-pipeline':
+        const leadSheet = spreadsheet.insertSheet(prefix + 'Lead Pipeline');
+        sheets.push(leadSheet.getName());
+        if (!isPreview) {
+          this.setupLeadPipelineSheet(leadSheet);
+        }
+        break;
+        
+      case 'property-manager':
+        const propertySheet = spreadsheet.insertSheet(prefix + 'Properties');
+        const tenantSheet = spreadsheet.insertSheet(prefix + 'Tenants');
+        const maintenanceSheet = spreadsheet.insertSheet(prefix + 'Maintenance');
+        sheets.push(propertySheet.getName(), tenantSheet.getName(), maintenanceSheet.getName());
+        
+        if (!isPreview) {
+          // Basic setup for property manager sheets
+          this.setupPropertySheet(propertySheet);
+          this.setupTenantSheet(tenantSheet);
+          this.setupMaintenanceSheet(maintenanceSheet);
+        }
+        break;
+        
+      case 'investment-analyzer':
+        const investmentSheet = spreadsheet.insertSheet(prefix + 'Investment Analysis');
+        const cashFlowSheet = spreadsheet.insertSheet(prefix + 'Cash Flow');
+        const roiSheet = spreadsheet.insertSheet(prefix + 'ROI Calculator');
+        sheets.push(investmentSheet.getName(), cashFlowSheet.getName(), roiSheet.getName());
+        
+        if (!isPreview) {
+          this.setupInvestmentSheet(investmentSheet);
+          this.setupCashFlowSheet(cashFlowSheet);
+          this.setupROISheet(roiSheet);
+        }
+        break;
+    }
+    
+    return { sheets };
+  },
+  
+  /**
+   * Create Construction template sheets
+   */
+  createConstructionTemplate: function(spreadsheet, templateType, isPreview = false) {
+    const sheets = [];
+    const prefix = isPreview ? '[PREVIEW] ' : '';
+    
+    switch (templateType) {
+      case 'material-tracker':
+        const materialSheet = spreadsheet.insertSheet(prefix + 'Material Tracker');
+        sheets.push(materialSheet.getName());
+        if (!isPreview) {
+          this.setupMaterialTrackerSheet(materialSheet);
+        }
+        break;
+        
+      case 'labor-manager':
+        const laborSheet = spreadsheet.insertSheet(prefix + 'Labor Manager');
+        sheets.push(laborSheet.getName());
+        if (!isPreview) {
+          this.setupLaborManagerSheet(laborSheet);
+        }
+        break;
+        
+      case 'change-orders':
+        const changeSheet = spreadsheet.insertSheet(prefix + 'Change Orders');
+        sheets.push(changeSheet.getName());
+        if (!isPreview) {
+          this.setupChangeOrderSheet(changeSheet);
+        }
+        break;
+        
+      case 'cost-estimator':
+        const estimateSheet = spreadsheet.insertSheet(prefix + 'Cost Estimator');
+        sheets.push(estimateSheet.getName());
+        if (!isPreview) {
+          this.setupCostEstimatorSheet(estimateSheet);
+        }
+        break;
+    }
+    
+    return { sheets };
+  },
+  
+  /**
+   * Create Healthcare template sheets
+   */
+  createHealthcareTemplate: function(spreadsheet, templateType, isPreview = false) {
+    const sheets = [];
+    const prefix = isPreview ? '[PREVIEW] ' : '';
+    
+    switch (templateType) {
+      case 'prior-auth-tracker':
+        const priorAuthSheet = spreadsheet.insertSheet(prefix + 'Prior Auth');
+        sheets.push(priorAuthSheet.getName());
+        if (!isPreview) {
+          this.setupPriorAuthSheet(priorAuthSheet);
+        }
+        break;
+        
+      case 'revenue-cycle':
+        const revenueSheet = spreadsheet.insertSheet(prefix + 'Revenue Cycle');
+        sheets.push(revenueSheet.getName());
+        if (!isPreview) {
+          this.setupRevenueCycleSheet(revenueSheet);
+        }
+        break;
+        
+      case 'denial-analytics':
+        const denialSheet = spreadsheet.insertSheet(prefix + 'Denial Analytics');
+        sheets.push(denialSheet.getName());
+        if (!isPreview) {
+          this.setupDenialAnalyticsSheet(denialSheet);
+        }
+        break;
+        
+      case 'insurance-verifier':
+        const insuranceSheet = spreadsheet.insertSheet(prefix + 'Insurance Verification');
+        sheets.push(insuranceSheet.getName());
+        if (!isPreview) {
+          this.setupInsuranceVerifierSheet(insuranceSheet);
+        }
+        break;
+    }
+    
+    return { sheets };
+  },
+  
+  /**
+   * Create Marketing template sheets
+   */
+  createMarketingTemplate: function(spreadsheet, templateType, isPreview = false) {
+    const sheets = [];
+    const prefix = isPreview ? '[PREVIEW] ' : '';
+    
+    switch (templateType) {
+      case 'lead-scoring-system':
+        const leadScoringSheet = spreadsheet.insertSheet(prefix + 'Lead Scoring');
+        sheets.push(leadScoringSheet.getName());
+        if (!isPreview) {
+          this.setupLeadScoringSheet(leadScoringSheet);
+        }
+        break;
+        
+      case 'content-performance':
+        const contentSheet = spreadsheet.insertSheet(prefix + 'Content Performance');
+        sheets.push(contentSheet.getName());
+        if (!isPreview) {
+          this.setupContentPerformanceSheet(contentSheet);
+        }
+        break;
+        
+      case 'customer-journey':
+        const journeySheet = spreadsheet.insertSheet(prefix + 'Customer Journey');
+        sheets.push(journeySheet.getName());
+        if (!isPreview) {
+          this.setupCustomerJourneySheet(journeySheet);
+        }
+        break;
+        
+      case 'campaign-dashboard':
+        const campaignSheet = spreadsheet.insertSheet(prefix + 'Campaign Dashboard');
+        sheets.push(campaignSheet.getName());
+        if (!isPreview) {
+          this.setupCampaignDashboardSheet(campaignSheet);
+        }
+        break;
+    }
+    
+    return { sheets };
+  },
+  
+  /**
+   * Create E-commerce template sheets
+   */
+  createEcommerceTemplate: function(spreadsheet, templateType, isPreview = false) {
+    const sheets = [];
+    const prefix = isPreview ? '[PREVIEW] ' : '';
+    
+    switch (templateType) {
+      case 'profitability-analyzer':
+        const profitSheet = spreadsheet.insertSheet(prefix + 'Profitability');
+        sheets.push(profitSheet.getName());
+        if (!isPreview) {
+          this.setupProfitabilitySheet(profitSheet);
+        }
+        break;
+        
+      case 'sales-forecasting':
+        const forecastSheet = spreadsheet.insertSheet(prefix + 'Sales Forecast');
+        sheets.push(forecastSheet.getName());
+        if (!isPreview) {
+          this.setupSalesForecastSheet(forecastSheet);
+        }
+        break;
+        
+      case 'ecommerce-inventory':
+        const inventorySheet = spreadsheet.insertSheet(prefix + 'Inventory Manager');
+        sheets.push(inventorySheet.getName());
+        if (!isPreview) {
+          this.setupInventorySheet(inventorySheet);
+        }
+        break;
+    }
+    
+    return { sheets };
+  },
+  
+  /**
+   * Create Consulting template sheets
+   */
+  createConsultingTemplate: function(spreadsheet, templateType, isPreview = false) {
+    const sheets = [];
+    const prefix = isPreview ? '[PREVIEW] ' : '';
+    
+    switch (templateType) {
+      case 'project-profitability':
+        const projectSheet = spreadsheet.insertSheet(prefix + 'Project Profitability');
+        sheets.push(projectSheet.getName());
+        if (!isPreview) {
+          this.setupProjectProfitabilitySheet(projectSheet);
+        }
+        break;
+        
+      case 'client-dashboard':
+        const clientSheet = spreadsheet.insertSheet(prefix + 'Client Dashboard');
+        sheets.push(clientSheet.getName());
+        if (!isPreview) {
+          this.setupClientDashboardSheet(clientSheet);
+        }
+        break;
+        
+      case 'time-billing-tracker':
+        const billingSheet = spreadsheet.insertSheet(prefix + 'Time & Billing');
+        sheets.push(billingSheet.getName());
+        if (!isPreview) {
+          this.setupTimeBillingSheet(billingSheet);
+        }
+        break;
+    }
+    
+    return { sheets };
+  },
+  
+  /**
    * Apply an industry-specific template
    * @param {string} templateType - Type of template to apply
    * @return {Object} Result with created sheets
    */
   applyTemplate: function(templateType) {
     try {
+      // First, clean up any existing preview sheets
+      this.cleanupPreviewSheets();
+      
       const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
       const createdSheets = [];
       
-      switch(templateType) {
-        // Real Estate Templates
+      // Use the same create functions but without preview flag
+      switch (templateType) {
+        // Real Estate templates
         case 'commission-tracker':
-          createdSheets.push(...this.createRealEstateCommissionTracker(spreadsheet));
-          break;
-          
         case 'property-manager':
-          createdSheets.push(...this.createPropertyManager(spreadsheet));
-          break;
-          
         case 'investment-analyzer':
-          // For now, create a simplified version or reuse commission tracker
-          createdSheets.push(...this.createRealEstateCommissionTracker(spreadsheet));
-          break;
-          
         case 'lead-pipeline':
-          // Create just the pipeline part from commission tracker
-          const pipelineSheet = spreadsheet.insertSheet('Lead Pipeline');
-          this.setupLeadPipelineSheet(pipelineSheet);
-          createdSheets.push(pipelineSheet.getName());
+          const realEstateResult = this.createRealEstateTemplate(spreadsheet, templateType, false);
+          createdSheets.push(...realEstateResult.sheets);
           break;
           
-        // Construction Templates
+        // Construction templates
         case 'cost-estimator':
-          createdSheets.push(...this.createConstructionEstimator(spreadsheet));
-          break;
-          
         case 'material-tracker':
-          // Create a material-focused subset
-          const materialSheet = spreadsheet.insertSheet('Material Tracker');
-          this.setupMaterialTrackerSheet(materialSheet);
-          createdSheets.push(materialSheet.getName());
-          break;
-          
         case 'labor-manager':
-          // Create a labor-focused subset
-          const laborSheet = spreadsheet.insertSheet('Labor Manager');
-          this.setupLaborManagerSheet(laborSheet);
-          createdSheets.push(laborSheet.getName());
-          break;
-          
         case 'change-orders':
-          // Create change order tracking
-          const changeSheet = spreadsheet.insertSheet('Change Orders');
-          this.setupChangeOrderSheet(changeSheet);
-          createdSheets.push(changeSheet.getName());
+          const constructionResult = this.createConstructionTemplate(spreadsheet, templateType, false);
+          createdSheets.push(...constructionResult.sheets);
           break;
           
-        // Healthcare Templates
+        // Healthcare templates
         case 'insurance-verifier':
-          createdSheets.push(...this.createHealthcareVerifier(spreadsheet));
-          break;
-          
         case 'prior-auth-tracker':
-          const priorAuthSheet = spreadsheet.insertSheet('Prior Auth Tracker');
-          this.setupPriorAuthSheet(priorAuthSheet);
-          createdSheets.push(priorAuthSheet.getName());
-          break;
-          
         case 'revenue-cycle':
-          const revenueSheet = spreadsheet.insertSheet('Revenue Cycle');
-          this.setupRevenueCycleSheet(revenueSheet);
-          createdSheets.push(revenueSheet.getName());
-          break;
-          
         case 'denial-analytics':
-          const denialSheet = spreadsheet.insertSheet('Denial Analytics');
-          this.setupDenialAnalyticsSheet(denialSheet);
-          createdSheets.push(denialSheet.getName());
+          const healthcareResult = this.createHealthcareTemplate(spreadsheet, templateType, false);
+          createdSheets.push(...healthcareResult.sheets);
           break;
           
-        // Marketing Templates
+        // Marketing templates
         case 'campaign-dashboard':
-          createdSheets.push(...this.createMarketingDashboard(spreadsheet));
-          break;
-          
         case 'lead-scoring-system':
-          const leadScoringSheet = spreadsheet.insertSheet('Lead Scoring');
-          this.setupLeadScoringSheet(leadScoringSheet);
-          createdSheets.push(leadScoringSheet.getName());
-          break;
-          
         case 'content-performance':
-          const contentSheet = spreadsheet.insertSheet('Content Performance');
-          this.setupContentPerformanceSheet(contentSheet);
-          createdSheets.push(contentSheet.getName());
-          break;
-          
         case 'customer-journey':
-          const journeySheet = spreadsheet.insertSheet('Customer Journey');
-          this.setupCustomerJourneySheet(journeySheet);
-          createdSheets.push(journeySheet.getName());
+          const marketingResult = this.createMarketingTemplate(spreadsheet, templateType, false);
+          createdSheets.push(...marketingResult.sheets);
           break;
           
-        // E-Commerce Templates
+        // E-commerce templates
         case 'ecommerce-inventory':
-          createdSheets.push(...this.createEcommerceInventory(spreadsheet));
-          break;
-          
         case 'profitability-analyzer':
-          const profitSheet = spreadsheet.insertSheet('Profitability Analysis');
-          this.setupProfitabilitySheet(profitSheet);
-          createdSheets.push(profitSheet.getName());
-          break;
-          
         case 'sales-forecasting':
-          const forecastSheet = spreadsheet.insertSheet('Sales Forecast');
-          this.setupSalesForecastSheet(forecastSheet);
-          createdSheets.push(forecastSheet.getName());
+          const ecommerceResult = this.createEcommerceTemplate(spreadsheet, templateType, false);
+          createdSheets.push(...ecommerceResult.sheets);
           break;
           
-        // Consulting Templates
+        // Consulting templates
         case 'time-billing-tracker':
-          createdSheets.push(...this.createConsultingTracker(spreadsheet));
-          break;
-          
         case 'project-profitability':
-          const projectSheet = spreadsheet.insertSheet('Project Profitability');
-          this.setupProjectProfitabilitySheet(projectSheet);
-          createdSheets.push(projectSheet.getName());
-          break;
-          
         case 'client-dashboard':
-          const clientSheet = spreadsheet.insertSheet('Client Dashboard');
-          this.setupClientDashboardSheet(clientSheet);
-          createdSheets.push(clientSheet.getName());
+          const consultingResult = this.createConsultingTemplate(spreadsheet, templateType, false);
+          createdSheets.push(...consultingResult.sheets);
           break;
           
         default:
@@ -2004,5 +2333,303 @@ const IndustryTemplates = {
     sheet.setColumnWidth(4, 200);
     sheet.setColumnWidth(9, 300);
     sheet.setColumnWidth(14, 250);
+  },
+
+  // Missing setup functions for various templates
+  
+  setupMaterialTrackerSheet: function(sheet) {
+    const headers = ['Material ID', 'Date', 'Material Name', 'Category', 'Unit', 'Quantity Ordered', 
+                     'Unit Cost', 'Total Cost', 'Supplier', 'Received Qty', 'Used Qty', 'Remaining', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#2C3E50').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Add formulas
+    for (let row = 2; row <= 50; row++) {
+      sheet.getRange(`H${row}`).setFormula(`=F${row}*G${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`L${row}`).setFormula(`=J${row}-K${row}`).setNumberFormat('#,##0');
+    }
+  },
+  
+  setupLaborManagerSheet: function(sheet) {
+    const headers = ['Employee ID', 'Name', 'Role', 'Department', 'Date', 'Hours Worked', 
+                     'Hourly Rate', 'Daily Cost', 'Project', 'Task', 'Status', 'Approved By'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#34495E').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Add formulas for cost calculation
+    for (let row = 2; row <= 100; row++) {
+      sheet.getRange(`H${row}`).setFormula(`=F${row}*G${row}`).setNumberFormat('$#,##0.00');
+    }
+  },
+  
+  setupChangeOrderSheet: function(sheet) {
+    const headers = ['Change Order #', 'Date', 'Client', 'Project', 'Description', 'Reason', 
+                     'Original Cost', 'Change Amount', 'New Total', 'Status', 'Approved By', 'Date Approved'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#E74C3C').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Add formulas for totals
+    for (let row = 2; row <= 50; row++) {
+      sheet.getRange(`I${row}`).setFormula(`=G${row}+H${row}`).setNumberFormat('$#,##0.00');
+    }
+  },
+  
+  setupPriorAuthSheet: function(sheet) {
+    const headers = ['Auth ID', 'Date', 'Patient ID', 'Patient Name', 'Insurance', 'Procedure Code', 
+                     'Procedure Description', 'Provider', 'Status', 'Auth Number', 'Valid From', 'Valid To', 
+                     'Units Authorized', 'Units Used', 'Remaining'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#3498DB').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Add formula for remaining units
+    for (let row = 2; row <= 100; row++) {
+      sheet.getRange(`O${row}`).setFormula(`=M${row}-N${row}`).setNumberFormat('#,##0');
+    }
+  },
+  
+  setupRevenueCycleSheet: function(sheet) {
+    const headers = ['Claim ID', 'Date', 'Patient', 'Provider', 'Service Date', 'CPT Code', 
+                     'Charge Amount', 'Allowed Amount', 'Paid Amount', 'Adjustment', 'Balance', 
+                     'Days in AR', 'Status', 'Denial Reason'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#27AE60').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Add formulas for balance and days in AR
+    for (let row = 2; row <= 100; row++) {
+      sheet.getRange(`K${row}`).setFormula(`=G${row}-I${row}-J${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`L${row}`).setFormula(`=TODAY()-B${row}`).setNumberFormat('#,##0');
+    }
+  },
+  
+  setupDenialAnalyticsSheet: function(sheet) {
+    const headers = ['Denial ID', 'Date', 'Claim ID', 'Patient', 'Payer', 'Amount', 
+                     'Denial Code', 'Denial Reason', 'Category', 'Appeal Status', 
+                     'Appeal Date', 'Recovery Amount', 'Days to Appeal', 'Resolution'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#E67E22').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Add formulas for days to appeal
+    for (let row = 2; row <= 100; row++) {
+      sheet.getRange(`M${row}`).setFormula(`=IF(K${row}<>"",K${row}-B${row},"")`).setNumberFormat('#,##0');
+    }
+  },
+  
+  setupLeadScoringSheet: function(sheet) {
+    const headers = ['Lead ID', 'Date', 'Name', 'Email', 'Company', 'Source', 'Industry', 
+                     'Company Size', 'Budget', 'Interest Level', 'Engagement Score', 
+                     'Lead Score', 'Status', 'Assigned To', 'Next Action'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#9B59B6').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Add scoring formulas
+    for (let row = 2; row <= 100; row++) {
+      sheet.getRange(`L${row}`).setFormula(`=(J${row}*0.3)+(K${row}*0.7)`).setNumberFormat('0.0');
+    }
+  },
+  
+  setupContentPerformanceSheet: function(sheet) {
+    const headers = ['Content ID', 'Date', 'Title', 'Type', 'Channel', 'Views', 
+                     'Engagement Rate', 'Shares', 'Comments', 'Likes', 'CTR', 
+                     'Conversion Rate', 'Revenue', 'ROI', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#16A085').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Add performance formulas
+    for (let row = 2; row <= 100; row++) {
+      sheet.getRange(`G${row}`).setFormula(`=(I${row}+J${row})/F${row}*100`).setNumberFormat('0.00%');
+      sheet.getRange(`K${row}`).setNumberFormat('0.00%');
+      sheet.getRange(`L${row}`).setNumberFormat('0.00%');
+    }
+  },
+  
+  setupCustomerJourneySheet: function(sheet) {
+    const headers = ['Customer ID', 'Date', 'Name', 'Email', 'Stage', 'Touchpoint', 
+                     'Channel', 'Action', 'Response', 'Sentiment', 'Next Step', 
+                     'Days in Stage', 'Lifetime Value', 'Churn Risk'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#2ECC71').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Add stage duration formulas
+    for (let row = 2; row <= 100; row++) {
+      sheet.getRange(`L${row}`).setFormula(`=TODAY()-B${row}`).setNumberFormat('#,##0');
+      sheet.getRange(`M${row}`).setNumberFormat('$#,##0.00');
+    }
+  },
+  
+  setupProfitabilitySheet: function(sheet) {
+    const headers = ['Product ID', 'Product Name', 'Category', 'Unit Cost', 'Selling Price', 
+                     'Units Sold', 'Revenue', 'Cost of Goods', 'Gross Profit', 'Margin %', 
+                     'Marketing Cost', 'Net Profit', 'ROI', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#F39C12').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Add profitability formulas
+    for (let row = 2; row <= 100; row++) {
+      sheet.getRange(`G${row}`).setFormula(`=E${row}*F${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`H${row}`).setFormula(`=D${row}*F${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`I${row}`).setFormula(`=G${row}-H${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`J${row}`).setFormula(`=IF(G${row}>0,I${row}/G${row},0)`).setNumberFormat('0.00%');
+      sheet.getRange(`L${row}`).setFormula(`=I${row}-K${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`M${row}`).setFormula(`=IF(K${row}>0,L${row}/K${row},0)`).setNumberFormat('0.00%');
+    }
+  },
+  
+  setupSalesForecastSheet: function(sheet) {
+    const headers = ['Month', 'Historical Sales', 'Growth Rate', 'Seasonal Factor', 'Base Forecast', 
+                     'Marketing Impact', 'Adjusted Forecast', 'Confidence %', 'Best Case', 
+                     'Worst Case', 'Actual Sales', 'Variance', 'Accuracy %'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#8E44AD').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Add forecasting formulas
+    for (let row = 2; row <= 13; row++) {
+      sheet.getRange(`E${row}`).setFormula(`=B${row}*(1+C${row})*D${row}`).setNumberFormat('$#,##0');
+      sheet.getRange(`G${row}`).setFormula(`=E${row}+F${row}`).setNumberFormat('$#,##0');
+      sheet.getRange(`I${row}`).setFormula(`=G${row}*1.2`).setNumberFormat('$#,##0');
+      sheet.getRange(`J${row}`).setFormula(`=G${row}*0.8`).setNumberFormat('$#,##0');
+      sheet.getRange(`L${row}`).setFormula(`=K${row}-G${row}`).setNumberFormat('$#,##0');
+      sheet.getRange(`M${row}`).setFormula(`=IF(K${row}>0,1-ABS(L${row})/K${row},0)`).setNumberFormat('0.00%');
+    }
+  },
+  
+  setupProjectProfitabilitySheet: function(sheet) {
+    const headers = ['Project ID', 'Client', 'Project Name', 'Start Date', 'End Date', 
+                     'Budget', 'Hours Budgeted', 'Hours Used', 'Labor Cost', 'Material Cost', 
+                     'Other Costs', 'Total Cost', 'Revenue', 'Profit', 'Margin %', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#2C3E50').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Add profitability formulas
+    for (let row = 2; row <= 50; row++) {
+      sheet.getRange(`L${row}`).setFormula(`=I${row}+J${row}+K${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`N${row}`).setFormula(`=M${row}-L${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`O${row}`).setFormula(`=IF(M${row}>0,N${row}/M${row},0)`).setNumberFormat('0.00%');
+    }
+  },
+  
+  setupClientDashboardSheet: function(sheet) {
+    const headers = ['Client ID', 'Client Name', 'Industry', 'Contact', 'Email', 'Phone', 
+                     'Total Projects', 'Active Projects', 'Completed Projects', 'Total Revenue', 
+                     'Outstanding Balance', 'Last Contact', 'Satisfaction Score', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#1ABC9C').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Format currency and number columns
+    sheet.getRange(2, 10, 100, 2).setNumberFormat('$#,##0.00');
+    sheet.getRange(2, 7, 100, 3).setNumberFormat('#,##0');
+    sheet.getRange(2, 13, 100, 1).setNumberFormat('0.0');
+    
+    // Add data validation for status
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Active', 'Inactive', 'Prospect', 'Lost'])
+      .build();
+    sheet.getRange(2, 14, 100, 1).setDataValidation(statusRule);
+  },
+  
+  // Additional missing setup functions
+  setupTimeBillingSheet: function(sheet) {
+    const headers = ['Date', 'Client', 'Project', 'Task Description', 'Start Time', 'End Time',
+                     'Hours', 'Hourly Rate', 'Total', 'Billable', 'Invoice #', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#3498DB').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Add formulas for hours and total calculation
+    for (let row = 2; row <= 100; row++) {
+      sheet.getRange(`G${row}`).setFormula(`=(F${row}-E${row})*24`).setNumberFormat('0.00');
+      sheet.getRange(`I${row}`).setFormula(`=G${row}*H${row}`).setNumberFormat('$#,##0.00');
+    }
+  },
+  
+  setupCommissionTrackerSheet: function(sheet) {
+    const headers = ['Transaction ID', 'Date', 'Agent', 'Property Address', 'Sale Price', 
+                     'Commission %', 'Commission Amount', 'Split %', 'Net Commission', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#27AE60').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    for (let row = 2; row <= 100; row++) {
+      sheet.getRange(`G${row}`).setFormula(`=E${row}*F${row}/100`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`I${row}`).setFormula(`=G${row}*H${row}/100`).setNumberFormat('$#,##0.00');
+    }
+  },
+  
+  setupPipelineSheet: function(sheet) {
+    const headers = ['Lead ID', 'Date', 'Name', 'Contact', 'Property Interest', 'Stage', 
+                     'Source', 'Next Action', 'Follow-up Date', 'Agent', 'Notes'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#E67E22').setFontColor('#FFFFFF').setFontWeight('bold');
+  },
+  
+  setupDashboardSheet: function(sheet) {
+    const headers = ['Metric', 'This Month', 'Last Month', 'YTD', 'Target', 'Variance'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#8E44AD').setFontColor('#FFFFFF').setFontWeight('bold');
+  },
+  
+  setupCostEstimatorSheet: function(sheet) {
+    const headers = ['Item', 'Category', 'Quantity', 'Unit', 'Unit Cost', 'Total Cost', 
+                     'Markup %', 'Selling Price', 'Margin', 'Notes'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#2C3E50').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    for (let row = 2; row <= 100; row++) {
+      sheet.getRange(`F${row}`).setFormula(`=C${row}*E${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`H${row}`).setFormula(`=F${row}*(1+G${row}/100)`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`I${row}`).setFormula(`=H${row}-F${row}`).setNumberFormat('$#,##0.00');
+    }
+  },
+  
+  setupInsuranceVerifierSheet: function(sheet) {
+    const headers = ['Patient ID', 'Patient Name', 'DOB', 'Insurance', 'Policy #', 
+                     'Group #', 'Effective Date', 'Expiry Date', 'Copay', 'Deductible', 
+                     'Coverage %', 'Verified Date', 'Verified By', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#16A085').setFontColor('#FFFFFF').setFontWeight('bold');
+  },
+  
+  setupCampaignDashboardSheet: function(sheet) {
+    const headers = ['Campaign', 'Channel', 'Start Date', 'End Date', 'Budget', 'Spend', 
+                     'Impressions', 'Clicks', 'CTR', 'Conversions', 'CPA', 'ROI'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#E74C3C').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    for (let row = 2; row <= 50; row++) {
+      sheet.getRange(`I${row}`).setFormula(`=IF(G${row}>0,H${row}/G${row}*100,0)`).setNumberFormat('0.00%');
+      sheet.getRange(`K${row}`).setFormula(`=IF(J${row}>0,F${row}/J${row},0)`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`L${row}`).setFormula(`=IF(F${row}>0,(J${row}*100-F${row})/F${row}*100,0)`).setNumberFormat('0.00%');
+    }
+  },
+  
+  setupInventorySheet: function(sheet) {
+    const headers = ['SKU', 'Product Name', 'Category', 'Current Stock', 'Min Stock', 
+                     'Max Stock', 'Reorder Point', 'Reorder Qty', 'Unit Cost', 'Total Value', 
+                     'Supplier', 'Lead Time', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#F39C12').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    for (let row = 2; row <= 100; row++) {
+      sheet.getRange(`J${row}`).setFormula(`=D${row}*I${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`M${row}`).setFormula(`=IF(D${row}<=G${row},"REORDER",IF(D${row}>=F${row},"OVERSTOCK","OK"))`);
+    }
   }
 };

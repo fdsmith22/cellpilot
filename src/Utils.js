@@ -1,9 +1,321 @@
 /**
- * CellPilot Utility Functions
- * Shared functions used across all modules
+ * CellPilot Utility Functions with ML Adaptive Threshold Learning
+ * Shared functions used across all modules with intelligent thresholds
  */
 
 const Utils = {
+  // ML Adaptive Threshold Properties
+  mlEnabled: false,
+  adaptiveThresholds: {
+    fuzzyMatch: 0.8,
+    duplicateDetection: 0.85,
+    outlierDetection: 3.0,
+    confidenceMinimum: 0.7,
+    anomalyDetection: 0.75,
+    patternRecognition: 0.8
+  },
+  thresholdHistory: [],
+  userFeedback: [],
+  performanceMetrics: {},
+  
+  /**
+   * Initialize ML adaptive learning
+   */
+  initializeAdaptiveLearning: function() {
+    try {
+      const mlStatus = PropertiesService.getUserProperties().getProperty('cellpilot_ml_enabled');
+      this.mlEnabled = mlStatus === 'true';
+      
+      if (this.mlEnabled) {
+        // Load saved thresholds
+        const savedThresholds = PropertiesService.getUserProperties().getProperty('adaptive_thresholds');
+        if (savedThresholds) {
+          this.adaptiveThresholds = JSON.parse(savedThresholds);
+        }
+        
+        // Load threshold history
+        const savedHistory = PropertiesService.getUserProperties().getProperty('threshold_history');
+        if (savedHistory) {
+          this.thresholdHistory = JSON.parse(savedHistory);
+        }
+        
+        // Load performance metrics
+        const savedMetrics = PropertiesService.getUserProperties().getProperty('threshold_metrics');
+        if (savedMetrics) {
+          this.performanceMetrics = JSON.parse(savedMetrics);
+        }
+      }
+      
+      return this.mlEnabled;
+    } catch (error) {
+      console.error('Error initializing adaptive learning:', error);
+      return false;
+    }
+  },
+  
+  /**
+   * Get adaptive threshold for specific operation
+   */
+  getAdaptiveThreshold: function(operation, defaultValue = null) {
+    if (!this.mlEnabled) {
+      return defaultValue || this.adaptiveThresholds[operation] || 0.8;
+    }
+    
+    // Check if we have learned a better threshold
+    const learnedThreshold = this.calculateOptimalThreshold(operation);
+    if (learnedThreshold !== null) {
+      return learnedThreshold;
+    }
+    
+    return this.adaptiveThresholds[operation] || defaultValue || 0.8;
+  },
+  
+  /**
+   * Calculate optimal threshold based on feedback history
+   */
+  calculateOptimalThreshold: function(operation) {
+    const relevantFeedback = this.userFeedback.filter(f => f.operation === operation);
+    
+    if (relevantFeedback.length < 5) {
+      // Not enough data to calculate optimal threshold
+      return null;
+    }
+    
+    // Group feedback by threshold ranges
+    const thresholdGroups = {};
+    relevantFeedback.forEach(feedback => {
+      const bucket = Math.floor(feedback.threshold * 10) / 10; // Round to nearest 0.1
+      if (!thresholdGroups[bucket]) {
+        thresholdGroups[bucket] = { correct: 0, incorrect: 0 };
+      }
+      
+      if (feedback.wasCorrect) {
+        thresholdGroups[bucket].correct++;
+      } else {
+        thresholdGroups[bucket].incorrect++;
+      }
+    });
+    
+    // Find threshold with best accuracy
+    let bestThreshold = null;
+    let bestAccuracy = 0;
+    
+    Object.entries(thresholdGroups).forEach(([threshold, counts]) => {
+      const accuracy = counts.correct / (counts.correct + counts.incorrect);
+      if (accuracy > bestAccuracy) {
+        bestAccuracy = accuracy;
+        bestThreshold = parseFloat(threshold);
+      }
+    });
+    
+    // Only use if significantly better than current
+    if (bestAccuracy > 0.8 && bestThreshold !== null) {
+      return bestThreshold;
+    }
+    
+    return null;
+  },
+  
+  /**
+   * Record feedback for threshold learning
+   */
+  recordThresholdFeedback: function(operation, threshold, wasCorrect, context = {}) {
+    if (!this.mlEnabled) return;
+    
+    const feedback = {
+      timestamp: new Date().toISOString(),
+      operation: operation,
+      threshold: threshold,
+      wasCorrect: wasCorrect,
+      context: context
+    };
+    
+    this.userFeedback.push(feedback);
+    
+    // Keep only recent feedback (last 1000 entries)
+    if (this.userFeedback.length > 1000) {
+      this.userFeedback = this.userFeedback.slice(-1000);
+    }
+    
+    // Update threshold if we have enough positive feedback
+    this.updateAdaptiveThreshold(operation);
+    
+    // Save feedback
+    this.saveAdaptiveData();
+  },
+  
+  /**
+   * Update adaptive threshold based on feedback
+   */
+  updateAdaptiveThreshold: function(operation) {
+    const relevantFeedback = this.userFeedback.filter(f => f.operation === operation);
+    const recentFeedback = relevantFeedback.slice(-20); // Last 20 feedbacks
+    
+    if (recentFeedback.length < 10) return; // Need enough data
+    
+    const correctCount = recentFeedback.filter(f => f.wasCorrect).length;
+    const accuracy = correctCount / recentFeedback.length;
+    
+    const currentThreshold = this.adaptiveThresholds[operation];
+    let newThreshold = currentThreshold;
+    
+    if (accuracy < 0.7) {
+      // Too many false positives, increase threshold
+      newThreshold = Math.min(0.95, currentThreshold + 0.02);
+    } else if (accuracy > 0.9 && recentFeedback.some(f => !f.wasCorrect)) {
+      // Very high accuracy but some misses, might decrease threshold slightly
+      newThreshold = Math.max(0.5, currentThreshold - 0.01);
+    }
+    
+    // Record threshold change
+    if (newThreshold !== currentThreshold) {
+      this.thresholdHistory.push({
+        timestamp: new Date().toISOString(),
+        operation: operation,
+        oldThreshold: currentThreshold,
+        newThreshold: newThreshold,
+        accuracy: accuracy,
+        sampleSize: recentFeedback.length
+      });
+      
+      this.adaptiveThresholds[operation] = newThreshold;
+      
+      // Keep history manageable
+      if (this.thresholdHistory.length > 500) {
+        this.thresholdHistory = this.thresholdHistory.slice(-500);
+      }
+    }
+  },
+  
+  /**
+   * Save adaptive learning data
+   */
+  saveAdaptiveData: function() {
+    try {
+      PropertiesService.getUserProperties().setProperty(
+        'adaptive_thresholds',
+        JSON.stringify(this.adaptiveThresholds)
+      );
+      
+      PropertiesService.getUserProperties().setProperty(
+        'threshold_history',
+        JSON.stringify(this.thresholdHistory)
+      );
+      
+      PropertiesService.getUserProperties().setProperty(
+        'threshold_metrics',
+        JSON.stringify(this.performanceMetrics)
+      );
+      
+    } catch (error) {
+      console.error('Error saving adaptive data:', error);
+    }
+  },
+  
+  /**
+   * Track performance metrics for operations
+   */
+  trackPerformance: function(operation, duration, success, dataSize = 0) {
+    if (!this.performanceMetrics[operation]) {
+      this.performanceMetrics[operation] = {
+        totalRuns: 0,
+        successCount: 0,
+        totalDuration: 0,
+        avgDuration: 0,
+        totalDataProcessed: 0,
+        lastRun: null
+      };
+    }
+    
+    const metrics = this.performanceMetrics[operation];
+    metrics.totalRuns++;
+    if (success) metrics.successCount++;
+    metrics.totalDuration += duration;
+    metrics.avgDuration = metrics.totalDuration / metrics.totalRuns;
+    metrics.totalDataProcessed += dataSize;
+    metrics.lastRun = new Date().toISOString();
+    metrics.successRate = (metrics.successCount / metrics.totalRuns) * 100;
+    
+    // Auto-adjust thresholds based on performance
+    if (this.mlEnabled && metrics.totalRuns % 10 === 0) {
+      this.autoAdjustThresholds(operation, metrics);
+    }
+  },
+  
+  /**
+   * Auto-adjust thresholds based on performance metrics
+   */
+  autoAdjustThresholds: function(operation, metrics) {
+    // If success rate is low, we might need to adjust thresholds
+    if (metrics.successRate < 70 && this.adaptiveThresholds[operation]) {
+      // Consider making threshold more lenient
+      const adjustment = (70 - metrics.successRate) / 1000; // Small adjustment
+      const currentThreshold = this.adaptiveThresholds[operation];
+      const newThreshold = Math.max(0.5, currentThreshold - adjustment);
+      
+      if (Math.abs(newThreshold - currentThreshold) > 0.01) {
+        this.adaptiveThresholds[operation] = newThreshold;
+        
+        console.log(`Auto-adjusted ${operation} threshold from ${currentThreshold} to ${newThreshold} based on ${metrics.successRate.toFixed(1)}% success rate`);
+        
+        this.saveAdaptiveData();
+      }
+    }
+  },
+  
+  /**
+   * Get threshold statistics
+   */
+  getThresholdStats: function() {
+    const stats = {
+      currentThresholds: this.adaptiveThresholds,
+      totalFeedback: this.userFeedback.length,
+      thresholdChanges: this.thresholdHistory.length,
+      performanceMetrics: {},
+      recentAdjustments: []
+    };
+    
+    // Summarize performance metrics
+    Object.entries(this.performanceMetrics).forEach(([operation, metrics]) => {
+      stats.performanceMetrics[operation] = {
+        runs: metrics.totalRuns,
+        successRate: metrics.successRate?.toFixed(1) + '%',
+        avgDuration: metrics.avgDuration?.toFixed(2) + 'ms'
+      };
+    });
+    
+    // Get recent threshold adjustments
+    stats.recentAdjustments = this.thresholdHistory.slice(-5).map(h => ({
+      operation: h.operation,
+      change: `${h.oldThreshold.toFixed(2)} → ${h.newThreshold.toFixed(2)}`,
+      accuracy: `${(h.accuracy * 100).toFixed(1)}%`,
+      when: h.timestamp
+    }));
+    
+    return stats;
+  },
+  
+  /**
+   * Reset adaptive thresholds to defaults
+   */
+  resetAdaptiveThresholds: function() {
+    this.adaptiveThresholds = {
+      fuzzyMatch: 0.8,
+      duplicateDetection: 0.85,
+      outlierDetection: 3.0,
+      confidenceMinimum: 0.7,
+      anomalyDetection: 0.75,
+      patternRecognition: 0.8
+    };
+    
+    this.thresholdHistory = [];
+    this.userFeedback = [];
+    this.performanceMetrics = {};
+    
+    this.saveAdaptiveData();
+    
+    return true;
+  },
   
   /**
    * Safe execution wrapper with error handling
@@ -88,44 +400,201 @@ const Utils = {
   },
   
   /**
-   * Detect data type in a range
+   * Detect data type in a range with smart header detection
    */
   detectDataType: function(data) {
     if (!data || data.length === 0) return 'empty';
     
-    const firstRow = data[0];
-    const sampleSize = Math.min(10, data.length);
-    const sample = data.slice(0, sampleSize);
+    // Check if first row might be headers
+    const hasHeaders = this.detectHeaders(data);
+    const dataRows = hasHeaders && data.length > 1 ? data.slice(1) : data;
     
-    let hasNumbers = false;
-    let hasDates = false;
-    let hasText = false;
-    let hasEmails = false;
-    let hasPhones = false;
+    // If we detected headers, return header info
+    if (hasHeaders && data.length > 1) {
+      const headerName = String(data[0][0]).trim();
+      const dataType = this.analyzeColumnData(dataRows.map(row => row[0]));
+      return `${headerName} (${dataType})`;
+    }
+    
+    // Otherwise analyze all the data
+    const sampleSize = Math.min(10, dataRows.length);
+    const sample = dataRows.slice(0, sampleSize);
+    
+    // Count different data types
+    let numbers = 0;
+    let dates = 0;
+    let text = 0;
+    let emails = 0;
+    let phones = 0;
+    let currency = 0;
+    let percentages = 0;
+    let empty = 0;
+    let total = 0;
     
     sample.forEach(row => {
       row.forEach(cell => {
+        total++;
         const cellStr = String(cell).trim();
         
-        if (cellStr === '') return;
+        if (cellStr === '') {
+          empty++;
+          return;
+        }
         
-        if (this.isNumber(cellStr)) hasNumbers = true;
-        if (this.isDate(cellStr)) hasDates = true;
-        if (this.isEmail(cellStr)) hasEmails = true;
-        if (this.isPhoneNumber(cellStr)) hasPhones = true;
-        if (isNaN(cellStr) && !this.isDate(cellStr)) hasText = true;
+        // Check for specific formats first
+        if (this.isCurrency(cellStr)) {
+          currency++;
+        } else if (this.isPercentage(cellStr)) {
+          percentages++;
+        } else if (this.isEmail(cellStr)) {
+          emails++;
+        } else if (this.isPhoneNumber(cellStr)) {
+          phones++;
+        } else if (this.isDate(cellStr)) {
+          dates++;
+        } else if (this.isNumber(cellStr)) {
+          numbers++;
+        } else {
+          text++;
+        }
       });
     });
     
-    // Return most specific type
-    if (hasEmails) return 'email';
-    if (hasPhones) return 'phone';
-    if (hasDates) return 'date';
-    if (hasNumbers && hasText) return 'mixed';
-    if (hasNumbers) return 'number';
-    if (hasText) return 'text';
+    // Calculate percentages
+    const nonEmpty = total - empty;
+    if (nonEmpty === 0) return 'empty';
+    
+    // Return most dominant type (at least 60% of non-empty cells)
+    const threshold = nonEmpty * 0.6;
+    
+    if (currency > threshold) return 'currency';
+    if (percentages > threshold) return 'percentage';
+    if (emails > threshold) return 'email';
+    if (phones > threshold) return 'phone';
+    if (dates > threshold) return 'date';
+    if (numbers > threshold) return 'number';
+    if (text > threshold) return 'text';
+    
+    // If mixed, describe the mix
+    if ((numbers + currency + percentages) > 0 && text > 0) return 'mixed';
     
     return 'unknown';
+  },
+  
+  /**
+   * Detect if first row contains headers
+   */
+  detectHeaders: function(data) {
+    if (!data || data.length < 2) return false;
+    
+    const firstRow = data[0];
+    const secondRow = data[1];
+    
+    // Common header patterns
+    const headerPatterns = [
+      /^(name|title|description|label|category|type|status|date|time|email|phone|address|city|state|country|zip|amount|price|cost|total|quantity|count|id|code|number|percent|rate|value|score|rating|notes|comments|salary|wage|income|revenue|expense|budget|tax|discount|profit|loss)$/i,
+      /^(first|last|full|user|customer|client|product|item|order|invoice|payment|transaction|account|balance|credit|debit|employee|staff|department|location|branch|store)[\s_-]?(name|id|number|date|amount|type|status|code|salary|rate)?$/i,
+      /^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|january|february|march|april|may|june|july|august|september|october|november|december|q[1-4]|quarter|year|month|week|day)[\s_-]?\d{0,4}$/i,
+      /^(gross|net|base|total|annual|monthly|weekly|daily|hourly)[\s_-]?(salary|wage|pay|income|revenue|amount|value|cost|price)?$/i
+    ];
+    
+    let headerLikeCount = 0;
+    let firstRowIsText = 0;
+    let secondRowIsNotText = 0;
+    
+    for (let i = 0; i < firstRow.length; i++) {
+      const firstCell = String(firstRow[i]).trim();
+      const secondCell = secondRow[i] ? String(secondRow[i]).trim() : '';
+      
+      // Check if first row cell matches header patterns
+      if (headerPatterns.some(pattern => pattern.test(firstCell))) {
+        headerLikeCount++;
+      }
+      
+      // Check if first row is text and second row is data
+      if (firstCell && isNaN(firstCell) && !this.isDate(firstCell)) {
+        firstRowIsText++;
+      }
+      
+      if (secondCell && (this.isNumber(secondCell) || this.isDate(secondCell) || this.isCurrency(secondCell))) {
+        secondRowIsNotText++;
+      }
+    }
+    
+    // If most cells in first row look like headers
+    if (headerLikeCount >= firstRow.length * 0.5) return true;
+    
+    // If first row is mostly text and second row is mostly data
+    if (firstRowIsText >= firstRow.length * 0.7 && secondRowIsNotText >= secondRow.length * 0.5) return true;
+    
+    return false;
+  },
+  
+  /**
+   * Analyze a single column of data
+   */
+  analyzeColumnData: function(columnData) {
+    if (!columnData || columnData.length === 0) return 'empty';
+    
+    const nonEmpty = columnData.filter(cell => String(cell).trim() !== '');
+    if (nonEmpty.length === 0) return 'empty';
+    
+    let numbers = 0;
+    let dates = 0;
+    let currency = 0;
+    let percentages = 0;
+    let emails = 0;
+    let phones = 0;
+    let text = 0;
+    
+    nonEmpty.forEach(cell => {
+      const cellStr = String(cell).trim();
+      
+      if (this.isCurrency(cellStr)) {
+        currency++;
+      } else if (this.isPercentage(cellStr)) {
+        percentages++;
+      } else if (this.isEmail(cellStr)) {
+        emails++;
+      } else if (this.isPhoneNumber(cellStr)) {
+        phones++;
+      } else if (this.isDate(cellStr)) {
+        dates++;
+      } else if (this.isNumber(cellStr)) {
+        numbers++;
+      } else {
+        text++;
+      }
+    });
+    
+    const total = nonEmpty.length;
+    const threshold = total * 0.6;
+    
+    if (currency > threshold) return 'currency';
+    if (percentages > threshold) return 'percentage';
+    if (emails > threshold) return 'email';
+    if (phones > threshold) return 'phone';
+    if (dates > threshold) return 'date';
+    if (numbers > threshold) return 'number';
+    if (text > threshold) return 'text';
+    
+    return 'mixed';
+  },
+  
+  /**
+   * Check if value is currency
+   */
+  isCurrency: function(value) {
+    const currencyPattern = /^[$£€¥₹¢]\s?[\d,]+\.?\d*$|^[\d,]+\.?\d*\s?[$£€¥₹¢]$/;
+    return currencyPattern.test(String(value).trim());
+  },
+  
+  /**
+   * Check if value is percentage
+   */
+  isPercentage: function(value) {
+    const percentPattern = /^\d+\.?\d*\s?%$|^%\s?\d+\.?\d*$/;
+    return percentPattern.test(String(value).trim());
   },
   
   /**
@@ -160,9 +629,16 @@ const Utils = {
   },
   
   /**
-   * Fuzzy string matching for duplicate detection
+   * Fuzzy string matching for duplicate detection with adaptive threshold
    */
-  fuzzyMatch: function(str1, str2, threshold = 0.8) {
+  fuzzyMatch: function(str1, str2, threshold = null) {
+    const startTime = Date.now();
+    
+    // Use adaptive threshold if ML is enabled
+    if (threshold === null) {
+      threshold = this.getAdaptiveThreshold('fuzzyMatch', 0.8);
+    }
+    
     if (str1 === str2) return 1;
     
     str1 = String(str1).toLowerCase().trim();
@@ -176,7 +652,15 @@ const Utils = {
     if (maxLength === 0) return 1;
     
     const similarity = 1 - (distance / maxLength);
-    return similarity >= threshold ? similarity : 0;
+    const result = similarity >= threshold ? similarity : 0;
+    
+    // Track performance if ML is enabled
+    if (this.mlEnabled) {
+      const duration = Date.now() - startTime;
+      this.trackPerformance('fuzzyMatch', duration, result > 0, str1.length + str2.length);
+    }
+    
+    return result;
   },
   
   /**

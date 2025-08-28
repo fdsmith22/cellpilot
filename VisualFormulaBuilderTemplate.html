@@ -518,6 +518,13 @@
 </head>
 <body>
   <div class="nav-header">
+    <button class="nav-back" onclick="google.script.run.showCellPilotSidebar()" style="padding: 8px 12px; background: var(--gray-100); border: 1px solid var(--gray-300); border-radius: 6px; cursor: pointer; font-size: 12px; color: var(--gray-700); display: flex; align-items: center; gap: 6px; margin-bottom: 12px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      Back to CellPilot
+    </button>
+    <div>
     <button class="nav-back" onclick="backToMain()">←</button>
     <div class="nav-title">
       <h2>Visual Formula Builder</h2>
@@ -600,7 +607,7 @@
            ondragleave="handleDragLeave(event)">
         <div class="formula-canvas-empty" id="canvasEmpty">
           <div>
-            <div style="font-size: 24px; margin-bottom: 8px;">📊</div>
+            <div style="font-size: 14px; margin-bottom: 8px; width: 32px; height: 32px; background: var(--primary-100); border-radius: 6px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: 700; color: var(--primary-700);">VF</div>
             Drag components here to start building
           </div>
         </div>
@@ -701,7 +708,7 @@
             <div class="draggable-component" draggable="true" 
                  data-type="function" data-value="VLOOKUP" 
                  ondragstart="handleDragStart(event)">
-              <div class="component-icon">🔍</div>
+              <div class="component-icon" style="background: var(--gray-100); color: var(--gray-700); font-weight: 700; font-size: 12px;">LU</div>
               <div class="component-label">VLOOKUP</div>
             </div>
             <div class="draggable-component" draggable="true" 
@@ -948,7 +955,7 @@
         canvas.innerHTML = `
           <div class="formula-canvas-empty" id="canvasEmpty">
             <div>
-              <div style="font-size: 24px; margin-bottom: 8px;">📊</div>
+              <div style="font-size: 14px; margin-bottom: 8px; width: 32px; height: 32px; background: var(--primary-100); border-radius: 6px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: 700; color: var(--primary-700);">VF</div>
               Drag components here to start building
             </div>
           </div>
@@ -1283,7 +1290,7 @@
       component.setAttribute('ondragstart', 'handleDragStart(event)');
       
       component.innerHTML = 
-        '<div class="component-icon">📊</div>' +
+        '<div class="component-icon" style="background: var(--primary-100); color: var(--primary-700); font-weight: 700; font-size: 12px;">MA</div>' +
         '<div class="component-label">' + reference + '</div>';
       
       // Add to canvas or palette
@@ -1433,7 +1440,7 @@
       component.setAttribute('data-value', formula);
       
       component.innerHTML = 
-        '<div class="component-icon">✨</div>' +
+        '<div class="component-icon" style="background: var(--warning-100); color: var(--warning-700); font-weight: 700; font-size: 12px;">TX</div>' +
         '<div class="component-label">Smart: ' + formula + '</div>';
       
       canvas.appendChild(component);

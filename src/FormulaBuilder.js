@@ -340,14 +340,51 @@ const FormulaBuilder = {
         .setText(placeholderText));
     }
     
+    // ML Confidence indicator (if available)
+    if (formulaData.confidence) {
+      const confidenceSection = CardService.newCardSection()
+        .setHeader('Confidence Level');
+      
+      const confidenceText = this.getConfidenceDescription(formulaData.confidence);
+      confidenceSection.addWidget(CardService.newTextParagraph()
+        .setText(`${confidenceText} (${Math.round(formulaData.confidence * 100)}%)`));
+      
+      // Add alternatives if available
+      if (formulaData.alternatives && formulaData.alternatives.length > 0) {
+        const altText = '<b>Alternative suggestions:</b><br>' +
+          formulaData.alternatives.slice(0, 3).map(alt => 
+            `• <font face="Courier New">${alt.formula}</font> (${Math.round(alt.confidence * 100)}%)`
+          ).join('<br>');
+        
+        confidenceSection.addWidget(CardService.newTextParagraph()
+          .setText(altText));
+      }
+      
+      card.addSection(confidenceSection);
+    }
+    
     // Action buttons
     const actionSection = CardService.newCardSection();
     
     const copyButton = CardService.newTextButton()
       .setText('Insert Formula')
       .setOnClickAction(CardService.newAction()
-        .setFunctionName('insertFormulaToActiveCell')
-        .setParameters({ formula: formulaData.formula }));
+        .setFunctionName('insertFormulaWithTracking')
+        .setParameters({ 
+          formula: formulaData.formula,
+          description: originalDescription
+        }));
+    
+    // Add feedback button for ML learning
+    const feedbackButton = CardService.newTextButton()
+      .setText('This Helped!')
+      .setOnClickAction(CardService.newAction()
+        .setFunctionName('recordFormulaFeedback')
+        .setParameters({ 
+          formula: formulaData.formula,
+          description: originalDescription,
+          helpful: 'true'
+        }));
     
     const newSearchButton = CardService.newTextButton()
       .setText('Build Another Formula')
@@ -355,6 +392,9 @@ const FormulaBuilder = {
         .setFunctionName('showNaturalLanguageFormulaBuilder'));
     
     actionSection.addWidget(copyButton);
+    if (formulaData.confidence) {
+      actionSection.addWidget(feedbackButton);
+    }
     actionSection.addWidget(newSearchButton);
     
     card.addSection(requestSection);
@@ -394,7 +434,64 @@ const FormulaBuilder = {
   },
   
   /**
-   * Insert formula into active cell
+   * Get confidence description
+   */
+  getConfidenceDescription: function(confidence) {
+    if (confidence >= 0.9) return 'Very High Confidence';
+    if (confidence >= 0.75) return 'High Confidence';
+    if (confidence >= 0.6) return 'Moderate Confidence';
+    if (confidence >= 0.4) return 'Low Confidence';
+    return 'Uncertain';
+  },
+  
+  /**
+   * Insert formula with ML tracking
+   */
+  insertFormulaWithTracking: function(params) {
+    return Utils.safeExecute(() => {
+      const formula = params && params.formula;
+      const description = params && params.description;
+      
+      if (!formula) {
+        throw new Error('No formula provided');
+      }
+      
+      const activeCell = SpreadsheetApp.getActiveCell();
+      activeCell.setFormula(formula);
+      
+      // Track formula usage for ML learning
+      if (description) {
+        this.learnFromFormulaSelection(formula, description, true);
+      }
+      
+      return UIComponents.buildSuccessCard(
+        'Formula inserted successfully',
+        `Formula "${formula}" has been added to cell ${activeCell.getA1Notation()}`
+      );
+      
+    }, Utils.handleError(new Error('Insert failed'), 'Failed to insert formula'), 'insertFormulaWithTracking');
+  },
+  
+  /**
+   * Record formula feedback for ML
+   */
+  recordFormulaFeedback: function(params) {
+    const formula = params && params.formula;
+    const description = params && params.description;
+    const helpful = params && params.helpful === 'true';
+    
+    if (formula && description) {
+      this.learnFromFormulaSelection(formula, description, helpful);
+    }
+    
+    return UIComponents.buildSuccessCard(
+      'Thank you!',
+      'Your feedback helps improve formula suggestions.'
+    );
+  },
+  
+  /**
+   * Original insert formula (kept for compatibility)
    */
   insertFormulaToActiveCell: function(params) {
     return Utils.safeExecute(() => {
@@ -424,18 +521,50 @@ const FormulaBuilder = {
   },
   
   /**
-   * Build formula templates card
+   * Build ML-enhanced formula templates card
    */
-  buildTemplatesCard: function() {
+  buildTemplatesCard: async function() {
+    // Initialize ML for personalized recommendations
+    if (!this.mlEnabled && typeof window !== 'undefined') {
+      await this.initializeML();
+    }
+    
     const card = CardService.newCardBuilder()
       .setHeader(CardService.newCardHeader()
         .setTitle('Formula Templates')
         .setSubtitle('Ready-to-use formulas'));
     
-    // Categories of templates
-    const categories = ['Lookup', 'Math', 'Text', 'Date', 'Conditional'];
+    // Categories of templates with ML personalization
+    const categories = ['Recommended', 'Lookup', 'Math', 'Text', 'Date', 'Conditional'];
     
-    categories.forEach(category => {
+    // Add recommended section if ML is enabled
+    if (this.mlEnabled && this.userFormulaHistory.length > 0) {
+      const recommendedSection = CardService.newCardSection()
+        .setHeader('Recommended for You')
+        .setCollapsible(false);
+      
+      const recommendations = await this.getPersonalizedRecommendations();
+      recommendations.forEach(rec => {
+        const button = CardService.newDecoratedText()
+          .setText(rec.name)
+          .setBottomLabel(`${Math.round(rec.confidence * 100)}% match`)
+          .setOnClickAction(CardService.newAction()
+            .setFunctionName('showTemplateDetail')
+            .setParameters({ 
+              templateId: rec.id,
+              isRecommended: 'true'
+            }));
+        
+        recommendedSection.addWidget(button);
+      });
+      
+      if (recommendations.length > 0) {
+        card.addSection(recommendedSection);
+      }
+    }
+    
+    // Add standard categories
+    categories.filter(cat => cat !== 'Recommended').forEach(category => {
       const section = CardService.newCardSection()
         .setHeader(category)
         .setCollapsible(true);
@@ -486,6 +615,63 @@ const FormulaBuilder = {
     };
     
     return allTemplates[category] || [];
+  },
+  
+  /**
+   * Get personalized formula recommendations
+   */
+  getPersonalizedRecommendations: async function() {
+    if (!this.mlEnabled || !this.mlEngine) {
+      return [];
+    }
+    
+    try {
+      // Analyze user history to find patterns
+      const recentFormulas = this.userFormulaHistory.slice(-20);
+      const context = this.getCurrentSheetContext();
+      
+      // Get ML recommendations
+      const recommendations = await this.mlEngine.getPersonalizedFormulas(
+        recentFormulas,
+        context
+      );
+      
+      // Map to template format
+      return recommendations.map(rec => ({
+        id: `ml_${rec.type}_${Date.now()}`,
+        name: rec.name || rec.formula,
+        formula: rec.formula,
+        confidence: rec.confidence || 0.5,
+        category: rec.category || 'Recommended'
+      }));
+    } catch (error) {
+      console.warn('Failed to get personalized recommendations:', error);
+      return [];
+    }
+  },
+  
+  /**
+   * Predict next formula based on context
+   */
+  predictNextFormula: async function() {
+    if (!this.mlEnabled || !this.mlEngine) {
+      return null;
+    }
+    
+    try {
+      const context = this.getCurrentSheetContext();
+      const recentFormulas = this.userFormulaHistory.slice(-5);
+      
+      const prediction = await this.mlEngine.predictNextFormula(
+        recentFormulas,
+        context
+      );
+      
+      return prediction;
+    } catch (error) {
+      console.warn('Formula prediction failed:', error);
+      return null;
+    }
   },
   
   /**

@@ -5,6 +5,11 @@
 
 const DataCleaner = {
   
+  // ML-enhanced properties
+  mlEnabled: false,
+  adaptiveThreshold: 0.85,
+  userFeedbackHistory: [],
+  
   /**
    * Show duplicate removal options interface
    */
@@ -96,10 +101,17 @@ const DataCleaner = {
   
   /**
    * Find duplicate rows in data
+   * Enhanced with ML-powered adaptive detection
    */
   findDuplicates: function(data, options = {}) {
-    const threshold = options.threshold || 0.85;
+    // Load adaptive threshold from user preferences
+    const userProfile = UserSettings.load('mlProfile', {});
+    const adaptiveThreshold = userProfile.adaptiveThresholds?.duplicate || this.adaptiveThreshold;
+    
+    const threshold = options.threshold || adaptiveThreshold;
     const caseSensitive = options.caseSensitive || false;
+    const useML = options.useML !== false && this.mlEnabled;
+    
     const duplicateGroups = [];
     const processed = new Set();
     
@@ -323,5 +335,212 @@ const DataCleaner = {
       // TODO: Implement date formatting UI
       return UIComponents.buildLoadingCard('Date formatting coming soon...');
     }, Utils.handleError(new Error('Feature unavailable'), 'Date formatting not yet available'), 'showDateFormattingOptions');
+  },
+  
+  /**
+   * ML Methods - Learn from user feedback
+   */
+  learnFromDuplicateFeedback: function(acceptedDuplicates, rejectedDuplicates, threshold) {
+    // Track user feedback
+    this.userFeedbackHistory.push({
+      accepted: acceptedDuplicates.length,
+      rejected: rejectedDuplicates.length,
+      threshold: threshold,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Calculate acceptance rate
+    const totalSuggestions = acceptedDuplicates.length + rejectedDuplicates.length;
+    if (totalSuggestions === 0) return;
+    
+    const acceptanceRate = acceptedDuplicates.length / totalSuggestions;
+    
+    // Adjust adaptive threshold based on user behavior
+    if (acceptanceRate < 0.7) {
+      // Too many false positives, increase threshold (be more strict)
+      this.adaptiveThreshold = Math.min(0.95, this.adaptiveThreshold + 0.02);
+      console.log('ML: Increasing duplicate threshold to', this.adaptiveThreshold);
+    } else if (acceptanceRate > 0.9) {
+      // Very accurate, can be slightly more aggressive
+      this.adaptiveThreshold = Math.max(0.75, this.adaptiveThreshold - 0.01);
+      console.log('ML: Decreasing duplicate threshold to', this.adaptiveThreshold);
+    }
+    
+    // Save updated threshold to user preferences
+    const userProfile = UserSettings.load('mlProfile', {});
+    userProfile.adaptiveThresholds = userProfile.adaptiveThresholds || {};
+    userProfile.adaptiveThresholds.duplicate = this.adaptiveThreshold;
+    userProfile.feedbackHistory = this.userFeedbackHistory.slice(-100); // Keep last 100 feedback entries
+    UserSettings.save('mlProfile', userProfile);
+    
+    // Return learning summary
+    return {
+      newThreshold: this.adaptiveThreshold,
+      acceptanceRate: acceptanceRate,
+      totalFeedback: this.userFeedbackHistory.length
+    };
+  },
+  
+  /**
+   * Enhanced similarity calculation with ML features
+   */
+  calculateRowSimilarityML: function(row1, row2, options = {}) {
+    const caseSensitive = options.caseSensitive || false;
+    
+    // Extract features for ML comparison
+    const features = {
+      exactMatches: 0,
+      fuzzyMatches: 0,
+      typeMatches: 0,
+      lengthSimilarity: 0,
+      numericSimilarity: 0,
+      patternMatch: 0
+    };
+    
+    const minLength = Math.min(row1.length, row2.length);
+    const maxLength = Math.max(row1.length, row2.length);
+    
+    for (let i = 0; i < minLength; i++) {
+      const val1 = caseSensitive ? String(row1[i]) : String(row1[i]).toLowerCase();
+      const val2 = caseSensitive ? String(row2[i]) : String(row2[i]).toLowerCase();
+      
+      // Exact match
+      if (val1 === val2) {
+        features.exactMatches++;
+      }
+      
+      // Fuzzy match
+      const fuzzyScore = Utils.fuzzyMatch(val1, val2, 0.7);
+      if (fuzzyScore > 0) {
+        features.fuzzyMatches += fuzzyScore;
+      }
+      
+      // Type match
+      const type1 = this.getValueType(row1[i]);
+      const type2 = this.getValueType(row2[i]);
+      if (type1 === type2) {
+        features.typeMatches++;
+      }
+      
+      // Length similarity
+      features.lengthSimilarity += 1 - Math.abs(val1.length - val2.length) / Math.max(val1.length, val2.length, 1);
+      
+      // Numeric similarity
+      if (!isNaN(row1[i]) && !isNaN(row2[i])) {
+        const num1 = Number(row1[i]);
+        const num2 = Number(row2[i]);
+        features.numericSimilarity += 1 - Math.abs(num1 - num2) / Math.max(Math.abs(num1), Math.abs(num2), 1);
+      }
+    }
+    
+    // Pattern matching
+    const pattern1 = row1.map(v => this.getValueType(v)).join('-');
+    const pattern2 = row2.map(v => this.getValueType(v)).join('-');
+    features.patternMatch = pattern1 === pattern2 ? 1 : 0;
+    
+    // Combine features with learned weights
+    const userProfile = UserSettings.load('mlProfile', {});
+    const weights = userProfile.featureWeights || {
+      exactMatches: 0.4,
+      fuzzyMatches: 0.2,
+      typeMatches: 0.1,
+      lengthSimilarity: 0.1,
+      numericSimilarity: 0.1,
+      patternMatch: 0.1
+    };
+    
+    let totalScore = 0;
+    totalScore += (features.exactMatches / maxLength) * weights.exactMatches;
+    totalScore += (features.fuzzyMatches / maxLength) * weights.fuzzyMatches;
+    totalScore += (features.typeMatches / maxLength) * weights.typeMatches;
+    totalScore += (features.lengthSimilarity / maxLength) * weights.lengthSimilarity;
+    totalScore += (features.numericSimilarity / Math.max(1, minLength)) * weights.numericSimilarity;
+    totalScore += features.patternMatch * weights.patternMatch;
+    
+    return {
+      score: totalScore,
+      features: features,
+      confidence: this.calculateConfidence(features, maxLength)
+    };
+  },
+  
+  /**
+   * Get value type for ML analysis
+   */
+  getValueType: function(value) {
+    if (value === null || value === undefined || value === '') return 'empty';
+    if (!isNaN(Number(value))) return 'number';
+    if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(value)) return 'date';
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'email';
+    if (/^[\+]?[\d\s\-\(\)]{10,}$/.test(value)) return 'phone';
+    if (/^[$£€¥]?[\d,]+\.?\d*$/.test(value)) return 'currency';
+    return 'text';
+  },
+  
+  /**
+   * Calculate confidence score for duplicate detection
+   */
+  calculateConfidence: function(features, totalCells) {
+    // Base confidence on multiple factors
+    const exactMatchRatio = features.exactMatches / totalCells;
+    const fuzzyMatchRatio = features.fuzzyMatches / totalCells;
+    const typeMatchRatio = features.typeMatches / totalCells;
+    
+    // Weighted confidence calculation
+    const confidence = (exactMatchRatio * 0.5) + 
+                      (fuzzyMatchRatio * 0.3) + 
+                      (typeMatchRatio * 0.2);
+    
+    return Math.min(1, confidence);
+  },
+  
+  /**
+   * Enable ML features for data cleaning
+   */
+  enableML: function() {
+    this.mlEnabled = true;
+    console.log('ML features enabled for DataCleaner');
+    
+    // Load user profile
+    const userProfile = UserSettings.load('mlProfile', {});
+    if (userProfile.adaptiveThresholds?.duplicate) {
+      this.adaptiveThreshold = userProfile.adaptiveThresholds.duplicate;
+    }
+    if (userProfile.feedbackHistory) {
+      this.userFeedbackHistory = userProfile.feedbackHistory;
+    }
+    
+    return true;
+  },
+  
+  /**
+   * Get ML status and metrics
+   */
+  getMLStatus: function() {
+    return {
+      enabled: this.mlEnabled,
+      adaptiveThreshold: this.adaptiveThreshold,
+      feedbackCount: this.userFeedbackHistory.length,
+      lastFeedback: this.userFeedbackHistory[this.userFeedbackHistory.length - 1] || null,
+      averageAcceptanceRate: this.calculateAverageAcceptanceRate()
+    };
+  },
+  
+  /**
+   * Calculate average acceptance rate from feedback history
+   */
+  calculateAverageAcceptanceRate: function() {
+    if (this.userFeedbackHistory.length === 0) return null;
+    
+    const recentFeedback = this.userFeedbackHistory.slice(-20);
+    let totalAccepted = 0;
+    let totalSuggestions = 0;
+    
+    recentFeedback.forEach(feedback => {
+      totalAccepted += feedback.accepted || 0;
+      totalSuggestions += (feedback.accepted || 0) + (feedback.rejected || 0);
+    });
+    
+    return totalSuggestions > 0 ? totalAccepted / totalSuggestions : null;
   }
 };

@@ -147,8 +147,18 @@ function createCellPilotMenu() {
         .addItem('Smart Formula Assistant', prefix + 'showSmartFormulaAssistant')
         .addItem('Natural Language Builder', prefix + 'showFormulaBuilder')
         .addItem('Visual Formula Builder', prefix + 'showVisualFormulaBuilder')
+        .addItem('Cross-Sheet Formula Builder', prefix + 'showCrossSheetFormulaBuilder')
+        .addItem('Formula Performance Optimizer', prefix + 'showFormulaPerformanceOptimizer')
         .addItem('Formula Templates', prefix + 'showFormulaTemplates'))
+      .addSubMenu(ui.createMenu('Advanced Tools')
+        .addItem('Pivot Table Assistant', prefix + 'showPivotTableAssistant')
+        .addItem('Data Pipeline Manager', prefix + 'showDataPipelineManager')
+        .addItem('Data Validation Generator', prefix + 'showDataValidationGenerator')
+        .addItem('Conditional Formatting Wizard', prefix + 'showConditionalFormattingWizard')
+        .addItem('Multi-Tab Relationship Mapper', prefix + 'showMultiTabRelationshipMapper')
+        .addItem('Smart Formula Debugger', prefix + 'showSmartFormulaDebugger'))
       .addSeparator()
+      .addItem('Enable ML Features', prefix + 'enableMLFeatures')
       .addItem('Settings', prefix + 'showSettings')
       .addItem('Help', prefix + 'showHelp')
       .addToUi();
@@ -541,6 +551,8 @@ function createMainSidebarHtml(context) {
         flex-direction: column;
         align-items: center;
         gap: 8px;
+        position: relative;
+        overflow: visible;
       }
       
       .quick-action-btn:hover {
@@ -565,6 +577,30 @@ function createMainSidebarHtml(context) {
         font-weight: 600;
         color: var(--gray-700);
         line-height: 1.2;
+      }
+      
+      .quick-badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        font-size: 8px;
+        padding: 2px 5px;
+        border-radius: 6px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        border: 2px solid white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      
+      .quick-badge.ml {
+        background: var(--primary-500);
+        color: white;
+      }
+      
+      .quick-badge.new {
+        background: var(--success-500);
+        color: white;
       }
       
       /* Dropdown sections */
@@ -754,20 +790,33 @@ function createMainSidebarHtml(context) {
       <div style="margin-bottom: 16px;">
         <h3 style="font-size: 12px; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Quick Actions</h3>
         <div class="quick-actions-grid">
-          <div class="quick-action-btn" onclick="google.script.run.showTableize()" style="background: white; border-color: var(--gray-200);">
-            <div class="quick-action-label" style="color: var(--gray-700); font-weight: 600;">Tableize Data</div>
+          <div class="quick-action-btn" onclick="google.script.run.showTableize()">
+            <div class="quick-action-label">Tableize Data</div>
+            <span class="quick-badge ml">ML</span>
           </div>
           
-          <div class="quick-action-btn" onclick="google.script.run.showDataCleaning()" style="background: white; border-color: var(--gray-200);">
-            <div class="quick-action-label" style="color: var(--gray-700); font-weight: 600;">Data Cleaning</div>
+          <div class="quick-action-btn" onclick="google.script.run.showDataCleaning()">
+            <div class="quick-action-label">Data Cleaning</div>
+            <span class="quick-badge ml">ML</span>
           </div>
           
-          <div class="quick-action-btn" onclick="google.script.run.showSmartFormulaAssistant()" style="background: white; border-color: var(--gray-200);">
-            <div class="quick-action-label" style="color: var(--gray-700); font-weight: 600;">Smart Formulas</div>
+          <div class="quick-action-btn" onclick="google.script.run.showSmartFormulaAssistant()">
+            <div class="quick-action-label">Smart Formulas</div>
+            <span class="quick-badge ml">ML</span>
           </div>
           
-          <div class="quick-action-btn" onclick="google.script.run.showAutomation()" style="background: white; border-color: var(--gray-200);">
-            <div class="quick-action-label" style="color: var(--gray-700); font-weight: 600;">Automation</div>
+          <div class="quick-action-btn" onclick="google.script.run.showAutomation()">
+            <div class="quick-action-label">Automation</div>
+          </div>
+          
+          <div class="quick-action-btn" onclick="google.script.run.showPivotTableAssistant()">
+            <div class="quick-action-label">Pivot Tables</div>
+            <span class="quick-badge ml">ML</span>
+          </div>
+          
+          <div class="quick-action-btn" onclick="google.script.run.showDataPipelineManager()">
+            <div class="quick-action-label">Data Pipeline</div>
+            <span class="quick-badge new">NEW</span>
           </div>
         </div>
       </div>
@@ -829,11 +878,31 @@ function createMainSidebarHtml(context) {
           <div class="dropdown-item" onclick="google.script.run.showApiIntegration()">
             API Integration
           </div>
-          <div class="dropdown-item" onclick="google.script.run.showDataValidation()">
-            Advanced Data Validation
+          <div class="dropdown-item" onclick="google.script.run.showDataValidationGenerator()">
+            Data Validation Generator
+            <span class="dropdown-item-badge">ML</span>
+          </div>
+          <div class="dropdown-item" onclick="google.script.run.showConditionalFormattingWizard()">
+            Conditional Formatting Wizard
+            <span class="dropdown-item-badge">ML</span>
           </div>
           <div class="dropdown-item" onclick="google.script.run.showBatchOperations()">
             Batch Operations
+          </div>
+          <div class="dropdown-item" onclick="google.script.run.showMultiTabRelationshipMapper()">
+            Multi-Tab Relationship Mapper
+            <span class="dropdown-item-badge">ML</span>
+          </div>
+          <div class="dropdown-item" onclick="google.script.run.showSmartFormulaDebugger()">
+            Smart Formula Debugger
+            <span class="dropdown-item-badge">ML</span>
+          </div>
+          <div class="dropdown-item" onclick="google.script.run.showVisualFormulaBuilder()">
+            Visual Formula Builder
+          </div>
+          <div class="dropdown-item" onclick="google.script.run.enableMLFeatures()">
+            Enable ML Features
+            <span class="dropdown-item-badge">NEW</span>
           </div>
         </div>
       </div>
@@ -2160,20 +2229,89 @@ function getCurrentUserContext() {
   try {
     const sheet = SpreadsheetApp.getActiveSheet();
     const range = sheet.getActiveRange();
+    const values = range.getValues();
+    const numCols = range.getNumColumns();
+    const numRows = range.getNumRows();
+    
+    let displayType = '';
+    let headerName = null;
+    
+    // Handle different selection scenarios
+    if (numCols === 1) {
+      // Single column selected
+      const dataType = Utils.detectDataType(values);
+      displayType = dataType;
+      
+      if (dataType.includes('(')) {
+        const parts = dataType.match(/^(.+?)\s*\((.+?)\)$/);
+        if (parts) {
+          headerName = parts[1];
+          displayType = `${parts[1]} column (${parts[2]})`;
+        }
+      }
+    } else if (numCols <= 3) {
+      // 2-3 columns selected - show each column type
+      const columnTypes = [];
+      for (let col = 0; col < numCols; col++) {
+        const colData = [];
+        for (let row = 0; row < numRows; row++) {
+          colData.push([values[row][col]]);
+        }
+        const colType = Utils.detectDataType(colData);
+        
+        // Extract column header if detected
+        if (colType.includes('(')) {
+          const parts = colType.match(/^(.+?)\s*\((.+?)\)$/);
+          if (parts) {
+            columnTypes.push(`${parts[1]} (${parts[2]})`);
+          } else {
+            columnTypes.push(colType);
+          }
+        } else {
+          // Add column letter for non-header columns
+          const colLetter = String.fromCharCode(65 + range.getColumn() - 1 + col);
+          columnTypes.push(`Col ${colLetter}: ${colType}`);
+        }
+      }
+      displayType = columnTypes.join(', ');
+    } else {
+      // More than 3 columns - show range summary
+      const startCol = String.fromCharCode(65 + range.getColumn() - 1);
+      const endCol = String.fromCharCode(65 + range.getColumn() - 1 + numCols - 1);
+      
+      // Detect predominant data types
+      const types = new Set();
+      for (let col = 0; col < Math.min(numCols, 5); col++) {
+        const colData = [];
+        for (let row = 0; row < Math.min(numRows, 10); row++) {
+          colData.push([values[row][col]]);
+        }
+        const colType = Utils.detectDataType(colData);
+        const baseType = colType.includes('(') ? colType.split('(')[1].replace(')', '') : colType;
+        types.add(baseType);
+      }
+      
+      const typesList = Array.from(types).slice(0, 3).join('/');
+      displayType = `Columns ${startCol}-${endCol} (${numCols} cols, mixed: ${typesList})`;
+    }
 
     return {
       sheet: sheet,
       range: range.getA1Notation(),
-      hasSelection: range.getNumRows() > 1 || range.getNumColumns() > 1,
-      dataType: Utils.detectDataType(range.getValues()),
-      rowCount: range.getNumRows(),
-      colCount: range.getNumColumns()
+      hasSelection: numRows > 1 || numCols > 1,
+      dataType: displayType,
+      rawDataType: displayType,
+      headerName: headerName,
+      rowCount: numRows,
+      colCount: numCols
     };
   } catch (error) {
     console.error('Error getting user context:', error);
     return {
       hasSelection: false,
       dataType: 'unknown',
+      rawDataType: 'unknown',
+      headerName: null,
       rowCount: 0,
       colCount: 0
     };
@@ -2768,4 +2906,547 @@ function clearFormattingRules(rangeA1) {
 
 function applyPresetFormatting(preset, rangeA1) {
   return ConditionalFormattingWizard.applyPresetFormatting(preset, rangeA1);
+}
+
+// ML Support Functions
+function getUserLearningProfile() {
+  try {
+    const profile = PropertiesService.getUserProperties().getProperty('cellpilot_ml_profile');
+    return profile ? JSON.parse(profile) : null;
+  } catch (error) {
+    console.error('Error loading user ML profile:', error);
+    return null;
+  }
+}
+
+function saveUserLearningProfile(profile) {
+  try {
+    const serialized = JSON.stringify(profile);
+    PropertiesService.getUserProperties().setProperty('cellpilot_ml_profile', serialized);
+    return { success: true };
+  } catch (error) {
+    console.error('Error saving user ML profile:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+function trackMLFeedback(operation, prediction, userAction, metadata) {
+  try {
+    // Get existing feedback history
+    const historyStr = PropertiesService.getUserProperties().getProperty('cellpilot_ml_feedback');
+    const history = historyStr ? JSON.parse(historyStr) : [];
+    
+    // Add new feedback
+    history.push({
+      operation: operation,
+      prediction: prediction,
+      userAction: userAction,
+      metadata: metadata,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Keep only recent feedback (last 500 entries)
+    if (history.length > 500) {
+      history.splice(0, history.length - 500);
+    }
+    
+    // Save back to properties
+    PropertiesService.getUserProperties().setProperty('cellpilot_ml_feedback', JSON.stringify(history));
+    
+    // Update DataCleaner if this is duplicate detection feedback
+    if (operation === 'duplicate_detection' && userAction) {
+      DataCleaner.learnFromDuplicateFeedback(
+        userAction === 'accept' ? [prediction] : [],
+        userAction === 'reject' ? [prediction] : [],
+        metadata?.threshold || 0.85
+      );
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error tracking ML feedback:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+function getMLFeedbackHistory() {
+  try {
+    const historyStr = PropertiesService.getUserProperties().getProperty('cellpilot_ml_feedback');
+    return historyStr ? JSON.parse(historyStr) : [];
+  } catch (error) {
+    console.error('Error getting ML feedback history:', error);
+    return [];
+  }
+}
+
+function enableMLFeatures() {
+  try {
+    // Enable ML in DataCleaner
+    DataCleaner.enableML();
+    
+    // Set flag in user properties
+    PropertiesService.getUserProperties().setProperty('cellpilot_ml_enabled', 'true');
+    
+    // Show success message
+    SpreadsheetApp.getUi().alert('ML Features Enabled', 
+      'Machine learning features have been activated. CellPilot will now learn from your actions to provide better suggestions.', 
+      SpreadsheetApp.getUi().ButtonSet.OK);
+    
+    console.log('ML features enabled');
+    return { success: true, message: 'ML features enabled successfully' };
+  } catch (error) {
+    console.error('Error enabling ML features:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+// User Preference Learning Functions
+function initializeUserPreferences() {
+  try {
+    UserPreferenceLearning.initialize();
+    return { success: true };
+  } catch (error) {
+    console.error('Error initializing user preferences:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+function trackUserAction(action, context) {
+  try {
+    UserPreferenceLearning.trackAction(action, context);
+    return { success: true };
+  } catch (error) {
+    console.error('Error tracking user action:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Get adaptive duplicate detection threshold
+ */
+function getAdaptiveDuplicateThreshold() {
+  try {
+    const userProperties = PropertiesService.getUserProperties();
+    const thresholdHistory = JSON.parse(userProperties.getProperty('thresholdHistory') || '[]');
+    
+    if (thresholdHistory.length > 0) {
+      const recent = thresholdHistory.slice(-10);
+      const avg = recent.reduce((sum, val) => sum + val, 0) / recent.length;
+      return {
+        success: true,
+        threshold: Math.round(avg * 100) / 100,
+        confidence: Math.min(0.95, 0.5 + (thresholdHistory.length * 0.05)),
+        basedOn: recent.length + ' previous selections'
+      };
+    }
+    
+    return {
+      success: true,
+      threshold: 0.85,
+      confidence: 0.5,
+      basedOn: 'default'
+    };
+  } catch (error) {
+    console.error('Error getting adaptive threshold:', error);
+    return {
+      success: false,
+      threshold: 0.85,
+      error: error.message
+    };
+  }
+}
+
+function getUserPreferenceSummary() {
+  try {
+    return UserPreferenceLearning.getPreferenceSummary();
+  } catch (error) {
+    console.error('Error getting preference summary:', error);
+    return null;
+  }
+}
+
+function getFeatureRecommendations() {
+  try {
+    return UserPreferenceLearning.getFeatureRecommendations();
+  } catch (error) {
+    console.error('Error getting feature recommendations:', error);
+    return [];
+  }
+}
+
+function getWorkflowSuggestions() {
+  try {
+    return UserPreferenceLearning.getWorkflowSuggestions();
+  } catch (error) {
+    console.error('Error getting workflow suggestions:', error);
+    return [];
+  }
+}
+
+function getPreferredSettings(feature) {
+  try {
+    return UserPreferenceLearning.getPreferredSettings(feature);
+  } catch (error) {
+    console.error('Error getting preferred settings:', error);
+    return {};
+  }
+}
+
+function predictNextAction(currentAction) {
+  try {
+    return UserPreferenceLearning.predictNextAction(currentAction);
+  } catch (error) {
+    console.error('Error predicting next action:', error);
+    return null;
+  }
+}
+
+function shouldAutomate(action, context) {
+  try {
+    return UserPreferenceLearning.shouldAutomate(action, context);
+  } catch (error) {
+    console.error('Error checking automation preference:', error);
+    return false;
+  }
+}
+
+function learnFromError(error, action, context) {
+  try {
+    UserPreferenceLearning.learnFromError(error, action, context);
+    return { success: true };
+  } catch (error) {
+    console.error('Error learning from error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+function learnFromSuccess(action, context, duration) {
+  try {
+    UserPreferenceLearning.learnFromSuccess(action, context, duration);
+    return { success: true };
+  } catch (error) {
+    console.error('Error learning from success:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+function exportUserPreferences() {
+  try {
+    return UserPreferenceLearning.exportPreferences();
+  } catch (error) {
+    console.error('Error exporting preferences:', error);
+    return null;
+  }
+}
+
+function resetUserPreferences() {
+  try {
+    UserPreferenceLearning.resetPreferences();
+    return { success: true, message: 'User preferences reset successfully' };
+  } catch (error) {
+    console.error('Error resetting preferences:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+// ML Performance Monitoring and Optimization
+function getMLPerformanceStats() {
+  try {
+    const stats = {
+      userPreferences: UserPreferenceLearning.getPreferenceSummary(),
+      adaptiveThresholds: Utils.getThresholdStats(),
+      validationPatterns: DataValidationGenerator.getValidationStats(),
+      anomalyDetection: ConditionalFormattingWizard.getAnomalyStats(),
+      totalActions: UserPreferenceLearning.behaviorHistory.length,
+      mlEnabled: PropertiesService.getUserProperties().getProperty('cellpilot_ml_enabled') === 'true'
+    };
+    
+    return stats;
+  } catch (error) {
+    console.error('Error getting ML performance stats:', error);
+    return null;
+  }
+}
+
+function optimizeMLPerformance() {
+  try {
+    // Initialize adaptive learning in Utils
+    Utils.initializeAdaptiveLearning();
+    
+    // Initialize user preferences
+    UserPreferenceLearning.initialize();
+    
+    // Initialize ML in various modules
+    DataValidationGenerator.initializeML();
+    ConditionalFormattingWizard.initializeML();
+    
+    return { 
+      success: true, 
+      message: 'ML performance optimization completed',
+      stats: getMLPerformanceStats()
+    };
+  } catch (error) {
+    console.error('Error optimizing ML performance:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Show Data Validation Generator interface
+ */
+function showDataValidationGenerator() {
+  try {
+    const html = HtmlService.createTemplateFromFile('DataValidationGeneratorTemplate');
+    const ui = HtmlService.createHtmlOutput(html.evaluate())
+      .setTitle('Data Validation Generator')
+      .setWidth(350);
+    
+    SpreadsheetApp.getUi().showSidebar(ui);
+  } catch (error) {
+    showErrorDialog('Failed to load Data Validation Generator', error.message);
+  }
+}
+
+/**
+ * Show Conditional Formatting Wizard interface
+ */
+function showConditionalFormattingWizard() {
+  try {
+    const html = HtmlService.createTemplateFromFile('ConditionalFormattingWizardTemplate');
+    const ui = HtmlService.createHtmlOutput(html.evaluate())
+      .setTitle('Conditional Formatting Wizard')
+      .setWidth(350);
+    
+    SpreadsheetApp.getUi().showSidebar(ui);
+  } catch (error) {
+    showErrorDialog('Failed to load Conditional Formatting Wizard', error.message);
+  }
+}
+
+/**
+ * Show Pivot Table Assistant interface
+ */
+function showPivotTableAssistant() {
+  try {
+    const html = HtmlService.createTemplateFromFile('PivotTableAssistantTemplate');
+    const ui = HtmlService.createHtmlOutput(html.evaluate())
+      .setTitle('Pivot Table Assistant')
+      .setWidth(350);
+    
+    SpreadsheetApp.getUi().showSidebar(ui);
+  } catch (error) {
+    showErrorDialog('Failed to load Pivot Table Assistant', error.message);
+  }
+}
+
+// Pivot Table Assistant Functions
+function analyzePivotData(range) {
+  try {
+    PivotTableAssistant.initialize();
+    return PivotTableAssistant.analyzeDataForPivot(range);
+  } catch (error) {
+    console.error('Error analyzing pivot data:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+function createPivotFromSuggestion(suggestion) {
+  try {
+    const result = PivotTableAssistant.createPivotTable(suggestion);
+    
+    // Track user action for ML
+    if (result.success) {
+      trackUserAction('createPivotTable', {
+        type: suggestion.name,
+        confidence: suggestion.confidence
+      });
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('Error creating pivot from suggestion:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+function applyPivotTemplate(templateName) {
+  try {
+    PivotTableAssistant.initialize();
+    const result = PivotTableAssistant.applyTemplate(templateName);
+    
+    // Track user action for ML
+    if (result.success) {
+      trackUserAction('applyPivotTemplate', {
+        template: templateName
+      });
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('Error applying pivot template:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+function getPivotTemplates() {
+  try {
+    return PivotTableAssistant.getPivotTemplates();
+  } catch (error) {
+    console.error('Error getting pivot templates:', error);
+    return [];
+  }
+}
+
+function getPivotStats() {
+  try {
+    return PivotTableAssistant.getPivotStats();
+  } catch (error) {
+    console.error('Error getting pivot stats:', error);
+    return null;
+  }
+}
+
+/**
+ * Show Data Pipeline Manager interface
+ */
+function showDataPipelineManager() {
+  try {
+    const html = HtmlService.createTemplateFromFile('DataPipelineTemplate');
+    const ui = HtmlService.createHtmlOutput(html.evaluate())
+      .setTitle('Data Pipeline Manager')
+      .setWidth(350);
+    
+    SpreadsheetApp.getUi().showSidebar(ui);
+  } catch (error) {
+    showErrorDialog('Failed to load Data Pipeline Manager', error.message);
+  }
+}
+
+// Data Pipeline Manager Functions
+function importPipelineData(config) {
+  try {
+    DataPipelineManager.initialize();
+    const result = DataPipelineManager.importData(config);
+    
+    // Track user action for ML
+    if (result.success) {
+      trackUserAction('importData', {
+        type: config.type,
+        rowsImported: result.rowsImported,
+        source: config.url ? 'url' : 'manual'
+      });
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('Error importing pipeline data:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+function exportPipelineData(options) {
+  try {
+    DataPipelineManager.initialize();
+    const result = DataPipelineManager.exportData(options);
+    
+    // Track user action for ML
+    if (result.success) {
+      trackUserAction('exportData', {
+        format: options.format,
+        rowsExported: result.rowsExported
+      });
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('Error exporting pipeline data:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+function getPipelineHistory() {
+  try {
+    DataPipelineManager.initialize();
+    return DataPipelineManager.importHistory || [];
+  } catch (error) {
+    console.error('Error getting pipeline history:', error);
+    return [];
+  }
+}
+
+function getPipelineStats() {
+  try {
+    DataPipelineManager.initialize();
+    return DataPipelineManager.getPipelineStats();
+  } catch (error) {
+    console.error('Error getting pipeline stats:', error);
+    return null;
+  }
+}
+
+function clearPipelineHistory() {
+  try {
+    // Clear import history
+    PropertiesService.getUserProperties().deleteProperty('import_history');
+    
+    // Reinitialize
+    DataPipelineManager.initialize();
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error clearing pipeline history:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Show Cross-Sheet Formula Builder interface
+ */
+function showCrossSheetFormulaBuilder() {
+  try {
+    // Use Visual Formula Builder template with cross-sheet focus
+    const html = HtmlService.createTemplateFromFile('VisualFormulaBuilderTemplate');
+    const ui = HtmlService.createHtmlOutput(html.evaluate())
+      .setTitle('Cross-Sheet Formula Builder')
+      .setWidth(350);
+    
+    SpreadsheetApp.getUi().showSidebar(ui);
+  } catch (error) {
+    showErrorDialog('Failed to load Cross-Sheet Formula Builder', error.message);
+  }
+}
+
+/**
+ * Show Formula Performance Optimizer interface
+ */
+function showFormulaPerformanceOptimizer() {
+  try {
+    // Use Smart Formula Debugger template with performance focus
+    const html = HtmlService.createTemplateFromFile('SmartFormulaDebuggerTemplate');
+    const ui = HtmlService.createHtmlOutput(html.evaluate())
+      .setTitle('Formula Performance Optimizer')
+      .setWidth(350);
+    
+    SpreadsheetApp.getUi().showSidebar(ui);
+  } catch (error) {
+    showErrorDialog('Failed to load Formula Performance Optimizer', error.message);
+  }
+}
+
+function getMLStatus() {
+  try {
+    const enabled = PropertiesService.getUserProperties().getProperty('cellpilot_ml_enabled') === 'true';
+    const profile = getUserLearningProfile();
+    const feedbackHistory = getMLFeedbackHistory();
+    
+    return {
+      enabled: enabled,
+      profile: profile,
+      feedbackCount: feedbackHistory.length,
+      dataCleanerStatus: DataCleaner.getMLStatus()
+    };
+  } catch (error) {
+    console.error('Error getting ML status:', error);
+    return { error: error.message };
+  }
 }

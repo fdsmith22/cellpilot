@@ -1,0 +1,1119 @@
+<!-- CellPilot ML Engine - Client-Side Machine Learning -->
+<script>
+/**
+ * CellPilot ML Engine
+ * Provides intelligent features through client-side machine learning
+ * Uses TensorFlow.js for all ML operations
+ */
+class CellPilotMLEngine {
+  constructor() {
+    this.models = {};
+    this.isInitialized = false;
+    this.userProfile = null;
+    this.cache = new Map();
+    
+    // Model configurations
+    this.modelConfigs = {
+      columnClassifier: {
+        inputShape: [30], // Reduced from 50 for better performance
+        outputClasses: 10, // text, number, date, email, phone, currency, boolean, id, name, address
+        modelPath: 'cellpilot_column_classifier'
+      },
+      duplicateDetector: {
+        inputShape: [15], // Row comparison features
+        outputClasses: 1, // Binary: duplicate or not
+        modelPath: 'cellpilot_duplicate_detector'
+      },
+      formulaSuggester: {
+        inputShape: [25], // Context features
+        outputClasses: 20, // Top formula types
+        modelPath: 'cellpilot_formula_suggester'
+      },
+      anomalyDetector: {
+        inputShape: [20], // Data pattern features
+        outputClasses: 1, // Anomaly score
+        modelPath: 'cellpilot_anomaly_detector'
+      }
+    };
+    
+    // Learning parameters
+    this.learningParams = {
+      batchSize: 32,
+      epochs: 3,
+      learningRate: 0.001,
+      validationSplit: 0.2
+    };
+    
+    // Performance optimization
+    this.performance = {
+      maxCacheSize: 100,
+      tensorCleanupInterval: 30000,
+      predictionTimeout: 5000
+    };
+  }
+  
+  /**
+   * Initialize the ML Engine
+   */
+  async initialize() {
+    if (this.isInitialized) return true;
+    
+    try {
+      console.log('Initializing CellPilot ML Engine...');
+      
+      // Wait for TensorFlow.js to be ready
+      await tf.ready();
+      console.log('TensorFlow.js backend:', tf.getBackend());
+      
+      // Try to use WebGL for better performance
+      if (tf.getBackend() !== 'webgl') {
+        try {
+          await tf.setBackend('webgl');
+          console.log('Switched to WebGL backend');
+        } catch (e) {
+          console.log('WebGL not available, using:', tf.getBackend());
+        }
+      }
+      
+      // Load or create models
+      await this.loadModels();
+      
+      // Load user profile
+      await this.loadUserProfile();
+      
+      // Start memory management
+      this.startMemoryManagement();
+      
+      this.isInitialized = true;
+      console.log('ML Engine initialized successfully');
+      return true;
+      
+    } catch (error) {
+      console.error('ML Engine initialization failed:', error);
+      throw error;
+    }
+  }
+  
+  /**
+   * Load or create ML models
+   */
+  async loadModels() {
+    for (const [modelName, config] of Object.entries(this.modelConfigs)) {
+      try {
+        // Try to load from localStorage
+        const modelKey = `localstorage://${config.modelPath}`;
+        const modelExists = await this.checkModelExists(modelKey);
+        
+        if (modelExists) {
+          this.models[modelName] = await tf.loadLayersModel(modelKey);
+          console.log(`Loaded existing model: ${modelName}`);
+        } else {
+          // Create new model
+          this.models[modelName] = this.createModel(config);
+          console.log(`Created new model: ${modelName}`);
+        }
+      } catch (error) {
+        console.warn(`Error loading ${modelName}, creating new:`, error);
+        this.models[modelName] = this.createModel(config);
+      }
+    }
+  }
+  
+  /**
+   * Check if model exists in localStorage
+   */
+  async checkModelExists(modelKey) {
+    try {
+      const modelInfo = localStorage.getItem(modelKey);
+      return modelInfo !== null;
+    } catch (e) {
+      return false;
+    }
+  }
+  
+  /**
+   * Create a new neural network model
+   */
+  createModel(config) {
+    const model = tf.sequential({
+      layers: [
+        // Input layer with dropout for regularization
+        tf.layers.dense({
+          inputShape: config.inputShape,
+          units: Math.floor(config.inputShape[0] * 2),
+          activation: 'relu',
+          kernelInitializer: 'heNormal'
+        }),
+        tf.layers.dropout({ rate: 0.2 }),
+        
+        // Hidden layer
+        tf.layers.dense({
+          units: Math.floor(config.inputShape[0] * 1.5),
+          activation: 'relu',
+          kernelInitializer: 'heNormal'
+        }),
+        tf.layers.dropout({ rate: 0.1 }),
+        
+        // Output layer
+        tf.layers.dense({
+          units: config.outputClasses,
+          activation: config.outputClasses > 1 ? 'softmax' : 'sigmoid'
+        })
+      ]
+    });
+    
+    // Compile the model
+    model.compile({
+      optimizer: tf.train.adam(this.learningParams.learningRate),
+      loss: config.outputClasses > 1 ? 'categoricalCrossentropy' : 'binaryCrossentropy',
+      metrics: ['accuracy']
+    });
+    
+    return model;
+  }
+  
+  /**
+   * Load user profile and preferences
+   */
+  async loadUserProfile() {
+    return new Promise((resolve) => {
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(profile => {
+            this.userProfile = profile || this.getDefaultProfile();
+            resolve(this.userProfile);
+          })
+          .withFailureHandler(() => {
+            this.userProfile = this.getDefaultProfile();
+            resolve(this.userProfile);
+          })
+          .getUserLearningProfile();
+      } else {
+        // For testing without Google Apps Script
+        this.userProfile = this.getDefaultProfile();
+        resolve(this.userProfile);
+      }
+    });
+  }
+  
+  /**
+   * Get default user profile
+   */
+  getDefaultProfile() {
+    return {
+      duplicateThreshold: 0.85,
+      confidenceThreshold: 0.7,
+      preferredFormulas: [],
+      columnTypeHistory: {},
+      feedbackHistory: [],
+      adaptiveThresholds: {
+        duplicate: 0.85,
+        similarity: 0.8,
+        anomaly: 0.95
+      }
+    };
+  }
+  
+  /**
+   * Classify column types using ML
+   */
+  async classifyColumns(data, headers = []) {
+    if (!this.isInitialized) await this.initialize();
+    
+    const predictions = [];
+    const model = this.models.columnClassifier;
+    
+    for (let colIndex = 0; colIndex < data[0].length; colIndex++) {
+      const columnData = data.map(row => row[colIndex]);
+      const header = headers[colIndex] || '';
+      
+      // Check cache first
+      const cacheKey = `column_${header}_${columnData.slice(0, 5).join('_')}`;
+      if (this.cache.has(cacheKey)) {
+        predictions.push(this.cache.get(cacheKey));
+        continue;
+      }
+      
+      // Extract features
+      const features = this.extractColumnFeatures(columnData, header);
+      
+      // Make prediction
+      const inputTensor = tf.tensor2d([features], [1, features.length]);
+      const prediction = model.predict(inputTensor);
+      const probabilities = await prediction.data();
+      
+      // Clean up tensors
+      inputTensor.dispose();
+      prediction.dispose();
+      
+      // Get the predicted type
+      const typeIndex = probabilities.indexOf(Math.max(...probabilities));
+      const confidence = probabilities[typeIndex];
+      
+      const result = {
+        columnIndex: colIndex,
+        header: header,
+        type: this.getColumnType(typeIndex),
+        confidence: confidence,
+        alternativeTypes: this.getAlternativeTypes(probabilities)
+      };
+      
+      // Cache the result
+      this.cache.set(cacheKey, result);
+      predictions.push(result);
+    }
+    
+    return predictions;
+  }
+  
+  /**
+   * Extract features from column data
+   */
+  extractColumnFeatures(columnData, header = '') {
+    const sample = columnData.slice(0, Math.min(100, columnData.length));
+    const nonEmpty = sample.filter(v => v !== null && v !== undefined && v !== '');
+    
+    if (nonEmpty.length === 0) return new Array(30).fill(0);
+    
+    const features = [];
+    
+    // Header-based features (5 features)
+    const headerLower = header.toLowerCase();
+    features.push(
+      headerLower.includes('name') || headerLower.includes('customer') ? 1 : 0,
+      headerLower.includes('email') || headerLower.includes('mail') ? 1 : 0,
+      headerLower.includes('date') || headerLower.includes('time') ? 1 : 0,
+      headerLower.includes('amount') || headerLower.includes('price') || headerLower.includes('cost') ? 1 : 0,
+      headerLower.includes('phone') || headerLower.includes('tel') || headerLower.includes('mobile') ? 1 : 0
+    );
+    
+    // Content-based features (15 features)
+    const contentFeatures = this.analyzeContent(nonEmpty);
+    features.push(...contentFeatures);
+    
+    // Statistical features (10 features)
+    const stats = this.calculateStatistics(nonEmpty);
+    features.push(...stats);
+    
+    // Ensure exactly 30 features
+    while (features.length < 30) features.push(0);
+    return features.slice(0, 30);
+  }
+  
+  /**
+   * Analyze content for features
+   */
+  analyzeContent(data) {
+    const features = [];
+    const total = data.length;
+    
+    // Type ratios
+    features.push(
+      data.filter(v => !isNaN(Number(v))).length / total, // Numeric ratio
+      data.filter(v => this.isEmail(String(v))).length / total, // Email ratio
+      data.filter(v => this.isDate(String(v))).length / total, // Date ratio
+      data.filter(v => this.isPhone(String(v))).length / total, // Phone ratio
+      data.filter(v => this.isCurrency(String(v))).length / total, // Currency ratio
+      data.filter(v => this.isBoolean(String(v))).length / total, // Boolean ratio
+      data.filter(v => this.isURL(String(v))).length / total, // URL ratio
+      data.filter(v => /^[A-Z]/.test(String(v))).length / total, // Starts with capital
+      data.filter(v => String(v).includes(' ')).length / total, // Contains spaces
+      data.filter(v => String(v).length > 50).length / total, // Long text ratio
+      data.filter(v => /\d/.test(String(v))).length / total, // Contains digits
+      data.filter(v => /[!@#$%^&*(),.?":{}|<>]/.test(String(v))).length / total, // Special chars
+      new Set(data).size / total, // Uniqueness ratio
+      data.filter(v => String(v).match(/^[A-Z0-9]+-?\d+$/)).length / total, // ID pattern
+      data.filter(v => String(v).trim() === '').length / total // Empty ratio
+    );
+    
+    return features;
+  }
+  
+  /**
+   * Calculate statistical features
+   */
+  calculateStatistics(data) {
+    const lengths = data.map(v => String(v).length);
+    const mean = lengths.reduce((a, b) => a + b, 0) / lengths.length;
+    const variance = lengths.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / lengths.length;
+    const stdDev = Math.sqrt(variance);
+    
+    // Numeric analysis for numeric data
+    const numbers = data.filter(v => !isNaN(Number(v))).map(Number);
+    let numMean = 0, numStdDev = 0, numMin = 0, numMax = 0;
+    
+    if (numbers.length > 0) {
+      numMean = numbers.reduce((a, b) => a + b, 0) / numbers.length;
+      const numVariance = numbers.reduce((a, b) => a + Math.pow(b - numMean, 2), 0) / numbers.length;
+      numStdDev = Math.sqrt(numVariance);
+      numMin = Math.min(...numbers);
+      numMax = Math.max(...numbers);
+    }
+    
+    return [
+      mean, // Average length
+      stdDev, // Length standard deviation
+      Math.min(...lengths), // Min length
+      Math.max(...lengths), // Max length
+      lengths.filter(l => l === 0).length / lengths.length, // Empty ratio
+      numMean, // Numeric mean
+      numStdDev, // Numeric std dev
+      numMin, // Numeric min
+      numMax, // Numeric max
+      numbers.length / data.length // Numeric ratio
+    ];
+  }
+  
+  /**
+   * Enhanced duplicate detection with ML
+   */
+  async detectDuplicates(data, options = {}) {
+    if (!this.isInitialized) await this.initialize();
+    
+    const threshold = options.threshold || this.userProfile.adaptiveThresholds.duplicate;
+    const duplicateGroups = [];
+    const processed = new Set();
+    const model = this.models.duplicateDetector;
+    
+    for (let i = 0; i < data.length; i++) {
+      if (processed.has(i)) continue;
+      
+      const currentGroup = [i];
+      const currentRow = data[i];
+      
+      for (let j = i + 1; j < data.length; j++) {
+        if (processed.has(j)) continue;
+        
+        const compareRow = data[j];
+        
+        // Extract comparison features
+        const features = this.extractRowComparisonFeatures(currentRow, compareRow);
+        
+        // Make prediction
+        const inputTensor = tf.tensor2d([features], [1, features.length]);
+        const prediction = model.predict(inputTensor);
+        const similarity = await prediction.data();
+        
+        // Clean up
+        inputTensor.dispose();
+        prediction.dispose();
+        
+        if (similarity[0] >= threshold) {
+          currentGroup.push(j);
+          processed.add(j);
+        }
+      }
+      
+      if (currentGroup.length > 1) {
+        duplicateGroups.push({
+          indices: currentGroup,
+          confidence: this.calculateGroupConfidence(currentGroup.length, data.length)
+        });
+      }
+      
+      processed.add(i);
+    }
+    
+    return duplicateGroups;
+  }
+  
+  /**
+   * Extract features for row comparison
+   */
+  extractRowComparisonFeatures(row1, row2) {
+    const features = [];
+    
+    // Basic similarity metrics
+    features.push(
+      this.calculateRowSimilarity(row1, row2), // Overall similarity
+      this.calculateExactMatches(row1, row2), // Exact match ratio
+      this.calculateFuzzyMatches(row1, row2), // Fuzzy match ratio
+      this.calculateNumericSimilarity(row1, row2), // Numeric similarity
+      this.calculateTextSimilarity(row1, row2) // Text similarity
+    );
+    
+    // Pattern-based features
+    features.push(
+      this.compareRowPatterns(row1, row2), // Pattern similarity
+      this.compareRowTypes(row1, row2), // Type similarity
+      this.compareRowLengths(row1, row2), // Length similarity
+      Math.abs(row1.length - row2.length), // Length difference
+      this.calculateEditDistance(row1, row2) // Edit distance
+    );
+    
+    // Statistical features
+    const stats1 = this.getRowStatistics(row1);
+    const stats2 = this.getRowStatistics(row2);
+    features.push(
+      Math.abs(stats1.mean - stats2.mean), // Mean difference
+      Math.abs(stats1.stdDev - stats2.stdDev), // Std dev difference
+      stats1.emptyRatio - stats2.emptyRatio, // Empty ratio difference
+      stats1.uniqueRatio - stats2.uniqueRatio, // Unique ratio difference
+      this.compareRowHashes(row1, row2) // Hash similarity
+    );
+    
+    return features;
+  }
+  
+  /**
+   * Suggest formulas using ML
+   */
+  async suggestFormulas(context) {
+    if (!this.isInitialized) await this.initialize();
+    
+    const model = this.models.formulaSuggester;
+    const features = this.extractFormulaContext(context);
+    
+    // Make prediction
+    const inputTensor = tf.tensor2d([features], [1, features.length]);
+    const prediction = model.predict(inputTensor);
+    const probabilities = await prediction.data();
+    
+    // Clean up
+    inputTensor.dispose();
+    prediction.dispose();
+    
+    // Get top suggestions
+    const suggestions = this.getTopFormulaSuggestions(probabilities, context);
+    
+    return suggestions;
+  }
+  
+  /**
+   * Extract context features for formula suggestion
+   */
+  extractFormulaContext(context) {
+    const features = [];
+    
+    // Data type features
+    features.push(
+      context.hasNumbers ? 1 : 0,
+      context.hasDates ? 1 : 0,
+      context.hasText ? 1 : 0,
+      context.hasCurrency ? 1 : 0,
+      context.hasPercentages ? 1 : 0
+    );
+    
+    // Structure features
+    features.push(
+      context.rowCount || 0,
+      context.columnCount || 0,
+      context.hasHeaders ? 1 : 0,
+      context.hasFormulas ? 1 : 0,
+      context.isTable ? 1 : 0
+    );
+    
+    // User intent features (from description)
+    const description = (context.description || '').toLowerCase();
+    features.push(
+      description.includes('sum') || description.includes('total') ? 1 : 0,
+      description.includes('average') || description.includes('mean') ? 1 : 0,
+      description.includes('count') || description.includes('number') ? 1 : 0,
+      description.includes('max') || description.includes('maximum') ? 1 : 0,
+      description.includes('min') || description.includes('minimum') ? 1 : 0,
+      description.includes('if') || description.includes('condition') ? 1 : 0,
+      description.includes('lookup') || description.includes('search') ? 1 : 0,
+      description.includes('date') || description.includes('time') ? 1 : 0,
+      description.includes('text') || description.includes('string') ? 1 : 0,
+      description.includes('unique') || description.includes('distinct') ? 1 : 0
+    );
+    
+    // User history features
+    const history = this.userProfile.preferredFormulas || [];
+    features.push(
+      history.filter(f => f.includes('SUM')).length,
+      history.filter(f => f.includes('VLOOKUP')).length,
+      history.filter(f => f.includes('IF')).length,
+      history.filter(f => f.includes('COUNT')).length,
+      history.length // Total formula history
+    );
+    
+    // Pad to 25 features
+    while (features.length < 25) features.push(0);
+    return features.slice(0, 25);
+  }
+  
+  /**
+   * Detect anomalies in data
+   */
+  async detectAnomalies(data, options = {}) {
+    if (!this.isInitialized) await this.initialize();
+    
+    const model = this.models.anomalyDetector;
+    const threshold = options.threshold || this.userProfile.adaptiveThresholds.anomaly;
+    const anomalies = [];
+    
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+      const features = this.extractAnomalyFeatures(row, data);
+      
+      // Make prediction
+      const inputTensor = tf.tensor2d([features], [1, features.length]);
+      const prediction = model.predict(inputTensor);
+      const anomalyScore = await prediction.data();
+      
+      // Clean up
+      inputTensor.dispose();
+      prediction.dispose();
+      
+      if (anomalyScore[0] >= threshold) {
+        anomalies.push({
+          rowIndex: i,
+          score: anomalyScore[0],
+          reason: this.explainAnomaly(row, data)
+        });
+      }
+    }
+    
+    return anomalies;
+  }
+  
+  /**
+   * Learn from user feedback
+   */
+  async learnFromFeedback(operation, prediction, userAction, context) {
+    console.log('Learning from feedback:', { operation, prediction, userAction });
+    
+    // Update user profile based on feedback
+    this.updateUserProfile(operation, userAction);
+    
+    // Prepare training data
+    const trainingData = this.prepareTrainingData(operation, prediction, userAction, context);
+    
+    if (trainingData && trainingData.features.length > 0) {
+      // Retrain the appropriate model
+      await this.retrainModel(operation, trainingData);
+    }
+    
+    // Save updated models and profile
+    await this.saveState();
+    
+    return true;
+  }
+  
+  /**
+   * Update user profile based on feedback
+   */
+  updateUserProfile(operation, userAction) {
+    if (!this.userProfile.feedbackHistory) {
+      this.userProfile.feedbackHistory = [];
+    }
+    
+    this.userProfile.feedbackHistory.push({
+      operation,
+      userAction,
+      timestamp: Date.now()
+    });
+    
+    // Adjust thresholds based on feedback patterns
+    if (operation === 'duplicate_detection') {
+      const recentFeedback = this.userProfile.feedbackHistory
+        .filter(f => f.operation === 'duplicate_detection')
+        .slice(-20);
+      
+      const acceptRate = recentFeedback.filter(f => f.userAction === 'accept').length / recentFeedback.length;
+      
+      if (acceptRate < 0.7) {
+        // Too many false positives, increase threshold
+        this.userProfile.adaptiveThresholds.duplicate = Math.min(0.95, this.userProfile.adaptiveThresholds.duplicate + 0.02);
+      } else if (acceptRate > 0.9) {
+        // Very accurate, can be more aggressive
+        this.userProfile.adaptiveThresholds.duplicate = Math.max(0.75, this.userProfile.adaptiveThresholds.duplicate - 0.01);
+      }
+    }
+  }
+  
+  /**
+   * Retrain model with new data
+   */
+  async retrainModel(operation, trainingData) {
+    let model;
+    
+    switch(operation) {
+      case 'duplicate_detection':
+        model = this.models.duplicateDetector;
+        break;
+      case 'column_classification':
+        model = this.models.columnClassifier;
+        break;
+      case 'formula_suggestion':
+        model = this.models.formulaSuggester;
+        break;
+      default:
+        return;
+    }
+    
+    if (model && trainingData.features.length >= 10) {
+      // Create tensors
+      const xs = tf.tensor2d(trainingData.features);
+      const ys = tf.tensor2d(trainingData.labels);
+      
+      // Quick training with few epochs
+      await model.fit(xs, ys, {
+        epochs: this.learningParams.epochs,
+        batchSize: Math.min(this.learningParams.batchSize, trainingData.features.length),
+        validationSplit: this.learningParams.validationSplit,
+        verbose: 0
+      });
+      
+      // Clean up
+      xs.dispose();
+      ys.dispose();
+      
+      console.log(`Model retrained for ${operation}`);
+    }
+  }
+  
+  /**
+   * Save models and user profile
+   */
+  async saveState() {
+    // Save models to localStorage
+    for (const [modelName, model] of Object.entries(this.models)) {
+      try {
+        const config = this.modelConfigs[modelName];
+        await model.save(`localstorage://${config.modelPath}`);
+      } catch (error) {
+        console.warn(`Failed to save model ${modelName}:`, error);
+      }
+    }
+    
+    // Save user profile to Google Apps Script
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(() => console.log('User profile saved'))
+        .withFailureHandler(error => console.warn('Failed to save profile:', error))
+        .saveUserLearningProfile(this.userProfile);
+    } else {
+      // Save to localStorage as fallback
+      localStorage.setItem('cellpilot_user_profile', JSON.stringify(this.userProfile));
+    }
+  }
+  
+  /**
+   * Memory management
+   */
+  startMemoryManagement() {
+    // Periodic tensor cleanup
+    setInterval(() => {
+      const memInfo = tf.memory();
+      if (memInfo.numTensors > 100) {
+        console.log(`High tensor count: ${memInfo.numTensors}, running cleanup`);
+        tf.engine().startScope();
+        tf.engine().endScope();
+      }
+      
+      // Clear old cache entries
+      if (this.cache.size > this.performance.maxCacheSize) {
+        const toDelete = this.cache.size - this.performance.maxCacheSize;
+        const keys = Array.from(this.cache.keys());
+        for (let i = 0; i < toDelete; i++) {
+          this.cache.delete(keys[i]);
+        }
+      }
+    }, this.performance.tensorCleanupInterval);
+  }
+  
+  // Utility methods
+  isEmail(str) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str); }
+  isDate(str) { const d = new Date(str); return !isNaN(d.getTime()) && str.length > 5; }
+  isPhone(str) { return /^[\+]?[\d\s\-\(\)]{10,}$/.test(str); }
+  isCurrency(str) { return /^[$£€¥]?[\d,]+\.?\d*$/.test(str) || /^[\d,]+\.?\d*[$£€¥]$/.test(str); }
+  isBoolean(str) { return /^(true|false|yes|no|y|n|1|0)$/i.test(str); }
+  isURL(str) { return /^https?:\/\/[^\s]+$/.test(str); }
+  
+  getColumnType(index) {
+    const types = ['text', 'number', 'date', 'email', 'phone', 'currency', 'boolean', 'id', 'name', 'address'];
+    return types[index] || 'text';
+  }
+  
+  getAlternativeTypes(probabilities) {
+    const types = ['text', 'number', 'date', 'email', 'phone', 'currency', 'boolean', 'id', 'name', 'address'];
+    return probabilities
+      .map((prob, i) => ({ type: types[i], confidence: prob }))
+      .sort((a, b) => b.confidence - a.confidence)
+      .slice(1, 4);
+  }
+  
+  calculateRowSimilarity(row1, row2) {
+    if (row1.length !== row2.length) return 0;
+    let matches = 0;
+    for (let i = 0; i < row1.length; i++) {
+      if (String(row1[i]).toLowerCase() === String(row2[i]).toLowerCase()) {
+        matches++;
+      }
+    }
+    return matches / row1.length;
+  }
+  
+  calculateExactMatches(row1, row2) {
+    let matches = 0;
+    const minLength = Math.min(row1.length, row2.length);
+    for (let i = 0; i < minLength; i++) {
+      if (row1[i] === row2[i]) matches++;
+    }
+    return matches / Math.max(row1.length, row2.length);
+  }
+  
+  calculateFuzzyMatches(row1, row2) {
+    let score = 0;
+    const minLength = Math.min(row1.length, row2.length);
+    for (let i = 0; i < minLength; i++) {
+      score += this.calculateStringSimilarity(String(row1[i]), String(row2[i]));
+    }
+    return score / Math.max(row1.length, row2.length);
+  }
+  
+  calculateStringSimilarity(str1, str2) {
+    const s1 = str1.toLowerCase();
+    const s2 = str2.toLowerCase();
+    if (s1 === s2) return 1;
+    
+    const longer = s1.length > s2.length ? s1 : s2;
+    const shorter = s1.length > s2.length ? s2 : s1;
+    
+    if (longer.length === 0) return 1.0;
+    
+    const editDistance = this.calculateLevenshteinDistance(longer, shorter);
+    return (longer.length - editDistance) / longer.length;
+  }
+  
+  calculateLevenshteinDistance(s1, s2) {
+    const costs = [];
+    for (let i = 0; i <= s1.length; i++) {
+      let lastValue = i;
+      for (let j = 0; j <= s2.length; j++) {
+        if (i === 0) costs[j] = j;
+        else {
+          if (j > 0) {
+            let newValue = costs[j - 1];
+            if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
+              newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+            }
+            costs[j - 1] = lastValue;
+            lastValue = newValue;
+          }
+        }
+      }
+      if (i > 0) costs[s2.length] = lastValue;
+    }
+    return costs[s2.length];
+  }
+  
+  calculateNumericSimilarity(row1, row2) {
+    const nums1 = row1.filter(v => !isNaN(Number(v))).map(Number);
+    const nums2 = row2.filter(v => !isNaN(Number(v))).map(Number);
+    
+    if (nums1.length === 0 || nums2.length === 0) return 0;
+    
+    const avg1 = nums1.reduce((a, b) => a + b, 0) / nums1.length;
+    const avg2 = nums2.reduce((a, b) => a + b, 0) / nums2.length;
+    
+    return 1 - Math.abs(avg1 - avg2) / Math.max(Math.abs(avg1), Math.abs(avg2), 1);
+  }
+  
+  calculateTextSimilarity(row1, row2) {
+    const text1 = row1.filter(v => isNaN(Number(v))).join(' ');
+    const text2 = row2.filter(v => isNaN(Number(v))).join(' ');
+    
+    return this.calculateStringSimilarity(text1, text2);
+  }
+  
+  compareRowPatterns(row1, row2) {
+    const pattern1 = row1.map(v => isNaN(Number(v)) ? 'T' : 'N').join('');
+    const pattern2 = row2.map(v => isNaN(Number(v)) ? 'T' : 'N').join('');
+    
+    return pattern1 === pattern2 ? 1 : 0;
+  }
+  
+  compareRowTypes(row1, row2) {
+    const types1 = row1.map(v => this.getValueType(v));
+    const types2 = row2.map(v => this.getValueType(v));
+    
+    let matches = 0;
+    const minLength = Math.min(types1.length, types2.length);
+    for (let i = 0; i < minLength; i++) {
+      if (types1[i] === types2[i]) matches++;
+    }
+    
+    return matches / Math.max(types1.length, types2.length);
+  }
+  
+  getValueType(value) {
+    if (value === null || value === undefined || value === '') return 'empty';
+    if (!isNaN(Number(value))) return 'number';
+    if (this.isDate(String(value))) return 'date';
+    if (this.isEmail(String(value))) return 'email';
+    return 'text';
+  }
+  
+  compareRowLengths(row1, row2) {
+    const len1 = row1.map(v => String(v).length).reduce((a, b) => a + b, 0);
+    const len2 = row2.map(v => String(v).length).reduce((a, b) => a + b, 0);
+    
+    return 1 - Math.abs(len1 - len2) / Math.max(len1, len2, 1);
+  }
+  
+  calculateEditDistance(row1, row2) {
+    const str1 = row1.join('|');
+    const str2 = row2.join('|');
+    
+    return this.calculateLevenshteinDistance(str1, str2) / Math.max(str1.length, str2.length, 1);
+  }
+  
+  getRowStatistics(row) {
+    const lengths = row.map(v => String(v).length);
+    const mean = lengths.reduce((a, b) => a + b, 0) / lengths.length;
+    const variance = lengths.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / lengths.length;
+    
+    return {
+      mean: mean,
+      stdDev: Math.sqrt(variance),
+      emptyRatio: row.filter(v => v === '' || v === null).length / row.length,
+      uniqueRatio: new Set(row).size / row.length
+    };
+  }
+  
+  compareRowHashes(row1, row2) {
+    // Simple hash comparison
+    const hash1 = row1.join('|').split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0);
+    const hash2 = row2.join('|').split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0);
+    
+    return hash1 === hash2 ? 1 : 0;
+  }
+  
+  calculateGroupConfidence(groupSize, totalSize) {
+    // Confidence based on group size relative to total
+    return Math.min(1, groupSize / Math.max(totalSize * 0.1, 1));
+  }
+  
+  prepareTrainingData(operation, prediction, userAction, context) {
+    const trainingData = {
+      features: [],
+      labels: []
+    };
+    
+    if (operation === 'duplicate_detection' && context.rows) {
+      // Prepare features for duplicate detection training
+      context.rows.forEach(rowPair => {
+        const features = this.extractRowComparisonFeatures(rowPair[0], rowPair[1]);
+        trainingData.features.push(features);
+        trainingData.labels.push([userAction === 'accept' ? 1 : 0]);
+      });
+    } else if (operation === 'column_classification' && context.columns) {
+      // Prepare features for column classification training
+      context.columns.forEach(column => {
+        const features = this.extractColumnFeatures(column.data, column.header);
+        trainingData.features.push(features);
+        // One-hot encode the label
+        const typeIndex = this.getColumnTypeIndex(userAction);
+        const label = new Array(10).fill(0);
+        label[typeIndex] = 1;
+        trainingData.labels.push(label);
+      });
+    }
+    
+    return trainingData;
+  }
+  
+  getColumnTypeIndex(type) {
+    const types = ['text', 'number', 'date', 'email', 'phone', 'currency', 'boolean', 'id', 'name', 'address'];
+    return types.indexOf(type);
+  }
+  
+  explainAnomaly(row, data) {
+    // Generate human-readable explanation for anomaly
+    const reasons = [];
+    
+    // Check for unusual patterns
+    const rowPattern = row.map(v => this.getValueType(v)).join('-');
+    const commonPatterns = data.slice(0, 100).map(r => 
+      r.map(v => this.getValueType(v)).join('-')
+    );
+    
+    if (!commonPatterns.includes(rowPattern)) {
+      reasons.push('Unusual data type pattern');
+    }
+    
+    // Check for outlier values
+    const numericValues = row.filter(v => !isNaN(Number(v))).map(Number);
+    if (numericValues.length > 0) {
+      const allNumeric = data.flatMap(r => r.filter(v => !isNaN(Number(v))).map(Number));
+      const mean = allNumeric.reduce((a, b) => a + b, 0) / allNumeric.length;
+      const stdDev = Math.sqrt(allNumeric.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / allNumeric.length);
+      
+      numericValues.forEach(num => {
+        if (Math.abs(num - mean) > 3 * stdDev) {
+          reasons.push(`Outlier value: ${num}`);
+        }
+      });
+    }
+    
+    return reasons.length > 0 ? reasons.join('; ') : 'General anomaly detected';
+  }
+  
+  extractAnomalyFeatures(row, allData) {
+    const features = [];
+    
+    // Row-level statistics
+    const rowStats = this.getRowStatistics(row);
+    features.push(rowStats.mean, rowStats.stdDev, rowStats.emptyRatio, rowStats.uniqueRatio);
+    
+    // Compare to dataset statistics
+    const dataStats = this.getDatasetStatistics(allData);
+    features.push(
+      Math.abs(rowStats.mean - dataStats.mean),
+      Math.abs(rowStats.stdDev - dataStats.stdDev),
+      Math.abs(rowStats.emptyRatio - dataStats.emptyRatio)
+    );
+    
+    // Pattern features
+    const rowPattern = row.map(v => this.getValueType(v)).join('-');
+    const commonPatterns = this.getCommonPatterns(allData);
+    features.push(commonPatterns.has(rowPattern) ? 0 : 1);
+    
+    // Numeric outlier features
+    const numericFeatures = this.extractNumericOutlierFeatures(row, allData);
+    features.push(...numericFeatures);
+    
+    // Text anomaly features
+    const textFeatures = this.extractTextAnomalyFeatures(row, allData);
+    features.push(...textFeatures);
+    
+    // Pad to 20 features
+    while (features.length < 20) features.push(0);
+    return features.slice(0, 20);
+  }
+  
+  getDatasetStatistics(data) {
+    const allLengths = data.flatMap(row => row.map(v => String(v).length));
+    const mean = allLengths.reduce((a, b) => a + b, 0) / allLengths.length;
+    const variance = allLengths.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / allLengths.length;
+    
+    return {
+      mean: mean,
+      stdDev: Math.sqrt(variance),
+      emptyRatio: data.flatMap(r => r).filter(v => v === '' || v === null).length / (data.length * data[0].length)
+    };
+  }
+  
+  getCommonPatterns(data) {
+    const patterns = new Map();
+    data.slice(0, 100).forEach(row => {
+      const pattern = row.map(v => this.getValueType(v)).join('-');
+      patterns.set(pattern, (patterns.get(pattern) || 0) + 1);
+    });
+    
+    // Keep only patterns that appear more than once
+    return new Set(Array.from(patterns.entries())
+      .filter(([_, count]) => count > 1)
+      .map(([pattern, _]) => pattern));
+  }
+  
+  extractNumericOutlierFeatures(row, data) {
+    const features = [];
+    const rowNumbers = row.filter(v => !isNaN(Number(v))).map(Number);
+    
+    if (rowNumbers.length > 0) {
+      const allNumbers = data.flatMap(r => r.filter(v => !isNaN(Number(v))).map(Number));
+      const mean = allNumbers.reduce((a, b) => a + b, 0) / allNumbers.length;
+      const stdDev = Math.sqrt(allNumbers.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / allNumbers.length);
+      
+      // Calculate z-scores
+      const zScores = rowNumbers.map(n => Math.abs((n - mean) / stdDev));
+      
+      features.push(
+        Math.max(...zScores), // Max z-score
+        zScores.reduce((a, b) => a + b, 0) / zScores.length, // Average z-score
+        zScores.filter(z => z > 3).length // Count of extreme outliers
+      );
+    } else {
+      features.push(0, 0, 0);
+    }
+    
+    return features;
+  }
+  
+  extractTextAnomalyFeatures(row, data) {
+    const features = [];
+    const rowTexts = row.filter(v => isNaN(Number(v)) && v !== '').map(String);
+    
+    if (rowTexts.length > 0) {
+      const allTexts = data.flatMap(r => r.filter(v => isNaN(Number(v)) && v !== '').map(String));
+      const avgLength = allTexts.reduce((a, b) => a + b.length, 0) / allTexts.length;
+      const maxLength = Math.max(...allTexts.map(t => t.length));
+      
+      features.push(
+        Math.max(...rowTexts.map(t => Math.abs(t.length - avgLength))), // Max length deviation
+        rowTexts.filter(t => t.length > maxLength * 0.9).length, // Count of very long texts
+        rowTexts.filter(t => /[^a-zA-Z0-9\s]/.test(t)).length // Count with special chars
+      );
+    } else {
+      features.push(0, 0, 0);
+    }
+    
+    return features;
+  }
+  
+  getTopFormulaSuggestions(probabilities, context) {
+    const formulas = [
+      'SUM', 'AVERAGE', 'COUNT', 'MAX', 'MIN',
+      'IF', 'VLOOKUP', 'INDEX', 'MATCH', 'SUMIF',
+      'COUNTIF', 'CONCATENATE', 'TEXT', 'DATE', 'TODAY',
+      'LEN', 'TRIM', 'UNIQUE', 'SORT', 'FILTER'
+    ];
+    
+    const suggestions = probabilities
+      .map((prob, i) => ({
+        formula: formulas[i] || 'CUSTOM',
+        confidence: prob,
+        example: this.generateFormulaExample(formulas[i], context)
+      }))
+      .sort((a, b) => b.confidence - a.confidence)
+      .slice(0, 5);
+    
+    return suggestions;
+  }
+  
+  generateFormulaExample(formula, context) {
+    const range = context.range || 'A1:A10';
+    
+    switch(formula) {
+      case 'SUM': return `=SUM(${range})`;
+      case 'AVERAGE': return `=AVERAGE(${range})`;
+      case 'COUNT': return `=COUNT(${range})`;
+      case 'MAX': return `=MAX(${range})`;
+      case 'MIN': return `=MIN(${range})`;
+      case 'IF': return `=IF(A1>10, "High", "Low")`;
+      case 'VLOOKUP': return `=VLOOKUP(A1, ${range}, 2, FALSE)`;
+      case 'SUMIF': return `=SUMIF(${range}, ">10")`;
+      case 'COUNTIF': return `=COUNTIF(${range}, "Yes")`;
+      default: return `=${formula}(${range})`;
+    }
+  }
+  
+  // Cleanup method
+  dispose() {
+    // Dispose all models
+    Object.values(this.models).forEach(model => {
+      if (model && typeof model.dispose === 'function') {
+        model.dispose();
+      }
+    });
+    
+    // Clear cache
+    this.cache.clear();
+    
+    // Clear any remaining tensors
+    if (typeof tf !== 'undefined') {
+      tf.engine().startScope();
+      tf.engine().endScope();
+    }
+    
+    console.log('ML Engine disposed');
+  }
+}
+
+// Create global instance
+window.cellpilotML = new CellPilotMLEngine();
+</script>

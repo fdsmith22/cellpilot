@@ -208,6 +208,93 @@
       font-size: 10px;
       margin-top: 2px;
     }
+    /* ML Confidence Indicators */
+    .ml-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: var(--primary-50);
+      color: var(--primary-700);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    
+    .ml-confidence-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    
+    .ml-confidence-high {
+      background: var(--success-100);
+      color: var(--success-700);
+    }
+    
+    .ml-confidence-medium {
+      background: var(--warning-100);
+      color: var(--warning-700);
+    }
+    
+    .ml-confidence-low {
+      background: var(--danger-100);
+      color: var(--danger-700);
+    }
+    
+    .ml-threshold-container {
+      background: var(--gray-50);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+      border: 1px solid var(--gray-200);
+    }
+    
+    .ml-threshold-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .ml-threshold-value {
+      color: var(--primary-600);
+      font-weight: 700;
+    }
+    
+    .ml-learning-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1));
+      border: 1px solid var(--primary-200);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--primary-700);
+      margin-top: 12px;
+    }
+    
+    .ml-learning-spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--primary-300);
+      border-top-color: var(--primary-600);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -251,12 +338,35 @@
         </div>
         
         <div class="form-group">
-          <label class="form-label">Similarity Threshold</label>
+          <label class="form-label">
+            Similarity Threshold
+            <span class="ml-indicator" id="mlIndicator" style="display: none;">ML Enhanced</span>
+          </label>
           <input type="range" id="threshold" class="form-range" min="0.5" max="1" step="0.05" value="0.85">
           <div class="form-range-label">
             <span class="text-small text-muted">Fuzzy Match</span>
             <span class="form-range-value" id="thresholdValue">85%</span>
             <span class="text-small text-muted">Exact Match</span>
+          </div>
+          
+          <!-- ML Adaptive Threshold Info -->
+          <div class="ml-threshold-container" id="mlThresholdInfo" style="display: none;">
+            <div class="ml-threshold-label">
+              <span>ML Recommended Threshold</span>
+              <span class="ml-threshold-value" id="mlRecommendedValue">85%</span>
+            </div>
+            <div style="font-size: 11px; color: var(--gray-600); margin-top: 4px;">
+              Based on your previous selections and data patterns
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="applyMLThreshold()" style="margin-top: 8px; font-size: 11px; padding: 4px 8px;">
+              Apply ML Recommendation
+            </button>
+          </div>
+          
+          <!-- ML Learning Indicator -->
+          <div class="ml-learning-indicator" id="mlLearning" style="display: none;">
+            <div class="ml-learning-spinner"></div>
+            <span>ML is learning from your selections...</span>
           </div>
         </div>
         
@@ -724,6 +834,12 @@
           if (result.success) {
             showStatus(result.message, 'success');
             document.getElementById('duplicatesPreview').style.display = 'none';
+            
+            // Track ML learning if duplicates were removed
+            const threshold = parseFloat(document.getElementById('threshold').value);
+            if (result.removed && result.removed > 0) {
+              learnFromDuplicateRemoval(threshold, result.removed);
+            }
           } else {
             showStatus(result.error || 'Failed to remove duplicates', 'error');
             
@@ -948,6 +1064,60 @@
     function runValidation() {
       showStatus('Data validation coming soon', 'info');
     }
+    // ML Enhancement Functions
+    function initMLFeatures() {
+      // Check if ML is enabled
+      google.script.run
+        .withSuccessHandler(function(status) {
+          if (status && status.enabled) {
+            document.getElementById('mlIndicator').style.display = 'inline-flex';
+            loadMLRecommendations();
+          }
+        })
+        .getMLStatus();
+    }
+    
+    function loadMLRecommendations() {
+      // Get ML recommended threshold
+      google.script.run
+        .withSuccessHandler(function(threshold) {
+          if (threshold && threshold > 0) {
+            document.getElementById('mlThresholdInfo').style.display = 'block';
+            document.getElementById('mlRecommendedValue').textContent = 
+              Math.round(threshold * 100) + '%';
+          }
+        })
+        .getAdaptiveDuplicateThreshold();
+    }
+    
+    function applyMLThreshold() {
+      google.script.run
+        .withSuccessHandler(function(threshold) {
+          if (threshold && threshold > 0) {
+            document.getElementById('threshold').value = threshold;
+            document.getElementById('thresholdValue').textContent = Math.round(threshold * 100) + '%';
+            showStatus('Applied ML recommended threshold', 'success');
+          }
+        })
+        .getAdaptiveDuplicateThreshold();
+    }
+    
+    function learnFromDuplicateRemoval(threshold, removedCount) {
+      // Send feedback to ML system
+      google.script.run
+        .withSuccessHandler(function(result) {
+          console.log('ML learning updated', result);
+        })
+        .trackMLFeedback('duplicateRemoval', threshold, 'accepted', {
+          removedCount: removedCount,
+          timestamp: new Date().toISOString()
+        });
+    }
+    
+    // Initialize ML features on load
+    document.addEventListener('DOMContentLoaded', function() {
+      initMLFeatures();
+    });
   </script>
 </body>
 </html>

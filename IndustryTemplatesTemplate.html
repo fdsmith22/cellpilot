@@ -173,24 +173,6 @@
   <div class="container">
     <div id="statusMessage" style="display: none;"></div>
     
-    <!-- Stats showing value -->
-    <div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.04), rgba(99, 102, 241, 0.08)); padding: 8px;">
-      <div class="stats-grid">
-        <div class="stat-card" style="padding: 6px 4px;">
-          <div class="stat-value" style="font-size: 18px; margin-bottom: 1px;">250%</div>
-          <div class="stat-label" style="font-size: 9px;">Average ROI</div>
-        </div>
-        <div class="stat-card" style="padding: 6px 4px;">
-          <div class="stat-value" style="font-size: 18px; margin-bottom: 1px;">20 hrs</div>
-          <div class="stat-label" style="font-size: 9px;">Saved Weekly</div>
-        </div>
-        <div class="stat-card" style="padding: 6px 4px;">
-          <div class="stat-value" style="font-size: 18px; margin-bottom: 1px;">6-9 mo</div>
-          <div class="stat-label" style="font-size: 9px;">Payback Period</div>
-        </div>
-      </div>
-    </div>
-    
     <!-- Industry Categories Grid -->
     <div class="industry-grid">
       <button class="industry-btn active" onclick="switchCategory('real-estate')">
@@ -280,7 +262,7 @@
       <div class="feature-grid">
         <div class="feature-card">
           <div class="feature-title">Master Construction Estimator</div>
-          <div class="feature-description">Professional construction project estimating system with material waste tracking, labor productivity analysis, subcontractor management, and comprehensive project dashboard with real-time alerts and profitability tracking.</div>
+          <div class="feature-description">Professional construction project estimating system with material waste tracking, labor productivity analysis, subcontractor management, and comprehensive project dashboard with real-time alerts.</div>
           <div class="feature-benefits">✓ Save 20+ hours per project ✓ 15-20% waste reduction ✓ Real-time budget alerts</div>
           <div class="template-actions">
             <button class="btn-preview" onclick="previewTemplate('cost-estimator')">Preview</button>
@@ -290,7 +272,7 @@
         
         <div class="feature-card">
           <div class="feature-title">Material & Inventory Manager</div>
-          <div class="feature-description">Advanced material tracking system with supplier management, purchase order automation, delivery scheduling, and comprehensive waste analysis. Includes automated reorder points and cost variance tracking.</div>
+          <div class="feature-description">Advanced material tracking system with supplier management, purchase order automation, delivery scheduling, and comprehensive waste analysis. Includes automated reorder points.</div>
           <div class="feature-benefits">✓ Reduce material waste 15-20% ✓ Automate purchase orders ✓ Track supplier performance</div>
           <div class="template-actions">
             <button class="btn-preview" onclick="previewTemplate('material-tracker')">Preview</button>
@@ -310,45 +292,24 @@
         
         <div class="feature-card">
           <div class="feature-title">Change Order Management</div>
-          <div class="feature-description">Professional change order tracking system with cost impact analysis, schedule adjustment calculations, approval workflows, and comprehensive reporting. Control scope creep and maintain profitability.</div>
+          <div class="feature-description">Professional change order tracking system with cost impact analysis, schedule adjustment calculations, approval workflows, and comprehensive reporting. Control scope creep effectively.</div>
           <div class="feature-benefits">✓ Control scope creep ✓ Track cost impacts ✓ Streamline approvals</div>
           <div class="template-actions">
             <button class="btn-preview" onclick="previewTemplate('change-orders')">Preview</button>
             <button class="btn-apply" onclick="applyTemplate('change-orders')">Apply Template</button>
           </div>
         </div>
-        
-        <div class="feature-card" onclick="applyTemplate('project-gantt')">
-          <div class="feature-icon" style="background: var(--primary-200); color: var(--primary-700);">GT</div>
-          <div class="feature-title">Project Gantt Chart</div>
-          <div class="feature-description">Milestone & resource tracking</div>
-          <div class="text-small text-muted mt-2">25% less delays</div>
-        </div>
-        
-        <div class="feature-card" onclick="applyTemplate('material-tracker')">
-          <div class="feature-icon" style="background: var(--success-200); color: var(--success-700);">MT</div>
-          <div class="feature-title">Material Tracker</div>
-          <div class="feature-description">Inventory & waste monitoring</div>
-          <div class="text-small text-muted mt-2">20% waste reduction</div>
-        </div>
-        
-        <div class="feature-card" onclick="applyTemplate('timesheet-processor')">
-          <div class="feature-icon" style="background: rgba(168, 85, 247, 0.15); color: rgba(168, 85, 247, 1);">TS</div>
-          <div class="feature-title">Timesheet Processor</div>
-          <div class="feature-description">Digital timesheets & payroll</div>
-          <div class="text-small text-muted mt-2">60% faster</div>
-        </div>
       </div>
       
-      <div class="card mt-3">
-        <div class="card-title">What's Included</div>
-        <ul style="margin-top: 12px; color: var(--gray-700);">
-          <li>Quantity × unit cost formulas with automatic tax</li>
-          <li>10-15% contingency planning built-in</li>
-          <li>Material waste tracking (save $15-30k/project)</li>
-          <li>Resource allocation optimization</li>
-          <li>$360,000 in documented savings over 5 years</li>
-        </ul>
+      <div class="card mt-3" style="background: var(--primary-50); border: 1px solid var(--primary-200);">
+        <div class="card-title" style="color: var(--primary-700); font-size: 13px;">Construction Features</div>
+        <div style="margin-top: 8px; font-size: 11px; color: var(--primary-600); line-height: 1.6;">
+          <div>✓ Advanced cost estimation formulas</div>
+          <div>✓ 10-15% contingency planning</div>
+          <div>✓ Material waste tracking system</div>
+          <div>✓ Resource allocation optimization</div>
+          <div>✓ Safety compliance monitoring</div>
+        </div>
       </div>
     </div>
     

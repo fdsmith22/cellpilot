@@ -76,9 +76,6 @@
     
     .smart-option.selected::after {
       background: var(--success-500);
-      top: 10px;
-      right: auto;
-      left: 12px;
     }
     
     .recommended-badge {
@@ -213,7 +210,36 @@
   <div class="container">
     <div id="statusMessage"></div>
     
-    <div id="analysisSection" class="card">
+    <!-- Initial Instructions Card -->
+    <div id="instructionsSection" class="card">
+      <div class="card-title">Tableize Your Data</div>
+      <div class="card-description">Transform unstructured data into organized columns</div>
+      
+      <div style="margin: 20px 0;">
+        <h4 style="font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">How to use:</h4>
+        <ol style="margin: 0; padding-left: 20px; font-size: 12px; color: var(--gray-600); line-height: 1.8;">
+          <li>Select the data in your spreadsheet that needs structuring</li>
+          <li>Click "Analyze Data" below to detect patterns</li>
+          <li>Choose how to split your data into columns</li>
+          <li>Preview and apply the transformation</li>
+        </ol>
+      </div>
+      
+      <div style="background: var(--primary-50); border: 1px solid var(--primary-200); border-radius: 8px; padding: 12px; margin: 16px 0;">
+        <p style="font-size: 11px; color: var(--primary-700); margin: 0;">
+          <strong>💡 Tip:</strong> Tableize works best with data that has consistent patterns like delimiters (commas, tabs) or fixed-width formatting.
+        </p>
+      </div>
+      
+      <button class="btn btn-primary btn-block" onclick="startAnalysis()">
+        Analyze Selected Data
+      </button>
+      <button class="btn btn-secondary btn-block" style="margin-top: 8px;" onclick="backToMain()">
+        Back to Main Menu
+      </button>
+    </div>
+    
+    <div id="analysisSection" class="card" style="display: none;">
       <div class="card-title">Data Analysis</div>
       <div class="card-description">Analyzing your data structure...</div>
       <div class="progress">
@@ -304,13 +330,22 @@
     let columnWidths = [10, 10, 10];
     let previewData = null;
     
-    // Wait for proper initialization before analyzing
+    // Don't auto-analyze on load
     window.onload = function() {
-      // Small delay to ensure sheet context is ready
+      // Page is ready, user can now click to analyze
+      console.log('Tableize page loaded - waiting for user action');
+    };
+    
+    function startAnalysis() {
+      // Hide instructions and show analysis section
+      document.getElementById('instructionsSection').style.display = 'none';
+      document.getElementById('analysisSection').style.display = 'block';
+      
+      // Small delay to ensure UI updates before starting analysis
       setTimeout(function() {
         checkAndAnalyze();
-      }, 500);
-    };
+      }, 100);
+    }
     
     function checkAndAnalyze() {
       // First check if there's actually a selection
@@ -320,21 +355,22 @@
             analyzeData();
           } else {
             document.getElementById('analysisSection').style.display = 'none';
-            showStatus('Please select data in your spreadsheet first', 'warning');
-            // Show a helpful instruction card
+            // Show error with option to retry
             document.getElementById('optionsSection').innerHTML = `
               <div class="card">
-                <div class="card-title">No Data Selected</div>
-                <div class="card-description">To use Tableize:</div>
-                <ol style="margin: 12px 0; padding-left: 20px; font-size: 12px; color: var(--gray-600);">
-                  <li>Select the data you want to structure</li>
-                  <li>Open CellPilot from the Extensions menu</li>
-                  <li>Click on Tableize Data</li>
-                </ol>
-                <button class="btn btn-primary btn-block" onclick="backToMain()">Back to Main Menu</button>
+                <div class="card-title">⚠️ No Data Selected</div>
+                <div class="card-description">Please select data in your spreadsheet first</div>
+                <div style="margin: 16px 0; padding: 12px; background: var(--warning-50); border: 1px solid var(--warning-200); border-radius: 6px;">
+                  <p style="font-size: 12px; color: var(--warning-700); margin: 0;">
+                    To use Tableize, you need to select the cells containing the data you want to structure.
+                  </p>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="location.reload()">Try Again</button>
+                <button class="btn btn-secondary btn-block" style="margin-top: 8px;" onclick="backToMain()">Back to Main Menu</button>
               </div>
             `;
             document.getElementById('optionsSection').style.display = 'block';
+            showStatus('No data selected. Please select cells in your spreadsheet.', 'warning');
           }
         })
         .withFailureHandler(function(error) {
