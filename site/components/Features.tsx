@@ -61,7 +61,7 @@ const features = [
 
 const Features = () => {
   return (
-    <section id="features" className="snap-section min-h-screen relative overflow-hidden bg-transparent">
+    <section id="features" className="snap-section h-screen relative overflow-hidden bg-transparent">
       {/* Background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-pastel-sky/10 rounded-full blur-3xl"></div>
@@ -73,9 +73,9 @@ const Features = () => {
       
       {/* Removed grid pattern - using global grid */}
       
-      <div className="container-wrapper relative z-10 flex items-center justify-center min-h-screen py-[104px]">
-        <div className="w-full">
-          <ScrollObserver className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4">
+      <div className="container-wrapper relative z-10 h-screen pt-[104px] pb-4 flex flex-col justify-center">
+        <div className="w-full max-h-full overflow-y-auto">
+          <ScrollObserver className="text-center max-w-3xl mx-auto mb-6 sm:mb-8 px-4">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-3 sm:mb-4">
             Tools That Actually Help
           </h2>
@@ -85,13 +85,13 @@ const Features = () => {
           </p>
         </ScrollObserver>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 px-4 sm:px-0">
           {features.map((feature, index) => (
             <ScrollObserver
               key={index}
               className={`scroll-observer-delay-${index * 100}`}
             >
-              <div className="group glass-card rounded-xl sm:rounded-2xl p-6 sm:p-8 card-hover h-full">
+              <div className="group glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 card-hover h-full">
               <div className="inline-flex p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-pastel-lavender/20 to-pastel-sky/20 text-primary-600 mb-3 sm:mb-4">
                 {feature.icon}
               </div>

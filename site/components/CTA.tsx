@@ -3,7 +3,7 @@ import ScrollObserver from './ScrollObserver'
 
 const CTA = () => {
   return (
-    <section className="snap-section min-h-screen flex items-center relative overflow-hidden bg-transparent py-[104px]">
+    <section className="snap-section h-screen relative overflow-hidden bg-transparent">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-64 h-64 bg-pastel-sky/20 rounded-full blur-2xl animate-blob"></div>
@@ -15,7 +15,7 @@ const CTA = () => {
       
       {/* Removed grid pattern - using global grid */}
       
-      <div className="container-wrapper relative z-10">
+      <div className="container-wrapper relative z-10 h-screen pt-[104px] pb-4 flex items-center justify-center">
         <ScrollObserver className="max-w-3xl mx-auto text-center px-4">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-4 sm:mb-6">
             Ready to Get Started?

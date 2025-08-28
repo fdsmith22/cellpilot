@@ -748,6 +748,26 @@
         </div>
       </div>
       
+      <!-- Footer -->
+      <div class="dashboard-footer">
+        <div class="footer-links">
+          <a href="#" class="footer-link" onclick="showSettings(); return false;">
+            <span class="footer-link-icon">⚙️</span>
+            <span>Settings</span>
+          </a>
+          <span class="footer-divider">•</span>
+          <a href="#" class="footer-link" onclick="showHelp(); return false;">
+            <span class="footer-link-icon">❓</span>
+            <span>Help</span>
+          </a>
+          <span class="footer-divider">•</span>
+          <a href="https://www.cellpilot.io" target="_blank" class="footer-link">
+            <span class="footer-link-icon">🌐</span>
+            <span>Website</span>
+          </a>
+        </div>
+      </div>
+      
       <!-- Floating Action Button -->
       <div class="fab" onclick="showHelp()" data-tooltip="Help & Support">
         ?
@@ -828,6 +848,19 @@
     // Show help
     function showHelp() {
       google.script.run.showHelp();
+    }
+    
+    // Show settings
+    function showSettings() {
+      // For now, show a message. Later can implement settings panel
+      google.script.run
+        .withSuccessHandler(function() {
+          console.log('Settings opened');
+        })
+        .withFailureHandler(function(error) {
+          alert('Settings panel coming soon!');
+        })
+        .showUserSettings();
     }
     
     // Utility: Debounce

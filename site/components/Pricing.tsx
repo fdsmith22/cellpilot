@@ -61,7 +61,7 @@ const Pricing = () => {
   const [selectedPlan, setSelectedPlan] = useState<string>('Starter')
   
   return (
-    <section id="pricing" className="snap-section min-h-screen relative overflow-hidden bg-transparent">
+    <section id="pricing" className="snap-section h-screen relative overflow-hidden bg-transparent">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] bg-gradient-to-r from-pastel-peach/20 to-pastel-lavender/20 rounded-full blur-3xl"></div>
@@ -72,9 +72,9 @@ const Pricing = () => {
       
       {/* Removed grid pattern - using global grid */}
       
-      <div className="container-wrapper relative z-10 flex items-center justify-center min-h-screen py-[104px]">
-        <div className="w-full">
-        <ScrollObserver className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4">
+      <div className="container-wrapper relative z-10 h-screen pt-[104px] pb-4 flex flex-col justify-center">
+        <div className="w-full max-h-full overflow-y-auto">
+        <ScrollObserver className="text-center max-w-3xl mx-auto mb-6 sm:mb-8 px-4">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-3 sm:mb-4">
             Simple Pricing
           </h2>
@@ -83,7 +83,7 @@ const Pricing = () => {
           </p>
         </ScrollObserver>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 items-stretch px-4 sm:px-0">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 items-stretch px-4 sm:px-0">
           {plans.map((plan, index) => (
             <ScrollObserver
               key={plan.name}
@@ -105,7 +105,7 @@ const Pricing = () => {
                 </div>
               )}
               
-              <div className="p-6 sm:p-8">
+              <div className="p-4 sm:p-6">
                 <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-2">{plan.name}</h3>
                 <p className="text-sm sm:text-base text-neutral-600 mb-4 sm:mb-6">{plan.description}</p>
                 
@@ -149,7 +149,7 @@ const Pricing = () => {
           ))}
         </div>
 
-        <div className="mt-12 sm:mt-16 text-center px-4">
+        <div className="mt-8 sm:mt-10 text-center px-4">
           <div className="inline-flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 p-4 sm:p-6 rounded-xl sm:rounded-2xl glass-card">
             <div className="flex items-center">
               <svg className="w-4 sm:w-5 h-4 sm:h-5 text-accent-teal mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
