@@ -22,11 +22,6 @@ const CTA = () => {
       
       <div className="container-wrapper relative z-10 pt-[104px] pb-4 flex items-center justify-center">
         <ScrollObserver className="max-w-4xl mx-auto text-center px-4">
-          {/* Animated emoji */}
-          <div className="mb-6 animate-float">
-            <span className="text-5xl sm:text-6xl">🚀</span>
-          </div>
-          
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
             <span className="text-gradient">Transform</span>
             <span className="text-neutral-900"> Your Spreadsheets </span>
@@ -34,29 +29,8 @@ const CTA = () => {
           </h2>
           
           <p className="text-base sm:text-lg md:text-xl text-neutral-600 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto">
-            Join thousands of professionals who save hours every week with CellPilot's intelligent automation tools.
+            Save hours every week with intelligent automation tools designed for Google Sheets power users.
           </p>
-          
-          {/* Stats grid */}
-          <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
-            {[
-              { number: '10K+', label: 'Active Users' },
-              { number: '2M+', label: 'Operations Run' },
-              { number: '4.9★', label: 'User Rating' },
-            ].map((stat, index) => (
-              <div 
-                key={index}
-                onMouseEnter={() => setHoveredStat(index)}
-                onMouseLeave={() => setHoveredStat(null)}
-                className={`glass-card p-4 rounded-xl transition-all duration-300 cursor-pointer ${
-                  hoveredStat === index ? 'scale-110 bg-white/60' : 'hover:scale-105'
-                }`}
-              >
-                <div className="text-2xl sm:text-3xl font-bold text-primary-600">{stat.number}</div>
-                <div className="text-xs sm:text-sm text-neutral-600">{stat.label}</div>
-              </div>
-            ))}
-          </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
             <Link

@@ -7,6 +7,8 @@ import Pricing from '@/components/Pricing'
 import CTA from '@/components/CTA'
 import Footer from '@/components/Footer'
 import ViewportProvider from '@/components/ViewportProvider'
+import ScrollProgress from '@/components/ScrollProgress'
+import KeyboardShortcuts from '@/components/KeyboardShortcuts'
 
 // Lazy load the GridAnimation component for better performance
 const GridAnimation = dynamic(() => import('@/components/GridAnimation'), {
@@ -19,6 +21,8 @@ export default function Home() {
     <ViewportProvider>
       <main className="relative">
         <GridAnimation />
+        <ScrollProgress />
+        <KeyboardShortcuts />
         <div className="relative z-elevated">
           <Hero />
           <Features />
