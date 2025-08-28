@@ -46,7 +46,7 @@ const Hero = () => {
   }, [])
 
   return (
-    <section className="snap-section relative h-screen overflow-hidden bg-transparent">
+    <section className="snap-section relative min-h-screen overflow-hidden bg-transparent">
       {/* Animated blobs */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="blob-shape w-96 h-96 bg-pastel-mint top-0 -left-48"></div>
@@ -56,7 +56,7 @@ const Hero = () => {
 
       {/* Removed grid pattern - now using global grid */}
       
-      <div className="container-wrapper relative z-10 flex items-center justify-center h-screen pt-[104px]">
+      <div className="container-wrapper relative z-10 flex items-center justify-center min-h-screen pt-[104px] pb-8">
         <div className="max-w-5xl mx-auto">
           
           {/* Heading */}

@@ -14,12 +14,14 @@ const GridAnimation = dynamic(() => import('@/components/GridAnimation'), {
 
 export default function Home() {
   return (
-    <main className="min-h-screen relative">
+    <main className="relative">
       <GridAnimation />
-      <Hero />
-      <Features />
-      <Pricing />
-      <CTA />
+      <div className="relative z-10">
+        <Hero />
+        <Features />
+        <Pricing />
+        <CTA />
+      </div>
     </main>
   )
 }

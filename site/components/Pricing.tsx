@@ -61,7 +61,7 @@ const Pricing = () => {
   const [selectedPlan, setSelectedPlan] = useState<string>('Starter')
   
   return (
-    <section id="pricing" className="snap-section h-screen relative overflow-hidden bg-transparent">
+    <section id="pricing" className="snap-section min-h-screen relative overflow-hidden bg-transparent">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] bg-gradient-to-r from-pastel-peach/20 to-pastel-lavender/20 rounded-full blur-3xl"></div>
@@ -72,7 +72,7 @@ const Pricing = () => {
       
       {/* Removed grid pattern - using global grid */}
       
-      <div className="container-wrapper relative z-10 flex items-center justify-center h-screen pt-[104px] pb-20">
+      <div className="container-wrapper relative z-10 flex items-center justify-center min-h-screen py-[104px]">
         <div className="w-full">
         <ScrollObserver className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-3 sm:mb-4">

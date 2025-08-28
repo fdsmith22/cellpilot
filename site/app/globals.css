@@ -35,14 +35,19 @@
   /* Only apply scroll snap on desktop */
   @media (min-width: 768px) {
     html {
-      scroll-snap-type: y mandatory;
+      scroll-snap-type: y proximity; /* Use proximity for better control */
       scroll-padding-top: 104px; /* Account for fixed header */
     }
     
     section.snap-section {
       scroll-snap-align: start;
       scroll-snap-stop: always;
-      scroll-margin-top: 104px; /* Ensures proper alignment with fixed header */
+      /* Remove scroll-margin-top as we're using scroll-padding-top */
+    }
+    
+    /* Footer should not snap */
+    footer {
+      scroll-snap-align: none;
     }
   }
 

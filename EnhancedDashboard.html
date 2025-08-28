@@ -506,6 +506,51 @@
     .fab:active {
       transform: scale(0.95);
     }
+    
+    /* Footer Styles */
+    .dashboard-footer {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      text-align: center;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    
+    .footer-link {
+      color: var(--gray-600);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .footer-link:hover {
+      background: var(--primary-50);
+      color: var(--primary-700);
+      transform: translateY(-1px);
+    }
+    
+    .footer-divider {
+      color: var(--gray-300);
+      margin: 0 4px;
+    }
+    
+    .footer-link-icon {
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -514,38 +559,40 @@
       <!-- Enhanced Header -->
       <div class="dashboard-header">
         <div class="logo-container">
-          <svg class="logo-animated" viewBox="0 0 200 60" width="180" height="54">
-            <!-- Modern Logo Design -->
-            <defs>
-              <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
-              </linearGradient>
-            </defs>
-            
-            <!-- Icon -->
-            <g transform="translate(10, 10)">
-              <rect x="0" y="0" width="40" height="40" rx="10" fill="url(#logoGradient)" opacity="0.1"/>
-              <rect x="5" y="5" width="30" height="30" rx="8" fill="none" stroke="url(#logoGradient)" stroke-width="2"/>
+          <a href="https://www.cellpilot.io" target="_blank" style="text-decoration: none; display: inline-block;">
+            <svg class="logo-animated" viewBox="0 0 200 60" width="180" height="54" style="cursor: pointer;">
+              <!-- Modern Logo Design -->
+              <defs>
+                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                </linearGradient>
+              </defs>
               
-              <!-- Grid Pattern -->
-              <line x1="15" y1="5" x2="15" y2="35" stroke="url(#logoGradient)" stroke-width="1" opacity="0.5"/>
-              <line x1="25" y1="5" x2="25" y2="35" stroke="url(#logoGradient)" stroke-width="1" opacity="0.5"/>
-              <line x1="5" y1="15" x2="35" y2="15" stroke="url(#logoGradient)" stroke-width="1" opacity="0.5"/>
-              <line x1="5" y1="25" x2="35" y2="25" stroke="url(#logoGradient)" stroke-width="1" opacity="0.5"/>
+              <!-- Icon -->
+              <g transform="translate(10, 10)">
+                <rect x="0" y="0" width="40" height="40" rx="10" fill="url(#logoGradient)" opacity="0.1"/>
+                <rect x="5" y="5" width="30" height="30" rx="8" fill="none" stroke="url(#logoGradient)" stroke-width="2"/>
+                
+                <!-- Grid Pattern -->
+                <line x1="15" y1="5" x2="15" y2="35" stroke="url(#logoGradient)" stroke-width="1" opacity="0.5"/>
+                <line x1="25" y1="5" x2="25" y2="35" stroke="url(#logoGradient)" stroke-width="1" opacity="0.5"/>
+                <line x1="5" y1="15" x2="35" y2="15" stroke="url(#logoGradient)" stroke-width="1" opacity="0.5"/>
+                <line x1="5" y1="25" x2="35" y2="25" stroke="url(#logoGradient)" stroke-width="1" opacity="0.5"/>
+                
+                <!-- Center Dot -->
+                <circle cx="20" cy="20" r="3" fill="url(#logoGradient)"/>
+              </g>
               
-              <!-- Center Dot -->
-              <circle cx="20" cy="20" r="3" fill="url(#logoGradient)"/>
-            </g>
-            
-            <!-- Text -->
-            <text x="60" y="35" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700" fill="#1f2937">
-              Cell<tspan fill="url(#logoGradient)">Pilot</tspan>
-            </text>
-            <text x="60" y="48" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#6b7280">
-              SMART SPREADSHEET ASSISTANT
-            </text>
-          </svg>
+              <!-- Text -->
+              <text x="60" y="35" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700" fill="#1f2937">
+                Cell<tspan fill="url(#logoGradient)">Pilot</tspan>
+              </text>
+              <text x="60" y="48" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#6b7280">
+                SMART SPREADSHEET ASSISTANT
+              </text>
+            </svg>
+          </a>
         </div>
         
         <!-- Smart Selection Indicator -->

@@ -17,7 +17,7 @@ export default function TermsOfService() {
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-pastel-peach/10 rounded-full blur-3xl"></div>
       </div>
       
-      <div className="container-wrapper relative pt-[100px] sm:pt-[110px] md:pt-[120px] lg:pt-[130px] pb-20" style={{zIndex: 10}}>
+      <div className="container-wrapper relative pt-[104px] pb-20" style={{zIndex: 10}}>
         <div className="max-w-4xl mx-auto">
           {/* Back link */}
           <Link href="/" className="inline-flex items-center text-primary-600 hover:text-primary-700 transition-colors mb-8">
