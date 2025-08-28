@@ -1,5 +1,11 @@
 import Link from 'next/link'
 import GridAnimation from '@/components/GridAnimation'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Pricing - CellPilot',
+  description: 'Simple, transparent pricing for CellPilot. Start free and upgrade when you need more. No hidden fees, cancel anytime.',
+}
 
 const plans = [
   {

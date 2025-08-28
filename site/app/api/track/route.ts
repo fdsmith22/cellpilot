@@ -15,13 +15,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Log the event (in production, save to database)
-    console.log('Tracking event:', {
-      event,
-      userId,
-      data,
-      timestamp: new Date().toISOString()
-    })
+    // In production, save to database
+    // Event tracked: { event, userId, data, timestamp: new Date().toISOString() }
 
     // Here you would typically:
     // 1. Save to database
@@ -45,7 +40,7 @@ export async function POST(request: NextRequest) {
         break
       
       default:
-        console.log('Unknown event type:', event)
+        // Unknown event type
     }
 
     return NextResponse.json({ 
@@ -53,7 +48,6 @@ export async function POST(request: NextRequest) {
       message: 'Event tracked successfully' 
     })
   } catch (error) {
-    console.error('Tracking error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -63,12 +57,7 @@ export async function POST(request: NextRequest) {
 
 async function trackInstallation(userId: string, data: any) {
   // In production, save to database
-  console.log('New installation:', {
-    userId,
-    method: data.method || 'unknown',
-    version: data.version,
-    source: data.source
-  })
+  // New installation: { userId, method, version, source }
   
   // Send welcome email
   // await sendWelcomeEmail(userId)
@@ -76,12 +65,7 @@ async function trackInstallation(userId: string, data: any) {
 
 async function trackUsage(userId: string, data: any) {
   // Track which features are being used
-  console.log('Feature usage:', {
-    userId,
-    feature: data.feature,
-    operation: data.operation,
-    count: data.count
-  })
+  // Feature usage: { userId, feature, operation, count }
   
   // Update usage limits
   // await updateUsageLimits(userId, data)
@@ -89,12 +73,7 @@ async function trackUsage(userId: string, data: any) {
 
 async function trackUpgrade(userId: string, data: any) {
   // Track plan changes
-  console.log('Plan upgrade:', {
-    userId,
-    fromPlan: data.fromPlan,
-    toPlan: data.toPlan,
-    revenue: data.revenue
-  })
+  // Plan upgrade: { userId, fromPlan, toPlan, revenue }
   
   // Update user subscription
   // await updateSubscription(userId, data)

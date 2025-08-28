@@ -34,7 +34,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(subscription)
   } catch (error) {
-    console.error('Subscription check error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -63,7 +62,7 @@ export async function PUT(request: NextRequest) {
     // Process payment if upgrading
     if (plan !== 'free') {
       // Integrate with Stripe here
-      console.log('Processing payment for:', { userId, plan, paymentMethod })
+      // Processing payment for: { userId, plan, paymentMethod }
     }
 
     // Update subscription in database
