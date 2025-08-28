@@ -89,22 +89,8 @@ const IndustryTemplates = {
         }
       }
       
-      // Show preview notification
-      SpreadsheetApp.getUi().showModalDialog(
-        HtmlService.createHtmlContent(`
-          <div style="padding: 20px;">
-            <h3>Template Preview Created</h3>
-            <p>Preview sheets have been created with [PREVIEW] prefix.</p>
-            <p><strong>Created sheets:</strong></p>
-            <ul>${createdSheets.map(s => `<li>${s}</li>`).join('')}</ul>
-            <p style="color: #666; margin-top: 15px;">
-              These are temporary preview sheets. Click "Apply" in the sidebar to keep them, 
-              or they will be removed when you preview another template or close the sidebar.
-            </p>
-          </div>
-        `).setWidth(400).setHeight(300),
-        'Template Preview'
-      );
+      // Skip modal dialog - it causes errors and UI feedback is handled by sidebar
+      // The success message and sheet list will be shown in the sidebar
       
       return {
         success: true,
@@ -2631,5 +2617,88 @@ const IndustryTemplates = {
       sheet.getRange(`J${row}`).setFormula(`=D${row}*I${row}`).setNumberFormat('$#,##0.00');
       sheet.getRange(`M${row}`).setFormula(`=IF(D${row}<=G${row},"REORDER",IF(D${row}>=F${row},"OVERSTOCK","OK"))`);
     }
+  },
+  
+  // Additional Real Estate setup functions
+  setupPropertySheet: function(sheet) {
+    const headers = ['Property ID', 'Address', 'Type', 'Bedrooms', 'Bathrooms', 
+                     'Square Feet', 'Purchase Price', 'Current Value', 'Monthly Rent', 
+                     'Occupancy Status', 'Tenant', 'Lease End', 'HOA Fees', 'Property Tax'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#2C3E50').setFontColor('#FFFFFF').setFontWeight('bold');
+  },
+  
+  setupTenantSheet: function(sheet) {
+    const headers = ['Tenant ID', 'Name', 'Contact', 'Email', 'Property', 
+                     'Lease Start', 'Lease End', 'Monthly Rent', 'Security Deposit', 
+                     'Payment Status', 'Last Payment', 'Balance Due'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#34495E').setFontColor('#FFFFFF').setFontWeight('bold');
+  },
+  
+  setupMaintenanceSheet: function(sheet) {
+    const headers = ['Request ID', 'Date', 'Property', 'Tenant', 'Issue Type', 
+                     'Description', 'Priority', 'Status', 'Vendor', 'Cost', 
+                     'Completion Date', 'Notes'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#E74C3C').setFontColor('#FFFFFF').setFontWeight('bold');
+  },
+  
+  setupInvestmentSheet: function(sheet) {
+    const headers = ['Property', 'Purchase Price', 'Down Payment', 'Loan Amount', 
+                     'Interest Rate', 'Monthly Payment', 'Rental Income', 
+                     'Operating Expenses', 'Cash Flow', 'ROI %', 'Cap Rate'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#27AE60').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    for (let row = 2; row <= 50; row++) {
+      sheet.getRange(`I${row}`).setFormula(`=G${row}-F${row}-H${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`J${row}`).setFormula(`=IF(B${row}>0,I${row}*12/B${row}*100,0)`).setNumberFormat('0.00%');
+    }
+  },
+  
+  setupCashFlowSheet: function(sheet) {
+    const headers = ['Month', 'Rental Income', 'Other Income', 'Total Income', 
+                     'Mortgage', 'HOA', 'Insurance', 'Property Tax', 'Maintenance', 
+                     'Utilities', 'Total Expenses', 'Net Cash Flow', 'Cumulative'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#3498DB').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    for (let row = 2; row <= 100; row++) {
+      sheet.getRange(`D${row}`).setFormula(`=B${row}+C${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`K${row}`).setFormula(`=SUM(E${row}:J${row})`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`L${row}`).setFormula(`=D${row}-K${row}`).setNumberFormat('$#,##0.00');
+      if (row === 2) {
+        sheet.getRange(`M${row}`).setFormula(`=L${row}`).setNumberFormat('$#,##0.00');
+      } else {
+        sheet.getRange(`M${row}`).setFormula(`=M${row-1}+L${row}`).setNumberFormat('$#,##0.00');
+      }
+    }
+  },
+  
+  setupROISheet: function(sheet) {
+    const headers = ['Metric', 'Value', 'Formula', 'Description'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground('#9B59B6').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    const metrics = [
+      ['Total Investment', '', 'Purchase + Repairs', 'Initial capital investment'],
+      ['Annual Income', '', 'Rent * 12', 'Gross rental income per year'],
+      ['Annual Expenses', '', 'All operating costs', 'Total yearly expenses'],
+      ['Net Operating Income', '', 'Income - Expenses', 'NOI before financing'],
+      ['Cash Flow', '', 'NOI - Debt Service', 'Annual cash flow after mortgage'],
+      ['Cash on Cash Return', '', 'Cash Flow / Investment', 'Return on cash invested'],
+      ['Cap Rate', '', 'NOI / Property Value', 'Capitalization rate'],
+      ['ROI', '', '(Value + Cash Flow - Investment) / Investment', 'Total return on investment']
+    ];
+    
+    sheet.getRange(2, 1, metrics.length, 4).setValues(metrics);
+    sheet.getRange(2, 2, metrics.length, 1).setNumberFormat('$#,##0.00');
   }
 };

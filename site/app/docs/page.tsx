@@ -17,7 +17,7 @@ export default function Documentation() {
         <div className="absolute bottom-1/3 right-0 w-96 h-96 bg-pastel-lavender/10 rounded-full blur-3xl"></div>
       </div>
       
-      <div className="container-wrapper relative pt-28 md:pt-32 sm:pt-36 max-sm:pt-[120px] pb-20" style={{zIndex: 10}}>
+      <div className="container-wrapper relative pt-[100px] sm:pt-[110px] md:pt-[120px] lg:pt-[130px] pb-20" style={{zIndex: 10}}>
         <div className="max-w-5xl mx-auto">
           {/* Back link */}
           <Link href="/" className="inline-flex items-center text-primary-600 hover:text-primary-700 transition-colors mb-8">

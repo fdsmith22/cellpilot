@@ -2586,6 +2586,45 @@ function applyIndustryTemplate(templateType) {
  */
 function previewTemplate(templateType) {
   try {
+    // Check if IndustryTemplates module is available
+    if (typeof IndustryTemplates === 'undefined') {
+      return {
+        success: false,
+        error: 'IndustryTemplates module not available'
+      };
+    }
+    
+    // Call the IndustryTemplates.previewTemplate method to create actual preview sheets
+    const result = IndustryTemplates.previewTemplate(templateType);
+    return result;
+    
+  } catch (error) {
+    console.error('Error creating template preview:', error);
+    return {
+      success: false,
+      error: error.message || error.toString()
+    };
+  }
+}
+
+/**
+ * Clean up industry template preview sheets
+ */
+function cleanupIndustryPreviews() {
+  try {
+    if (typeof IndustryTemplates !== 'undefined' && IndustryTemplates.cleanupPreviewSheets) {
+      return IndustryTemplates.cleanupPreviewSheets();
+    }
+    return { success: true };
+  } catch (error) {
+    console.error('Error cleaning up previews:', error);
+    return { success: false, error: error.toString() };
+  }
+}
+
+// Keep the old function for reference (can be removed later)
+function previewTemplateOld(templateType) {
+  try {
     // Template preview data with descriptions and sheet structures
     const templatePreviews = {
       // Real Estate Templates

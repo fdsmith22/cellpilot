@@ -763,6 +763,14 @@ return CellPilot.previewTemplate(templateType);
 }
 
 /**
+* Clean up industry template preview sheets
+* @return {Object} Result of cleanup operation
+*/
+function cleanupIndustryPreviews() {
+return CellPilot.cleanupIndustryPreviews();
+}
+
+/**
 * Get cross-sheet information for visual formula builder
 * @return {Array} Array of sheet information objects
 */
