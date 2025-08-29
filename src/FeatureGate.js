@@ -290,10 +290,16 @@ const FeatureGate = {
     const now = new Date();
     const daysRemaining = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
     
+    // Format date as DD/MM/YYYY
+    const day = String(endDate.getDate()).padStart(2, '0');
+    const month = String(endDate.getMonth() + 1).padStart(2, '0');
+    const year = endDate.getFullYear();
+    const formattedDate = day + '/' + month + '/' + year;
+    
     return {
       active: true,
       daysRemaining: daysRemaining,
-      endDate: endDate.toLocaleDateString(),
+      endDate: formattedDate,
       message: 'Beta period: ' + daysRemaining + ' days remaining. All features currently unlocked.',
       benefits: this.BETA_CONFIG.betaUserBenefits
     };

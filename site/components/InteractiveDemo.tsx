@@ -13,7 +13,7 @@ const InteractiveDemo = () => {
       description: 'Describe what you want in plain English and get the perfect formula',
       demo: (
         <div className="space-y-3">
-          <div className="glass-card p-3 rounded-lg">
+          <div className="bg-white/95 border border-neutral-200 p-3 rounded-lg">
             <div className="text-xs text-neutral-500 mb-1">Your request:</div>
             <div className="text-sm text-neutral-700">"Calculate the average of column B where column A contains 'Active'"</div>
           </div>
@@ -22,13 +22,13 @@ const InteractiveDemo = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
           </div>
-          <div className="glass-card p-3 rounded-lg bg-gradient-to-br from-pastel-mint/20 to-transparent">
+          <div className="bg-white/95 border border-neutral-200 p-3 rounded-lg bg-gradient-to-br from-pastel-mint/30 to-white/95">
             <div className="text-xs text-neutral-500 mb-1">Generated formula:</div>
             <code className="text-sm font-mono text-primary-700">=AVERAGEIF(A:A,"Active",B:B)</code>
           </div>
         </div>
       ),
-      icon: '🧮'
+      icon: null
     },
     {
       title: 'Data Cleaning Assistant',
@@ -36,7 +36,7 @@ const InteractiveDemo = () => {
       demo: (
         <div className="space-y-2">
           <div className="grid grid-cols-2 gap-2">
-            <div className="glass-card p-2 rounded">
+            <div className="bg-white/95 border border-neutral-200 p-2 rounded">
               <div className="text-xs text-neutral-500 mb-1">Before:</div>
               <div className="space-y-1 text-xs font-mono">
                 <div className="text-red-600">  john doe  </div>
@@ -44,7 +44,7 @@ const InteractiveDemo = () => {
                 <div className="text-red-600">bob_jones@email</div>
               </div>
             </div>
-            <div className="glass-card p-2 rounded bg-gradient-to-br from-pastel-sky/20 to-transparent">
+            <div className="bg-white/95 border border-neutral-200 p-2 rounded bg-gradient-to-br from-pastel-sky/30 to-white/95">
               <div className="text-xs text-neutral-500 mb-1">After:</div>
               <div className="space-y-1 text-xs font-mono">
                 <div className="text-green-600">John Doe</div>
@@ -60,7 +60,7 @@ const InteractiveDemo = () => {
           </div>
         </div>
       ),
-      icon: '✨'
+      icon: null
     },
     {
       title: 'Visual Data Mapper',
@@ -88,7 +88,7 @@ const InteractiveDemo = () => {
           </div>
         </div>
       ),
-      icon: '🔗'
+      icon: null
     }
   ]
 
@@ -103,10 +103,10 @@ const InteractiveDemo = () => {
       <div className="container-wrapper relative z-10">
         <ScrollObserver className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-neutral-900 mb-4">
-            Experience the Magic
+            How It Works
           </h2>
           <p className="text-lg text-neutral-600">
-            Interactive tools that understand your data and work the way you think
+            Simple tools that help you work faster with spreadsheets
           </p>
         </ScrollObserver>
 
@@ -123,13 +123,11 @@ const InteractiveDemo = () => {
                     onClick={() => setActiveFeature(index)}
                     className={`w-full text-left p-6 rounded-2xl transition-all ${
                       activeFeature === index
-                        ? 'glass-card-active shadow-xl scale-105'
-                        : 'glass-card hover:shadow-lg hover:scale-102'
+                        ? 'bg-white border-2 border-primary-300 shadow-xl scale-105'
+                        : 'bg-white/90 border border-neutral-200 hover:shadow-lg hover:scale-102'
                     }`}
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="text-3xl">{feature.icon}</div>
-                      <div>
+                    <div>
                         <h3 className="text-lg font-semibold text-neutral-900 mb-2">
                           {feature.title}
                         </h3>
@@ -145,7 +143,7 @@ const InteractiveDemo = () => {
 
             {/* Demo area */}
             <ScrollObserver>
-              <div className="glass-card rounded-2xl p-8 min-h-[400px] flex items-center justify-center">
+              <div className="bg-white/95 border border-neutral-200 shadow-lg rounded-2xl p-8 min-h-[400px] flex items-center justify-center">
                 <div className="w-full">
                   {features[activeFeature].demo}
                 </div>
@@ -157,7 +155,7 @@ const InteractiveDemo = () => {
         {/* Live spreadsheet interaction */}
         <div className="mt-16">
           <ScrollObserver>
-            <div className="glass-card rounded-2xl p-6 max-w-4xl mx-auto">
+            <div className="bg-white/95 border border-neutral-200 shadow-lg rounded-2xl p-6 max-w-4xl mx-auto">
               <h3 className="text-xl font-semibold text-neutral-900 mb-4 text-center">
                 Try It Yourself - Hover Over Cells
               </h3>
