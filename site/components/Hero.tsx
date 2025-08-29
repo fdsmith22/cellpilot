@@ -54,8 +54,8 @@ const Hero = () => {
         <div className="blob-shape w-96 h-96 bg-pastel-sky bottom-0 left-1/2 animation-delay-4000"></div>
       </div>
 
-      {/* Content wrapper - uses flex-grow to center content in available space */}
-      <div className="container-wrapper relative z-10 flex-grow flex flex-col justify-center">
+      {/* Clean content wrapper - no complex positioning needed */}
+      <div className="container-wrapper relative z-10 py-12 sm:py-16 lg:py-20">
         <div className="max-w-5xl mx-auto">
           
           {/* Heading with new layout */}

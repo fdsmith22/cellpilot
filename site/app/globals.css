@@ -59,51 +59,37 @@
     scroll-behavior: smooth;
   }
   
-  /* Professional Layout System - Prevents Header Overlap */
-  /* Method 1: Box Model Approach (Currently Active) */
+  /* Modern Professional Layout - No Overlap Issues */
   @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
     html {
       scroll-snap-type: y proximity;
-      scroll-padding-top: var(--header-height);
+      /* No padding needed - header is sticky, not fixed */
     }
     
-    /* Sections use border-box sizing with padding for header space */
+    /* Clean section styling - no header compensation needed */
     section.snap-section {
       scroll-snap-align: start;
       min-height: 100vh;
-      /* Use box-sizing to include padding in height calculation */
-      box-sizing: border-box;
-      /* Padding creates space for fixed header */
-      padding-top: calc(var(--header-height) + 2rem);
-      padding-bottom: 2rem;
-      /* Content container should NOT use items-center */
       display: flex;
       flex-direction: column;
+      justify-content: center;
+      position: relative;
     }
     
-    /* Alternative Method 2: Margin Approach (commented out) */
-    /* section.snap-section {
-      margin-top: var(--header-height);
-      min-height: calc(100vh - var(--header-height));
-    } */
+    /* Ensure sections have proper spacing */
+    section.snap-section > * {
+      position: relative;
+      z-index: 1;
+    }
     
-    /* Alternative Method 3: Grid Approach (commented out) */
-    /* body {
-      display: grid;
-      grid-template-rows: var(--header-height) 1fr auto;
-    } */
-    
-    /* Last section (CTA) should have flexible height for footer access */
+    /* Last section can be shorter for footer access */
     section.snap-section:last-child {
-      scroll-snap-align: start;
-      min-height: calc(100vh - var(--header-height));
-      padding-top: var(--header-height);
+      min-height: auto;
     }
     
-    /* Footer should not snap and allow natural scrolling */
+    /* Footer never snaps */
     footer {
       scroll-snap-align: none !important;
-      scroll-snap-stop: normal !important;
     }
   }
   

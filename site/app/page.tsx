@@ -20,14 +20,14 @@ export default function Home() {
     <ViewportProvider>
       <div className="relative">
         <GridAnimation />
-        <main className="relative z-elevated">
+        <div className="relative">
           <Hero />
           <Features />
           <InteractiveDemo />
           <Pricing />
           <CTA />
-        </main>
-        <Footer />
+          <Footer />
+        </div>
       </div>
     </ViewportProvider>
   )

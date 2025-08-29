@@ -44,6 +44,7 @@ function onOpen() {
     CellPilot.onOpen();
   } catch (e) {
     SpreadsheetApp.getUi().alert('CellPilot library not loaded properly. Please check library setup.');
+    console.error('CellPilot error:', e);
   }
 }
 

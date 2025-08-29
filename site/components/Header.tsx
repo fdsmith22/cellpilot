@@ -23,7 +23,7 @@ const Header = () => {
   ]
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-header transition-all duration-500 pt-safe-top ${
+    <header className={`sticky top-0 z-header transition-all duration-500 pt-safe-top ${
       scrolled 
         ? 'bg-gradient-to-b from-white/98 via-white/92 to-transparent backdrop-blur-2xl border-b border-neutral-200/30 shadow-sm' 
         : 'bg-gradient-to-b from-white/85 via-white/70 to-transparent backdrop-blur-xl'
@@ -31,10 +31,10 @@ const Header = () => {
       {/* Grid pattern that fades into header */}
       <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" 
            style={{maskImage: 'linear-gradient(to bottom, black, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, black, transparent)'}}></div>
-      <nav className="relative py-4 max-sm:py-3">
+      <nav className="relative container-wrapper py-4 max-sm:py-3">
         <div className="flex items-center justify-between min-h-[80px] max-sm:min-h-[64px]">
           {/* Logo - positioned in top left */}
-          <Link href="/" className="flex items-center pl-4 md:pl-6 lg:pl-8 group">
+          <Link href="/" className="flex items-center group">
             <div className="relative h-14 sm:h-16 md:h-18 lg:h-20 w-[140px] sm:w-[160px] md:w-[180px] lg:w-[200px] transition-transform group-hover:scale-105">
               <Image 
                 src="/logo/combined/horizontal-standard-200x60.svg" 
@@ -47,7 +47,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-4 lg:gap-6 pr-4 md:pr-6 lg:pr-8">
+          <div className="hidden md:flex items-center gap-4 lg:gap-6">
             {navItems.map((item, index) => {
               const colors = [
                 'from-pastel-sky/30 to-pastel-sky/20 border-pastel-sky/40',
@@ -94,7 +94,7 @@ const Header = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 mr-4 rounded-lg hover:bg-neutral-100 transition-colors"
+            className="md:hidden p-2 rounded-lg hover:bg-neutral-100 transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}

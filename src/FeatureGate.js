@@ -146,7 +146,7 @@ const FeatureGate = {
         description: this.getFeatureDescription(featureName),
         benefits: this.getTierBenefits(access.requiredTiers[0]),
         cta: {
-          text: isBetaUser ? `Upgrade Now (${discount}% Beta Discount!)` : 'Upgrade Now',
+          text: isBetaUser ? 'Upgrade Now (' + discount + '% Beta Discount)' : 'Upgrade Now',
           action: 'showUpgradeDialog',
           params: {
             feature: featureName,
@@ -294,7 +294,7 @@ const FeatureGate = {
       active: true,
       daysRemaining: daysRemaining,
       endDate: endDate.toLocaleDateString(),
-      message: `Beta ends in ${daysRemaining} days - All features unlocked!`,
+      message: 'Beta period: ' + daysRemaining + ' days remaining. All features currently unlocked.',
       benefits: this.BETA_CONFIG.betaUserBenefits
     };
   },
@@ -309,15 +309,19 @@ const FeatureGate = {
       const betaStatus = this.getBetaStatus();
       const ui = SpreadsheetApp.getUi();
       ui.alert(
-        'Welcome to CellPilot Beta!',
-        `Thank you for being an early adopter!\n\n` +
-        `✨ All premium features are unlocked during beta\n` +
-        `📅 Beta period ends: ${betaStatus.endDate}\n` +
-        `🎁 As a beta user, you'll receive:\n` +
-        `   • ${this.BETA_CONFIG.betaUserBenefits.extendedTrial} day extended trial after beta\n` +
-        `   • ${this.BETA_CONFIG.betaUserBenefits.discountPercentage}% lifetime discount\n` +
-        `   • Permanent access to select features\n\n` +
-        `We'd love your feedback to make CellPilot better!`,
+        'Welcome to CellPilot Beta',
+        'Thank you for joining our beta program.\n\n' +
+        'Beta Program Benefits:\n' +
+        '- Full access to all premium features\n' +
+        '- Beta period ends: ' + betaStatus.endDate + '\n\n' +
+        'Exclusive Beta User Rewards:\n' +
+        '- ' + this.BETA_CONFIG.betaUserBenefits.extendedTrial + '-day extended trial after beta\n' +
+        '- ' + this.BETA_CONFIG.betaUserBenefits.discountPercentage + '% lifetime discount on all plans\n' +
+        '- Permanent access to select premium features\n\n' +
+        'Important Notice:\n' +
+        'CellPilot is actively being developed and improved. While we strive for excellence,\n' +
+        'some features may still be under refinement. Please report any issues you encounter.\n\n' +
+        'Your feedback helps us improve CellPilot. Thank you for your support.',
         ui.ButtonSet.OK
       );
       

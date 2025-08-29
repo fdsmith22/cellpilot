@@ -63,9 +63,15 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
       </head>
-      <body className={inter.className}>
-        <Header />
-        {children}
+      <body className={`${inter.className} min-h-screen`}>
+        {/* Professional Layout: Header is part of the document flow */}
+        {/* No fixed positioning = no overlap issues */}
+        <div className="min-h-screen flex flex-col">
+          <Header />
+          <main className="flex-1">
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   )
