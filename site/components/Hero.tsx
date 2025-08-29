@@ -5,44 +5,9 @@ import Link from 'next/link'
 
 const Hero = () => {
   const [mounted, setMounted] = useState(false)
-  const [featureIndex, setFeatureIndex] = useState(0)
-
-  const features = [
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      ),
-      text: 'Fast & Simple',
-      color: 'pastel-mint'
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-      text: 'No Setup Required',
-      color: 'pastel-lavender'
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-        </svg>
-      ),
-      text: 'Smart Tools',
-      color: 'pastel-sky'
-    }
-  ]
 
   useEffect(() => {
     setMounted(true)
-    const interval = setInterval(() => {
-      setFeatureIndex((prev) => (prev + 1) % features.length)
-    }, 3500) // Slowed down from 2500ms to 3500ms for smoother transitions
-    return () => clearInterval(interval)
   }, [])
 
   return (
@@ -58,125 +23,91 @@ const Hero = () => {
       <div className="container-wrapper relative z-10 pt-20 sm:pt-24 lg:pt-28 pb-12 sm:pb-16 lg:pb-20">
         <div className="w-full">
           
-          {/* Heading with new layout */}
-          <div className={`mb-8 sm:mb-10 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <div className="text-lg sm:text-xl md:text-2xl uppercase tracking-[0.2em] text-primary-600 font-bold text-center mb-4">Google Sheets</div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center mb-6">
-              <div className="flex gap-2 sm:gap-3 md:gap-4 items-center justify-center flex-wrap max-w-full px-2">
-                {['R', 'e', 'i', 'm', 'a', 'g', 'i', 'n', 'e', 'd'].map((letter, index) => (
-                  <span
-                    key={index}
-                    className="inline-block px-2 sm:px-3 md:px-4 lg:px-5 py-1.5 sm:py-2 md:py-3 bg-gradient-to-br from-white/95 to-white/85 backdrop-blur-sm border-2 border-primary-300/60 rounded-xl shadow-lg hover:shadow-2xl hover:scale-110 hover:-translate-y-2 transition-all cursor-default"
-                  style={{
-                    opacity: 0,
-                    animation: mounted ? `letterPop 0.6s ease-out ${800 + (index * 150)}ms forwards` : 'none',
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                  }}
-                >
-                  <span className="text-gradient font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl">{letter}</span>
-                </span>
-              ))}
-              </div>
-            </h1>
-            <div className="text-center text-neutral-600 text-lg sm:text-xl font-medium">Transform your workflow with intelligent automation</div>
+          {/* Redesigned Hero Layout */}
+          <div className={`space-y-6 sm:space-y-8 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            {/* Main Title Group */}
+            <div className="space-y-2">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-800 text-center">
+                Google Sheets
+              </h2>
+              <h1 className="text-center">
+                <div className="flex gap-1.5 sm:gap-2 md:gap-3 items-center justify-center flex-wrap max-w-full">
+                  {['R', 'e', 'i', 'm', 'a', 'g', 'i', 'n', 'e', 'd'].map((letter, index) => (
+                    <span
+                      key={index}
+                      className="inline-block px-1.5 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-1.5 md:py-2 bg-gradient-to-br from-white/95 to-white/85 backdrop-blur-sm border-2 border-primary-300/60 rounded-lg shadow-md hover:shadow-xl hover:scale-110 hover:-translate-y-1 transition-all cursor-default"
+                    style={{
+                      opacity: 0,
+                      animation: mounted ? `letterPop 0.6s ease-out ${600 + (index * 100)}ms forwards` : 'none',
+                      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    }}
+                  >
+                    <span className="text-gradient font-black text-xl sm:text-2xl md:text-3xl lg:text-4xl">{letter}</span>
+                  </span>
+                ))}
+                </div>
+              </h1>
+            </div>
+            
+            {/* Tagline */}
+            <p className="text-center text-neutral-600 text-base sm:text-lg md:text-xl max-w-2xl mx-auto font-medium">
+              Transform your workflow with intelligent automation
+            </p>
           </div>
           
-          {/* Feature cards */}
-          <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 mb-8 transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <div className="glass-card p-4 rounded-xl text-center">
-              <div className="w-12 h-12 mx-auto mb-2 rounded-lg bg-gradient-to-br from-pastel-sky/30 to-pastel-sky/20 flex items-center justify-center">
-                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {/* Feature cards - more compact */}
+          <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 mt-10 mb-8 transition-all duration-700 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            <div className="glass-card p-3 sm:p-4 rounded-xl flex items-center md:flex-col md:text-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pastel-sky/30 to-pastel-sky/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="font-semibold text-neutral-800 mb-1">Lightning Fast</h3>
-              <p className="text-sm text-neutral-600">Process thousands of rows in seconds</p>
+              <div>
+                <h3 className="font-semibold text-neutral-800 text-sm">Lightning Fast</h3>
+                <p className="text-xs text-neutral-600 mt-0.5">Process thousands of rows in seconds</p>
+              </div>
             </div>
-            <div className="glass-card p-4 rounded-xl text-center">
-              <div className="w-12 h-12 mx-auto mb-2 rounded-lg bg-gradient-to-br from-pastel-mint/30 to-pastel-mint/20 flex items-center justify-center">
-                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="glass-card p-3 sm:p-4 rounded-xl flex items-center md:flex-col md:text-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pastel-mint/30 to-pastel-mint/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="font-semibold text-neutral-800 mb-1">Zero Setup</h3>
-              <p className="text-sm text-neutral-600">Works instantly with any Google Sheet</p>
+              <div>
+                <h3 className="font-semibold text-neutral-800 text-sm">Zero Setup</h3>
+                <p className="text-xs text-neutral-600 mt-0.5">Works instantly with any Google Sheet</p>
+              </div>
             </div>
-            <div className="glass-card p-4 rounded-xl text-center">
-              <div className="w-12 h-12 mx-auto mb-2 rounded-lg bg-gradient-to-br from-pastel-lavender/30 to-pastel-lavender/20 flex items-center justify-center">
-                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="glass-card p-3 sm:p-4 rounded-xl flex items-center md:flex-col md:text-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pastel-lavender/30 to-pastel-lavender/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                 </svg>
               </div>
-              <h3 className="font-semibold text-neutral-800 mb-1">AI-Powered</h3>
-              <p className="text-sm text-neutral-600">Smart suggestions and auto-detection</p>
+              <div>
+                <h3 className="font-semibold text-neutral-800 text-sm">AI-Powered</h3>
+                <p className="text-xs text-neutral-600 mt-0.5">Smart suggestions and auto-detection</p>
+              </div>
             </div>
           </div>
 
-          {/* CTA Buttons as Spreadsheet Cells */}
-          <div className={`flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-8 sm:mb-10 px-4 sm:px-0 transition-all duration-700 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            {/* Start Free Cell */}
-            <div className="relative">
-              <div className="absolute -top-3 -left-3 text-xs text-neutral-500 font-mono">B2</div>
-              <Link href="/install" className="block">
-                <div className="w-full sm:w-48 h-14 bg-white/80 backdrop-blur-md border-2 border-primary-300/50 rounded-lg shadow-lg overflow-hidden relative hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent"></div>
-                  <div className="relative h-full flex items-center justify-center px-4">
-                    <span className="text-sm font-semibold text-primary-700 group-hover:text-primary-800">Start Free</span>
-                    <svg className="w-4 h-4 ml-2 text-primary-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </div>
-                </div>
-              </Link>
-            </div>
+          {/* CTA Buttons - cleaner design */}
+          <div className={`flex flex-col sm:flex-row gap-4 justify-center mt-8 mb-10 transition-all duration-700 delay-400 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            <Link href="/install" className="group inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+              Get Started Free
+              <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
 
-            {/* See How It Works Cell */}
-            <div className="relative">
-              <div className="absolute -top-3 -left-3 text-xs text-neutral-500 font-mono">C2</div>
-              <Link href="#features" className="block">
-                <div className="w-full sm:w-48 h-14 bg-white/80 backdrop-blur-md border-2 border-primary-300/50 rounded-lg shadow-lg overflow-hidden relative hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent"></div>
-                  <div className="relative h-full flex items-center justify-center px-4">
-                    <svg className="w-4 h-4 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-sm font-semibold text-primary-700 group-hover:text-primary-800">See How It Works</span>
-                  </div>
-                </div>
-              </Link>
-            </div>
-
-            {/* Feature Roller Cell */}
-            <div className="relative">
-              <div className="absolute -top-3 -left-3 text-xs text-neutral-500 font-mono">D2</div>
-              <div className="w-full sm:w-48 h-14 bg-white/80 backdrop-blur-md border-2 border-primary-300/50 rounded-lg shadow-lg overflow-hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent"></div>
-                <div className="relative h-full">
-                  {features.map((feature, index) => (
-                    <div
-                      key={index}
-                      className={`absolute inset-0 flex items-center px-4 transition-all duration-700 ease-in-out ${
-                        index === featureIndex 
-                          ? 'opacity-100 transform translate-y-0' 
-                          : index === (featureIndex - 1 + features.length) % features.length
-                          ? 'opacity-0 transform -translate-y-full'
-                          : 'opacity-0 transform translate-y-full'
-                      }`}
-                    >
-                      <div className={`p-2 rounded-lg ${
-                        feature.color === 'pastel-mint' ? 'bg-pastel-mint/20' :
-                        feature.color === 'pastel-lavender' ? 'bg-pastel-lavender/20' :
-                        'bg-pastel-sky/20'
-                      } text-primary-700 mr-3`}>
-                        {feature.icon}
-                      </div>
-                      <span className="text-sm font-semibold text-neutral-800">{feature.text}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <Link href="#features" className="group inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-primary-700 bg-white/90 border-2 border-primary-200 rounded-xl hover:bg-white hover:border-primary-300 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105">
+              <svg className="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Watch Demo
+            </Link>
           </div>
 
           {/* Preview Window */}
