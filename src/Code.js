@@ -11,7 +11,7 @@ function onInstall(e) {
 }
 
 function onOpen(e) {
-  console.log('CellPilot initializing...');
+  Logger.info('CellPilot initializing...');
   UserSettings.initialize();
   
   // Create fallback menu for development/independent installation
@@ -27,10 +27,10 @@ function onOpen(e) {
   try {
     ApiIntegration.checkSubscription();
   } catch (error) {
-    console.log('Could not check subscription:', error);
+    Logger.info('Could not check subscription:', error);
   }
   
-  console.log('CellPilot ready');
+  Logger.info('CellPilot ready');
 }
 
 /**
@@ -39,7 +39,7 @@ function onOpen(e) {
  */
 function buildHomepage(e) {
   try {
-    console.log('Building add-on homepage...');
+    Logger.info('Building add-on homepage...');
     
     // Create an improved card interface that matches our HTML sidebar styling
     const card = CardService.newCardBuilder()
@@ -84,7 +84,7 @@ function buildHomepage(e) {
     return card;
     
   } catch (error) {
-    console.error('Error building homepage:', error);
+    Logger.error('Error building homepage:', error);
     return buildErrorCard('Failed to load CellPilot', error.message);
   }
 }
@@ -143,6 +143,7 @@ function createCellPilotMenu() {
       .addSeparator()
       .addItem('Data Cleaning', prefix + 'showDataCleaning')
       .addItem('Tableize Data', prefix + 'showTableize')
+      .addItem('Advanced Data Restructuring', prefix + 'showAdvancedRestructuring')
       .addSubMenu(ui.createMenu('Formula Builder')
         .addItem('Smart Formula Assistant', prefix + 'showSmartFormulaAssistant')
         .addItem('Natural Language Builder', prefix + 'showFormulaBuilder')
@@ -161,7 +162,7 @@ function createCellPilotMenu() {
       .addItem('Help', prefix + 'showHelp')
       .addToUi();
   } catch (error) {
-    console.error('Error creating menu:', error);
+    Logger.error('Error creating menu:', error);
   }
 }
 
@@ -841,6 +842,11 @@ function createMainSidebarHtml(context) {
             <span class="quick-badge ml">ML</span>
           </div>
           
+          <div class="quick-action-btn" onclick="google.script.run.showAdvancedRestructuring()">
+            <div class="quick-action-label">Restructure Data</div>
+            <span class="quick-badge new">New</span>
+          </div>
+          
           <div class="quick-action-btn" onclick="google.script.run.showSmartFormulaAssistant()">
             <div class="quick-action-label">Smart Formulas</div>
             <span class="quick-badge ml">ML</span>
@@ -957,7 +963,7 @@ function createMainSidebarHtml(context) {
       
       <div class="footer">
         <div class="footer-links">
-          <a href="#" class="footer-link" onclick="google.script.run.showUserSettings(); return false;">Settings</a>
+          <a href="#" class="footer-link" onclick="google.script.run.showSettings(); return false;">Settings</a>
           <span class="footer-divider">•</span>
           <a href="#" class="footer-link" onclick="google.script.run.showHelp(); return false;">Help</a>
           <span class="footer-divider">•</span>
@@ -1022,7 +1028,7 @@ function createMainSidebarHtml(context) {
             }
           })
           .withFailureHandler(function(error) {
-            console.error('Error updating selection info:', error);
+            Logger.error('Error updating selection info:', error);
           })
           .getCurrentUserContext();
       }
@@ -1201,7 +1207,7 @@ function removeDuplicatesProcess(options) {
       removedCount: removedCount
     };
   } catch (error) {
-    console.error('Error removing duplicates:', error);
+    Logger.error('Error removing duplicates:', error);
     return { success: false, error: error.message };
   }
 }
@@ -1298,7 +1304,7 @@ function processLargeDuplicateRemoval(range, options) {
     };
     
   } catch (error) {
-    console.error('Error in large duplicate removal:', error);
+    Logger.error('Error in large duplicate removal:', error);
     return { success: false, error: error.message };
   }
 }
@@ -1361,7 +1367,7 @@ function previewDuplicates(options) {
     };
     
   } catch (error) {
-    console.error('Error previewing duplicates:', error);
+    Logger.error('Error previewing duplicates:', error);
     return { success: false, error: error.message };
   }
 }
@@ -1440,7 +1446,7 @@ function generateFormulaFromDescription(description) {
     };
 
   } catch (error) {
-    console.error('Error generating formula:', error);
+    Logger.error('Error generating formula:', error);
     return { success: false, error: error.message };
   }
 }
@@ -1467,7 +1473,7 @@ function insertFormulaIntoCell(formulaText) {
     };
     
   } catch (error) {
-    console.error('Error inserting formula:', error);
+    Logger.error('Error inserting formula:', error);
     return { success: false, error: error.message };
   }
 }
@@ -1485,7 +1491,7 @@ function showAutomation() {
     
     SpreadsheetApp.getUi().showSidebar(html);
   } catch (error) {
-    console.error('Error showing automation interface:', error);
+    Logger.error('Error showing automation interface:', error);
     showErrorDialog('Error', 'Failed to open automation panel: ' + error.message);
   }
 }
@@ -1546,7 +1552,7 @@ function analyzeFormats(options) {
     };
     
   } catch (error) {
-    console.error('Error analyzing formats:', error);
+    Logger.error('Error analyzing formats:', error);
     return { success: false, error: error.message };
   }
 }
@@ -1577,6 +1583,45 @@ function showTableize() {
   }
 }
 
+/**
+ * Show Advanced Data Restructuring interface
+ */
+function showAdvancedRestructuring() {
+  try {
+    const range = SpreadsheetApp.getActiveRange();
+    
+    if (!range) {
+      showErrorDialog('No Data Selected', 'Please select data to restructure.');
+      return;
+    }
+    
+    const html = HtmlService.createTemplateFromFile('AdvancedRestructuringTemplate')
+      .evaluate()
+      .setTitle('Advanced Data Restructuring')
+      .setWidth(480)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    
+    SpreadsheetApp.getUi().showSidebar(html);
+    
+  } catch (error) {
+    showErrorDialog('Error', 'Failed to load Advanced Restructuring: ' + error.message);
+  }
+}
+
+/**
+ * Show a toast notification
+ * @param {string} message - The message to display
+ * @param {string} title - The title of the toast (optional)
+ * @param {number} timeout - Timeout in seconds (optional)
+ */
+function showToast(message, title, timeout) {
+  const ui = SpreadsheetApp.getUi();
+  const actualTitle = title || 'CellPilot';
+  const actualTimeout = timeout || 3;
+  
+  SpreadsheetApp.getActiveSpreadsheet().toast(message, actualTitle, actualTimeout);
+}
+
 function hasDataSelection() {
   try {
     const sheet = SpreadsheetApp.getActiveSheet();
@@ -1603,13 +1648,13 @@ function hasDataSelection() {
     
     return false;
   } catch (error) {
-    console.error('Error checking selection:', error);
+    Logger.error('Error checking selection:', error);
     return false;
   }
 }
 
 function analyzeDataForTableize() {
-  console.log('analyzeDataForTableize called');
+  Logger.info('analyzeDataForTableize called');
   
   try {
     const range = SpreadsheetApp.getActiveRange();
@@ -1683,7 +1728,7 @@ function analyzeDataForTableize() {
     };
     
   } catch (error) {
-    console.error('Error in analyzeDataForTableize:', error);
+    Logger.error('Error in analyzeDataForTableize:', error);
     return { hasData: false, error: 'Function error: ' + error.toString() };
   }
 }
@@ -1693,8 +1738,8 @@ function previewTableize(options) {
     const range = SpreadsheetApp.getActiveRange();
     const data = range.getValues();
     
-    console.log('Preview tableize with options:', options);
-    console.log('Data dimensions:', data.length, 'rows x', data[0].length, 'columns');
+    Logger.info('Preview tableize with options:', options);
+    Logger.info('Data dimensions:', data.length, 'rows x', data[0].length, 'columns');
     
     let parsedData = [];
     
@@ -1705,7 +1750,7 @@ function previewTableize(options) {
     
     if (hasMultipleColumns && options.preserveColumns !== false) {
       // Data is already in columns - preserve it
-      console.log('Data already in columns, preserving structure');
+      Logger.info('Data already in columns, preserving structure');
       
       parsedData = data.map(row => 
         row.map(cell => String(cell || '').trim())
@@ -1725,7 +1770,7 @@ function previewTableize(options) {
       
     } else if (options.method === 'smart') {
       // Use smart parser for single column data
-      console.log('Using smart parser for single column data');
+      Logger.info('Using smart parser for single column data');
       parsedData = SmartTableParser.smartParse(data, options);
       
       // Add suggested headers if first row isn't headers
@@ -1748,7 +1793,7 @@ function previewTableize(options) {
       
     } else {
       // Simple delimiter splitting for single column data
-      console.log('Using delimiter splitting');
+      Logger.info('Using delimiter splitting');
       
       for (let i = 0; i < data.length; i++) {
         if (hasMultipleColumns) {
@@ -1807,7 +1852,7 @@ function previewTableize(options) {
     
     const maxColumns = Math.max(...parsedData.map(row => row.length));
     
-    console.log('Parsed data:', parsedData.length, 'rows,', maxColumns, 'columns');
+    Logger.info('Parsed data:', parsedData.length, 'rows,', maxColumns, 'columns');
     
     return {
       success: true,
@@ -1818,7 +1863,7 @@ function previewTableize(options) {
     };
     
   } catch (error) {
-    console.error('Error previewing tableize:', error);
+    Logger.error('Error previewing tableize:', error);
     return { success: false, error: error.message };
   }
 }
@@ -1827,7 +1872,7 @@ function applyTableize(parsedData) {
   try {
     const range = SpreadsheetApp.getActiveRange();
     
-    console.log('Applying tableize, data rows:', parsedData.length);
+    Logger.info('Applying tableize, data rows:', parsedData.length);
     
     // Save state for undo
     UndoManager.saveState(range, 'Tableize Data');
@@ -1872,7 +1917,7 @@ function applyTableize(parsedData) {
     return { success: false, error: 'No data to apply' };
     
   } catch (error) {
-    console.error('Error applying tableize:', error);
+    Logger.error('Error applying tableize:', error);
     return { success: false, error: error.message };
   }
 }
@@ -2026,7 +2071,7 @@ function standardizeText(options) {
     };
 
   } catch (error) {
-    console.error('Error standardizing text:', error);
+    Logger.error('Error standardizing text:', error);
     return { success: false, error: error.message };
   }
 }
@@ -2104,7 +2149,7 @@ function previewStandardization(options) {
     };
     
   } catch (error) {
-    console.error('Error previewing standardization:', error);
+    Logger.error('Error previewing standardization:', error);
     return { success: false, error: error.message };
   }
 }
@@ -2161,7 +2206,7 @@ function previewDateFormatting(options) {
     };
     
   } catch (error) {
-    console.error('Error previewing date formatting:', error);
+    Logger.error('Error previewing date formatting:', error);
     return { success: false, error: error.message };
   }
 }
@@ -2216,7 +2261,7 @@ function formatDates(options) {
     };
     
   } catch (error) {
-    console.error('Error formatting dates:', error);
+    Logger.error('Error formatting dates:', error);
     return { success: false, error: error.message };
   }
 }
@@ -2234,7 +2279,7 @@ function showUpgradeDialog() {
     
     SpreadsheetApp.getUi().showSidebar(html);
   } catch (error) {
-    console.error('Error showing upgrade dialog:', error);
+    Logger.error('Error showing upgrade dialog:', error);
     showErrorDialog('Error', 'Failed to open upgrade panel: ' + error.message);
   }
 }
@@ -2245,10 +2290,10 @@ function showUpgradeDialog() {
 function trackPlanSelection(plan) {
   try {
     // Track the plan selection for analytics
-    console.log('User selected plan:', plan);
+    Logger.info('User selected plan:', plan);
     return { success: true };
   } catch (error) {
-    console.error('Error tracking plan selection:', error);
+    Logger.error('Error tracking plan selection:', error);
     return { success: false };
   }
 }
@@ -2344,7 +2389,7 @@ function getCurrentUserContext() {
       colCount: numCols
     };
   } catch (error) {
-    console.error('Error getting user context:', error);
+    Logger.error('Error getting user context:', error);
     return {
       hasSelection: false,
       dataType: 'unknown',
@@ -2427,7 +2472,7 @@ function showSettings() {
     
     SpreadsheetApp.getUi().showSidebar(html);
   } catch (error) {
-    console.error('Error showing settings:', error);
+    Logger.error('Error showing settings:', error);
     SpreadsheetApp.getUi().alert('Settings', 'Failed to open settings panel.', SpreadsheetApp.getUi().ButtonSet.OK);
   }
 }
@@ -2435,12 +2480,45 @@ function showHelp() {
   try {
     const html = HtmlService.createTemplateFromFile('HelpFeedbackTemplate')
       .evaluate()
-      .setTitle('Help & Feedback')
-      .setWidth(400);
+      .setTitle('Help & Documentation')
+      .setWidth(450)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     
     SpreadsheetApp.getUi().showSidebar(html);
   } catch (error) {
     SpreadsheetApp.getUi().alert('Help', 'Visit www.cellpilot.io for documentation and support!', SpreadsheetApp.getUi().ButtonSet.OK);
+  }
+}
+
+/**
+ * Show feedback form for bug reports or feature requests
+ * @param {string} type - Type of feedback ('bug' or 'feature')
+ */
+function showFeedback(type) {
+  try {
+    // For now, redirect to submitFeedback with type
+    const ui = SpreadsheetApp.getUi();
+    const title = type === 'bug' ? 'Report a Bug' : 'Request a Feature';
+    const prompt = type === 'bug' ? 
+      'Please describe the issue you encountered:' : 
+      'Please describe the feature you\'d like to see:';
+    
+    const response = ui.prompt(title, prompt, ui.ButtonSet.OK_CANCEL);
+    
+    if (response.getSelectedButton() === ui.Button.OK) {
+      const feedbackData = {
+        type: type,
+        message: response.getResponseText(),
+        timestamp: new Date(),
+        userEmail: Session.getActiveUser().getEmail()
+      };
+      
+      submitFeedback(feedbackData);
+      ui.alert('Thank you!', 'Your feedback has been submitted.', ui.ButtonSet.OK);
+    }
+  } catch (error) {
+    Logger.error('Error showing feedback form:', error);
+    SpreadsheetApp.getUi().alert('Failed to submit feedback: ' + error.toString());
   }
 }
 
@@ -2460,7 +2538,7 @@ function submitFeedback(data) {
     feedbackStore.setProperty(feedbackKey, JSON.stringify(data));
     
     // Log for debugging
-    console.log('Feedback submitted:', data);
+    Logger.info('Feedback submitted:', data);
     
     // In production, send to API endpoint
     // UrlFetchApp.fetch('https://api.cellpilot.io/feedback', {
@@ -2472,10 +2550,10 @@ function submitFeedback(data) {
     // Track in analytics
     if (data.type === 'bug') {
       // Track bug report
-      console.log('Bug report:', data.title);
+      Logger.info('Bug report:', data.title);
     } else if (data.type === 'feature') {
       // Track feature request
-      console.log('Feature request:', data.title);
+      Logger.info('Feature request:', data.title);
     }
     
     return {
@@ -2484,7 +2562,7 @@ function submitFeedback(data) {
     };
     
   } catch (error) {
-    console.error('Error submitting feedback:', error);
+    Logger.error('Error submitting feedback:', error);
     throw new Error('Failed to submit feedback');
   }
 }
@@ -2504,7 +2582,7 @@ function showSmartFormulaAssistant() {
     
     SpreadsheetApp.getUi().showSidebar(html);
   } catch (error) {
-    console.error('Error showing smart formula assistant:', error);
+    Logger.error('Error showing smart formula assistant:', error);
     showErrorDialog('Error', 'Failed to load Smart Formula Assistant');
   }
 }
@@ -2530,7 +2608,7 @@ function getSmartFormulaContext() {
     
     return context;
   } catch (error) {
-    console.error('Error getting context:', error);
+    Logger.error('Error getting context:', error);
     return { hasSelection: false };
   }
 }
@@ -2567,7 +2645,7 @@ function insertSmartFormula(formula) {
       cell: cell.getA1Notation()
     };
   } catch (error) {
-    console.error('Error inserting formula:', error);
+    Logger.error('Error inserting formula:', error);
     throw new Error('Failed to insert formula');
   }
 }
@@ -2593,7 +2671,7 @@ function applyIndustryTemplate(templateType) {
     return result;
     
   } catch (error) {
-    console.error('Error applying industry template:', error);
+    Logger.error('Error applying industry template:', error);
     return {
       success: false,
       error: error.message
@@ -2621,7 +2699,7 @@ function previewTemplate(templateType) {
     return result;
     
   } catch (error) {
-    console.error('Error creating template preview:', error);
+    Logger.error('Error creating template preview:', error);
     return {
       success: false,
       error: error.message || error.toString()
@@ -2639,7 +2717,7 @@ function cleanupIndustryPreviews() {
     }
     return { success: true };
   } catch (error) {
-    console.error('Error cleaning up previews:', error);
+    Logger.error('Error cleaning up previews:', error);
     return { success: false, error: error.toString() };
   }
 }
@@ -2787,7 +2865,7 @@ function previewTemplateOld(templateType) {
     };
     
   } catch (error) {
-    console.error('Error generating template preview:', error);
+    Logger.error('Error generating template preview:', error);
     return {
       success: false,
       error: error.message
@@ -2846,7 +2924,7 @@ function showMultiTabRelationshipMapper() {
     
     SpreadsheetApp.getUi().showSidebar(html);
   } catch (error) {
-    console.error('Error showing relationship mapper:', error);
+    Logger.error('Error showing relationship mapper:', error);
     SpreadsheetApp.getUi().alert('Failed to open Relationship Mapper: ' + error.message);
   }
 }
@@ -2910,7 +2988,7 @@ function navigateToSheet(sheetName) {
     }
     return false;
   } catch (error) {
-    console.error('Error navigating to sheet:', error);
+    Logger.error('Error navigating to sheet:', error);
     return false;
   }
 }
@@ -2975,7 +3053,7 @@ function getUserLearningProfile() {
     const profile = PropertiesService.getUserProperties().getProperty('cellpilot_ml_profile');
     return profile ? JSON.parse(profile) : null;
   } catch (error) {
-    console.error('Error loading user ML profile:', error);
+    Logger.error('Error loading user ML profile:', error);
     return null;
   }
 }
@@ -2986,7 +3064,7 @@ function saveUserLearningProfile(profile) {
     PropertiesService.getUserProperties().setProperty('cellpilot_ml_profile', serialized);
     return { success: true };
   } catch (error) {
-    console.error('Error saving user ML profile:', error);
+    Logger.error('Error saving user ML profile:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3025,7 +3103,7 @@ function trackMLFeedback(operation, prediction, userAction, metadata) {
     
     return { success: true };
   } catch (error) {
-    console.error('Error tracking ML feedback:', error);
+    Logger.error('Error tracking ML feedback:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3035,7 +3113,7 @@ function getMLFeedbackHistory() {
     const historyStr = PropertiesService.getUserProperties().getProperty('cellpilot_ml_feedback');
     return historyStr ? JSON.parse(historyStr) : [];
   } catch (error) {
-    console.error('Error getting ML feedback history:', error);
+    Logger.error('Error getting ML feedback history:', error);
     return [];
   }
 }
@@ -3053,10 +3131,10 @@ function enableMLFeatures() {
       'Machine learning features have been activated. CellPilot will now learn from your actions to provide better suggestions.', 
       SpreadsheetApp.getUi().ButtonSet.OK);
     
-    console.log('ML features enabled');
+    Logger.info('ML features enabled');
     return { success: true, message: 'ML features enabled successfully' };
   } catch (error) {
-    console.error('Error enabling ML features:', error);
+    Logger.error('Error enabling ML features:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3067,10 +3145,10 @@ function enableMLFeatures() {
 function disableMLFeatures() {
   try {
     PropertiesService.getUserProperties().setProperty('cellpilot_ml_enabled', 'false');
-    console.log('ML features disabled');
+    Logger.info('ML features disabled');
     return { success: true, message: 'ML features disabled' };
   } catch (error) {
-    console.error('Error disabling ML features:', error);
+    Logger.error('Error disabling ML features:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3092,7 +3170,7 @@ function loadUserSettings() {
     };
     return settings;
   } catch (error) {
-    console.error('Error loading settings:', error);
+    Logger.error('Error loading settings:', error);
     return {};
   }
 }
@@ -3128,7 +3206,7 @@ function saveUserSettings(settings) {
     
     return { success: true };
   } catch (error) {
-    console.error('Error saving settings:', error);
+    Logger.error('Error saving settings:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3153,7 +3231,7 @@ function getMLStorageInfo() {
       total: 500000 // 500KB limit for properties
     };
   } catch (error) {
-    console.error('Error getting ML storage info:', error);
+    Logger.error('Error getting ML storage info:', error);
     return null;
   }
 }
@@ -3174,7 +3252,7 @@ function clearMLData() {
     
     return { success: true };
   } catch (error) {
-    console.error('Error clearing ML data:', error);
+    Logger.error('Error clearing ML data:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3201,7 +3279,7 @@ function resetSettings() {
     
     return { success: true };
   } catch (error) {
-    console.error('Error resetting settings:', error);
+    Logger.error('Error resetting settings:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3221,7 +3299,7 @@ function exportUserSettings() {
       version: '1.0'
     };
   } catch (error) {
-    console.error('Error exporting settings:', error);
+    Logger.error('Error exporting settings:', error);
     return null;
   }
 }
@@ -3232,7 +3310,7 @@ function initializeUserPreferences() {
     UserPreferenceLearning.initialize();
     return { success: true };
   } catch (error) {
-    console.error('Error initializing user preferences:', error);
+    Logger.error('Error initializing user preferences:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3242,7 +3320,7 @@ function trackUserAction(action, context) {
     UserPreferenceLearning.trackAction(action, context);
     return { success: true };
   } catch (error) {
-    console.error('Error tracking user action:', error);
+    Logger.error('Error tracking user action:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3273,7 +3351,7 @@ function getAdaptiveDuplicateThreshold() {
       basedOn: 'default'
     };
   } catch (error) {
-    console.error('Error getting adaptive threshold:', error);
+    Logger.error('Error getting adaptive threshold:', error);
     return {
       success: false,
       threshold: 0.85,
@@ -3286,7 +3364,7 @@ function getUserPreferenceSummary() {
   try {
     return UserPreferenceLearning.getPreferenceSummary();
   } catch (error) {
-    console.error('Error getting preference summary:', error);
+    Logger.error('Error getting preference summary:', error);
     return null;
   }
 }
@@ -3295,7 +3373,7 @@ function getFeatureRecommendations() {
   try {
     return UserPreferenceLearning.getFeatureRecommendations();
   } catch (error) {
-    console.error('Error getting feature recommendations:', error);
+    Logger.error('Error getting feature recommendations:', error);
     return [];
   }
 }
@@ -3304,7 +3382,7 @@ function getWorkflowSuggestions() {
   try {
     return UserPreferenceLearning.getWorkflowSuggestions();
   } catch (error) {
-    console.error('Error getting workflow suggestions:', error);
+    Logger.error('Error getting workflow suggestions:', error);
     return [];
   }
 }
@@ -3313,7 +3391,7 @@ function getPreferredSettings(feature) {
   try {
     return UserPreferenceLearning.getPreferredSettings(feature);
   } catch (error) {
-    console.error('Error getting preferred settings:', error);
+    Logger.error('Error getting preferred settings:', error);
     return {};
   }
 }
@@ -3322,7 +3400,7 @@ function predictNextAction(currentAction) {
   try {
     return UserPreferenceLearning.predictNextAction(currentAction);
   } catch (error) {
-    console.error('Error predicting next action:', error);
+    Logger.error('Error predicting next action:', error);
     return null;
   }
 }
@@ -3331,7 +3409,7 @@ function shouldAutomate(action, context) {
   try {
     return UserPreferenceLearning.shouldAutomate(action, context);
   } catch (error) {
-    console.error('Error checking automation preference:', error);
+    Logger.error('Error checking automation preference:', error);
     return false;
   }
 }
@@ -3341,7 +3419,7 @@ function learnFromError(error, action, context) {
     UserPreferenceLearning.learnFromError(error, action, context);
     return { success: true };
   } catch (error) {
-    console.error('Error learning from error:', error);
+    Logger.error('Error learning from error:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3351,7 +3429,7 @@ function learnFromSuccess(action, context, duration) {
     UserPreferenceLearning.learnFromSuccess(action, context, duration);
     return { success: true };
   } catch (error) {
-    console.error('Error learning from success:', error);
+    Logger.error('Error learning from success:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3360,7 +3438,7 @@ function exportUserPreferences() {
   try {
     return UserPreferenceLearning.exportPreferences();
   } catch (error) {
-    console.error('Error exporting preferences:', error);
+    Logger.error('Error exporting preferences:', error);
     return null;
   }
 }
@@ -3370,7 +3448,7 @@ function resetUserPreferences() {
     UserPreferenceLearning.resetPreferences();
     return { success: true, message: 'User preferences reset successfully' };
   } catch (error) {
-    console.error('Error resetting preferences:', error);
+    Logger.error('Error resetting preferences:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3389,7 +3467,7 @@ function getMLPerformanceStats() {
     
     return stats;
   } catch (error) {
-    console.error('Error getting ML performance stats:', error);
+    Logger.error('Error getting ML performance stats:', error);
     return null;
   }
 }
@@ -3412,7 +3490,7 @@ function optimizeMLPerformance() {
       stats: getMLPerformanceStats()
     };
   } catch (error) {
-    console.error('Error optimizing ML performance:', error);
+    Logger.error('Error optimizing ML performance:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3471,7 +3549,7 @@ function analyzePivotData(range) {
     PivotTableAssistant.initialize();
     return PivotTableAssistant.analyzeDataForPivot(range);
   } catch (error) {
-    console.error('Error analyzing pivot data:', error);
+    Logger.error('Error analyzing pivot data:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3490,7 +3568,7 @@ function createPivotFromSuggestion(suggestion) {
     
     return result;
   } catch (error) {
-    console.error('Error creating pivot from suggestion:', error);
+    Logger.error('Error creating pivot from suggestion:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3509,7 +3587,7 @@ function applyPivotTemplate(templateName) {
     
     return result;
   } catch (error) {
-    console.error('Error applying pivot template:', error);
+    Logger.error('Error applying pivot template:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3518,7 +3596,7 @@ function getPivotTemplates() {
   try {
     return PivotTableAssistant.getPivotTemplates();
   } catch (error) {
-    console.error('Error getting pivot templates:', error);
+    Logger.error('Error getting pivot templates:', error);
     return [];
   }
 }
@@ -3527,7 +3605,7 @@ function getPivotStats() {
   try {
     return PivotTableAssistant.getPivotStats();
   } catch (error) {
-    console.error('Error getting pivot stats:', error);
+    Logger.error('Error getting pivot stats:', error);
     return null;
   }
 }
@@ -3565,7 +3643,7 @@ function importPipelineData(config) {
     
     return result;
   } catch (error) {
-    console.error('Error importing pipeline data:', error);
+    Logger.error('Error importing pipeline data:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3585,7 +3663,7 @@ function exportPipelineData(options) {
     
     return result;
   } catch (error) {
-    console.error('Error exporting pipeline data:', error);
+    Logger.error('Error exporting pipeline data:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3595,7 +3673,7 @@ function getPipelineHistory() {
     DataPipelineManager.initialize();
     return DataPipelineManager.importHistory || [];
   } catch (error) {
-    console.error('Error getting pipeline history:', error);
+    Logger.error('Error getting pipeline history:', error);
     return [];
   }
 }
@@ -3605,7 +3683,7 @@ function getPipelineStats() {
     DataPipelineManager.initialize();
     return DataPipelineManager.getPipelineStats();
   } catch (error) {
-    console.error('Error getting pipeline stats:', error);
+    Logger.error('Error getting pipeline stats:', error);
     return null;
   }
 }
@@ -3620,7 +3698,7 @@ function clearPipelineHistory() {
     
     return { success: true };
   } catch (error) {
-    console.error('Error clearing pipeline history:', error);
+    Logger.error('Error clearing pipeline history:', error);
     return { success: false, error: error.message };
   }
 }
@@ -3650,7 +3728,7 @@ function getSheetNames() {
     const sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
     return sheets.map(sheet => sheet.getName());
   } catch (error) {
-    console.error('Error getting sheet names:', error);
+    Logger.error('Error getting sheet names:', error);
     return [];
   }
 }
@@ -3685,7 +3763,7 @@ function getMLStatus() {
       dataCleanerStatus: DataCleaner.getMLStatus()
     };
   } catch (error) {
-    console.error('Error getting ML status:', error);
+    Logger.error('Error getting ML status:', error);
     return { error: error.message };
   }
 }

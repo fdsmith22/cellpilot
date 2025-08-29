@@ -1,9 +1,95 @@
 /**
  * Industry-Specific Template Generator
  * Based on research showing 15-25 hours weekly savings per business
+ * Enhanced with auto-resize, cohesive styling, and cross-tab formulas
  */
 
 const IndustryTemplates = {
+  
+  // Professional color scheme for all templates
+  colors: {
+    primary: {
+      header: '#4A5568',      // Slate gray for headers
+      headerText: '#FFFFFF',  // White text on headers
+      accent: '#6366F1',      // Indigo accent
+      light: '#E0E7FF'        // Light indigo background
+    },
+    secondary: {
+      positive: '#10B981',    // Green for positive values
+      negative: '#EF4444',    // Red for negative values
+      warning: '#F59E0B',     // Amber for warnings
+      info: '#3B82F6'        // Blue for info
+    },
+    backgrounds: {
+      main: '#FFFFFF',        // White for main content
+      alternate: '#F9FAFB',   // Light gray for alternating rows
+      summary: '#F3F4F6',     // Gray for summary sections
+      highlight: '#FEF3C7'    // Light yellow for highlights
+    }
+  },
+  
+  /**
+   * Apply professional formatting to a range
+   */
+  applyProfessionalFormatting: function(sheet, startRow, endRow, startCol, endCol) {
+    const range = sheet.getRange(startRow, startCol, endRow - startRow + 1, endCol - startCol + 1);
+    
+    // Apply alternating row colors
+    for (let row = startRow; row <= endRow; row++) {
+      const rowRange = sheet.getRange(row, startCol, 1, endCol - startCol + 1);
+      if (row % 2 === 0) {
+        rowRange.setBackground(this.colors.backgrounds.alternate);
+      } else {
+        rowRange.setBackground(this.colors.backgrounds.main);
+      }
+    }
+    
+    // Add borders
+    range.setBorder(true, true, true, true, true, true, '#D1D5DB', SpreadsheetApp.BorderStyle.SOLID);
+    
+    // Set font
+    range.setFontFamily('Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif');
+    range.setFontSize(10);
+  },
+  
+  /**
+   * Auto-resize all columns to fit content
+   */
+  autoResizeColumns: function(sheet) {
+    const lastColumn = sheet.getLastColumn();
+    if (lastColumn > 0) {
+      // Auto-resize each column individually for better control
+      for (let col = 1; col <= lastColumn; col++) {
+        sheet.autoResizeColumn(col);
+        
+        // Add a bit of padding (20 pixels) for better readability
+        const currentWidth = sheet.getColumnWidth(col);
+        sheet.setColumnWidth(col, currentWidth + 20);
+      }
+    }
+  },
+  
+  /**
+   * Format headers with professional styling
+   */
+  formatHeaders: function(sheet, headerRow, columnCount) {
+    headerRow = headerRow || 1;  // Default to row 1 if not specified
+    columnCount = columnCount || sheet.getLastColumn();
+    
+    const headerRange = sheet.getRange(headerRow, 1, 1, columnCount);
+    headerRange.setBackground(this.colors.primary.header);
+    headerRange.setFontColor(this.colors.primary.headerText);
+    headerRange.setFontWeight('bold');
+    headerRange.setFontSize(11);
+    headerRange.setHorizontalAlignment('center');
+    headerRange.setVerticalAlignment('middle');
+    
+    // Set header row height
+    sheet.setRowHeight(headerRow, 40);
+    
+    // Freeze header row
+    sheet.setFrozenRows(headerRow);
+  },
   
   /**
    * Preview an industry-specific template
@@ -101,7 +187,7 @@ const IndustryTemplates = {
         message: 'Preview sheets created successfully'
       };
     } catch (error) {
-      console.error('Error previewing template:', error);
+      Logger.error('Error previewing template:', error);
       return { success: false, error: error.toString() };
     }
   },
@@ -128,14 +214,14 @@ const IndustryTemplates = {
               deletedCount++;
             }
           } catch (e) {
-            console.log('Could not delete sheet:', sheetName, e.toString());
+            Logger.info('Could not delete sheet:', sheetName, e.toString());
           }
         });
         
         // Clear the property after cleanup
         scriptProperties.deleteProperty('previewSheets');
       } catch (e) {
-        console.log('Error with script properties cleanup:', e.toString());
+        Logger.info('Error with script properties cleanup:', e.toString());
       }
       
       // Also do a general cleanup of any sheets starting with [PREVIEW]
@@ -146,14 +232,14 @@ const IndustryTemplates = {
             spreadsheet.deleteSheet(sheet);
             deletedCount++;
           } catch (e) {
-            console.log('Could not delete preview sheet:', sheetName, e.toString());
+            Logger.info('Could not delete preview sheet:', sheetName, e.toString());
           }
         }
       });
       
       return { success: true, deletedCount: deletedCount };
     } catch (error) {
-      console.error('Error cleaning up preview sheets:', error);
+      Logger.error('Error cleaning up preview sheets:', error);
       return { success: false, error: error.toString() };
     }
   },
@@ -457,7 +543,7 @@ const IndustryTemplates = {
       };
       
     } catch (error) {
-      console.error('Error applying template:', error);
+      Logger.error('Error applying template:', error);
       return { success: false, error: error.message };
     }
   },
@@ -1914,54 +2000,96 @@ const IndustryTemplates = {
 
   // Individual template setup functions
   setupLeadPipelineSheet: function(sheet) {
-    // Headers
+    // Headers with enhanced fields
     const headers = ['Lead ID', 'Company', 'Contact Name', 'Email', 'Phone', 'Lead Source', 
-                     'Status', 'Lead Score', 'Assigned To', 'Created Date', 'Last Contact', 
-                     'Next Action', 'Deal Value', 'Probability %', 'Expected Close', 'Notes'];
+                     'Status', 'Lead Score', 'Days in Pipeline', 'Assigned To', 'Created Date', 'Last Contact', 
+                     'Next Action', 'Deal Value', 'Probability %', 'Expected Revenue', 'Expected Close', 'Notes'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
     
-    // Apply formatting
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#2C3E50');
-    headerRange.setFontColor('#FFFFFF');
-    headerRange.setFontWeight('bold');
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
     
-    // Add sample data
+    // Add enhanced sample data with formulas
     const sampleData = [
       ['L001', 'TechCorp', 'John Smith', 'john@techcorp.com', '555-0101', 'Website', 
-       'Qualified', 85, 'Sarah Johnson', new Date(), new Date(), 'Demo scheduled', 
-       50000, 60, new Date(Date.now() + 30*24*60*60*1000), 'High interest in product'],
+       'Qualified', 85, '', 'Sarah Johnson', '=TODAY()-30', '=TODAY()-2', 'Demo scheduled', 
+       50000, 60, '', '=TODAY()+30', 'High interest in enterprise plan'],
       ['L002', 'DataSoft', 'Jane Doe', 'jane@datasoft.com', '555-0102', 'Referral', 
-       'New', 65, 'Mike Chen', new Date(), '', 'Initial call', 
-       75000, 30, new Date(Date.now() + 45*24*60*60*1000), 'Evaluating options']
+       'Proposal', 75, '', 'Mike Chen', '=TODAY()-14', '=TODAY()-1', 'Review proposal', 
+       75000, 40, '', '=TODAY()+45', 'Comparing with competitors'],
+      ['L003', 'GlobalTech', 'Bob Wilson', 'bob@globaltech.com', '555-0103', 'Trade Show', 
+       'New', 45, '', 'Sarah Johnson', '=TODAY()-7', '', 'Initial outreach', 
+       35000, 20, '', '=TODAY()+60', 'Met at conference'],
+      ['L004', 'StartupInc', 'Alice Brown', 'alice@startup.com', '555-0104', 'Cold Call', 
+       'Negotiation', 90, '', 'Mike Chen', '=TODAY()-45', '=TODAY()', 'Final pricing', 
+       100000, 80, '', '=TODAY()+14', 'Ready to close this quarter']
     ];
-    sheet.getRange(2, 1, sampleData.length, headers.length).setValues(sampleData);
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Add formulas for calculated fields
+    for (let row = 2; row <= 50; row++) {
+      // Days in pipeline
+      sheet.getRange(`I${row}`).setFormula(`=IF(K${row}<>"",TODAY()-K${row},"")`);
+      // Expected revenue
+      sheet.getRange(`P${row}`).setFormula(`=IF(AND(N${row}<>"",O${row}<>""),N${row}*O${row}/100,"")`);
+    }
+    
+    // Format columns
+    sheet.getRange('N:N').setNumberFormat('$#,##0');
+    sheet.getRange('P:P').setNumberFormat('$#,##0');
+    sheet.getRange('O:O').setNumberFormat('0%');
     
     // Add data validation for Status
     const statusRule = SpreadsheetApp.newDataValidation()
-      .requireValueInList(['New', 'Contacted', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'])
+      .requireValueInList(['New', 'Contacted', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'], true)
       .build();
-    sheet.getRange(2, 7, 100, 1).setDataValidation(statusRule);
+    sheet.getRange('G2:G').setDataValidation(statusRule);
     
-    // Add conditional formatting for Lead Score
-    const scoreRange = sheet.getRange(2, 8, 100, 1);
-    const highScoreRule = SpreadsheetApp.newConditionalFormatRule()
+    // Add data validation for Lead Source
+    const sourceRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Website', 'Referral', 'Trade Show', 'Cold Call', 'Email Campaign', 'Social Media', 'Partner'], true)
+      .build();
+    sheet.getRange('F2:F').setDataValidation(sourceRule);
+    
+    // Enhanced conditional formatting for Lead Score
+    const scoreRange = sheet.getRange('H2:H50');
+    const hotLeadRule = SpreadsheetApp.newConditionalFormatRule()
       .whenNumberGreaterThanOrEqualTo(80)
-      .setBackground('#27AE60')
+      .setBackground(this.colors.danger.light)
+      .setFontColor(this.colors.danger.dark)
       .setRanges([scoreRange])
       .build();
-    const medScoreRule = SpreadsheetApp.newConditionalFormatRule()
+    const warmLeadRule = SpreadsheetApp.newConditionalFormatRule()
       .whenNumberBetween(50, 79)
-      .setBackground('#F39C12')
+      .setBackground(this.colors.warning.light)
+      .setFontColor(this.colors.warning.dark)
       .setRanges([scoreRange])
       .build();
-    sheet.setConditionalFormatRules([highScoreRule, medScoreRule]);
+    const coldLeadRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberLessThan(50)
+      .setBackground(this.colors.primary.light)
+      .setRanges([scoreRange])
+      .build();
     
-    // Set column widths
-    sheet.setColumnWidth(2, 150);
-    sheet.setColumnWidth(3, 150);
-    sheet.setColumnWidth(4, 200);
-    sheet.setColumnWidth(16, 300);
+    // Conditional formatting for Status
+    const statusRange = sheet.getRange('G2:G50');
+    const wonRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Closed Won')
+      .setBackground(this.colors.success.light)
+      .setFontColor(this.colors.success.dark)
+      .setRanges([statusRange])
+      .build();
+    const lostRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Closed Lost')
+      .setBackground(this.colors.danger.light)
+      .setRanges([statusRange])
+      .build();
+    
+    sheet.setConditionalFormatRules([hotLeadRule, warmLeadRule, coldLeadRule, wonRule, lostRule]);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 50);
   },
 
   setupKanbanBoardSheet: function(sheet) {
@@ -2313,42 +2441,191 @@ const IndustryTemplates = {
   
   setupMaterialTrackerSheet: function(sheet) {
     const headers = ['Material ID', 'Date', 'Material Name', 'Category', 'Unit', 'Quantity Ordered', 
-                     'Unit Cost', 'Total Cost', 'Supplier', 'Received Qty', 'Used Qty', 'Remaining', 'Status'];
+                     'Unit Cost', 'Total Cost', 'Supplier', 'Received Qty', 'Used Qty', 'Remaining', 
+                     'Lead Time', 'Reorder Level', 'Status'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#2C3E50').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Add sample material data with cross-references
+    const sampleData = [
+      ['MAT-001', '=TODAY()-14', '2x4 Lumber', 'Wood', 'bd ft', 5000, 2.5, '', 'Lumber Co', 5000, 3500, '', '7 days', 1000, 'In Stock'],
+      ['MAT-002', '=TODAY()-7', 'Concrete Mix', 'Concrete', 'bags', 200, 8.5, '', 'ABC Supply', 200, 150, '', '3 days', 50, 'In Stock'],
+      ['MAT-003', '=TODAY()-3', 'Rebar #4', 'Steel', 'tons', 10, 650, '', 'Steel Direct', 10, 5, '', '5 days', 2, 'In Stock'],
+      ['MAT-004', '=TODAY()', 'Drywall Sheets', 'Drywall', 'sheets', 500, 12, '', 'Building Supply', 0, 0, '', '2 days', 100, 'On Order']
+    ];
+    
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
     
     // Add formulas
     for (let row = 2; row <= 50; row++) {
-      sheet.getRange(`H${row}`).setFormula(`=F${row}*G${row}`).setNumberFormat('$#,##0.00');
-      sheet.getRange(`L${row}`).setFormula(`=J${row}-K${row}`).setNumberFormat('#,##0');
+      sheet.getRange(`H${row}`).setFormula(`=IF(AND(F${row}<>"",G${row}<>""),F${row}*G${row},"")`);
+      sheet.getRange(`L${row}`).setFormula(`=IF(AND(J${row}<>"",K${row}<>""),J${row}-K${row},"")`);
     }
+    
+    // Format columns
+    sheet.getRange('G:G').setNumberFormat('$#,##0.00');
+    sheet.getRange('H:H').setNumberFormat('$#,##0.00');
+    sheet.getRange('F:F').setNumberFormat('#,##0');
+    sheet.getRange('J:L').setNumberFormat('#,##0');
+    sheet.getRange('N:N').setNumberFormat('#,##0');
+    
+    // Add category validation
+    const categoryRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Wood', 'Concrete', 'Steel', 'Drywall', 'Electrical', 'Plumbing', 'HVAC', 'Other'], true)
+      .build();
+    sheet.getRange('D2:D').setDataValidation(categoryRule);
+    
+    // Add status validation
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['In Stock', 'Low Stock', 'On Order', 'Back Order', 'Delivered'], true)
+      .build();
+    sheet.getRange('O2:O').setDataValidation(statusRule);
+    
+    // Conditional formatting for status
+    const statusRange = sheet.getRange('O2:O50');
+    const inStockRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('In Stock')
+      .setBackground(this.colors.success.light)
+      .setRanges([statusRange])
+      .build();
+    const lowStockRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Low Stock')
+      .setBackground(this.colors.warning.light)
+      .setRanges([statusRange])
+      .build();
+    const onOrderRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('On Order')
+      .setBackground(this.colors.primary.light)
+      .setRanges([statusRange])
+      .build();
+    
+    sheet.setConditionalFormatRules([inStockRule, lowStockRule, onOrderRule]);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 50);
   },
   
   setupLaborManagerSheet: function(sheet) {
     const headers = ['Employee ID', 'Name', 'Role', 'Department', 'Date', 'Hours Worked', 
-                     'Hourly Rate', 'Daily Cost', 'Project', 'Task', 'Status', 'Approved By'];
+                     'Overtime Hours', 'Hourly Rate', 'OT Rate', 'Daily Cost', 'Project', 
+                     'Task', 'Status', 'Approved By'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#34495E').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Add sample labor data
+    const sampleData = [
+      ['EMP-001', 'John Smith', 'Foreman', 'Construction', '=TODAY()', 8, 0, 45, '=H2*1.5', '', '=\'Cost Estimator\'!A2', 'Framing', 'Approved', 'Manager'],
+      ['EMP-002', 'Mike Johnson', 'Carpenter', 'Construction', '=TODAY()', 8, 2, 35, '=H3*1.5', '', '=\'Cost Estimator\'!A2', 'Framing', 'Approved', 'Foreman'],
+      ['EMP-003', 'Bob Wilson', 'Electrician', 'Electrical', '=TODAY()', 7, 0, 55, '=H4*1.5', '', '=\'Cost Estimator\'!A2', 'Rough-in', 'Pending', ''],
+      ['EMP-004', 'Tom Davis', 'Helper', 'General', '=TODAY()', 8, 0, 25, '=H5*1.5', '', '=\'Cost Estimator\'!A2', 'General', 'Approved', 'Foreman']
+    ];
+    
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
     
     // Add formulas for cost calculation
     for (let row = 2; row <= 100; row++) {
-      sheet.getRange(`H${row}`).setFormula(`=F${row}*G${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`J${row}`).setFormula(`=IF(OR(F${row}<>"",G${row}<>""),F${row}*H${row}+G${row}*I${row},"")`);
     }
+    
+    // Format columns
+    sheet.getRange('H:I').setNumberFormat('$#,##0.00');
+    sheet.getRange('J:J').setNumberFormat('$#,##0.00');
+    sheet.getRange('F:G').setNumberFormat('#,##0.0');
+    
+    // Add role validation
+    const roleRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Foreman', 'Carpenter', 'Electrician', 'Plumber', 'Mason', 'Helper', 'Laborer', 'Operator'], true)
+      .build();
+    sheet.getRange('C2:C').setDataValidation(roleRule);
+    
+    // Add status validation
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Approved', 'Pending', 'Rejected', 'In Review'], true)
+      .build();
+    sheet.getRange('M2:M').setDataValidation(statusRule);
+    
+    // Conditional formatting for status
+    const statusRange = sheet.getRange('M2:M100');
+    const approvedRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Approved')
+      .setBackground(this.colors.success.light)
+      .setRanges([statusRange])
+      .build();
+    const pendingRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Pending')
+      .setBackground(this.colors.warning.light)
+      .setRanges([statusRange])
+      .build();
+    
+    sheet.setConditionalFormatRules([approvedRule, pendingRule]);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 50);
   },
   
-  setupChangeOrderSheet: function(sheet) {
+  setupChangeOrdersSheet: function(sheet) {
     const headers = ['Change Order #', 'Date', 'Client', 'Project', 'Description', 'Reason', 
-                     'Original Cost', 'Change Amount', 'New Total', 'Status', 'Approved By', 'Date Approved'];
+                     'Original Cost', 'Change Amount', 'New Total', 'Impact Days', 'Status', 
+                     'Approved By', 'Date Approved', 'Notes'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#E74C3C').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Add sample change orders
+    const sampleData = [
+      ['CO-001', '=TODAY()-10', 'ABC Corp', '=\'Cost Estimator\'!A2', 'Add bathroom fixture upgrade', 'Client request', 85000, 5500, '', 3, 'Approved', 'Client PM', '=TODAY()-8', 'Premium fixtures selected'],
+      ['CO-002', '=TODAY()-5', 'ABC Corp', '=\'Cost Estimator\'!A2', 'Foundation reinforcement', 'Soil conditions', 85000, 12000, '', 5, 'Pending', '', '', 'Engineering review needed'],
+      ['CO-003', '=TODAY()-3', 'XYZ Inc', '=\'Cost Estimator\'!A3', 'Change electrical layout', 'Design change', 125000, -2500, '', 0, 'Approved', 'Architect', '=TODAY()-2', 'Simplified design']
+    ];
+    
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
     
     // Add formulas for totals
     for (let row = 2; row <= 50; row++) {
-      sheet.getRange(`I${row}`).setFormula(`=G${row}+H${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`I${row}`).setFormula(`=IF(AND(G${row}<>"",H${row}<>""),G${row}+H${row},"")`);
     }
+    
+    // Format columns
+    sheet.getRange('G:I').setNumberFormat('$#,##0');
+    sheet.getRange('J:J').setNumberFormat('#,##0');
+    
+    // Add reason validation
+    const reasonRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Client request', 'Design change', 'Code requirement', 'Site conditions', 'Material unavailable', 'Error correction'], true)
+      .build();
+    sheet.getRange('F2:F').setDataValidation(reasonRule);
+    
+    // Add status validation
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Draft', 'Pending', 'Approved', 'Rejected', 'Implemented'], true)
+      .build();
+    sheet.getRange('K2:K').setDataValidation(statusRule);
+    
+    // Conditional formatting for change amount
+    const changeRange = sheet.getRange('H2:H50');
+    const increaseRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberGreaterThan(0)
+      .setBackground(this.colors.warning.light)
+      .setRanges([changeRange])
+      .build();
+    const decreaseRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberLessThan(0)
+      .setBackground(this.colors.success.light)
+      .setRanges([changeRange])
+      .build();
+    
+    sheet.setConditionalFormatRules([increaseRule, decreaseRule]);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 50);
   },
   
   setupPriorAuthSheet: function(sheet) {
@@ -2530,123 +2807,632 @@ const IndustryTemplates = {
   
   setupCommissionTrackerSheet: function(sheet) {
     const headers = ['Transaction ID', 'Date', 'Agent', 'Property Address', 'Sale Price', 
-                     'Commission %', 'Commission Amount', 'Split %', 'Net Commission', 'Status'];
+                     'Commission %', 'Commission Amount', 'Split %', 'Net Commission', 'Status', 'Lead Source'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#27AE60').setFontColor('#FFFFFF').setFontWeight('bold');
     
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Add sample data with formulas
+    const sampleData = [
+      ['TRX-001', '=TODAY()-30', 'Agent Smith', '123 Main St', 450000, 3, '', 70, '', 'Closed', 'Referral'],
+      ['TRX-002', '=TODAY()-15', 'Agent Jones', '456 Oak Ave', 325000, 2.5, '', 70, '', 'Pending', 'Website'],
+      ['TRX-003', '=TODAY()-7', 'Agent Smith', '789 Elm Dr', 575000, 3, '', 70, '', 'Active', 'Open House']
+    ];
+    
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Apply formulas for calculations
     for (let row = 2; row <= 100; row++) {
-      sheet.getRange(`G${row}`).setFormula(`=E${row}*F${row}/100`).setNumberFormat('$#,##0.00');
-      sheet.getRange(`I${row}`).setFormula(`=G${row}*H${row}/100`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`G${row}`).setFormula(`=IF(E${row}<>"",E${row}*F${row}/100,"")`);
+      sheet.getRange(`I${row}`).setFormula(`=IF(G${row}<>"",G${row}*H${row}/100,"")`);
     }
+    
+    // Format columns
+    sheet.getRange('E:E').setNumberFormat('$#,##0');
+    sheet.getRange('G:G').setNumberFormat('$#,##0.00');
+    sheet.getRange('I:I').setNumberFormat('$#,##0.00');
+    sheet.getRange('F:F').setNumberFormat('0.0%');
+    sheet.getRange('H:H').setNumberFormat('0%');
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 50);
+    
+    // Add status validation
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Active', 'Pending', 'Closed', 'Cancelled'], true)
+      .build();
+    sheet.getRange('J2:J').setDataValidation(statusRule);
   },
   
   setupPipelineSheet: function(sheet) {
-    const headers = ['Lead ID', 'Date', 'Name', 'Contact', 'Property Interest', 'Stage', 
-                     'Source', 'Next Action', 'Follow-up Date', 'Agent', 'Notes'];
+    const headers = ['Lead ID', 'Date', 'Name', 'Contact', 'Property Interest', 'Budget', 'Stage', 
+                     'Days in Stage', 'Source', 'Next Action', 'Follow-up Date', 'Agent', 'Score', 'Notes'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#E67E22').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Add sample data
+    const sampleData = [
+      ['L-001', '=TODAY()-14', 'John Smith', '555-0101', 'Single Family Home', 450000, 'Qualified', '', 'Referral', 'Schedule Showing', '=TODAY()+2', 'Agent Smith', '', 'Looking for 3BR'],
+      ['L-002', '=TODAY()-7', 'Jane Doe', '555-0102', 'Condo', 275000, 'Active', '', 'Website', 'Send Listings', '=TODAY()+1', 'Agent Jones', '', 'First-time buyer'],
+      ['L-003', '=TODAY()-3', 'Bob Wilson', '555-0103', 'Investment Property', 600000, 'New', '', 'Open House', 'Initial Contact', '=TODAY()', 'Agent Smith', '', 'Cash buyer']
+    ];
+    
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Add formulas for days in stage
+    for (let row = 2; row <= 100; row++) {
+      sheet.getRange(`H${row}`).setFormula(`=IF(B${row}<>"",TODAY()-B${row},"")`);
+      sheet.getRange(`M${row}`).setFormula(`=IF(G${row}="Qualified",8,IF(G${row}="Active",5,IF(G${row}="New",3,0)))`);
+    }
+    
+    // Format columns
+    sheet.getRange('F:F').setNumberFormat('$#,##0');
+    
+    // Add stage validation
+    const stageRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['New', 'Contacted', 'Qualified', 'Active', 'Offer', 'Negotiating', 'Contract', 'Closed', 'Lost'], true)
+      .build();
+    sheet.getRange('G2:G').setDataValidation(stageRule);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 50);
   },
   
   setupDashboardSheet: function(sheet) {
-    const headers = ['Metric', 'This Month', 'Last Month', 'YTD', 'Target', 'Variance'];
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#8E44AD').setFontColor('#FFFFFF').setFontWeight('bold');
+    // Title section
+    sheet.getRange('A1').setValue('Real Estate Performance Dashboard');
+    sheet.getRange('A1').setFontSize(18).setFontWeight('bold').setFontColor(this.colors.primary.header);
+    sheet.getRange('A2').setValue('Last Updated: ' + new Date().toLocaleDateString());
+    
+    // KPI Headers
+    const headers = ['Key Metrics', 'Current Month', 'Last Month', 'YTD', 'Target', '% to Target'];
+    sheet.getRange(4, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 4, headers.length);
+    
+    // Cross-tab KPI formulas pulling from other sheets
+    const kpiData = [
+      ['Total Deals', 
+       '=COUNTIFS(\'Commission Tracker\'!B:B,">="&EOMONTH(TODAY(),-1)+1,\'Commission Tracker\'!B:B,"<="&EOMONTH(TODAY(),0),\'Commission Tracker\'!J:J,"Closed")',
+       '=COUNTIFS(\'Commission Tracker\'!B:B,">="&EOMONTH(TODAY(),-2)+1,\'Commission Tracker\'!B:B,"<="&EOMONTH(TODAY(),-1),\'Commission Tracker\'!J:J,"Closed")',
+       '=COUNTIFS(\'Commission Tracker\'!B:B,">="&DATE(YEAR(TODAY()),1,1),\'Commission Tracker\'!J:J,"Closed")',
+       '10',
+       '=IF(E5>0,D5/E5,0)'],
+      ['Gross Commission', 
+       '=SUMIFS(\'Commission Tracker\'!G:G,\'Commission Tracker\'!B:B,">="&EOMONTH(TODAY(),-1)+1,\'Commission Tracker\'!B:B,"<="&EOMONTH(TODAY(),0),\'Commission Tracker\'!J:J,"Closed")',
+       '=SUMIFS(\'Commission Tracker\'!G:G,\'Commission Tracker\'!B:B,">="&EOMONTH(TODAY(),-2)+1,\'Commission Tracker\'!B:B,"<="&EOMONTH(TODAY(),-1),\'Commission Tracker\'!J:J,"Closed")',
+       '=SUMIFS(\'Commission Tracker\'!G:G,\'Commission Tracker\'!B:B,">="&DATE(YEAR(TODAY()),1,1),\'Commission Tracker\'!J:J,"Closed")',
+       '50000',
+       '=IF(E6>0,D6/E6,0)'],
+      ['Net Commission',
+       '=SUMIFS(\'Commission Tracker\'!I:I,\'Commission Tracker\'!B:B,">="&EOMONTH(TODAY(),-1)+1,\'Commission Tracker\'!B:B,"<="&EOMONTH(TODAY(),0),\'Commission Tracker\'!J:J,"Closed")',
+       '=SUMIFS(\'Commission Tracker\'!I:I,\'Commission Tracker\'!B:B,">="&EOMONTH(TODAY(),-2)+1,\'Commission Tracker\'!B:B,"<="&EOMONTH(TODAY(),-1),\'Commission Tracker\'!J:J,"Closed")',
+       '=SUMIFS(\'Commission Tracker\'!I:I,\'Commission Tracker\'!B:B,">="&DATE(YEAR(TODAY()),1,1),\'Commission Tracker\'!J:J,"Closed")',
+       '35000',
+       '=IF(E7>0,D7/E7,0)'],
+      ['Active Pipeline',
+       '=COUNTIF(\'Pipeline\'!G:G,"Active")+COUNTIF(\'Pipeline\'!G:G,"Qualified")',
+       '',
+       '=COUNTIFS(\'Pipeline\'!B:B,">="&DATE(YEAR(TODAY()),1,1),\'Pipeline\'!G:G,"<>Closed",\'Pipeline\'!G:G,"<>Lost")',
+       '25',
+       '=IF(E8>0,B8/E8,0)'],
+      ['Pipeline Value',
+       '=SUMIFS(\'Pipeline\'!F:F,\'Pipeline\'!G:G,"Active")+SUMIFS(\'Pipeline\'!F:F,\'Pipeline\'!G:G,"Qualified")',
+       '',
+       '=SUMIFS(\'Pipeline\'!F:F,\'Pipeline\'!B:B,">="&DATE(YEAR(TODAY()),1,1),\'Pipeline\'!G:G,"<>Closed",\'Pipeline\'!G:G,"<>Lost")',
+       '5000000',
+       '=IF(E9>0,B9/E9,0)'],
+      ['Avg Deal Size',
+       '=IFERROR(AVERAGEIFS(\'Commission Tracker\'!E:E,\'Commission Tracker\'!B:B,">="&EOMONTH(TODAY(),-1)+1,\'Commission Tracker\'!B:B,"<="&EOMONTH(TODAY(),0),\'Commission Tracker\'!J:J,"Closed"),0)',
+       '=IFERROR(AVERAGEIFS(\'Commission Tracker\'!E:E,\'Commission Tracker\'!B:B,">="&EOMONTH(TODAY(),-2)+1,\'Commission Tracker\'!B:B,"<="&EOMONTH(TODAY(),-1),\'Commission Tracker\'!J:J,"Closed"),0)',
+       '=IFERROR(AVERAGEIFS(\'Commission Tracker\'!E:E,\'Commission Tracker\'!B:B,">="&DATE(YEAR(TODAY()),1,1),\'Commission Tracker\'!J:J,"Closed"),0)',
+       '400000',
+       '=IF(E10>0,D10/E10,0)'],
+      ['Conversion Rate',
+       '=IFERROR(COUNTIF(\'Pipeline\'!G:G,"Closed")/(COUNTIF(\'Pipeline\'!G:G,"<>"&"")),0)',
+       '',
+       '=IFERROR(COUNTIFS(\'Pipeline\'!G:G,"Closed",\'Pipeline\'!B:B,">="&DATE(YEAR(TODAY()),1,1))/COUNTIFS(\'Pipeline\'!B:B,">="&DATE(YEAR(TODAY()),1,1),\'Pipeline\'!A:A,"<>"),0)',
+       '0.25',
+       '=IF(E11>0,D11/E11,0)']
+    ];
+    
+    sheet.getRange(5, 1, kpiData.length, kpiData[0].length).setValues(kpiData);
+    
+    // Format the dashboard
+    sheet.getRange('B5:D11').setNumberFormat('#,##0');
+    sheet.getRange('B6:D7').setNumberFormat('$#,##0');
+    sheet.getRange('B9:D9').setNumberFormat('$#,##0');
+    sheet.getRange('B10:D10').setNumberFormat('$#,##0');
+    sheet.getRange('B11:D11').setNumberFormat('0.0%');
+    sheet.getRange('F5:F11').setNumberFormat('0%');
+    
+    // Apply conditional formatting for variance
+    const varianceRange = sheet.getRange('F5:F11');
+    const greenRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberGreaterThanOrEqualTo(1)
+      .setBackground('#D4EDDA')
+      .setFontColor('#155724')
+      .setRanges([varianceRange])
+      .build();
+    const yellowRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberBetween(0.7, 0.99)
+      .setBackground('#FFF3CD')
+      .setFontColor('#856404')
+      .setRanges([varianceRange])
+      .build();
+    const redRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberLessThan(0.7)
+      .setBackground('#F8D7DA')
+      .setFontColor('#721C24')
+      .setRanges([varianceRange])
+      .build();
+    
+    sheet.setConditionalFormatRules([greenRule, yellowRule, redRule]);
+    
+    // Auto-resize columns
+    this.autoResizeColumns(sheet);
+    
+    // Apply professional formatting
+    this.applyProfessionalFormatting(sheet, 11);
+    
+    // Add charts section header
+    sheet.getRange('A14').setValue('Performance Trends');
+    sheet.getRange('A14').setFontSize(14).setFontWeight('bold').setFontColor(this.colors.primary.header);
+    
+    // Add lead source analysis
+    sheet.getRange('A17').setValue('Lead Source Analysis');
+    sheet.getRange('A17').setFontSize(14).setFontWeight('bold').setFontColor(this.colors.primary.header);
+    
+    const sourceHeaders = ['Source', 'Leads', 'Conversions', 'Conversion %', 'Revenue'];
+    sheet.getRange(18, 1, 1, sourceHeaders.length).setValues([sourceHeaders]);
+    this.formatHeaders(sheet, 18, sourceHeaders.length);
+    
+    const sourceData = [
+      ['Referral', '=COUNTIF(\'Pipeline\'!I:I,"Referral")', '=COUNTIFS(\'Pipeline\'!I:I,"Referral",\'Pipeline\'!G:G,"Closed")', '=IFERROR(C19/B19,0)', '=SUMIFS(\'Commission Tracker\'!I:I,\'Commission Tracker\'!K:K,"Referral",\'Commission Tracker\'!J:J,"Closed")'],
+      ['Website', '=COUNTIF(\'Pipeline\'!I:I,"Website")', '=COUNTIFS(\'Pipeline\'!I:I,"Website",\'Pipeline\'!G:G,"Closed")', '=IFERROR(C20/B20,0)', '=SUMIFS(\'Commission Tracker\'!I:I,\'Commission Tracker\'!K:K,"Website",\'Commission Tracker\'!J:J,"Closed")'],
+      ['Open House', '=COUNTIF(\'Pipeline\'!I:I,"Open House")', '=COUNTIFS(\'Pipeline\'!I:I,"Open House",\'Pipeline\'!G:G,"Closed")', '=IFERROR(C21/B21,0)', '=SUMIFS(\'Commission Tracker\'!I:I,\'Commission Tracker\'!K:K,"Open House",\'Commission Tracker\'!J:J,"Closed")']
+    ];
+    
+    sheet.getRange(19, 1, sourceData.length, sourceData[0].length).setValues(sourceData);
+    sheet.getRange('D19:D21').setNumberFormat('0%');
+    sheet.getRange('E19:E21').setNumberFormat('$#,##0');
+    
+    // Apply formatting to source analysis
+    this.applyProfessionalFormatting(sheet, 21);
   },
   
   setupCostEstimatorSheet: function(sheet) {
     const headers = ['Item', 'Category', 'Quantity', 'Unit', 'Unit Cost', 'Total Cost', 
-                     'Markup %', 'Selling Price', 'Margin', 'Notes'];
+                     'Markup %', 'Selling Price', 'Margin', 'Vendor', 'Lead Time', 'Notes'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#2C3E50').setFontColor('#FFFFFF').setFontWeight('bold');
     
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Add sample data
+    const sampleData = [
+      ['Concrete Foundation', 'Materials', 100, 'cu yd', 150, '', 20, '', '', 'ABC Supply', '3 days', 'Grade A'],
+      ['Framing Lumber', 'Materials', 5000, 'bd ft', 2.5, '', 25, '', '', 'Lumber Co', '1 week', '2x4 studs'],
+      ['Labor - Framing', 'Labor', 160, 'hours', 45, '', 15, '', '', 'Crew A', 'Available', 'Skilled crew'],
+      ['Electrical Rough-in', 'Subcontractor', 1, 'job', 3500, '', 10, '', '', 'Elite Electric', '2 weeks', 'Licensed']
+    ];
+    
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Apply formulas
     for (let row = 2; row <= 100; row++) {
-      sheet.getRange(`F${row}`).setFormula(`=C${row}*E${row}`).setNumberFormat('$#,##0.00');
-      sheet.getRange(`H${row}`).setFormula(`=F${row}*(1+G${row}/100)`).setNumberFormat('$#,##0.00');
-      sheet.getRange(`I${row}`).setFormula(`=H${row}-F${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`F${row}`).setFormula(`=IF(AND(C${row}<>"",E${row}<>""),C${row}*E${row},"")`);
+      sheet.getRange(`H${row}`).setFormula(`=IF(AND(F${row}<>"",G${row}<>""),F${row}*(1+G${row}/100),"")`);
+      sheet.getRange(`I${row}`).setFormula(`=IF(AND(H${row}<>"",F${row}<>""),H${row}-F${row},"")`);
     }
+    
+    // Format columns
+    sheet.getRange('E:E').setNumberFormat('$#,##0.00');
+    sheet.getRange('F:F').setNumberFormat('$#,##0.00');
+    sheet.getRange('H:H').setNumberFormat('$#,##0.00');
+    sheet.getRange('I:I').setNumberFormat('$#,##0.00');
+    sheet.getRange('G:G').setNumberFormat('0%');
+    
+    // Add category validation
+    const categoryRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Materials', 'Labor', 'Equipment', 'Subcontractor', 'Permits', 'Other'], true)
+      .build();
+    sheet.getRange('B2:B').setDataValidation(categoryRule);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 50);
   },
   
   setupInsuranceVerifierSheet: function(sheet) {
     const headers = ['Patient ID', 'Patient Name', 'DOB', 'Insurance', 'Policy #', 
                      'Group #', 'Effective Date', 'Expiry Date', 'Copay', 'Deductible', 
-                     'Coverage %', 'Verified Date', 'Verified By', 'Status'];
+                     'Coverage %', 'Out of Pocket Max', 'Verified Date', 'Verified By', 'Status'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#16A085').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Add sample data
+    const sampleData = [
+      ['P-001', 'John Smith', '01/15/1980', 'Blue Cross', 'BC123456', 'GRP789', '01/01/2024', '12/31/2024', 25, 1500, 80, 5000, '=TODAY()', 'Admin', 'Verified'],
+      ['P-002', 'Jane Doe', '03/22/1975', 'Aetna', 'AET789012', 'GRP456', '03/01/2024', '02/28/2025', 30, 2000, 70, 6000, '=TODAY()-1', 'Admin', 'Verified'],
+      ['P-003', 'Bob Wilson', '07/10/1990', 'United Health', 'UH345678', 'GRP123', '06/01/2024', '05/31/2025', 20, 1000, 90, 4000, '=TODAY()-2', 'Admin', 'Pending']
+    ];
+    
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Format columns
+    sheet.getRange('I:I').setNumberFormat('$#,##0');
+    sheet.getRange('J:J').setNumberFormat('$#,##0');
+    sheet.getRange('L:L').setNumberFormat('$#,##0');
+    sheet.getRange('K:K').setNumberFormat('0%');
+    
+    // Add status validation and conditional formatting
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Verified', 'Pending', 'Expired', 'Invalid'], true)
+      .build();
+    sheet.getRange('O2:O').setDataValidation(statusRule);
+    
+    // Conditional formatting for status
+    const statusRange = sheet.getRange('O2:O100');
+    const verifiedRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Verified')
+      .setBackground(this.colors.success.light)
+      .setRanges([statusRange])
+      .build();
+    const pendingRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Pending')
+      .setBackground(this.colors.warning.light)
+      .setRanges([statusRange])
+      .build();
+    const expiredRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Expired')
+      .setBackground(this.colors.danger.light)
+      .setRanges([statusRange])
+      .build();
+    
+    sheet.setConditionalFormatRules([verifiedRule, pendingRule, expiredRule]);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 50);
   },
   
   setupCampaignDashboardSheet: function(sheet) {
     const headers = ['Campaign', 'Channel', 'Start Date', 'End Date', 'Budget', 'Spend', 
-                     'Impressions', 'Clicks', 'CTR', 'Conversions', 'CPA', 'ROI'];
+                     'Impressions', 'Clicks', 'CTR %', 'Conversions', 'CPA', 'ROAS', 'Status'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#E74C3C').setFontColor('#FFFFFF').setFontWeight('bold');
     
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Add sample campaigns
+    const sampleData = [
+      ['Summer Sale 2024', 'Google Ads', '=TODAY()-30', '=TODAY()+30', 5000, 2500, 125000, 3750, '', 45, '', '', 'Active'],
+      ['Email Newsletter', 'Email', '=TODAY()-15', '=TODAY()+15', 1000, 450, 25000, 1250, '', 25, '', '', 'Active'],
+      ['Social Media Push', 'Facebook', '=TODAY()-45', '=TODAY()-15', 3000, 3000, 75000, 2250, '', 30, '', '', 'Completed'],
+      ['Black Friday', 'Multi-Channel', '=TODAY()+20', '=TODAY()+25', 10000, 0, 0, 0, '', 0, '', '', 'Planned']
+    ];
+    
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Apply formulas for metrics
     for (let row = 2; row <= 50; row++) {
-      sheet.getRange(`I${row}`).setFormula(`=IF(G${row}>0,H${row}/G${row}*100,0)`).setNumberFormat('0.00%');
-      sheet.getRange(`K${row}`).setFormula(`=IF(J${row}>0,F${row}/J${row},0)`).setNumberFormat('$#,##0.00');
-      sheet.getRange(`L${row}`).setFormula(`=IF(F${row}>0,(J${row}*100-F${row})/F${row}*100,0)`).setNumberFormat('0.00%');
+      sheet.getRange(`I${row}`).setFormula(`=IF(G${row}>0,H${row}/G${row},0)`);
+      sheet.getRange(`K${row}`).setFormula(`=IF(J${row}>0,F${row}/J${row},0)`);
+      sheet.getRange(`L${row}`).setFormula(`=IF(F${row}>0,(J${row}*100)/F${row},0)`);
     }
+    
+    // Format columns
+    sheet.getRange('E:F').setNumberFormat('$#,##0');
+    sheet.getRange('G:G').setNumberFormat('#,##0');
+    sheet.getRange('H:H').setNumberFormat('#,##0');
+    sheet.getRange('I:I').setNumberFormat('0.00%');
+    sheet.getRange('J:J').setNumberFormat('#,##0');
+    sheet.getRange('K:K').setNumberFormat('$#,##0.00');
+    sheet.getRange('L:L').setNumberFormat('0.00');
+    
+    // Add channel validation
+    const channelRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Google Ads', 'Facebook', 'Instagram', 'Email', 'LinkedIn', 'Twitter', 'Multi-Channel'], true)
+      .build();
+    sheet.getRange('B2:B').setDataValidation(channelRule);
+    
+    // Add status validation
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Planned', 'Active', 'Paused', 'Completed'], true)
+      .build();
+    sheet.getRange('M2:M').setDataValidation(statusRule);
+    
+    // Apply conditional formatting for ROAS
+    const roasRange = sheet.getRange('L2:L50');
+    const goodRoas = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberGreaterThanOrEqualTo(3)
+      .setBackground(this.colors.success.light)
+      .setRanges([roasRange])
+      .build();
+    const avgRoas = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberBetween(1, 2.99)
+      .setBackground(this.colors.warning.light)
+      .setRanges([roasRange])
+      .build();
+    const poorRoas = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberLessThan(1)
+      .setBackground(this.colors.danger.light)
+      .setRanges([roasRange])
+      .build();
+    
+    sheet.setConditionalFormatRules([goodRoas, avgRoas, poorRoas]);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 50);
   },
   
   setupInventorySheet: function(sheet) {
     const headers = ['SKU', 'Product Name', 'Category', 'Current Stock', 'Min Stock', 
                      'Max Stock', 'Reorder Point', 'Reorder Qty', 'Unit Cost', 'Total Value', 
-                     'Supplier', 'Lead Time', 'Status'];
+                     'Supplier', 'Lead Time', 'Last Order', 'Status'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#F39C12').setFontColor('#FFFFFF').setFontWeight('bold');
     
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Add sample inventory data
+    const sampleData = [
+      ['SKU-001', 'Widget A', 'Electronics', 45, 20, 100, 30, 50, 25.99, '', 'Supplier A', '7 days', '=TODAY()-14', ''],
+      ['SKU-002', 'Widget B', 'Electronics', 15, 25, 75, 30, 40, 35.50, '', 'Supplier B', '10 days', '=TODAY()-7', ''],
+      ['SKU-003', 'Gadget X', 'Accessories', 120, 50, 200, 75, 100, 12.99, '', 'Supplier A', '5 days', '=TODAY()-21', ''],
+      ['SKU-004', 'Gadget Y', 'Accessories', 8, 15, 60, 20, 30, 45.00, '', 'Supplier C', '14 days', '=TODAY()-30', '']
+    ];
+    
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Apply formulas
     for (let row = 2; row <= 100; row++) {
-      sheet.getRange(`J${row}`).setFormula(`=D${row}*I${row}`).setNumberFormat('$#,##0.00');
-      sheet.getRange(`M${row}`).setFormula(`=IF(D${row}<=G${row},"REORDER",IF(D${row}>=F${row},"OVERSTOCK","OK"))`);
+      sheet.getRange(`J${row}`).setFormula(`=IF(AND(D${row}<>"",I${row}<>""),D${row}*I${row},"")`);
+      sheet.getRange(`N${row}`).setFormula(`=IF(D${row}<>"",IF(D${row}<=G${row},"REORDER",IF(D${row}>=F${row},"OVERSTOCK","OK")),"")`);
     }
+    
+    // Format columns
+    sheet.getRange('I:I').setNumberFormat('$#,##0.00');
+    sheet.getRange('J:J').setNumberFormat('$#,##0.00');
+    sheet.getRange('D:H').setNumberFormat('#,##0');
+    
+    // Add category validation
+    const categoryRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Electronics', 'Accessories', 'Clothing', 'Home & Garden', 'Sports', 'Books'], true)
+      .build();
+    sheet.getRange('C2:C').setDataValidation(categoryRule);
+    
+    // Conditional formatting for status
+    const statusRange = sheet.getRange('N2:N100');
+    const reorderRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('REORDER')
+      .setBackground(this.colors.danger.light)
+      .setFontColor(this.colors.danger.dark)
+      .setRanges([statusRange])
+      .build();
+    const overstockRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('OVERSTOCK')
+      .setBackground(this.colors.warning.light)
+      .setFontColor(this.colors.warning.dark)
+      .setRanges([statusRange])
+      .build();
+    const okRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('OK')
+      .setBackground(this.colors.success.light)
+      .setFontColor(this.colors.success.dark)
+      .setRanges([statusRange])
+      .build();
+    
+    sheet.setConditionalFormatRules([reorderRule, overstockRule, okRule]);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 50);
   },
   
   // Additional Real Estate setup functions
   setupPropertySheet: function(sheet) {
     const headers = ['Property ID', 'Address', 'Type', 'Bedrooms', 'Bathrooms', 
                      'Square Feet', 'Purchase Price', 'Current Value', 'Monthly Rent', 
-                     'Occupancy Status', 'Tenant', 'Lease End', 'HOA Fees', 'Property Tax'];
+                     'Annual Income', 'Cap Rate', 'Occupancy Status', 'Tenant', 'Lease End', 'HOA Fees', 'Property Tax'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#2C3E50').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Add sample properties
+    const sampleData = [
+      ['PROP-001', '123 Main St, City, ST', 'Single Family', 3, 2, 1850, 350000, 385000, 2500, '', '', 'Occupied', 'John Smith', '=TODAY()+180', 150, 4200],
+      ['PROP-002', '456 Oak Ave #5', 'Condo', 2, 1, 950, 225000, 245000, 1800, '', '', 'Occupied', 'Jane Doe', '=TODAY()+90', 250, 2800],
+      ['PROP-003', '789 Elm Dr', 'Duplex', 4, 3, 2400, 425000, 450000, 3200, '', '', 'Vacant', '', '', 0, 5100]
+    ];
+    
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Add formulas for calculations
+    for (let row = 2; row <= 50; row++) {
+      sheet.getRange(`J${row}`).setFormula(`=IF(I${row}<>"",I${row}*12,"")`);
+      sheet.getRange(`K${row}`).setFormula(`=IF(AND(J${row}<>"",H${row}<>""),J${row}/H${row},"")`);
+    }
+    
+    // Format columns
+    sheet.getRange('G:I').setNumberFormat('$#,##0');
+    sheet.getRange('J:J').setNumberFormat('$#,##0');
+    sheet.getRange('K:K').setNumberFormat('0.00%');
+    sheet.getRange('O:P').setNumberFormat('$#,##0');
+    
+    // Add type validation
+    const typeRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Single Family', 'Condo', 'Townhouse', 'Duplex', 'Multi-Family', 'Commercial'], true)
+      .build();
+    sheet.getRange('C2:C').setDataValidation(typeRule);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 50);
   },
   
   setupTenantSheet: function(sheet) {
     const headers = ['Tenant ID', 'Name', 'Contact', 'Email', 'Property', 
                      'Lease Start', 'Lease End', 'Monthly Rent', 'Security Deposit', 
-                     'Payment Status', 'Last Payment', 'Balance Due'];
+                     'Payment Status', 'Last Payment', 'Balance Due', 'Days Until Renewal'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#34495E').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Add sample tenants with cross-references to properties
+    const sampleData = [
+      ['T-001', 'John Smith', '555-0101', 'john@email.com', '=\'Properties\'!B2', '=TODAY()-180', '=TODAY()+180', 2500, 2500, 'Current', '=TODAY()-5', 0, ''],
+      ['T-002', 'Jane Doe', '555-0102', 'jane@email.com', '=\'Properties\'!B3', '=TODAY()-270', '=TODAY()+90', 1800, 1800, 'Current', '=TODAY()-3', 0, ''],
+      ['T-003', 'Bob Wilson', '555-0103', 'bob@email.com', 'Pending', '=TODAY()+30', '=TODAY()+395', 3200, 3200, 'Pending', '', 0, '']
+    ];
+    
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Add formula for days until renewal
+    for (let row = 2; row <= 50; row++) {
+      sheet.getRange(`M${row}`).setFormula(`=IF(G${row}<>"",G${row}-TODAY(),"")`);
+    }
+    
+    // Format columns
+    sheet.getRange('H:I').setNumberFormat('$#,##0');
+    sheet.getRange('L:L').setNumberFormat('$#,##0');
+    
+    // Add payment status validation
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Current', 'Late', 'Pending', 'Vacant'], true)
+      .build();
+    sheet.getRange('J2:J').setDataValidation(statusRule);
+    
+    // Conditional formatting for payment status
+    const statusRange = sheet.getRange('J2:J50');
+    const currentRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Current')
+      .setBackground(this.colors.success.light)
+      .setRanges([statusRange])
+      .build();
+    const lateRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Late')
+      .setBackground(this.colors.danger.light)
+      .setRanges([statusRange])
+      .build();
+    
+    sheet.setConditionalFormatRules([currentRule, lateRule]);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 50);
   },
   
   setupMaintenanceSheet: function(sheet) {
     const headers = ['Request ID', 'Date', 'Property', 'Tenant', 'Issue Type', 
                      'Description', 'Priority', 'Status', 'Vendor', 'Cost', 
-                     'Completion Date', 'Notes'];
+                     'Completion Date', 'Days Open', 'Notes'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#E74C3C').setFontColor('#FFFFFF').setFontWeight('bold');
+    
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Add sample maintenance requests with cross-references
+    const sampleData = [
+      ['M-001', '=TODAY()-7', '=\'Properties\'!B2', '=\'Tenants\'!B2', 'Plumbing', 'Leaky faucet in kitchen', 'Medium', 'In Progress', 'ABC Plumbing', 250, '', '', 'Parts ordered'],
+      ['M-002', '=TODAY()-3', '=\'Properties\'!B3', '=\'Tenants\'!B3', 'HVAC', 'AC not cooling', 'High', 'Open', '', '', '', '', 'Tenant called today'],
+      ['M-003', '=TODAY()-14', '=\'Properties\'!B2', '=\'Tenants\'!B2', 'Electrical', 'Outlet not working', 'Low', 'Completed', 'Elite Electric', 150, '=TODAY()-2', '', 'Fixed']
+    ];
+    
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Add formula for days open
+    for (let row = 2; row <= 50; row++) {
+      sheet.getRange(`L${row}`).setFormula(`=IF(AND(B${row}<>"",H${row}<>"Completed"),TODAY()-B${row},IF(AND(B${row}<>"",K${row}<>""),K${row}-B${row},""))`);
+    }
+    
+    // Format columns
+    sheet.getRange('J:J').setNumberFormat('$#,##0');
+    
+    // Add priority validation
+    const priorityRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Low', 'Medium', 'High', 'Emergency'], true)
+      .build();
+    sheet.getRange('G2:G').setDataValidation(priorityRule);
+    
+    // Add status validation
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Open', 'In Progress', 'Waiting Parts', 'Completed', 'Cancelled'], true)
+      .build();
+    sheet.getRange('H2:H').setDataValidation(statusRule);
+    
+    // Conditional formatting for priority
+    const priorityRange = sheet.getRange('G2:G50');
+    const emergencyRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Emergency')
+      .setBackground(this.colors.danger.dark)
+      .setFontColor('#FFFFFF')
+      .setRanges([priorityRange])
+      .build();
+    const highRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('High')
+      .setBackground(this.colors.danger.light)
+      .setRanges([priorityRange])
+      .build();
+    const mediumRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Medium')
+      .setBackground(this.colors.warning.light)
+      .setRanges([priorityRange])
+      .build();
+    
+    sheet.setConditionalFormatRules([emergencyRule, highRule, mediumRule]);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 50);
   },
   
   setupInvestmentSheet: function(sheet) {
     const headers = ['Property', 'Purchase Price', 'Down Payment', 'Loan Amount', 
                      'Interest Rate', 'Monthly Payment', 'Rental Income', 
-                     'Operating Expenses', 'Cash Flow', 'ROI %', 'Cap Rate'];
+                     'Operating Expenses', 'Cash Flow', 'Annual Cash Flow', 'ROI %', 'Cap Rate'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#27AE60').setFontColor('#FFFFFF').setFontWeight('bold');
     
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Add sample investment properties
+    const sampleData = [
+      ['=\'Properties\'!B2', '=\'Properties\'!G2', '=B2*0.2', '=B2-C2', 4.5, '', '=\'Properties\'!I2', 500, '', '', '', ''],
+      ['=\'Properties\'!B3', '=\'Properties\'!G3', '=B3*0.2', '=B3-C3', 4.25, '', '=\'Properties\'!I3', 350, '', '', '', ''],
+      ['789 Investment Blvd', 525000, '=B4*0.25', '=B4-C4', 4.75, '', 3800, 650, '', '', '', '']
+    ];
+    
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Add investment formulas
     for (let row = 2; row <= 50; row++) {
-      sheet.getRange(`I${row}`).setFormula(`=G${row}-F${row}-H${row}`).setNumberFormat('$#,##0.00');
-      sheet.getRange(`J${row}`).setFormula(`=IF(B${row}>0,I${row}*12/B${row}*100,0)`).setNumberFormat('0.00%');
+      sheet.getRange(`F${row}`).setFormula(`=IF(AND(D${row}<>"",E${row}<>""),PMT(E${row}/100/12,360,-D${row}),"")`);
+      sheet.getRange(`I${row}`).setFormula(`=IF(AND(G${row}<>"",F${row}<>"",H${row}<>""),G${row}-F${row}-H${row},"")`);
+      sheet.getRange(`J${row}`).setFormula(`=IF(I${row}<>"",I${row}*12,"")`);
+      sheet.getRange(`K${row}`).setFormula(`=IF(AND(J${row}<>"",C${row}<>""),J${row}/C${row},"")`);
+      sheet.getRange(`L${row}`).setFormula(`=IF(AND(J${row}<>"",B${row}<>""),J${row}/B${row},"")`);
     }
+    
+    // Format columns
+    sheet.getRange('B:D').setNumberFormat('$#,##0');
+    sheet.getRange('E:E').setNumberFormat('0.00%');
+    sheet.getRange('F:J').setNumberFormat('$#,##0');
+    sheet.getRange('K:L').setNumberFormat('0.00%');
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 50);
   },
   
   setupCashFlowSheet: function(sheet) {
@@ -2654,39 +3440,142 @@ const IndustryTemplates = {
                      'Mortgage', 'HOA', 'Insurance', 'Property Tax', 'Maintenance', 
                      'Utilities', 'Total Expenses', 'Net Cash Flow', 'Cumulative'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#3498DB').setFontColor('#FFFFFF').setFontWeight('bold');
     
+    // Apply professional formatting
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Add sample cash flow data for 12 months
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                   'July', 'August', 'September', 'October', 'November', 'December'];
+    const sampleData = [];
+    
+    for (let i = 0; i < months.length; i++) {
+      sampleData.push([
+        months[i],
+        '=SUMIF(\'Properties\'!L:L,"Occupied",\'Properties\'!I:I)', // Rental from occupied properties
+        0, // Other income
+        '', // Total income formula
+        2500, // Mortgage
+        '=SUM(\'Properties\'!O:O)', // HOA from properties
+        350, // Insurance
+        '=SUM(\'Properties\'!P:P)/12', // Property tax monthly
+        '=AVERAGEIF(\'Maintenance\'!H:H,"<>Cancelled",\'Maintenance\'!J:J)', // Avg maintenance
+        200, // Utilities
+        '', // Total expenses formula
+        '', // Net cash flow formula
+        '' // Cumulative formula
+      ]);
+    }
+    
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Apply formulas
     for (let row = 2; row <= 100; row++) {
-      sheet.getRange(`D${row}`).setFormula(`=B${row}+C${row}`).setNumberFormat('$#,##0.00');
-      sheet.getRange(`K${row}`).setFormula(`=SUM(E${row}:J${row})`).setNumberFormat('$#,##0.00');
-      sheet.getRange(`L${row}`).setFormula(`=D${row}-K${row}`).setNumberFormat('$#,##0.00');
+      sheet.getRange(`D${row}`).setFormula(`=IF(OR(B${row}<>"",C${row}<>""),B${row}+C${row},"")`);
+      sheet.getRange(`K${row}`).setFormula(`=IF(A${row}<>"",SUM(E${row}:J${row}),"")`);
+      sheet.getRange(`L${row}`).setFormula(`=IF(AND(D${row}<>"",K${row}<>""),D${row}-K${row},"")`);
       if (row === 2) {
-        sheet.getRange(`M${row}`).setFormula(`=L${row}`).setNumberFormat('$#,##0.00');
+        sheet.getRange(`M${row}`).setFormula(`=IF(L${row}<>"",L${row},"")`);
       } else {
-        sheet.getRange(`M${row}`).setFormula(`=M${row-1}+L${row}`).setNumberFormat('$#,##0.00');
+        sheet.getRange(`M${row}`).setFormula(`=IF(L${row}<>"",IF(M${row-1}<>"",M${row-1}+L${row},L${row}),"")`);
       }
     }
+    
+    // Format columns
+    sheet.getRange('B:M').setNumberFormat('$#,##0');
+    
+    // Conditional formatting for negative cash flow
+    const cashFlowRange = sheet.getRange('L2:L100');
+    const negativeRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberLessThan(0)
+      .setBackground(this.colors.danger.light)
+      .setFontColor(this.colors.danger.dark)
+      .setRanges([cashFlowRange])
+      .build();
+    const positiveRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberGreaterThan(0)
+      .setBackground(this.colors.success.light)
+      .setFontColor(this.colors.success.dark)
+      .setRanges([cashFlowRange])
+      .build();
+    
+    sheet.setConditionalFormatRules([negativeRule, positiveRule]);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 13);
   },
   
   setupROISheet: function(sheet) {
-    const headers = ['Metric', 'Value', 'Formula', 'Description'];
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#9B59B6').setFontColor('#FFFFFF').setFontWeight('bold');
+    // Title
+    sheet.getRange('A1').setValue('Investment ROI Calculator');
+    sheet.getRange('A1').setFontSize(18).setFontWeight('bold').setFontColor(this.colors.primary.header);
     
+    const headers = ['Metric', 'Value', 'Calculation', 'Industry Benchmark'];
+    sheet.getRange(3, 1, 1, headers.length).setValues([headers]);
+    
+    // Apply professional formatting
+    this.formatHeaders(sheet, 3, headers.length);
+    this.autoResizeColumns(sheet);
+    
+    // Enhanced metrics with cross-tab formulas
     const metrics = [
-      ['Total Investment', '', 'Purchase + Repairs', 'Initial capital investment'],
-      ['Annual Income', '', 'Rent * 12', 'Gross rental income per year'],
-      ['Annual Expenses', '', 'All operating costs', 'Total yearly expenses'],
-      ['Net Operating Income', '', 'Income - Expenses', 'NOI before financing'],
-      ['Cash Flow', '', 'NOI - Debt Service', 'Annual cash flow after mortgage'],
-      ['Cash on Cash Return', '', 'Cash Flow / Investment', 'Return on cash invested'],
-      ['Cap Rate', '', 'NOI / Property Value', 'Capitalization rate'],
-      ['ROI', '', '(Value + Cash Flow - Investment) / Investment', 'Total return on investment']
+      ['Purchase Price', '=SUM(\'Investment Analysis\'!B:B)', 'Sum of all property purchases', ''],
+      ['Down Payment', '=SUM(\'Investment Analysis\'!C:C)', 'Total cash invested', ''],
+      ['Annual Rental Income', '=SUM(\'Cash Flow\'!B14:B25)', 'Total rental income per year', '$50,000'],
+      ['Annual Expenses', '=SUM(\'Cash Flow\'!K14:K25)', 'Total operating expenses', '$20,000'],
+      ['Net Operating Income', '=B6-B7', 'Income minus expenses', '$30,000'],
+      ['Annual Debt Service', '=SUM(\'Cash Flow\'!E14:E25)', 'Total mortgage payments', '$18,000'],
+      ['Annual Cash Flow', '=B8-B9', 'NOI minus debt service', '$12,000'],
+      ['', '', '', ''],
+      ['Key Performance Metrics', '', '', ''],
+      ['Cash-on-Cash Return', '=IF(B5>0,B10/B5,0)', 'Annual cash flow / down payment', '8-12%'],
+      ['Cap Rate', '=IF(B4>0,B8/B4,0)', 'NOI / property value', '6-10%'],
+      ['Gross Rent Multiplier', '=IF(B6>0,B4/B6,0)', 'Property value / annual rent', '8-12x'],
+      ['Debt Service Coverage', '=IF(B9>0,B8/B9,0)', 'NOI / debt service', '>1.25x'],
+      ['Total ROI', '=IF(B5>0,(B10+(B4*0.03))/B5,0)', 'Total return on investment', '15-20%']
     ];
     
-    sheet.getRange(2, 1, metrics.length, 4).setValues(metrics);
-    sheet.getRange(2, 2, metrics.length, 1).setNumberFormat('$#,##0.00');
+    sheet.getRange(4, 1, metrics.length, 4).setValues(metrics);
+    
+    // Format values
+    sheet.getRange('B4:B10').setNumberFormat('$#,##0');
+    sheet.getRange('B13:B13').setNumberFormat('0.00%');
+    sheet.getRange('B14:B14').setNumberFormat('0.00%');
+    sheet.getRange('B15:B15').setNumberFormat('0.00');
+    sheet.getRange('B16:B16').setNumberFormat('0.00');
+    sheet.getRange('B17:B17').setNumberFormat('0.00%');
+    
+    // Add section headers formatting
+    sheet.getRange('A12:D12').setBackground(this.colors.primary.light);
+    sheet.getRange('A12').setFontWeight('bold').setFontSize(12);
+    
+    // Conditional formatting for metrics
+    const performanceRange = sheet.getRange('B13:B17');
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 17);
+    
+    // Add investment summary section
+    sheet.getRange('A20').setValue('Investment Summary');
+    sheet.getRange('A20').setFontSize(14).setFontWeight('bold').setFontColor(this.colors.primary.header);
+    
+    const summaryHeaders = ['Property', 'Purchase Date', 'Current Value', 'Monthly Cash Flow', 'ROI %'];
+    sheet.getRange(21, 1, 1, summaryHeaders.length).setValues([summaryHeaders]);
+    this.formatHeaders(sheet, 21, summaryHeaders.length);
+    
+    // Add cross-tab summary formulas
+    const summaryData = [
+      ['=\'Investment Analysis\'!A2', '=\'Commission Tracker\'!B2', '=\'Investment Analysis\'!B2*1.1', '=\'Cash Flow\'!L2', '=IF(\'Investment Analysis\'!C2>0,E22/\'Investment Analysis\'!C2,0)'],
+      ['=\'Investment Analysis\'!A3', '=\'Commission Tracker\'!B3', '=\'Investment Analysis\'!B3*1.1', '=\'Cash Flow\'!L3', '=IF(\'Investment Analysis\'!C3>0,E23/\'Investment Analysis\'!C3,0)'],
+      ['=\'Investment Analysis\'!A4', '=\'Commission Tracker\'!B4', '=\'Investment Analysis\'!B4*1.1', '=\'Cash Flow\'!L4', '=IF(\'Investment Analysis\'!C4>0,E24/\'Investment Analysis\'!C4,0)']
+    ];
+    
+    sheet.getRange(22, 1, summaryData.length, summaryData[0].length).setValues(summaryData);
+    sheet.getRange('C22:D24').setNumberFormat('$#,##0');
+    sheet.getRange('E22:E24').setNumberFormat('0.00%');
+    
+    // Apply alternating rows to summary
+    this.applyProfessionalFormatting(sheet, 24);
   }
 };

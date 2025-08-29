@@ -48,7 +48,7 @@ const Utils = {
       
       return this.mlEnabled;
     } catch (error) {
-      console.error('Error initializing adaptive learning:', error);
+      Logger.error('Error initializing adaptive learning:', error);
       return false;
     }
   },
@@ -208,7 +208,7 @@ const Utils = {
       );
       
     } catch (error) {
-      console.error('Error saving adaptive data:', error);
+      Logger.error('Error saving adaptive data:', error);
     }
   },
   
@@ -256,7 +256,7 @@ const Utils = {
       if (Math.abs(newThreshold - currentThreshold) > 0.01) {
         this.adaptiveThresholds[operation] = newThreshold;
         
-        console.log(`Auto-adjusted ${operation} threshold from ${currentThreshold} to ${newThreshold} based on ${metrics.successRate.toFixed(1)}% success rate`);
+        Logger.info(`Auto-adjusted ${operation} threshold from ${currentThreshold} to ${newThreshold} based on ${metrics.successRate.toFixed(1)}% success rate`);
         
         this.saveAdaptiveData();
       }
@@ -324,7 +324,7 @@ const Utils = {
     try {
       return operation();
     } catch (error) {
-      console.error(`Error in ${context}:`, error.message);
+      Logger.error(`Error in ${context}:`, error.message);
       this.logError(error, context);
       this.showUserError(error, context);
       return fallback;
@@ -335,7 +335,7 @@ const Utils = {
    * Handle and display errors to users
    */
   handleError: function(error, userMessage = 'An error occurred') {
-    console.error('CellPilot Error:', error);
+    Logger.error('CellPilot Error:', error);
     
     // Create error card for user
     return CardService.newCardBuilder()
@@ -362,7 +362,7 @@ const Utils = {
     const errorType = this.classifyError(error);
     const message = userFriendlyMessages[errorType] || `Error in ${context}: ${error.message}`;
     
-    console.log('User error message:', message);
+    Logger.info('User error message:', message);
   },
   
   /**
@@ -396,7 +396,7 @@ const Utils = {
       data: additionalData
     };
     
-    console.error('Error Log:', JSON.stringify(logEntry, null, 2));
+    Logger.error('Error Log:', JSON.stringify(logEntry, null, 2));
   },
   
   /**
@@ -1063,7 +1063,7 @@ const Utils = {
       
       return backupSheet.getName();
     } catch (error) {
-      console.error('Failed to create backup:', error);
+      Logger.error('Failed to create backup:', error);
       return null;
     }
   },
@@ -1073,7 +1073,7 @@ const Utils = {
    */
   showProgress: function(current, total, operation = 'Processing') {
     const percentage = Math.round((current / total) * 100);
-    console.log(`${operation}: ${percentage}% (${current}/${total})`);
+    Logger.info(`${operation}: ${percentage}% (${current}/${total})`);
   },
   
   /**

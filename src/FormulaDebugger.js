@@ -17,7 +17,7 @@ const FormulaDebugger = {
       
       SpreadsheetApp.getUi().showSidebar(html);
     } catch (error) {
-      console.error('Error showing formula debugger:', error);
+      Logger.error('Error showing formula debugger:', error);
       SpreadsheetApp.getUi().alert('Failed to open Formula Debugger: ' + error.message);
     }
   },
@@ -45,7 +45,7 @@ const FormulaDebugger = {
       };
       
     } catch (error) {
-      console.error('Error debugging active formula:', error);
+      Logger.error('Error debugging active formula:', error);
       return {
         success: false,
         error: error.message
@@ -99,7 +99,7 @@ const FormulaDebugger = {
       };
       
     } catch (error) {
-      console.error('Error debugging selection:', error);
+      Logger.error('Error debugging selection:', error);
       return {
         success: false,
         error: error.message
@@ -161,7 +161,7 @@ const FormulaDebugger = {
       };
       
     } catch (error) {
-      console.error('Error debugging all formulas:', error);
+      Logger.error('Error debugging all formulas:', error);
       return {
         success: false,
         error: error.message
@@ -280,7 +280,7 @@ const FormulaDebugger = {
       }
       
     } catch (error) {
-      console.error('Error checking formula errors:', error);
+      Logger.error('Error checking formula errors:', error);
     }
     
     return null;
@@ -317,7 +317,7 @@ const FormulaDebugger = {
       // TODO: Check for indirect circular references
       
     } catch (error) {
-      console.error('Error checking circular reference:', error);
+      Logger.error('Error checking circular reference:', error);
     }
     
     return null;
@@ -353,7 +353,7 @@ const FormulaDebugger = {
       }
       
     } catch (error) {
-      console.error('Error checking invalid references:', error);
+      Logger.error('Error checking invalid references:', error);
     }
     
     return null;
@@ -454,7 +454,7 @@ const FormulaDebugger = {
       }
       
     } catch (error) {
-      console.error('Error checking performance:', error);
+      Logger.error('Error checking performance:', error);
     }
     
     return null;
@@ -517,7 +517,7 @@ const FormulaDebugger = {
       }
       
     } catch (error) {
-      console.error('Error checking syntax:', error);
+      Logger.error('Error checking syntax:', error);
     }
     
     return null;
@@ -569,7 +569,7 @@ const FormulaDebugger = {
       };
       
     } catch (error) {
-      console.error('Error applying fix:', error);
+      Logger.error('Error applying fix:', error);
       return {
         success: false,
         error: error.message
@@ -600,7 +600,7 @@ const FormulaDebugger = {
       };
       
     } catch (error) {
-      console.error('Error analyzing dependencies:', error);
+      Logger.error('Error analyzing dependencies:', error);
       return {
         success: false,
         error: error.message
@@ -651,7 +651,7 @@ const FormulaDebugger = {
       };
       
     } catch (error) {
-      console.error('Error analyzing performance:', error);
+      Logger.error('Error analyzing performance:', error);
       return {
         success: false,
         error: error.message

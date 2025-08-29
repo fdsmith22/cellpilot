@@ -4,771 +4,1653 @@
   <base target="_top">
   <?!= include('SharedStyles'); ?>
   <style>
-    /* Help & Feedback Styles */
-    .help-section {
-      margin-bottom: 20px;
+    /* Override container max-width for sidebars */
+    body {
+      overflow-x: hidden;
+      max-width: 100%;
     }
     
-    .help-category {
+    .container {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+    
+    /* Grid-based tab navigation */
+    .tab-nav-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding: 8px;
+      background: var(--gray-50);
+      border-radius: 12px;
     }
     
-    .help-card {
+    .tab-btn-grid {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 8px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
       background: white;
-      border: 1.5px solid var(--gray-200);
-      border-radius: 10px;
-      padding: 14px;
+      color: var(--gray-600);
+      font-size: 12px;
+      font-weight: 500;
       cursor: pointer;
-      transition: all var(--transition-fast);
-      text-align: center;
+      transition: all 0.2s ease;
+      min-height: 60px;
       position: relative;
     }
     
-    .help-card:hover {
-      border-color: var(--primary-400);
+    .tab-btn-grid:hover {
+      border-color: var(--primary-300);
       background: var(--gray-50);
-      transform: translateY(-2px);
-      box-shadow: var(--elevation-2);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     
-    .help-card.selected {
+    .tab-btn-grid.active {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
       border-color: var(--primary-500);
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1));
+      color: var(--primary-700);
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
     
-    .help-icon {
-      width: 32px;
-      height: 32px;
-      margin: 0 auto 8px;
-      background: var(--primary-100);
-      color: var(--primary-600);
-      border-radius: 8px;
+    .tab-icon-letter {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      background: var(--gray-100);
+      color: var(--gray-600);
     }
     
-    .help-card.bug .help-icon {
-      background: var(--danger-100);
-      color: var(--danger-600);
+    .tab-btn-grid.active .tab-icon-letter {
+      background: var(--primary-500);
+      color: white;
     }
     
-    .help-card.feature .help-icon {
-      background: var(--success-100);
-      color: var(--success-600);
+    .tab-label {
+      font-size: 11px;
+      line-height: 1.2;
+      text-align: center;
     }
     
-    .help-card.question .help-icon {
-      background: var(--warning-100);
-      color: var(--warning-600);
+    /* Feature cards */
+    .feature-card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
     
-    .help-title {
+    .feature-card:hover {
+      border-color: var(--primary-400);
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .feature-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .feature-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+    
+    .feature-badge {
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      background: var(--primary-100);
+      color: var(--primary-700);
+    }
+    
+    .feature-description {
+      font-size: 11px;
+      color: var(--gray-600);
+      line-height: 1.4;
+    }
+    
+    /* Search box */
+    .search-container {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 10px 36px 10px 12px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-500);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    .search-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+      font-size: 14px;
+    }
+    
+    /* Quick action buttons */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .quick-action-btn {
+      padding: 10px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      background: white;
+      color: var(--gray-700);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+    
+    .quick-action-btn:hover {
+      background: var(--primary-50);
+      border-color: var(--primary-400);
+      color: var(--primary-700);
+    }
+    
+    .quick-action-btn.primary {
+      background: var(--primary-500);
+      color: white;
+      border-color: var(--primary-500);
+    }
+    
+    .quick-action-btn.primary:hover {
+      background: var(--primary-600);
+      border-color: var(--primary-600);
+    }
+    
+    /* Collapsible sections */
+    .collapsible {
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+    
+    .collapsible-header {
+      padding: 12px;
+      background: var(--gray-50);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    
+    .collapsible-header:hover {
+      background: var(--gray-100);
+    }
+    
+    .collapsible-title {
       font-size: 12px;
       font-weight: 600;
       color: var(--gray-800);
-      margin-bottom: 4px;
     }
     
-    .help-desc {
-      font-size: 10px;
+    .collapsible-arrow {
+      transition: transform 0.3s;
       color: var(--gray-500);
-      line-height: 1.3;
+      font-size: 10px;
     }
     
-    /* Feedback Form */
-    .feedback-form {
+    .collapsible.expanded .collapsible-arrow {
+      transform: rotate(180deg);
+    }
+    
+    .collapsible-content {
       display: none;
+      padding: 12px;
+      background: white;
     }
     
-    .feedback-form.active {
+    .collapsible.expanded .collapsible-content {
       display: block;
     }
     
-    .priority-selector {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-    }
-    
-    .priority-btn {
-      flex: 1;
-      padding: 8px;
-      border: 1.5px solid var(--gray-200);
-      border-radius: 6px;
-      background: white;
-      font-size: 11px;
-      cursor: pointer;
-      transition: all var(--transition-fast);
-      text-align: center;
-    }
-    
-    .priority-btn:hover {
-      border-color: var(--primary-300);
-      background: var(--gray-50);
-    }
-    
-    .priority-btn.selected {
-      background: var(--primary-500);
-      border-color: var(--primary-500);
-      color: white;
-    }
-    
-    .priority-btn.low {
-      border-color: var(--success-300);
-    }
-    
-    .priority-btn.low.selected {
-      background: var(--success-500);
-      border-color: var(--success-500);
-    }
-    
-    .priority-btn.medium {
-      border-color: var(--warning-300);
-    }
-    
-    .priority-btn.medium.selected {
-      background: var(--warning-500);
-      border-color: var(--warning-500);
-    }
-    
-    .priority-btn.high {
-      border-color: var(--danger-300);
-    }
-    
-    .priority-btn.high.selected {
-      background: var(--danger-500);
-      border-color: var(--danger-500);
-    }
-    
-    /* Quick Links */
-    .quick-links {
-      display: grid;
-      gap: 8px;
-    }
-    
-    .quick-link {
-      display: flex;
-      align-items: center;
-      padding: 10px 12px;
-      background: var(--gray-50);
-      border-radius: 8px;
-      text-decoration: none;
-      color: var(--gray-700);
-      font-size: 12px;
-      transition: all var(--transition-fast);
-    }
-    
-    .quick-link:hover {
-      background: var(--primary-50);
-      color: var(--primary-700);
-      transform: translateX(4px);
-    }
-    
-    .quick-link-icon {
-      width: 20px;
-      height: 20px;
-      margin-right: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--primary-500);
-    }
-    
-    /* Feature Request Tags */
-    .tag-selector {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
-    }
-    
-    .tag-chip {
-      padding: 4px 10px;
-      background: var(--gray-100);
-      border: 1px solid var(--gray-200);
-      border-radius: 12px;
-      font-size: 10px;
-      cursor: pointer;
-      transition: all var(--transition-fast);
-    }
-    
-    .tag-chip:hover {
-      border-color: var(--primary-300);
-      background: var(--primary-50);
-    }
-    
-    .tag-chip.selected {
-      background: var(--primary-500);
-      border-color: var(--primary-500);
-      color: white;
-    }
-    
-    /* Submission Status */
-    .submission-success {
+    /* Detail pages */
+    .detail-page {
       display: none;
-      text-align: center;
-      padding: 24px;
     }
     
-    .success-icon {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 12px;
-      background: var(--success-500);
+    .detail-page.active {
+      display: block;
+    }
+    
+    .detail-header {
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .detail-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 4px;
+    }
+    
+    .detail-subtitle {
+      font-size: 12px;
+      color: var(--gray-600);
+    }
+    
+    /* Steps */
+    .steps-list {
+      counter-reset: step-counter;
+    }
+    
+    .step-item {
+      position: relative;
+      padding-left: 36px;
+      margin-bottom: 16px;
+      counter-increment: step-counter;
+    }
+    
+    .step-item::before {
+      content: counter(step-counter);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 24px;
+      height: 24px;
+      background: var(--primary-500);
       color: white;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 11px;
+      font-weight: 600;
     }
     
-    .success-title {
-      font-size: 16px;
+    .step-title {
+      font-size: 12px;
       font-weight: 600;
-      color: var(--gray-800);
+      color: var(--gray-900);
+      margin-bottom: 4px;
+    }
+    
+    .step-description {
+      font-size: 11px;
+      color: var(--gray-600);
+      line-height: 1.5;
+    }
+    
+    /* Tips */
+    .tip-card {
+      background: linear-gradient(135deg, var(--warning-50), var(--warning-100));
+      border: 1px solid var(--warning-200);
+      border-radius: 8px;
+      padding: 12px;
       margin-bottom: 8px;
     }
     
-    .success-message {
-      font-size: 12px;
-      color: var(--gray-600);
+    .tip-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--warning-800);
+      margin-bottom: 4px;
+    }
+    
+    .tip-content {
+      font-size: 11px;
+      color: var(--warning-700);
       line-height: 1.4;
-    }
-    
-    /* Character counter */
-    .char-counter {
-      text-align: right;
-      font-size: 10px;
-      color: var(--gray-400);
-      margin-top: 4px;
-    }
-    
-    .char-counter.warning {
-      color: var(--warning-500);
-    }
-    
-    .char-counter.error {
-      color: var(--danger-500);
     }
   </style>
 </head>
 <body>
   <div class="nav-header">
-    <button class="nav-back" onclick="backToMain()">←</button>
+    <button class="nav-back" onclick="backToMain()" aria-label="Back to main menu" title="Back to main menu">←</button>
     <div class="nav-title">
-      <h2>Help & Feedback</h2>
-      <p>Get help or share your suggestions</p>
+      <h2>Help & Documentation</h2>
+      <p>Learn how to use CellPilot effectively</p>
     </div>
   </div>
   
   <div class="container">
     <div id="statusMessage" style="display: none;"></div>
     
-    <!-- Main Help Menu -->
-    <div id="helpMenu" class="help-section">
-      <div class="card">
-        <div class="card-title">How can we help?</div>
-        <div class="card-description">Select an option below</div>
+    <!-- Main View -->
+    <div id="mainView">
+      <!-- Search Bar -->
+      <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search features..." onkeyup="searchFeatures()">
+        <span class="search-icon">🔍</span>
+      </div>
+      
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <button class="quick-action-btn primary" onclick="showGettingStarted()">
+          Getting Started
+        </button>
+        <button class="quick-action-btn" onclick="showShortcuts()">
+          Keyboard Shortcuts
+        </button>
+      </div>
+      
+      <!-- Tab Navigation -->
+      <div class="tab-nav-grid">
+        <button class="tab-btn-grid active" onclick="switchTab('features')">
+          <div class="tab-icon-letter">F</div>
+          <div class="tab-label">Features</div>
+        </button>
+        <button class="tab-btn-grid" onclick="switchTab('tutorials')">
+          <div class="tab-icon-letter">T</div>
+          <div class="tab-label">Tutorials</div>
+        </button>
+        <button class="tab-btn-grid" onclick="switchTab('feedback')">
+          <div class="tab-icon-letter">FB</div>
+          <div class="tab-label">Feedback</div>
+        </button>
+        <button class="tab-btn-grid" onclick="switchTab('support')">
+          <div class="tab-icon-letter">S</div>
+          <div class="tab-label">Support</div>
+        </button>
+      </div>
+      
+      <!-- Features Tab -->
+      <div id="featuresTab" class="tab-content">
+        <!-- Data Cleaning Category -->
+        <div class="collapsible expanded">
+          <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <span class="collapsible-title">Data Cleaning & Restructuring</span>
+            <span class="collapsible-arrow">▼</span>
+          </div>
+          <div class="collapsible-content">
+            <div class="feature-card" onclick="showFeatureDetail('duplicates')">
+              <div class="feature-header">
+                <span class="feature-title">Remove Duplicates</span>
+                <span class="feature-badge">ML</span>
+              </div>
+              <div class="feature-description">
+                Find and remove duplicate rows with smart detection and fuzzy matching
+              </div>
+            </div>
+            
+            <div class="feature-card" onclick="showFeatureDetail('tableize')">
+              <div class="feature-header">
+                <span class="feature-title">Tableize Data</span>
+                <span class="feature-badge">ML</span>
+              </div>
+              <div class="feature-description">
+                Convert unstructured text into clean, organized tables automatically
+              </div>
+            </div>
+            
+            <div class="feature-card" onclick="showFeatureDetail('restructure')">
+              <div class="feature-header">
+                <span class="feature-title">Advanced Restructuring</span>
+                <span class="feature-badge">New</span>
+              </div>
+              <div class="feature-description">
+                Transform complex data with section and column detection
+              </div>
+            </div>
+            
+            <div class="feature-card" onclick="showFeatureDetail('text-standardization')">
+              <div class="feature-header">
+                <span class="feature-title">Text Standardization</span>
+                <span class="feature-badge">ML</span>
+              </div>
+              <div class="feature-description">
+                Clean and standardize text formatting, case, and spacing
+              </div>
+            </div>
+            
+            <div class="feature-card" onclick="showFeatureDetail('date-formatting')">
+              <div class="feature-header">
+                <span class="feature-title">Date Formatting</span>
+                <span class="feature-badge">Pro</span>
+              </div>
+              <div class="feature-description">
+                Convert dates between formats and standardize date columns
+              </div>
+            </div>
+          </div>
+        </div>
         
-        <div class="help-category">
-          <div class="help-card bug" onclick="showFeedbackForm('bug')">
-            <div class="help-icon">🐛</div>
-            <div class="help-title">Report a Bug</div>
-            <div class="help-desc">Something not working?</div>
+        <!-- Formulas Category -->
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <span class="collapsible-title">Formula Tools</span>
+            <span class="collapsible-arrow">▼</span>
           </div>
-          
-          <div class="help-card feature" onclick="showFeedbackForm('feature')">
-            <div class="help-icon">💡</div>
-            <div class="help-title">Request Feature</div>
-            <div class="help-desc">Have an idea?</div>
+          <div class="collapsible-content">
+            <div class="feature-card" onclick="showFeatureDetail('smart-formula')">
+              <div class="feature-header">
+                <span class="feature-title">Smart Formula Assistant</span>
+                <span class="feature-badge">ML</span>
+              </div>
+              <div class="feature-description">
+                Generate complex formulas from natural language descriptions
+              </div>
+            </div>
+            
+            <div class="feature-card" onclick="showFeatureDetail('cross-sheet')">
+              <div class="feature-header">
+                <span class="feature-title">Cross-Sheet Formulas</span>
+                <span class="feature-badge">Pro</span>
+              </div>
+              <div class="feature-description">
+                Build VLOOKUP and QUERY formulas across multiple sheets
+              </div>
+            </div>
+            
+            <div class="feature-card" onclick="showFeatureDetail('formula-debugger')">
+              <div class="feature-header">
+                <span class="feature-title">Formula Debugger</span>
+                <span class="feature-badge">New</span>
+              </div>
+              <div class="feature-description">
+                Debug and fix formula errors with AI-powered explanations
+              </div>
+            </div>
+            
+            <div class="feature-card" onclick="showFeatureDetail('multi-tab-mapper')">
+              <div class="feature-header">
+                <span class="feature-title">Multi-Tab Relationship Mapper</span>
+                <span class="feature-badge">Pro</span>
+              </div>
+              <div class="feature-description">
+                Visualize and manage relationships between multiple sheets
+              </div>
+            </div>
           </div>
-          
-          <div class="help-card question" onclick="showFeedbackForm('question')">
-            <div class="help-icon">❓</div>
-            <div class="help-title">Ask a Question</div>
-            <div class="help-desc">Need help?</div>
+        </div>
+        
+        <!-- Advanced Analysis Category -->
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <span class="collapsible-title">Advanced Analysis</span>
+            <span class="collapsible-arrow">▼</span>
           </div>
-          
-          <div class="help-card" onclick="showFeedbackForm('feedback')">
-            <div class="help-icon">💬</div>
-            <div class="help-title">General Feedback</div>
-            <div class="help-desc">Share your thoughts</div>
+          <div class="collapsible-content">
+            <div class="feature-card" onclick="showFeatureDetail('pivot-assistant')">
+              <div class="feature-header">
+                <span class="feature-title">Pivot Table Assistant</span>
+                <span class="feature-badge">ML</span>
+              </div>
+              <div class="feature-description">
+                Create pivot tables with AI-guided configuration
+              </div>
+            </div>
+            
+            <div class="feature-card" onclick="showFeatureDetail('conditional-formatting')">
+              <div class="feature-header">
+                <span class="feature-title">Conditional Formatting Wizard</span>
+                <span class="feature-badge">Pro</span>
+              </div>
+              <div class="feature-description">
+                Apply complex conditional formatting rules easily
+              </div>
+            </div>
+            
+            <div class="feature-card" onclick="showFeatureDetail('data-validation')">
+              <div class="feature-header">
+                <span class="feature-title">Data Validation Generator</span>
+                <span class="feature-badge">New</span>
+              </div>
+              <div class="feature-description">
+                Create dropdown lists and validation rules automatically
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Integration & Automation Category -->
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <span class="collapsible-title">Integration & Automation</span>
+            <span class="collapsible-arrow">▼</span>
+          </div>
+          <div class="collapsible-content">
+            <div class="feature-card" onclick="showFeatureDetail('data-pipeline')">
+              <div class="feature-header">
+                <span class="feature-title">Data Pipeline Manager</span>
+                <span class="feature-badge">Pro</span>
+              </div>
+              <div class="feature-description">
+                Import/export data from CSV, JSON, and databases
+              </div>
+            </div>
+            
+            <div class="feature-card" onclick="showFeatureDetail('excel-migration')">
+              <div class="feature-header">
+                <span class="feature-title">Excel Migration</span>
+                <span class="feature-badge">Pro</span>
+              </div>
+              <div class="feature-description">
+                Convert Excel formulas and macros to Google Sheets
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Industry Templates Category -->
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <span class="collapsible-title">Industry Templates</span>
+            <span class="collapsible-arrow">▼</span>
+          </div>
+          <div class="collapsible-content">
+            <div class="feature-card" onclick="showFeatureDetail('real-estate')">
+              <div class="feature-header">
+                <span class="feature-title">Real Estate Tools</span>
+                <span class="feature-badge">Industry</span>
+              </div>
+              <div class="feature-description">
+                Property analysis, ROI calculations, and comp analysis
+              </div>
+            </div>
+            
+            <div class="feature-card" onclick="showFeatureDetail('healthcare')">
+              <div class="feature-header">
+                <span class="feature-title">Healthcare Tools</span>
+                <span class="feature-badge">Industry</span>
+              </div>
+              <div class="feature-description">
+                Patient data management and HIPAA-compliant templates
+              </div>
+            </div>
+            
+            <div class="feature-card" onclick="showFeatureDetail('ecommerce')">
+              <div class="feature-header">
+                <span class="feature-title">E-commerce Tools</span>
+                <span class="feature-badge">Industry</span>
+              </div>
+              <div class="feature-description">
+                Inventory tracking, sales analysis, and order management
+              </div>
+            </div>
           </div>
         </div>
       </div>
       
-      <!-- Quick Links -->
-      <div class="card">
-        <div class="card-title">Quick Links</div>
-        
-        <div class="quick-links">
-          <a href="https://www.cellpilot.io/docs" target="_blank" class="quick-link">
-            <span class="quick-link-icon">▶</span>
-            Documentation
-          </a>
-          
-          <a href="https://www.cellpilot.io/tutorials" target="_blank" class="quick-link">
-            <span class="quick-link-icon">▶</span>
-            Video Tutorials
-          </a>
-          
-          <a href="https://www.cellpilot.io/changelog" target="_blank" class="quick-link">
-            <span class="quick-link-icon">▶</span>
-            What's New
-          </a>
-          
-          <a href="#" onclick="showKeyboardShortcuts()" class="quick-link">
-            <span class="quick-link-icon">▶</span>
-            Keyboard Shortcuts
-          </a>
+      <!-- Tutorials Tab -->
+      <div id="tutorialsTab" class="tab-content" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Video Tutorials</div>
+          </div>
+          <div style="padding: 12px;">
+            <p style="font-size: 12px; color: var(--gray-600);">
+              Coming soon! Video tutorials will be available here.
+            </p>
+          </div>
         </div>
       </div>
       
-      <!-- Version Info -->
-      <div class="card">
-        <div class="card-title">About CellPilot</div>
-        <div style="font-size: 11px; color: var(--gray-600); line-height: 1.5;">
-          <div style="margin-bottom: 4px;">Version: 2.0.1</div>
-          <div style="margin-bottom: 4px;">Last Updated: <?!= new Date().toLocaleDateString() ?></div>
-          <div style="margin-bottom: 8px;">License: Free Tier (100 operations/month)</div>
-          <button class="btn btn-primary btn-block" onclick="google.script.run.showUpgradeOptions()">
-            Upgrade for Unlimited Access
-          </button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Bug Report Form -->
-    <div id="bugForm" class="feedback-form">
-      <div class="card">
-        <div class="card-title">Report a Bug</div>
-        <div class="card-description">Help us improve by reporting issues</div>
-        
-        <div class="form-group">
-          <label class="form-label">What went wrong? <span style="color: var(--danger-500);">*</span></label>
-          <input type="text" id="bugTitle" class="form-input" placeholder="Brief description of the issue" maxlength="100">
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Steps to reproduce</label>
-          <textarea id="bugSteps" class="form-input" rows="3" placeholder="1. Click on...&#10;2. Then...&#10;3. Error appears..." maxlength="500"></textarea>
-          <div class="char-counter" id="bugStepsCounter">0/500</div>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Expected behavior</label>
-          <input type="text" id="bugExpected" class="form-input" placeholder="What should have happened?" maxlength="200">
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Priority</label>
-          <div class="priority-selector">
-            <button class="priority-btn low" onclick="setPriority('low', this)">Low</button>
-            <button class="priority-btn medium selected" onclick="setPriority('medium', this)">Medium</button>
-            <button class="priority-btn high" onclick="setPriority('high', this)">High</button>
+      <!-- Feedback Tab -->
+      <div id="feedbackTab" class="tab-content" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Send Feedback</div>
+            <div class="card-description">Help us improve CellPilot</div>
           </div>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Your email (optional)</label>
-          <input type="email" id="bugEmail" class="form-input" placeholder="email@example.com">
-          <div class="form-help">We'll notify you when this is fixed</div>
-        </div>
-        
-        <div class="btn-group">
-          <button class="btn btn-secondary" onclick="cancelFeedback()">Cancel</button>
-          <button class="btn btn-danger" onclick="submitBugReport()">Submit Bug Report</button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Feature Request Form -->
-    <div id="featureForm" class="feedback-form">
-      <div class="card">
-        <div class="card-title">Request a Feature</div>
-        <div class="card-description">Tell us what would make CellPilot better</div>
-        
-        <div class="form-group">
-          <label class="form-label">Feature title <span style="color: var(--danger-500);">*</span></label>
-          <input type="text" id="featureTitle" class="form-input" placeholder="What would you like to see?" maxlength="100">
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Describe the feature</label>
-          <textarea id="featureDescription" class="form-input" rows="4" placeholder="How would this feature work? Why would it be useful?" maxlength="1000"></textarea>
-          <div class="char-counter" id="featureDescCounter">0/1000</div>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Category</label>
-          <div class="tag-selector">
-            <div class="tag-chip" onclick="toggleTag(this)">Formulas</div>
-            <div class="tag-chip" onclick="toggleTag(this)">Data Cleaning</div>
-            <div class="tag-chip" onclick="toggleTag(this)">Automation</div>
-            <div class="tag-chip" onclick="toggleTag(this)">Visualization</div>
-            <div class="tag-chip" onclick="toggleTag(this)">Import/Export</div>
-            <div class="tag-chip" onclick="toggleTag(this)">Templates</div>
-            <div class="tag-chip" onclick="toggleTag(this)">UI/UX</div>
-            <div class="tag-chip" onclick="toggleTag(this)">Performance</div>
+          
+          <div class="form-group">
+            <label class="form-label">Feedback Type</label>
+            <select id="feedbackType" class="form-select">
+              <option value="bug">Bug Report</option>
+              <option value="feature">Feature Request</option>
+              <option value="general">General Feedback</option>
+            </select>
           </div>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">How often would you use this?</label>
-          <select id="featureFrequency" class="form-select">
-            <option value="">Select frequency...</option>
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="occasionally">Occasionally</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Your email (optional)</label>
-          <input type="email" id="featureEmail" class="form-input" placeholder="email@example.com">
-          <div class="form-help">We'll notify you if this feature is added</div>
-        </div>
-        
-        <div class="btn-group">
-          <button class="btn btn-secondary" onclick="cancelFeedback()">Cancel</button>
-          <button class="btn btn-success" onclick="submitFeatureRequest()">Submit Request</button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Question Form -->
-    <div id="questionForm" class="feedback-form">
-      <div class="card">
-        <div class="card-title">Ask a Question</div>
-        <div class="card-description">Get help with CellPilot</div>
-        
-        <div class="form-group">
-          <label class="form-label">What do you need help with? <span style="color: var(--danger-500);">*</span></label>
-          <select id="questionCategory" class="form-select">
-            <option value="">Select a topic...</option>
-            <option value="getting-started">Getting Started</option>
-            <option value="formulas">Formula Builder</option>
-            <option value="data-cleaning">Data Cleaning</option>
-            <option value="automation">Automation</option>
-            <option value="templates">Industry Templates</option>
-            <option value="account">Account & Billing</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Your question</label>
-          <textarea id="questionText" class="form-input" rows="4" placeholder="Type your question here..." maxlength="500"></textarea>
-          <div class="char-counter" id="questionCounter">0/500</div>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Your email <span style="color: var(--danger-500);">*</span></label>
-          <input type="email" id="questionEmail" class="form-input" placeholder="email@example.com" required>
-          <div class="form-help">We'll send the answer to this email</div>
-        </div>
-        
-        <div class="btn-group">
-          <button class="btn btn-secondary" onclick="cancelFeedback()">Cancel</button>
-          <button class="btn btn-primary" onclick="submitQuestion()">Submit Question</button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- General Feedback Form -->
-    <div id="feedbackForm" class="feedback-form">
-      <div class="card">
-        <div class="card-title">General Feedback</div>
-        <div class="card-description">Share your thoughts about CellPilot</div>
-        
-        <div class="form-group">
-          <label class="form-label">How's your experience so far?</label>
-          <div class="priority-selector">
-            <button class="priority-btn" onclick="setRating(1, this)">😞</button>
-            <button class="priority-btn" onclick="setRating(2, this)">😐</button>
-            <button class="priority-btn" onclick="setRating(3, this)">🙂</button>
-            <button class="priority-btn selected" onclick="setRating(4, this)">😊</button>
-            <button class="priority-btn" onclick="setRating(5, this)">🤩</button>
+          
+          <div class="form-group">
+            <label class="form-label">Title</label>
+            <input type="text" id="feedbackTitle" class="form-input" placeholder="Brief description">
           </div>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Your feedback</label>
-          <textarea id="feedbackText" class="form-input" rows="4" placeholder="What do you like? What could be better?" maxlength="1000"></textarea>
-          <div class="char-counter" id="feedbackCounter">0/1000</div>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Your email (optional)</label>
-          <input type="email" id="feedbackEmail" class="form-input" placeholder="email@example.com">
-        </div>
-        
-        <div class="btn-group">
-          <button class="btn btn-secondary" onclick="cancelFeedback()">Cancel</button>
+          
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea id="feedbackDescription" class="form-input" rows="4" placeholder="Tell us more..."></textarea>
+          </div>
+          
           <button class="btn btn-primary" onclick="submitFeedback()">Submit Feedback</button>
         </div>
       </div>
+      
+      <!-- Support Tab -->
+      <div id="supportTab" class="tab-content" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Get Support</div>
+          </div>
+          <div style="padding: 12px;">
+            <div style="margin-bottom: 12px;">
+              <a href="https://www.cellpilot.io/docs" target="_blank" class="btn btn-secondary" style="width: 100%; margin-bottom: 8px;">
+                Documentation
+              </a>
+              <a href="mailto:support@cellpilot.io" class="btn btn-secondary" style="width: 100%;">
+                Email Support
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     
-    <!-- Success Message -->
-    <div id="successMessage" class="submission-success">
-      <div class="card">
-        <div class="success-icon">✓</div>
-        <div class="success-title">Thank You!</div>
-        <div class="success-message" id="successText">
-          Your feedback has been submitted successfully. We appreciate your input and will review it soon.
+    <!-- Detail Views -->
+    <div id="detailView" style="display: none;">
+      <button class="btn btn-secondary" onclick="backToList()" style="margin-bottom: 12px;">← Back</button>
+      
+      <!-- Duplicates Detail -->
+      <div id="duplicatesDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Remove Duplicates</div>
+          <div class="detail-subtitle">Find and remove duplicate rows with smart detection</div>
         </div>
-        <button class="btn btn-primary btn-block" onclick="resetForm()" style="margin-top: 16px;">
-          Submit Another
-        </button>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How to Use</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Select Your Data</div>
+              <div class="step-description">
+                Highlight the cells containing data you want to check for duplicates.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Open Duplicate Removal</div>
+              <div class="step-description">
+                Click Data Cleaning in the sidebar, then select Duplicates tab.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Configure Settings</div>
+              <div class="step-description">
+                Adjust the similarity threshold and matching options.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Preview & Remove</div>
+              <div class="step-description">
+                Review found duplicates and click Remove to clean your data.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            Use the Smart Detection feature to find near-duplicates with minor typos or variations.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Getting Started Detail -->
+      <div id="gettingStartedDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Getting Started with CellPilot</div>
+          <div class="detail-subtitle">Your quick guide to mastering CellPilot</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Quick Start Steps</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Open CellPilot</div>
+              <div class="step-description">
+                Click Extensions → CellPilot → Open CellPilot in your Google Sheets menu.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Select Your Data</div>
+              <div class="step-description">
+                Highlight the cells you want to work with before using any feature.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Choose a Feature</div>
+              <div class="step-description">
+                Browse through categories or use search to find the tool you need.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Apply Changes</div>
+              <div class="step-description">
+                Configure settings, preview results, and apply transformations.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tableize Detail -->
+      <div id="tableizeDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Tableize Data</div>
+          <div class="detail-subtitle">Transform unstructured text into clean, organized tables</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How to Use</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Select Your Data</div>
+              <div class="step-description">
+                Highlight the unstructured text data you want to convert into a table format.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Open Tableize</div>
+              <div class="step-description">
+                Go to Data Cleaning → Tableize Data or use the quick action button.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Choose Column Detection</div>
+              <div class="step-description">
+                Select how columns should be detected: Smart Detection (AI), Multiple Spaces, Delimiter, or Fixed Width.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Preview and Adjust</div>
+              <div class="step-description">
+                Review the preview table, add custom headers if needed, then click Apply to Spreadsheet.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            Smart Detection uses AI to identify column boundaries even in complex data. Perfect for reports, logs, and exported data.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Advanced Restructuring Detail -->
+      <div id="restructureDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Advanced Data Restructuring</div>
+          <div class="detail-subtitle">Transform complex data with section and column detection</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How to Use</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Select Complex Data</div>
+              <div class="step-description">
+                Highlight data with multiple sections, headers, or complex structure.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Open Advanced Restructuring</div>
+              <div class="step-description">
+                Go to Data Cleaning → Advanced Data Restructuring.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Configure Sections</div>
+              <div class="step-description">
+                Define how sections are separated: by keyword, blank lines, pattern, or treat as single block.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Set Column Rules</div>
+              <div class="step-description">
+                Choose column detection method for each section independently.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Apply Transformation</div>
+              <div class="step-description">
+                Preview the restructured data and apply to your spreadsheet.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            Perfect for processing reports with multiple sections, each having different column structures.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Text Standardization Detail -->
+      <div id="text-standardizationDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Text Standardization</div>
+          <div class="detail-subtitle">Clean and standardize text formatting across your data</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How to Use</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Select Text Data</div>
+              <div class="step-description">
+                Highlight the cells containing text you want to standardize.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Open Text Standardization</div>
+              <div class="step-description">
+                Go to Data Cleaning → Text tab.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Choose Options</div>
+              <div class="step-description">
+                Select case conversion (Upper, Lower, Proper, Sentence), trim spaces, remove special characters.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Apply Changes</div>
+              <div class="step-description">
+                Preview the changes and click Apply to update your data.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            Use Proper Case for names and addresses, Sentence Case for descriptions, and Upper Case for codes.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Date Formatting Detail -->
+      <div id="date-formattingDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Date Formatting</div>
+          <div class="detail-subtitle">Convert and standardize dates across different formats</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How to Use</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Select Date Columns</div>
+              <div class="step-description">
+                Highlight cells containing dates in various formats.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Open Date Formatting</div>
+              <div class="step-description">
+                Go to Data Cleaning → Dates tab.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Choose Target Format</div>
+              <div class="step-description">
+                Select your desired date format: MM/DD/YYYY, DD/MM/YYYY, YYYY-MM-DD, or custom.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Convert Dates</div>
+              <div class="step-description">
+                Preview the conversion and apply to standardize all dates.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            The AI can recognize and convert various date formats including text dates like "Jan 1, 2024".
+          </div>
+        </div>
+      </div>
+      
+      <!-- Smart Formula Assistant Detail -->
+      <div id="smart-formulaDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Smart Formula Assistant</div>
+          <div class="detail-subtitle">Generate complex formulas from natural language</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How to Use</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Select Target Cell</div>
+              <div class="step-description">
+                Click on the cell where you want to insert the formula.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Open Formula Assistant</div>
+              <div class="step-description">
+                Go to Formulas → Smart Formula Assistant.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Describe Your Need</div>
+              <div class="step-description">
+                Type what you want in plain English, like "sum all sales for January where region is East".
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Review and Insert</div>
+              <div class="step-description">
+                Review the generated formula, understand the explanation, and click Insert.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            Be specific about column names and conditions. The AI understands complex requirements like "average of top 10 values".
+          </div>
+        </div>
+      </div>
+      
+      <!-- Cross-Sheet Formulas Detail -->
+      <div id="cross-sheetDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Cross-Sheet Formula Builder</div>
+          <div class="detail-subtitle">Build VLOOKUP and QUERY formulas across multiple sheets</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How to Use</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Select Source Sheet</div>
+              <div class="step-description">
+                Choose the sheet containing the data you want to look up.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Define Lookup Key</div>
+              <div class="step-description">
+                Select the column to match between sheets (like ID or Name).
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Choose Return Values</div>
+              <div class="step-description">
+                Select which columns to bring from the source sheet.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Generate Formula</div>
+              <div class="step-description">
+                Choose between VLOOKUP, INDEX/MATCH, or QUERY and insert the formula.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            QUERY is more powerful but slower. Use VLOOKUP for simple lookups, QUERY for complex filtering.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Formula Debugger Detail -->
+      <div id="formula-debuggerDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Smart Formula Debugger</div>
+          <div class="detail-subtitle">Debug and fix formula errors with AI explanations</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How to Use</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Select Error Cell</div>
+              <div class="step-description">
+                Click on a cell showing an error like #REF!, #VALUE!, #N/A, etc.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Open Debugger</div>
+              <div class="step-description">
+                Go to Formulas → Formula Debugger.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Analyze Error</div>
+              <div class="step-description">
+                The AI analyzes the formula and explains what went wrong.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Apply Fix</div>
+              <div class="step-description">
+                Review the suggested fix and apply it to resolve the error.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            The debugger can also optimize working formulas for better performance.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Multi-Tab Mapper Detail -->
+      <div id="multi-tab-mapperDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Multi-Tab Relationship Mapper</div>
+          <div class="detail-subtitle">Visualize and manage relationships between sheets</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How to Use</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Scan Sheets</div>
+              <div class="step-description">
+                Click Analyze to scan all sheets for potential relationships.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">View Relationships</div>
+              <div class="step-description">
+                See visual map of how sheets connect through common columns.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Create Links</div>
+              <div class="step-description">
+                Click on suggested relationships to create formulas automatically.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Manage Connections</div>
+              <div class="step-description">
+                Update or remove existing links between sheets.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            Use consistent column names across sheets for better automatic detection.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Pivot Assistant Detail -->
+      <div id="pivot-assistantDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Pivot Table Assistant</div>
+          <div class="detail-subtitle">Create pivot tables with AI-guided configuration</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How to Use</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Select Data Range</div>
+              <div class="step-description">
+                Highlight your data including headers.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Open Pivot Assistant</div>
+              <div class="step-description">
+                Go to Analysis → Pivot Table Assistant.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Describe Analysis</div>
+              <div class="step-description">
+                Tell the AI what insights you want, like "sales by region and month".
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Configure and Create</div>
+              <div class="step-description">
+                Review the suggested configuration and create the pivot table.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            The AI can suggest the best pivot configuration based on your data patterns.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Conditional Formatting Detail -->
+      <div id="conditional-formattingDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Conditional Formatting Wizard</div>
+          <div class="detail-subtitle">Apply complex formatting rules with ease</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How to Use</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Select Range</div>
+              <div class="step-description">
+                Highlight cells where you want to apply conditional formatting.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Open Wizard</div>
+              <div class="step-description">
+                Go to Analysis → Conditional Formatting Wizard.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Choose Rule Type</div>
+              <div class="step-description">
+                Select from color scales, data bars, icon sets, or custom rules.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Configure and Apply</div>
+              <div class="step-description">
+                Set thresholds, colors, and conditions, then apply formatting.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            Layer multiple rules for sophisticated visualizations like heat maps and KPI dashboards.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Data Validation Detail -->
+      <div id="data-validationDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Data Validation Generator</div>
+          <div class="detail-subtitle">Create dropdown lists and validation rules automatically</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How to Use</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Select Cells</div>
+              <div class="step-description">
+                Highlight cells where you want to add validation.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Open Generator</div>
+              <div class="step-description">
+                Go to Analysis → Data Validation Generator.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Choose Validation Type</div>
+              <div class="step-description">
+                Select dropdown list, number range, date range, or custom formula.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Set Rules</div>
+              <div class="step-description">
+                Define allowed values, ranges, or conditions and apply.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            Use dependent dropdowns where the second list changes based on the first selection.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Data Pipeline Detail -->
+      <div id="data-pipelineDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Data Pipeline Manager</div>
+          <div class="detail-subtitle">Import and export data from various sources</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How to Use</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Choose Operation</div>
+              <div class="step-description">
+                Select Import or Export mode.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Select Source/Target</div>
+              <div class="step-description">
+                Choose CSV, JSON, XML, Database, or API endpoint.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Map Fields</div>
+              <div class="step-description">
+                Match columns between source and destination.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Schedule or Run</div>
+              <div class="step-description">
+                Run immediately or set up automatic scheduled syncs.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            Set up webhooks for real-time data synchronization with external systems.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Excel Migration Detail -->
+      <div id="excel-migrationDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Excel Migration Tool</div>
+          <div class="detail-subtitle">Convert Excel formulas and features to Google Sheets</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How to Use</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Import Excel File</div>
+              <div class="step-description">
+                Upload your Excel file or paste Excel formulas.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Scan for Issues</div>
+              <div class="step-description">
+                Automatically detect incompatible formulas and features.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Review Conversions</div>
+              <div class="step-description">
+                See how Excel formulas will be converted to Sheets equivalents.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Apply Migration</div>
+              <div class="step-description">
+                Convert all formulas and features to Google Sheets format.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            VBA macros are converted to Google Apps Script where possible.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Real Estate Detail -->
+      <div id="real-estateDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Real Estate Tools</div>
+          <div class="detail-subtitle">Professional templates for property analysis</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Available Templates</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Property Analyzer</div>
+              <div class="step-description">
+                Calculate ROI, cap rates, cash flow for investment properties.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Comp Analysis</div>
+              <div class="step-description">
+                Compare properties with automatic market data integration.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Rental Calculator</div>
+              <div class="step-description">
+                Analyze rental income, expenses, and profitability.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Portfolio Tracker</div>
+              <div class="step-description">
+                Manage multiple properties with consolidated reporting.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            Templates include market data feeds for automatic valuation updates.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Healthcare Detail -->
+      <div id="healthcareDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">Healthcare Tools</div>
+          <div class="detail-subtitle">HIPAA-compliant templates for healthcare data</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Available Templates</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Patient Tracker</div>
+              <div class="step-description">
+                Manage patient information with privacy controls.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Appointment Scheduler</div>
+              <div class="step-description">
+                Schedule and track appointments with reminders.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Medication Log</div>
+              <div class="step-description">
+                Track prescriptions, dosages, and refills.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Billing Manager</div>
+              <div class="step-description">
+                Handle insurance claims and patient billing.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            All templates include data encryption and access logging for compliance.
+          </div>
+        </div>
+      </div>
+      
+      <!-- E-commerce Detail -->
+      <div id="ecommerceDetail" class="detail-page">
+        <div class="detail-header">
+          <div class="detail-title">E-commerce Tools</div>
+          <div class="detail-subtitle">Complete solution for online business management</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Available Templates</div>
+          </div>
+          <div class="steps-list" style="padding: 12px;">
+            <div class="step-item">
+              <div class="step-title">Inventory Manager</div>
+              <div class="step-description">
+                Track stock levels, reorder points, and suppliers.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Sales Dashboard</div>
+              <div class="step-description">
+                Analyze sales trends, customer behavior, and revenue.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Order Processor</div>
+              <div class="step-description">
+                Manage orders from multiple channels in one place.
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-title">Product Catalog</div>
+              <div class="step-description">
+                Organize products with variants, pricing, and images.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tip-card">
+          <div class="tip-title">Pro Tip</div>
+          <div class="tip-content">
+            Integrates with Shopify, WooCommerce, and Amazon for automatic sync.
+          </div>
+        </div>
       </div>
     </div>
   </div>
   
   <script>
-    let currentPriority = 'medium';
-    let currentRating = 4;
-    let selectedTags = [];
+    // Tab switching
+    function switchTab(tab) {
+      // Update button states
+      document.querySelectorAll('.tab-btn-grid').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Find and activate the clicked button
+      event.target.closest('.tab-btn-grid').classList.add('active');
+      
+      // Show/hide content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      document.getElementById(tab + 'Tab').style.display = 'block';
+    }
     
+    // Toggle collapsible
+    function toggleCollapsible(header) {
+      const collapsible = header.parentElement;
+      collapsible.classList.toggle('expanded');
+    }
+    
+    // Show feature detail
+    function showFeatureDetail(feature) {
+      document.getElementById('mainView').style.display = 'none';
+      document.getElementById('detailView').style.display = 'block';
+      
+      // Hide all detail pages
+      document.querySelectorAll('.detail-page').forEach(page => {
+        page.style.display = 'none';
+      });
+      
+      // Show selected detail
+      const detailPage = document.getElementById(feature + 'Detail');
+      if (detailPage) {
+        detailPage.style.display = 'block';
+      }
+    }
+    
+    // Show getting started
+    function showGettingStarted() {
+      document.getElementById('mainView').style.display = 'none';
+      document.getElementById('detailView').style.display = 'block';
+      
+      document.querySelectorAll('.detail-page').forEach(page => {
+        page.style.display = 'none';
+      });
+      
+      document.getElementById('gettingStartedDetail').style.display = 'block';
+    }
+    
+    // Back to list
+    function backToList() {
+      document.getElementById('mainView').style.display = 'block';
+      document.getElementById('detailView').style.display = 'none';
+    }
+    
+    // Back to main
     function backToMain() {
       google.script.run.showCellPilotSidebar();
     }
     
-    function showFeedbackForm(type) {
-      // Hide menu
-      document.getElementById('helpMenu').style.display = 'none';
+    // Search features
+    function searchFeatures() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.feature-card');
       
-      // Hide all forms
-      document.querySelectorAll('.feedback-form').forEach(form => {
-        form.classList.remove('active');
+      cards.forEach(card => {
+        const title = card.querySelector('.feature-title').textContent.toLowerCase();
+        const desc = card.querySelector('.feature-description').textContent.toLowerCase();
+        
+        if (title.includes(query) || desc.includes(query)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
       });
       
-      // Show selected form
-      document.getElementById(type + 'Form').classList.add('active');
-    }
-    
-    function cancelFeedback() {
-      // Show menu
-      document.getElementById('helpMenu').style.display = 'block';
-      
-      // Hide all forms
-      document.querySelectorAll('.feedback-form').forEach(form => {
-        form.classList.remove('active');
+      // Expand collapsibles that have matching content
+      document.querySelectorAll('.collapsible').forEach(collapsible => {
+        const hasVisible = collapsible.querySelectorAll('.feature-card[style="display: block;"]').length > 0;
+        if (hasVisible || query === '') {
+          collapsible.classList.add('expanded');
+        }
       });
-      
-      // Reset form fields
-      document.querySelectorAll('.form-input').forEach(input => {
-        input.value = '';
-      });
-      
-      // Reset selections
-      currentPriority = 'medium';
-      currentRating = 4;
-      selectedTags = [];
     }
     
-    function setPriority(priority, button) {
-      currentPriority = priority;
-      button.parentElement.querySelectorAll('.priority-btn').forEach(btn => {
-        btn.classList.remove('selected');
-      });
-      button.classList.add('selected');
+    // Show shortcuts
+    function showShortcuts() {
+      alert('Keyboard Shortcuts:\n\nCtrl+Alt+C: Open CellPilot\nCtrl+K: Quick Search\nCtrl+Shift+F: Smart Formula');
     }
     
-    function setRating(rating, button) {
-      currentRating = rating;
-      button.parentElement.querySelectorAll('.priority-btn').forEach(btn => {
-        btn.classList.remove('selected');
-      });
-      button.classList.add('selected');
-    }
-    
-    function toggleTag(chip) {
-      chip.classList.toggle('selected');
-      const tag = chip.textContent;
-      
-      if (chip.classList.contains('selected')) {
-        selectedTags.push(tag);
-      } else {
-        selectedTags = selectedTags.filter(t => t !== tag);
-      }
-    }
-    
-    function submitBugReport() {
-      const data = {
-        type: 'bug',
-        title: document.getElementById('bugTitle').value,
-        steps: document.getElementById('bugSteps').value,
-        expected: document.getElementById('bugExpected').value,
-        priority: currentPriority,
-        email: document.getElementById('bugEmail').value,
-        timestamp: new Date().toISOString(),
-        version: '2.0.1'
-      };
-      
-      if (!data.title) {
-        showStatus('Please provide a brief description of the issue', 'error');
-        return;
-      }
-      
-      submitToBackend(data);
-    }
-    
-    function submitFeatureRequest() {
-      const data = {
-        type: 'feature',
-        title: document.getElementById('featureTitle').value,
-        description: document.getElementById('featureDescription').value,
-        tags: selectedTags,
-        frequency: document.getElementById('featureFrequency').value,
-        email: document.getElementById('featureEmail').value,
-        timestamp: new Date().toISOString(),
-        version: '2.0.1'
-      };
-      
-      if (!data.title) {
-        showStatus('Please provide a feature title', 'error');
-        return;
-      }
-      
-      submitToBackend(data);
-    }
-    
-    function submitQuestion() {
-      const data = {
-        type: 'question',
-        category: document.getElementById('questionCategory').value,
-        question: document.getElementById('questionText').value,
-        email: document.getElementById('questionEmail').value,
-        timestamp: new Date().toISOString(),
-        version: '2.0.1'
-      };
-      
-      if (!data.category || !data.email) {
-        showStatus('Please select a topic and provide your email', 'error');
-        return;
-      }
-      
-      submitToBackend(data);
-    }
-    
+    // Submit feedback
     function submitFeedback() {
-      const data = {
-        type: 'feedback',
-        rating: currentRating,
-        feedback: document.getElementById('feedbackText').value,
-        email: document.getElementById('feedbackEmail').value,
-        timestamp: new Date().toISOString(),
-        version: '2.0.1'
-      };
+      const type = document.getElementById('feedbackType').value;
+      const title = document.getElementById('feedbackTitle').value;
+      const description = document.getElementById('feedbackDescription').value;
       
-      submitToBackend(data);
-    }
-    
-    function submitToBackend(data) {
-      showStatus('Submitting...', 'info');
+      if (!title || !description) {
+        alert('Please fill in all fields');
+        return;
+      }
       
       google.script.run
-        .withSuccessHandler(function(result) {
-          showSuccessMessage(data.type);
+        .withSuccessHandler(() => {
+          alert('Thank you for your feedback!');
+          document.getElementById('feedbackTitle').value = '';
+          document.getElementById('feedbackDescription').value = '';
         })
-        .withFailureHandler(function(error) {
-          showStatus('Submission failed. Please try again.', 'error');
+        .withFailureHandler((error) => {
+          alert('Failed to submit feedback: ' + error);
         })
-        .submitFeedback(data);
+        .submitFeedback({
+          type: type,
+          title: title,
+          description: description,
+          timestamp: new Date().toISOString()
+        });
     }
     
-    function showSuccessMessage(type) {
-      // Hide all forms
-      document.querySelectorAll('.feedback-form').forEach(form => {
-        form.classList.remove('active');
-      });
-      
-      // Customize success message
-      const messages = {
-        bug: 'Your bug report has been submitted. We\'ll investigate and fix it as soon as possible.',
-        feature: 'Your feature request has been submitted. We review all suggestions to improve CellPilot.',
-        question: 'Your question has been submitted. We\'ll respond to your email within 24 hours.',
-        feedback: 'Thank you for your feedback! It helps us make CellPilot better for everyone.'
-      };
-      
-      document.getElementById('successText').textContent = messages[type];
-      document.getElementById('successMessage').style.display = 'block';
-    }
-    
-    function resetForm() {
-      document.getElementById('successMessage').style.display = 'none';
-      document.getElementById('helpMenu').style.display = 'block';
-      cancelFeedback();
-    }
-    
-    function showKeyboardShortcuts() {
-      const shortcuts = `
-        <div style="font-size: 12px; line-height: 1.6;">
-          <strong>Keyboard Shortcuts:</strong><br>
-          <div style="margin-top: 8px;">
-            <code>Ctrl/Cmd + Shift + C</code> - Open CellPilot<br>
-            <code>Ctrl/Cmd + Shift + D</code> - Data Cleaning<br>
-            <code>Ctrl/Cmd + Shift + T</code> - Tableize Data<br>
-            <code>Ctrl/Cmd + Shift + F</code> - Formula Builder<br>
-            <code>Esc</code> - Close sidebar
-          </div>
-        </div>
-      `;
-      
-      showStatus(shortcuts, 'info');
-    }
-    
-    function showStatus(message, type) {
-      const statusDiv = document.getElementById('statusMessage');
-      statusDiv.className = 'alert alert-' + type;
-      statusDiv.innerHTML = message;
-      statusDiv.style.display = 'block';
-      
-      if (type === 'success') {
-        setTimeout(function() {
-          statusDiv.style.display = 'none';
-        }, 3000);
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      // Keep first collapsible expanded
+      const firstCollapsible = document.querySelector('.collapsible');
+      if (firstCollapsible) {
+        firstCollapsible.classList.add('expanded');
       }
-    }
-    
-    // Character counters
-    document.getElementById('bugSteps')?.addEventListener('input', function() {
-      updateCharCounter('bugStepsCounter', this.value.length, 500);
     });
-    
-    document.getElementById('featureDescription')?.addEventListener('input', function() {
-      updateCharCounter('featureDescCounter', this.value.length, 1000);
-    });
-    
-    document.getElementById('questionText')?.addEventListener('input', function() {
-      updateCharCounter('questionCounter', this.value.length, 500);
-    });
-    
-    document.getElementById('feedbackText')?.addEventListener('input', function() {
-      updateCharCounter('feedbackCounter', this.value.length, 1000);
-    });
-    
-    function updateCharCounter(counterId, current, max) {
-      const counter = document.getElementById(counterId);
-      counter.textContent = current + '/' + max;
-      
-      counter.classList.remove('warning', 'error');
-      if (current > max * 0.8) {
-        counter.classList.add('warning');
-      }
-      if (current >= max) {
-        counter.classList.add('error');
-      }
-    }
   </script>
 </body>
 </html>

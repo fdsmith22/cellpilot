@@ -645,7 +645,7 @@ const FormulaBuilder = {
         category: rec.category || 'Recommended'
       }));
     } catch (error) {
-      console.warn('Failed to get personalized recommendations:', error);
+      Logger.warn('Failed to get personalized recommendations:', error);
       return [];
     }
   },
@@ -669,7 +669,7 @@ const FormulaBuilder = {
       
       return prediction;
     } catch (error) {
-      console.warn('Formula prediction failed:', error);
+      Logger.warn('Formula prediction failed:', error);
       return null;
     }
   },

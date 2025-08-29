@@ -26,7 +26,7 @@ function testCellPilotConnection() {
     if (typeof CellPilot === 'undefined') {
       return { success: false, error: 'CellPilot library not found. Please add the library.' };
     }
-    
+
     // Test a simple function
     const context = CellPilot.getCurrentUserContext();
     return { success: true, message: 'CellPilot library connected successfully!', context: context };
@@ -359,6 +359,58 @@ CellPilot.showCalendarIntegration();
 }
 
 // ============================================
+// ADVANCED DATA RESTRUCTURING
+// ============================================
+
+/**
+ * Show Advanced Data Restructuring interface
+ */
+function showAdvancedRestructuring() {
+  return CellPilot.showAdvancedRestructuring();
+}
+
+/**
+ * Analyze data structure for restructuring
+ */
+function analyzeDataStructure() {
+  return CellPilot.analyzeDataStructure();
+}
+
+/**
+ * Process section configuration
+ * @param {Object} config - Section configuration
+ */
+function processSectionConfiguration(config) {
+  return CellPilot.processSectionConfiguration(config);
+}
+
+/**
+ * Process column configuration
+ * @param {Object} config - Column configuration
+ */
+function processColumnConfiguration(config) {
+  return CellPilot.processColumnConfiguration(config);
+}
+
+/**
+ * Apply restructured data to spreadsheet
+ * @param {Object} config - Final configuration with headers
+ */
+function applyRestructuredData(config) {
+  return CellPilot.applyRestructuredData(config);
+}
+
+/**
+ * Show a toast notification
+ * @param {string} message - The message to display
+ * @param {string} title - The title of the toast (optional)
+ * @param {number} timeout - Timeout in seconds (optional)
+ */
+function showToast(message, title, timeout) {
+  return CellPilot.showToast(message, title, timeout);
+}
+
+// ============================================
 // SETTINGS & HELP
 // ============================================
 
@@ -423,7 +475,130 @@ return CellPilot.disableMLFeatures();
 * Show help documentation
 */
 function showHelp() {
-CellPilot.showHelp();
+  return CellPilot.showHelp();
+}
+
+/**
+* Show Smart Formula Assistant
+*/
+function showSmartFormulaAssistant() {
+  return CellPilot.showSmartFormulaAssistant();
+}
+
+/**
+* Show Multi-Tab Relationship Mapper
+*/
+function showMultiTabRelationshipMapper() {
+  return CellPilot.showMultiTabRelationshipMapper();
+}
+
+/**
+* Show Smart Formula Debugger
+*/
+function showSmartFormulaDebugger() {
+  return CellPilot.showSmartFormulaDebugger();
+}
+
+/**
+* Show Data Validation Generator
+*/
+function showDataValidationGenerator() {
+  return CellPilot.showDataValidationGenerator();
+}
+
+/**
+* Show Conditional Formatting Wizard
+*/
+function showConditionalFormattingWizard() {
+  return CellPilot.showConditionalFormattingWizard();
+}
+
+/**
+* Show Pivot Table Assistant
+*/
+function showPivotTableAssistant() {
+  return CellPilot.showPivotTableAssistant();
+}
+
+/**
+* Show Data Pipeline Manager
+*/
+function showDataPipelineManager() {
+  return CellPilot.showDataPipelineManager();
+}
+
+/**
+* Show Cross-Sheet Formula Builder
+*/
+function showCrossSheetFormulaBuilder() {
+  return CellPilot.showCrossSheetFormulaBuilder();
+}
+
+/**
+* Show Formula Performance Optimizer
+*/
+function showFormulaPerformanceOptimizer() {
+  return CellPilot.showFormulaPerformanceOptimizer();
+}
+
+/**
+* Show Industry Template
+* @param {string} category - Template category
+*/
+function showIndustryTemplate(category) {
+  return CellPilot.showIndustryTemplate(category);
+}
+
+/**
+* Show Excel Migration tool
+*/
+function showExcelMigration() {
+  return CellPilot.showExcelMigration();
+}
+
+/**
+* Show API Integration
+*/
+function showApiIntegration() {
+  return CellPilot.showApiIntegration();
+}
+
+/**
+* Show Data Validation
+*/
+function showDataValidation() {
+  return CellPilot.showDataValidation();
+}
+
+/**
+* Show Batch Operations
+*/
+function showBatchOperations() {
+  return CellPilot.showBatchOperations();
+}
+
+/**
+* Show Upgrade Dialog
+*/
+function showUpgradeDialog() {
+  return CellPilot.showUpgradeDialog();
+}
+
+/**
+* Show Error Dialog
+* @param {string} title - Error title
+* @param {string} message - Error message
+*/
+function showErrorDialog(title, message) {
+  return CellPilot.showErrorDialog(title, message);
+}
+
+/**
+ * Show feedback form for bug reports or feature requests
+ * @param {string} type - Type of feedback ('bug' or 'feature')
+ */
+function showFeedback(type) {
+  return CellPilot.showFeedback(type);
 }
 
 /**

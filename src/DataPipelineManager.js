@@ -44,7 +44,7 @@ const DataPipelineManager = {
       
       return true;
     } catch (error) {
-      console.error('Error initializing Data Pipeline Manager:', error);
+      Logger.error('Error initializing Data Pipeline Manager:', error);
       return false;
     }
   },
@@ -93,7 +93,7 @@ const DataPipelineManager = {
       return result;
       
     } catch (error) {
-      console.error('Error importing data:', error);
+      Logger.error('Error importing data:', error);
       return {
         success: false,
         error: error.message
@@ -163,7 +163,7 @@ const DataPipelineManager = {
       };
       
     } catch (error) {
-      console.error('Error importing CSV:', error);
+      Logger.error('Error importing CSV:', error);
       return {
         success: false,
         error: error.message
@@ -243,7 +243,7 @@ const DataPipelineManager = {
       };
       
     } catch (error) {
-      console.error('Error importing JSON:', error);
+      Logger.error('Error importing JSON:', error);
       return {
         success: false,
         error: error.message
@@ -313,7 +313,7 @@ const DataPipelineManager = {
       });
       
     } catch (error) {
-      console.error('Error importing from API:', error);
+      Logger.error('Error importing from API:', error);
       return {
         success: false,
         error: error.message
@@ -405,7 +405,7 @@ const DataPipelineManager = {
       };
       
     } catch (error) {
-      console.error('Error importing HTML table:', error);
+      Logger.error('Error importing HTML table:', error);
       return {
         success: false,
         error: error.message
@@ -439,7 +439,7 @@ const DataPipelineManager = {
       }
       
     } catch (error) {
-      console.error('Error exporting data:', error);
+      Logger.error('Error exporting data:', error);
       return {
         success: false,
         error: error.message
@@ -766,7 +766,7 @@ const DataPipelineManager = {
       sheet.setFrozenRows(1);
       
     } catch (error) {
-      console.error('Error formatting imported data:', error);
+      Logger.error('Error formatting imported data:', error);
     }
   },
   
@@ -924,7 +924,7 @@ const DataPipelineManager = {
       return result;
       
     } catch (error) {
-      console.error('Error enhancing import with ML:', error);
+      Logger.error('Error enhancing import with ML:', error);
       return result;
     }
   },
@@ -962,7 +962,7 @@ const DataPipelineManager = {
       this.saveMLData();
       
     } catch (error) {
-      console.error('Error tracking import:', error);
+      Logger.error('Error tracking import:', error);
     }
   },
   
@@ -1058,7 +1058,7 @@ const DataPipelineManager = {
       );
       
     } catch (error) {
-      console.error('Error saving ML data:', error);
+      Logger.error('Error saving ML data:', error);
     }
   },
   

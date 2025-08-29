@@ -47,7 +47,7 @@ const TableParser = {
             delimiter.consistent = false;
           }
         } catch (e) {
-          console.error('Error counting delimiter:', key, e);
+          Logger.error('Error counting delimiter:', key, e);
           delimiter.count = 0;
           counts[index][key] = 0;
         }
@@ -417,7 +417,7 @@ const TableParser = {
       };
       
     } catch (error) {
-      console.error('Error applying parsed data:', error);
+      Logger.error('Error applying parsed data:', error);
       return { success: false, error: error.message };
     }
   }

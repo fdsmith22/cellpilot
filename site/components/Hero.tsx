@@ -59,30 +59,59 @@ const Hero = () => {
       <div className="container-wrapper relative z-10 h-full flex items-center justify-center py-8 sm:py-12">
         <div className="max-w-5xl mx-auto">
           
-          {/* Heading */}
-          <h1 className={`text-7xl lg:text-6xl md:text-5xl sm:text-4xl max-sm:text-3xl font-bold text-center mb-6 max-sm:mb-4 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <span className="block text-neutral-900 mb-2 sm:mb-3">Spreadsheets</span>
-            <div className="flex gap-1 sm:gap-2 items-center justify-center flex-wrap max-w-full px-2">
-              {['R', 'e', 'i', 'm', 'a', 'g', 'i', 'n', 'e', 'd'].map((letter, index) => (
-                <span
-                  key={index}
-                  className="inline-block px-4 md:px-3 sm:px-2 max-sm:px-1.5 py-2 max-sm:py-1 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm border border-primary-200/50 rounded-lg shadow-sm hover:shadow-lg hover:scale-110 hover:-translate-y-1 text-2xl md:text-xl sm:text-lg max-sm:text-sm"
+          {/* Heading with new layout */}
+          <div className={`mb-8 sm:mb-10 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            <div className="text-sm sm:text-base uppercase tracking-[0.3em] text-primary-600 font-semibold text-center mb-4">Google Sheets</div>
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-center mb-6">
+              <div className="flex gap-2 sm:gap-3 md:gap-4 items-center justify-center flex-wrap max-w-full px-2">
+                {['R', 'e', 'i', 'm', 'a', 'g', 'i', 'n', 'e', 'd'].map((letter, index) => (
+                  <span
+                    key={index}
+                    className="inline-block px-3 sm:px-4 md:px-5 lg:px-6 py-2 sm:py-3 md:py-4 bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-sm border-2 border-primary-300/60 rounded-xl shadow-lg hover:shadow-2xl hover:scale-110 hover:-translate-y-2 transition-all cursor-default"
                   style={{
                     opacity: 0,
                     animation: mounted ? `letterPop 0.6s ease-out ${800 + (index * 150)}ms forwards` : 'none',
                     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                   }}
                 >
-                  <span className="text-gradient font-bold">{letter}</span>
+                  <span className="text-gradient font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">{letter}</span>
                 </span>
               ))}
-            </div>
-          </h1>
+              </div>
+            </h1>
+            <div className="text-center text-neutral-600 text-lg sm:text-xl font-medium">Transform your workflow with intelligent automation</div>
+          </div>
           
-          {/* Description */}
-          <p className={`text-base sm:text-xl md:text-2xl text-neutral-600 text-center mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed px-4 sm:px-6 transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            Take control of your spreadsheet data simply and quickly with smart automation tools
-          </p>
+          {/* Feature cards */}
+          <div className={`grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 max-w-4xl mx-auto px-4 transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            <div className="glass-card p-4 rounded-xl text-center">
+              <div className="w-12 h-12 mx-auto mb-2 rounded-lg bg-gradient-to-br from-pastel-sky/30 to-pastel-sky/20 flex items-center justify-center">
+                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-neutral-800 mb-1">Lightning Fast</h3>
+              <p className="text-sm text-neutral-600">Process thousands of rows in seconds</p>
+            </div>
+            <div className="glass-card p-4 rounded-xl text-center">
+              <div className="w-12 h-12 mx-auto mb-2 rounded-lg bg-gradient-to-br from-pastel-mint/30 to-pastel-mint/20 flex items-center justify-center">
+                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-neutral-800 mb-1">Zero Setup</h3>
+              <p className="text-sm text-neutral-600">Works instantly with any Google Sheet</p>
+            </div>
+            <div className="glass-card p-4 rounded-xl text-center">
+              <div className="w-12 h-12 mx-auto mb-2 rounded-lg bg-gradient-to-br from-pastel-lavender/30 to-pastel-lavender/20 flex items-center justify-center">
+                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-neutral-800 mb-1">AI-Powered</h3>
+              <p className="text-sm text-neutral-600">Smart suggestions and auto-detection</p>
+            </div>
+          </div>
 
           {/* CTA Buttons as Spreadsheet Cells */}
           <div className={`flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-8 sm:mb-10 px-4 sm:px-0 transition-all duration-700 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>

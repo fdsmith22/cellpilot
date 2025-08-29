@@ -71,7 +71,7 @@ const DataCleaner = {
       // Create backup if enabled
       if (UserSettings.load('autoBackup', true)) {
         const backupName = Utils.createBackup(range, 'Before Duplicate Removal');
-        console.log('Backup created:', backupName);
+        Logger.info('Backup created:', backupName);
       }
       
       // Get settings
@@ -359,11 +359,11 @@ const DataCleaner = {
     if (acceptanceRate < 0.7) {
       // Too many false positives, increase threshold (be more strict)
       this.adaptiveThreshold = Math.min(0.95, this.adaptiveThreshold + 0.02);
-      console.log('ML: Increasing duplicate threshold to', this.adaptiveThreshold);
+      Logger.debug('ML: Increasing duplicate threshold to', this.adaptiveThreshold);
     } else if (acceptanceRate > 0.9) {
       // Very accurate, can be slightly more aggressive
       this.adaptiveThreshold = Math.max(0.75, this.adaptiveThreshold - 0.01);
-      console.log('ML: Decreasing duplicate threshold to', this.adaptiveThreshold);
+      Logger.debug('ML: Decreasing duplicate threshold to', this.adaptiveThreshold);
     }
     
     // Save updated threshold to user preferences
@@ -499,7 +499,7 @@ const DataCleaner = {
    */
   enableML: function() {
     this.mlEnabled = true;
-    console.log('ML features enabled for DataCleaner');
+    Logger.info('ML features enabled for DataCleaner');
     
     // Load user profile
     const userProfile = UserSettings.load('mlProfile', {});

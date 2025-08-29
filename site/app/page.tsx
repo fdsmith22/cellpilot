@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import Hero from '@/components/Hero'
 import Features from '@/components/Features'
+import InteractiveDemo from '@/components/InteractiveDemo'
 import Pricing from '@/components/Pricing'
 import CTA from '@/components/CTA'
 import Footer from '@/components/Footer'
@@ -22,6 +23,7 @@ export default function Home() {
         <main className="relative z-elevated">
           <Hero />
           <Features />
+          <InteractiveDemo />
           <Pricing />
           <CTA />
         </main>

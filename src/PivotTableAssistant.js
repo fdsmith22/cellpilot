@@ -36,7 +36,7 @@ const PivotTableAssistant = {
       
       return true;
     } catch (error) {
-      console.error('Error initializing Pivot Table Assistant:', error);
+      Logger.error('Error initializing Pivot Table Assistant:', error);
       return false;
     }
   },
@@ -90,7 +90,7 @@ const PivotTableAssistant = {
       };
       
     } catch (error) {
-      console.error('Error analyzing data for pivot:', error);
+      Logger.error('Error analyzing data for pivot:', error);
       return {
         success: false,
         error: error.toString()
@@ -544,7 +544,7 @@ const PivotTableAssistant = {
       };
       
     } catch (error) {
-      console.error('Error creating pivot table:', error);
+      Logger.error('Error creating pivot table:', error);
       return {
         success: false,
         error: error.toString()
@@ -613,7 +613,7 @@ const PivotTableAssistant = {
       );
       
     } catch (error) {
-      console.error('Error tracking successful pivot:', error);
+      Logger.error('Error tracking successful pivot:', error);
     }
   },
   

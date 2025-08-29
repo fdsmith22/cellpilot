@@ -18,7 +18,7 @@ const UserSettings = {
       }
     });
     
-    console.log('User settings initialized');
+    Logger.info('User settings initialized');
   },
   
   /**
@@ -32,7 +32,7 @@ const UserSettings = {
       );
       return true;
     } catch (error) {
-      console.error(`Failed to save setting ${key}:`, error);
+      Logger.error(`Failed to save setting ${key}:`, error);
       return false;
     }
   },
@@ -45,7 +45,7 @@ const UserSettings = {
       const value = PropertiesService.getUserProperties().getProperty(`cellpilot_${key}`);
       return value ? JSON.parse(value) : defaultValue;
     } catch (error) {
-      console.error(`Failed to load setting ${key}:`, error);
+      Logger.error(`Failed to load setting ${key}:`, error);
       return defaultValue;
     }
   },
@@ -58,7 +58,7 @@ const UserSettings = {
       PropertiesService.getUserProperties().deleteProperty(`cellpilot_${key}`);
       return true;
     } catch (error) {
-      console.error(`Failed to remove setting ${key}:`, error);
+      Logger.error(`Failed to remove setting ${key}:`, error);
       return false;
     }
   },
@@ -80,7 +80,7 @@ const UserSettings = {
       
       return cellpilotProps;
     } catch (error) {
-      console.error('Failed to get all settings:', error);
+      Logger.error('Failed to get all settings:', error);
       return {};
     }
   },

@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('SharedStyles'); ?>
+  <style>
+    /* Step indicator styling */
+    .step-indicator {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+      position: relative;
+    }
+    
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .step::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: -50%;
+      right: -50%;
+      height: 2px;
+      background: var(--gray-200);
+      z-index: -1;
+    }
+    
+    .step:first-child::before {
+      left: 50%;
+    }
+    
+    .step:last-child::before {
+      right: 50%;
+    }
+    
+    .step.active::before,
+    .step.completed::before {
+      background: var(--primary-500);
+    }
+    
+    .step-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid var(--gray-300);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--gray-500);
+      margin-bottom: 8px;
+    }
+    
+    .step.active .step-circle {
+      border-color: var(--primary-500);
+      color: var(--primary-600);
+      background: var(--primary-50);
+    }
+    
+    .step.completed .step-circle {
+      background: var(--success-500);
+      border-color: var(--success-500);
+      color: white;
+    }
+    
+    .step-label {
+      font-size: 11px;
+      color: var(--gray-600);
+      text-align: center;
+    }
+    
+    .step.active .step-label {
+      color: var(--primary-600);
+      font-weight: 600;
+    }
+    
+    /* Pattern detection cards */
+    .pattern-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .pattern-card:hover {
+      background: var(--primary-50);
+      border-color: var(--primary-300);
+    }
+    
+    .pattern-card.selected {
+      background: var(--primary-100);
+      border-color: var(--primary-500);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    .pattern-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .pattern-type {
+      font-weight: 600;
+      color: var(--gray-900);
+      font-size: 13px;
+    }
+    
+    .confidence-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    
+    .confidence-high {
+      background: var(--success-100);
+      color: var(--success-700);
+    }
+    
+    .confidence-medium {
+      background: var(--warning-100);
+      color: var(--warning-700);
+    }
+    
+    .confidence-low {
+      background: var(--gray-100);
+      color: var(--gray-700);
+    }
+    
+    .pattern-preview {
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 11px;
+      color: var(--gray-600);
+      background: white;
+      padding: 8px;
+      border-radius: 4px;
+      max-height: 60px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    
+    .highlight-match {
+      background: var(--warning-200);
+      padding: 1px 3px;
+      border-radius: 2px;
+      font-weight: 600;
+    }
+    
+    /* Column configuration */
+    .column-config-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    
+    .delimiter-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    
+    .delimiter-btn {
+      padding: 6px 12px;
+      border: 1px solid var(--gray-300);
+      background: white;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .delimiter-btn:hover {
+      border-color: var(--primary-400);
+      background: var(--primary-50);
+    }
+    
+    .delimiter-btn.active {
+      background: var(--primary-500);
+      color: white;
+      border-color: var(--primary-500);
+    }
+    
+    /* Preview table */
+    .preview-container {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 16px;
+    }
+    
+    .preview-header {
+      background: var(--gray-50);
+      padding: 12px;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .preview-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--gray-600);
+    }
+    
+    .preview-stat {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .preview-stat-value {
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+    
+    .preview-table-wrapper {
+      overflow-x: auto;
+      max-height: 400px;
+    }
+    
+    .preview-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    
+    .preview-table th {
+      background: var(--gray-100);
+      padding: 8px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--gray-700);
+      border-bottom: 1px solid var(--gray-200);
+      position: sticky;
+      top: 0;
+    }
+    
+    .preview-table td {
+      padding: 8px;
+      border-bottom: 1px solid var(--gray-100);
+      color: var(--gray-900);
+    }
+    
+    .preview-table tr:hover {
+      background: var(--gray-50);
+    }
+    
+    .section-header-row {
+      background: var(--primary-50) !important;
+      font-weight: 600;
+    }
+    
+    .section-header-row td {
+      color: var(--primary-700);
+      border-top: 2px solid var(--primary-200);
+    }
+    
+    /* Header configuration */
+    .header-config {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    .header-input {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .header-input label {
+      font-size: 10px;
+      color: var(--gray-500);
+      font-weight: 600;
+    }
+    
+    .header-input input {
+      padding: 6px 8px;
+      border: 1px solid var(--gray-300);
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    
+    /* Processing animation */
+    .processing-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .processing-card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .processing-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--primary-500);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-header">
+    <button class="nav-back" onclick="backToMain()">←</button>
+    <div class="nav-title">
+      <h2>Advanced Data Restructuring</h2>
+      <p>Transform complex unstructured data into clean tables</p>
+    </div>
+  </div>
+  
+  <div class="container">
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div class="step active" id="step1">
+        <div class="step-circle">1</div>
+        <div class="step-label">Analyze</div>
+      </div>
+      <div class="step" id="step2">
+        <div class="step-circle">2</div>
+        <div class="step-label">Sections</div>
+      </div>
+      <div class="step" id="step3">
+        <div class="step-circle">3</div>
+        <div class="step-label">Columns</div>
+      </div>
+      <div class="step" id="step4">
+        <div class="step-circle">4</div>
+        <div class="step-label">Preview</div>
+      </div>
+    </div>
+    
+    <!-- Step 1: Analysis -->
+    <div id="step1Content" class="step-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Analyzing Data Structure</div>
+          <div class="card-description">Detecting patterns and structure in your data...</div>
+        </div>
+        
+        <div class="progress-container">
+          <div class="progress">
+            <div class="progress-bar" id="analysisProgress" style="width: 0%"></div>
+          </div>
+          <p class="progress-text" id="analysisStatus">Initializing analysis...</p>
+        </div>
+        
+        <div id="analysisResults" style="display: none;">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="totalLines">0</div>
+              <div class="stat-label">Total Lines</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="detectedSections">0</div>
+              <div class="stat-label">Detected Sections</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="dataTypes">0</div>
+              <div class="stat-label">Data Types</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Step 2: Section Configuration -->
+    <div id="step2Content" class="step-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Configure Section Separators</div>
+          <div class="card-description">Define how to split your data into logical sections</div>
+        </div>
+        
+        <!-- Detected Patterns -->
+        <div id="detectedPatternsSection">
+          <h4 class="section-title">Detected Patterns</h4>
+          <div id="patternsList"></div>
+        </div>
+        
+        <!-- Manual Configuration -->
+        <div class="form-group">
+          <label class="form-label">Section Separator Method</label>
+          
+          <div class="form-check">
+            <input type="radio" name="sectionMethod" id="noSections" value="none" checked>
+            <label for="noSections">No sections - treat as single block</label>
+          </div>
+          
+          <div class="form-check">
+            <input type="radio" name="sectionMethod" id="keywordSection" value="keyword">
+            <label for="keywordSection">Keyword separator (e.g., "SECTION")</label>
+          </div>
+          
+          <div class="form-check">
+            <input type="radio" name="sectionMethod" id="blankLineSection" value="blankline">
+            <label for="blankLineSection">Blank lines separate sections</label>
+          </div>
+          
+          <div class="form-check">
+            <input type="radio" name="sectionMethod" id="patternSection" value="pattern">
+            <label for="patternSection">Custom pattern (regex)</label>
+          </div>
+        </div>
+        
+        <!-- Keyword Input -->
+        <div id="keywordConfig" class="form-group" style="display: none;">
+          <label class="form-label">Section Keyword</label>
+          <input type="text" id="sectionKeyword" class="form-input" placeholder="Enter keyword (e.g., SECTION)">
+          <div class="form-help">This keyword will mark the start of each new section</div>
+        </div>
+        
+        <!-- Pattern Input -->
+        <div id="patternConfig" class="form-group" style="display: none;">
+          <label class="form-label">Section Pattern (Regex)</label>
+          <input type="text" id="sectionPattern" class="form-input" placeholder="e.g., ^[A-Z\s]+$">
+          <div class="form-help">Lines matching this pattern will start new sections</div>
+        </div>
+        
+        <button class="btn btn-primary" onclick="processSections()">
+          Analyze Sections
+        </button>
+      </div>
+    </div>
+    
+    <!-- Step 3: Column Configuration -->
+    <div id="step3Content" class="step-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Configure Column Splitting</div>
+          <div class="card-description">Define how to split each row into columns</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Column Splitting Method</label>
+          
+          <div class="form-check">
+            <input type="radio" name="columnMethod" id="smartSplit" value="smart" checked>
+            <label for="smartSplit">
+              Smart Detection
+              <span class="badge badge-primary">Recommended</span>
+            </label>
+            <div class="form-help">Intelligently detects column boundaries based on patterns</div>
+          </div>
+          
+          <div class="form-check">
+            <input type="radio" name="columnMethod" id="whitespaceSplit" value="whitespace">
+            <label for="whitespaceSplit">Multiple Spaces/Tabs</label>
+            <div class="form-help">Split on consecutive whitespace characters</div>
+          </div>
+          
+          <div class="form-check">
+            <input type="radio" name="columnMethod" id="delimiterSplit" value="delimiter">
+            <label for="delimiterSplit">Specific Delimiter</label>
+          </div>
+          
+          <div class="form-check">
+            <input type="radio" name="columnMethod" id="fixedWidth" value="fixed">
+            <label for="fixedWidth">Fixed Width Columns</label>
+          </div>
+        </div>
+        
+        <!-- Delimiter Selection -->
+        <div id="delimiterConfig" class="form-group" style="display: none;">
+          <label class="form-label">Choose Delimiter</label>
+          <div class="delimiter-buttons">
+            <button class="delimiter-btn" data-delimiter=",">Comma (,)</button>
+            <button class="delimiter-btn" data-delimiter="|">Pipe (|)</button>
+            <button class="delimiter-btn" data-delimiter="\t">Tab</button>
+            <button class="delimiter-btn" data-delimiter=";">Semicolon (;)</button>
+            <button class="delimiter-btn" data-delimiter=":">Colon (:)</button>
+            <button class="delimiter-btn" data-delimiter="custom">Custom...</button>
+          </div>
+          <input type="text" id="customDelimiter" class="form-input" 
+                 placeholder="Enter custom delimiter" style="display: none; margin-top: 8px;">
+        </div>
+        
+        <!-- Fixed Width Config -->
+        <div id="fixedWidthConfig" class="form-group" style="display: none;">
+          <label class="form-label">Column Positions (comma-separated)</label>
+          <input type="text" id="columnPositions" class="form-input" 
+                 placeholder="e.g., 10,25,40,60">
+          <div class="form-help">Enter character positions where columns should split</div>
+        </div>
+        
+        <!-- Advanced Options -->
+        <div class="form-group">
+          <label class="form-label">Advanced Options</label>
+          <div class="form-check">
+            <input type="checkbox" id="trimWhitespace" checked>
+            <label for="trimWhitespace">Trim whitespace from values</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="preserveEmpty">
+            <label for="preserveEmpty">Preserve empty columns</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="mergeConsecutive">
+            <label for="mergeConsecutive">Merge consecutive delimiters</label>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary" onclick="processColumns()">
+          Generate Preview
+        </button>
+      </div>
+    </div>
+    
+    <!-- Step 4: Preview & Apply -->
+    <div id="step4Content" class="step-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Preview & Apply</div>
+          <div class="card-description">Review the restructured data before applying</div>
+        </div>
+        
+        <div class="preview-container">
+          <div class="preview-header">
+            <div class="preview-title">Data Preview</div>
+            <div class="preview-stats">
+              <div class="preview-stat">
+                <span>Sections:</span>
+                <span class="preview-stat-value" id="previewSections">0</span>
+              </div>
+              <div class="preview-stat">
+                <span>Rows:</span>
+                <span class="preview-stat-value" id="previewRows">0</span>
+              </div>
+              <div class="preview-stat">
+                <span>Columns:</span>
+                <span class="preview-stat-value" id="previewColumns">0</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="preview-table-wrapper">
+            <table class="preview-table" id="previewTable">
+              <thead id="previewTableHead"></thead>
+              <tbody id="previewTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Column Headers -->
+        <div class="form-group">
+          <label class="form-label">Column Headers (Optional)</label>
+          <div class="header-config" id="headerConfig"></div>
+          <div class="form-help">Leave empty to use default headers or auto-detected values</div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="goToStep(3)">
+            ← Back to Column Config
+          </button>
+          <button class="btn btn-success" onclick="applyRestructuring()">
+            Apply to Spreadsheet
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Processing Overlay -->
+  <div class="processing-overlay" id="processingOverlay">
+    <div class="processing-card">
+      <div class="processing-spinner"></div>
+      <div class="processing-text" id="processingText">Processing...</div>
+    </div>
+  </div>
+  
+  <script>
+    // Global state
+    let currentStep = 1;
+    let analysisData = null;
+    let sectionData = null;
+    let columnData = null;
+    let previewData = null;
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeEventListeners();
+      startAnalysis();
+    });
+    
+    function initializeEventListeners() {
+      // Section method radio buttons
+      document.querySelectorAll('input[name="sectionMethod"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+          document.getElementById('keywordConfig').style.display = 
+            this.value === 'keyword' ? 'block' : 'none';
+          document.getElementById('patternConfig').style.display = 
+            this.value === 'pattern' ? 'block' : 'none';
+        });
+      });
+      
+      // Column method radio buttons
+      document.querySelectorAll('input[name="columnMethod"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+          document.getElementById('delimiterConfig').style.display = 
+            this.value === 'delimiter' ? 'block' : 'none';
+          document.getElementById('fixedWidthConfig').style.display = 
+            this.value === 'fixed' ? 'block' : 'none';
+        });
+      });
+      
+      // Delimiter buttons
+      document.querySelectorAll('.delimiter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.delimiter-btn').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          
+          const customInput = document.getElementById('customDelimiter');
+          if (this.dataset.delimiter === 'custom') {
+            customInput.style.display = 'block';
+            customInput.focus();
+          } else {
+            customInput.style.display = 'none';
+          }
+        });
+      });
+    }
+    
+    function startAnalysis() {
+      showProcessing('Analyzing data structure...');
+      updateProgress('analysisProgress', 20);
+      document.getElementById('analysisStatus').textContent = 'Reading selected data...';
+      
+      google.script.run
+        .withSuccessHandler(onAnalysisComplete)
+        .withFailureHandler(onAnalysisError)
+        .analyzeDataStructure();
+    }
+    
+    function onAnalysisComplete(result) {
+      hideProcessing();
+      
+      if (result.success) {
+        analysisData = result;
+        updateProgress('analysisProgress', 100);
+        document.getElementById('analysisStatus').textContent = 'Analysis complete!';
+        
+        // Update stats
+        document.getElementById('totalLines').textContent = result.totalLines || 0;
+        document.getElementById('detectedSections').textContent = result.detectedSections || 0;
+        document.getElementById('dataTypes').textContent = result.dataTypes || 0;
+        document.getElementById('analysisResults').style.display = 'block';
+        
+        // Show detected patterns in next step
+        if (result.patterns && result.patterns.length > 0) {
+          displayDetectedPatterns(result.patterns);
+        }
+        
+        // Auto-advance after delay
+        setTimeout(() => goToStep(2), 1500);
+        
+      } else {
+        showError(result.error || 'Analysis failed');
+      }
+    }
+    
+    function onAnalysisError(error) {
+      hideProcessing();
+      showError('Analysis error: ' + error.message);
+    }
+    
+    function displayDetectedPatterns(patterns) {
+      const container = document.getElementById('patternsList');
+      container.innerHTML = '';
+      
+      patterns.forEach(pattern => {
+        const card = document.createElement('div');
+        card.className = 'pattern-card';
+        card.onclick = () => selectPattern(pattern);
+        
+        const confidence = pattern.confidence > 0.7 ? 'high' : 
+                          pattern.confidence > 0.4 ? 'medium' : 'low';
+        
+        card.innerHTML = `
+          <div class="pattern-header">
+            <span class="pattern-type">${pattern.type}</span>
+            <span class="confidence-badge confidence-${confidence}">
+              ${Math.round(pattern.confidence * 100)}% confidence
+            </span>
+          </div>
+          <div class="pattern-preview">${escapeHtml(pattern.example)}</div>
+        `;
+        
+        container.appendChild(card);
+      });
+    }
+    
+    function selectPattern(pattern) {
+      // Auto-fill based on pattern
+      if (pattern.type === 'KEYWORD_SECTION') {
+        document.getElementById('keywordSection').checked = true;
+        document.getElementById('sectionKeyword').value = pattern.keyword;
+        document.getElementById('keywordConfig').style.display = 'block';
+      }
+      
+      // Mark card as selected
+      document.querySelectorAll('.pattern-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      event.currentTarget.classList.add('selected');
+    }
+    
+    function processSections() {
+      const method = document.querySelector('input[name="sectionMethod"]:checked').value;
+      const config = { method: method };
+      
+      if (method === 'keyword') {
+        config.keyword = document.getElementById('sectionKeyword').value;
+        if (!config.keyword) {
+          showError('Please enter a section keyword');
+          return;
+        }
+      } else if (method === 'pattern') {
+        config.pattern = document.getElementById('sectionPattern').value;
+        if (!config.pattern) {
+          showError('Please enter a section pattern');
+          return;
+        }
+      }
+      
+      showProcessing('Processing sections...');
+      
+      google.script.run
+        .withSuccessHandler(onSectionsProcessed)
+        .withFailureHandler(onProcessError)
+        .processSectionConfiguration(config);
+    }
+    
+    function onSectionsProcessed(result) {
+      hideProcessing();
+      
+      if (result.success) {
+        sectionData = result;
+        goToStep(3);
+      } else {
+        showError(result.error || 'Section processing failed');
+      }
+    }
+    
+    function processColumns() {
+      const method = document.querySelector('input[name="columnMethod"]:checked').value;
+      const config = { 
+        method: method,
+        trimWhitespace: document.getElementById('trimWhitespace').checked,
+        preserveEmpty: document.getElementById('preserveEmpty').checked,
+        mergeConsecutive: document.getElementById('mergeConsecutive').checked
+      };
+      
+      if (method === 'delimiter') {
+        const activeBtn = document.querySelector('.delimiter-btn.active');
+        if (!activeBtn) {
+          showError('Please select a delimiter');
+          return;
+        }
+        
+        if (activeBtn.dataset.delimiter === 'custom') {
+          config.delimiter = document.getElementById('customDelimiter').value;
+          if (!config.delimiter) {
+            showError('Please enter a custom delimiter');
+            return;
+          }
+        } else {
+          config.delimiter = activeBtn.dataset.delimiter;
+        }
+      } else if (method === 'fixed') {
+        config.positions = document.getElementById('columnPositions').value;
+        if (!config.positions) {
+          showError('Please enter column positions');
+          return;
+        }
+      }
+      
+      showProcessing('Generating preview...');
+      
+      google.script.run
+        .withSuccessHandler(onColumnsProcessed)
+        .withFailureHandler(onProcessError)
+        .processColumnConfiguration(config);
+    }
+    
+    function onColumnsProcessed(result) {
+      hideProcessing();
+      
+      if (result.success) {
+        columnData = result;
+        previewData = result.preview;
+        displayPreview(result.preview);
+        goToStep(4);
+      } else {
+        showError(result.error || 'Column processing failed');
+      }
+    }
+    
+    function displayPreview(data) {
+      // Update stats
+      document.getElementById('previewSections').textContent = data.sectionCount || 1;
+      document.getElementById('previewRows').textContent = data.rows.length;
+      document.getElementById('previewColumns').textContent = data.columnCount;
+      
+      // Build table
+      const thead = document.getElementById('previewTableHead');
+      const tbody = document.getElementById('previewTableBody');
+      
+      // Headers
+      let headerHtml = '<tr>';
+      for (let i = 0; i < data.columnCount; i++) {
+        headerHtml += `<th>Column ${i + 1}</th>`;
+      }
+      headerHtml += '</tr>';
+      thead.innerHTML = headerHtml;
+      
+      // Body - show first 20 rows
+      let bodyHtml = '';
+      const maxRows = Math.min(20, data.rows.length);
+      
+      for (let i = 0; i < maxRows; i++) {
+        const row = data.rows[i];
+        const isSection = row._isSection;
+        
+        bodyHtml += `<tr ${isSection ? 'class="section-header-row"' : ''}>`;
+        for (let j = 0; j < data.columnCount; j++) {
+          const value = row[j] || '';
+          bodyHtml += `<td title="${escapeHtml(value)}">${escapeHtml(value)}</td>`;
+        }
+        bodyHtml += '</tr>';
+      }
+      
+      if (data.rows.length > maxRows) {
+        bodyHtml += `
+          <tr>
+            <td colspan="${data.columnCount}" style="text-align: center; font-style: italic;">
+              ... and ${data.rows.length - maxRows} more rows
+            </td>
+          </tr>
+        `;
+      }
+      
+      tbody.innerHTML = bodyHtml;
+      
+      // Generate header inputs
+      generateHeaderInputs(data.columnCount, data.suggestedHeaders);
+    }
+    
+    function generateHeaderInputs(columnCount, suggested) {
+      const container = document.getElementById('headerConfig');
+      let html = '';
+      
+      for (let i = 0; i < columnCount; i++) {
+        const suggestedValue = suggested && suggested[i] ? suggested[i] : '';
+        html += `
+          <div class="header-input">
+            <label>Column ${i + 1}</label>
+            <input type="text" class="header-field" placeholder="Header ${i + 1}" 
+                   value="${suggestedValue}">
+          </div>
+        `;
+      }
+      
+      container.innerHTML = html;
+    }
+    
+    function applyRestructuring() {
+      if (!confirm('This will replace your selected data with the restructured version. Continue?')) {
+        return;
+      }
+      
+      // Collect headers
+      const headers = Array.from(document.querySelectorAll('.header-field'))
+        .map(input => input.value.trim());
+      
+      const config = {
+        headers: headers.filter(h => h.length > 0),
+        includeHeaders: headers.some(h => h.length > 0)
+      };
+      
+      showProcessing('Applying restructured data...');
+      
+      google.script.run
+        .withSuccessHandler(onApplyComplete)
+        .withFailureHandler(onProcessError)
+        .applyRestructuredData(config);
+    }
+    
+    function onApplyComplete(result) {
+      hideProcessing();
+      
+      if (result.success) {
+        showSuccess(`Successfully restructured ${result.rowsProcessed} rows into ${result.columnsCreated} columns`);
+        setTimeout(() => backToMain(), 2000);
+      } else {
+        showError(result.error || 'Failed to apply restructuring');
+      }
+    }
+    
+    function onProcessError(error) {
+      hideProcessing();
+      showError('Processing error: ' + error.message);
+    }
+    
+    // Navigation
+    function goToStep(step) {
+      // Update step indicators
+      document.querySelectorAll('.step').forEach((el, index) => {
+        if (index < step - 1) {
+          el.classList.add('completed');
+          el.classList.remove('active');
+        } else if (index === step - 1) {
+          el.classList.add('active');
+          el.classList.remove('completed');
+        } else {
+          el.classList.remove('active', 'completed');
+        }
+      });
+      
+      // Show/hide content
+      document.querySelectorAll('.step-content').forEach(el => {
+        el.style.display = 'none';
+      });
+      document.getElementById(`step${step}Content`).style.display = 'block';
+      
+      currentStep = step;
+    }
+    
+    // Utilities
+    function showProcessing(message) {
+      document.getElementById('processingText').textContent = message;
+      document.getElementById('processingOverlay').style.display = 'flex';
+    }
+    
+    function hideProcessing() {
+      document.getElementById('processingOverlay').style.display = 'none';
+    }
+    
+    function updateProgress(elementId, percent) {
+      document.getElementById(elementId).style.width = percent + '%';
+    }
+    
+    function showError(message) {
+      google.script.run.showToast(message, 'Error', 5);
+    }
+    
+    function showSuccess(message) {
+      google.script.run.showToast(message, 'Success', 3);
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = String(text || '');
+      return div.innerHTML;
+    }
+    
+    function backToMain() {
+      google.script.run.showCellPilotSidebar();
+    }
+  </script>
+</body>
+</html>

@@ -57,7 +57,7 @@ const UserPreferenceLearning = {
       
       return true;
     } catch (error) {
-      console.error('Error initializing preference learning:', error);
+      Logger.error('Error initializing preference learning:', error);
       return false;
     }
   },
@@ -116,7 +116,7 @@ const UserPreferenceLearning = {
       }
       
     } catch (error) {
-      console.error('Error tracking action:', error);
+      Logger.error('Error tracking action:', error);
     }
   },
   
@@ -179,7 +179,7 @@ const UserPreferenceLearning = {
       }
       
     } catch (error) {
-      console.error('Error learning from action:', error);
+      Logger.error('Error learning from action:', error);
     }
   },
   
@@ -362,7 +362,7 @@ const UserPreferenceLearning = {
       return this.nextActionPredictions;
       
     } catch (error) {
-      console.error('Error predicting next action:', error);
+      Logger.error('Error predicting next action:', error);
       return null;
     }
   },
@@ -416,7 +416,7 @@ const UserPreferenceLearning = {
       return this.featureRecommendations;
       
     } catch (error) {
-      console.error('Error getting recommendations:', error);
+      Logger.error('Error getting recommendations:', error);
       return [];
     }
   },
@@ -550,7 +550,7 @@ const UserPreferenceLearning = {
       automation.successRate = Math.max(0, automation.successRate - 10);
       
     } catch (err) {
-      console.error('Error learning from error:', err);
+      Logger.error('Error learning from error:', err);
     }
   },
   
@@ -588,7 +588,7 @@ const UserPreferenceLearning = {
       automation.avgDuration = (automation.avgDuration * (automation.attempts - 1) + duration) / automation.attempts;
       
     } catch (error) {
-      console.error('Error learning from success:', error);
+      Logger.error('Error learning from success:', error);
     }
   },
   
@@ -715,7 +715,7 @@ const UserPreferenceLearning = {
       
       return true;
     } catch (error) {
-      console.error('Error saving preferences:', error);
+      Logger.error('Error saving preferences:', error);
       return false;
     }
   },

@@ -133,7 +133,7 @@ const ExcelMigration = {
       };
       
     } catch (error) {
-      console.error('Error scanning for Excel issues:', error);
+      Logger.error('Error scanning for Excel issues:', error);
       return { success: false, error: error.message };
     }
   },
@@ -170,7 +170,7 @@ const ExcelMigration = {
             fixes.push(`Fixed locale in ${issue.cell}`);
             fixCount++;
           } catch (e) {
-            console.error(`Failed to fix locale in ${issue.cell}:`, e);
+            Logger.error(`Failed to fix locale in ${issue.cell}:`, e);
           }
         });
       }
@@ -187,7 +187,7 @@ const ExcelMigration = {
               fixCount++;
             }
           } catch (e) {
-            console.error(`Failed to convert XLOOKUP in ${issue.cell}:`, e);
+            Logger.error(`Failed to convert XLOOKUP in ${issue.cell}:`, e);
           }
         });
       }
@@ -204,7 +204,7 @@ const ExcelMigration = {
               fixCount++;
             }
           } catch (e) {
-            console.error(`Failed to fix structured ref in ${issue.cell}:`, e);
+            Logger.error(`Failed to fix structured ref in ${issue.cell}:`, e);
           }
         });
       }
@@ -226,7 +226,7 @@ const ExcelMigration = {
               fixCount++;
             }
           } catch (e) {
-            console.error(`Failed to optimize volatile in ${issue.cell}:`, e);
+            Logger.error(`Failed to optimize volatile in ${issue.cell}:`, e);
           }
         });
       }
@@ -240,7 +240,7 @@ const ExcelMigration = {
       };
       
     } catch (error) {
-      console.error('Error fixing Excel issues:', error);
+      Logger.error('Error fixing Excel issues:', error);
       return { success: false, error: error.message };
     }
   },
@@ -272,7 +272,7 @@ const ExcelMigration = {
         return formula.replace(xlookupMatch[0], indexMatch);
       }
     } catch (e) {
-      console.error('Error converting XLOOKUP:', e);
+      Logger.error('Error converting XLOOKUP:', e);
     }
     
     return formula;
@@ -400,7 +400,7 @@ const ExcelMigration = {
       };
       
     } catch (error) {
-      console.error('Error fixing #REF!:', error);
+      Logger.error('Error fixing #REF!:', error);
       return { success: false, error: error.message };
     }
   },

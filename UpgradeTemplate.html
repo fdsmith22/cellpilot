@@ -85,31 +85,39 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
-      padding: 16px 0;
+      padding: 16px;
       border-radius: 8px;
       background: var(--gray-50);
+      margin: 0;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     
     .stat-card {
       text-align: center;
-      padding: 8px;
+      padding: 8px 4px;
+      min-width: 0; /* Prevent grid blowout */
+      overflow: hidden;
     }
     
     .stat-value {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 700;
       background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin-bottom: 4px;
+      word-break: break-word;
     }
     
     .stat-label {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--gray-600);
       font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
+      word-wrap: break-word;
     }
     
     /* Benefits grid - cleaner cards */

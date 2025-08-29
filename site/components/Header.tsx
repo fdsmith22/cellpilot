@@ -23,31 +23,31 @@ const Header = () => {
   ]
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-header transition-all duration-300 pt-safe-top ${
+    <header className={`fixed top-0 left-0 right-0 z-header transition-all duration-500 pt-safe-top ${
       scrolled 
-        ? 'bg-gradient-to-b from-white/95 via-white/85 to-transparent backdrop-blur-xl border-b border-neutral-200/20' 
-        : 'bg-gradient-to-b from-white/80 via-white/60 to-transparent backdrop-blur-lg'
+        ? 'bg-gradient-to-b from-white/98 via-white/92 to-transparent backdrop-blur-2xl border-b border-neutral-200/30 shadow-sm' 
+        : 'bg-gradient-to-b from-white/85 via-white/70 to-transparent backdrop-blur-xl'
     }`}>
       {/* Grid pattern that fades into header */}
       <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" 
            style={{maskImage: 'linear-gradient(to bottom, black, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, black, transparent)'}}></div>
-      <nav className="relative py-3 max-sm:py-2">
-        <div className="flex items-center justify-between min-h-[72px] max-sm:min-h-[60px]">
+      <nav className="relative py-4 max-sm:py-3">
+        <div className="flex items-center justify-between min-h-[80px] max-sm:min-h-[64px]">
           {/* Logo - positioned in top left */}
-          <Link href="/" className="flex items-center pl-4 md:pl-6 lg:pl-8">
-            <div className="relative h-20 lg:h-16 md:h-14 sm:h-12 max-sm:h-10 w-[200px] lg:w-[160px] md:w-[140px] sm:w-[120px] max-sm:w-[100px]">
+          <Link href="/" className="flex items-center pl-4 md:pl-6 lg:pl-8 group">
+            <div className="relative h-14 sm:h-16 md:h-18 lg:h-20 w-[140px] sm:w-[160px] md:w-[180px] lg:w-[200px] transition-transform group-hover:scale-105">
               <Image 
                 src="/logo/combined/horizontal-standard-200x60.svg" 
                 alt="CellPilot - Google Sheets Automation" 
                 fill
-                className="object-contain object-left"
+                className="object-contain object-left drop-shadow-sm"
                 priority
               />
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-3 lg:gap-4 pr-4 md:pr-6 lg:pr-8">
+          <div className="hidden md:flex items-center gap-4 lg:gap-6 pr-4 md:pr-6 lg:pr-8">
             {navItems.map((item, index) => {
               const colors = [
                 'from-pastel-sky/30 to-pastel-sky/20 border-pastel-sky/40',
@@ -61,7 +61,7 @@ const Header = () => {
                   </div>
                   <a
                     href={item.href}
-                    className={`block px-4 py-2 bg-gradient-to-br ${colors[index]} backdrop-blur-md border rounded-lg hover:shadow-lg hover:scale-105 transition-all text-sm font-medium text-neutral-700 hover:text-primary-700`}
+                    className={`block px-5 py-2.5 bg-gradient-to-br ${colors[index]} backdrop-blur-md border rounded-xl hover:shadow-lg hover:scale-105 transition-all text-sm font-medium text-neutral-700 hover:text-primary-700`}
                     onClick={(e) => {
                       if (item.href.startsWith('/#')) {
                         // If on home page, just scroll
@@ -85,7 +85,7 @@ const Header = () => {
               <div className="absolute -top-2 -left-2 text-[10px] text-neutral-500/70 font-mono">D1</div>
               <Link 
                 href="/install" 
-                className="block px-5 py-2 bg-gradient-to-br from-primary-500/95 to-primary-600/95 text-white rounded-lg border border-primary-600/50 hover:from-primary-600 hover:to-primary-700 hover:shadow-xl hover:scale-105 transition-all text-sm font-medium shadow-md backdrop-blur-sm"
+                className="block px-6 py-2.5 bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-xl border border-primary-600/30 hover:from-primary-600 hover:to-primary-700 hover:shadow-xl hover:scale-105 transition-all text-sm font-semibold shadow-lg backdrop-blur-sm"
               >
                 Get Started
               </Link>

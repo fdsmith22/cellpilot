@@ -21,10 +21,10 @@ const SmartTableParser = {
         this.mlEngine = new window.CellPilotMLEngine();
         await this.mlEngine.initialize();
         this.mlEnabled = true;
-        console.log('SmartTableParser ML initialized successfully');
+        Logger.info('SmartTableParser ML initialized successfully');
       }
     } catch (error) {
-      console.warn('ML initialization failed, falling back to rule-based parsing:', error);
+      Logger.warn('ML initialization failed, falling back to rule-based parsing:', error);
       this.mlEnabled = false;
     }
   },
@@ -92,7 +92,7 @@ const SmartTableParser = {
       
       return finalTypes;
     } catch (error) {
-      console.warn('ML column detection failed, using fallback:', error);
+      Logger.warn('ML column detection failed, using fallback:', error);
       return this.detectColumnTypesFallback(data, headers);
     }
   },

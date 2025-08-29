@@ -23,7 +23,7 @@ const DataValidationGenerator = {
       
       return this.mlEnabled;
     } catch (error) {
-      console.error('Error initializing ML for validation:', error);
+      Logger.error('Error initializing ML for validation:', error);
       return false;
     }
   },
@@ -46,7 +46,7 @@ const DataValidationGenerator = {
         numCols: range.getNumColumns()
       };
     } catch (error) {
-      console.error('Error getting current selection:', error);
+      Logger.error('Error getting current selection:', error);
       return null;
     }
   },
@@ -218,7 +218,7 @@ const DataValidationGenerator = {
       };
       
     } catch (error) {
-      console.error('Error applying data validation:', error);
+      Logger.error('Error applying data validation:', error);
       return {
         success: false,
         error: error.toString()
@@ -344,7 +344,7 @@ const DataValidationGenerator = {
       };
       
     } catch (error) {
-      console.error('Error testing validation:', error);
+      Logger.error('Error testing validation:', error);
       return {
         isValid: false,
         reason: 'Error testing validation: ' + error.toString()
@@ -367,7 +367,7 @@ const DataValidationGenerator = {
       };
       
     } catch (error) {
-      console.error('Error clearing data validation:', error);
+      Logger.error('Error clearing data validation:', error);
       return {
         success: false,
         error: error.toString()
@@ -398,7 +398,7 @@ const DataValidationGenerator = {
       };
       
     } catch (error) {
-      console.error('Error getting existing validation:', error);
+      Logger.error('Error getting existing validation:', error);
       return null;
     }
   },
@@ -555,7 +555,7 @@ const DataValidationGenerator = {
       return suggestion;
       
     } catch (error) {
-      console.error('Error suggesting validation:', error);
+      Logger.error('Error suggesting validation:', error);
       return {
         type: 'error',
         reason: error.toString()
@@ -656,7 +656,7 @@ const DataValidationGenerator = {
       return patternScores;
       
     } catch (error) {
-      console.error('Error analyzing patterns:', error);
+      Logger.error('Error analyzing patterns:', error);
       return {};
     }
   },
@@ -747,7 +747,7 @@ const DataValidationGenerator = {
       return prediction;
       
     } catch (error) {
-      console.error('Error in ML prediction:', error);
+      Logger.error('Error in ML prediction:', error);
       return null;
     }
   },
@@ -798,7 +798,7 @@ const DataValidationGenerator = {
       return true;
       
     } catch (error) {
-      console.error('Error learning from feedback:', error);
+      Logger.error('Error learning from feedback:', error);
       return false;
     }
   },
@@ -856,7 +856,7 @@ const DataValidationGenerator = {
       return stats;
       
     } catch (error) {
-      console.error('Error getting validation stats:', error);
+      Logger.error('Error getting validation stats:', error);
       return null;
     }
   }

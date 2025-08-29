@@ -45,7 +45,7 @@ const UndoManager = {
       
       return true;
     } catch (error) {
-      console.error('Failed to save undo state:', error);
+      Logger.error('Failed to save undo state:', error);
       return false;
     }
   },
@@ -131,7 +131,7 @@ const UndoManager = {
       };
       
     } catch (error) {
-      console.error('Undo failed:', error);
+      Logger.error('Undo failed:', error);
       return {
         success: false,
         error: 'Failed to undo: ' + error.message

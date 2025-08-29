@@ -27,7 +27,7 @@ const ApiIntegration = {
       
       this.sendTrackingEvent(data);
     } catch (error) {
-      console.error('Failed to track installation:', error);
+      Logger.error('Failed to track installation:', error);
     }
   },
   
@@ -50,7 +50,7 @@ const ApiIntegration = {
       
       this.sendTrackingEvent(data);
     } catch (error) {
-      console.error('Failed to track usage:', error);
+      Logger.error('Failed to track usage:', error);
     }
   },
   
@@ -84,7 +84,7 @@ const ApiIntegration = {
       
       return null;
     } catch (error) {
-      console.error('Failed to check subscription:', error);
+      Logger.error('Failed to check subscription:', error);
       return null;
     }
   },
@@ -109,7 +109,7 @@ const ApiIntegration = {
       
       return response.getResponseCode() === 200;
     } catch (error) {
-      console.error('Failed to send tracking event:', error);
+      Logger.error('Failed to send tracking event:', error);
       return false;
     }
   },
@@ -152,7 +152,7 @@ const ApiIntegration = {
       
       this.sendTrackingEvent(data);
     } catch (e) {
-      console.error('Failed to report error:', e);
+      Logger.error('Failed to report error:', e);
     }
   }
 };

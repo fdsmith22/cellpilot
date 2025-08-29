@@ -27,7 +27,7 @@ const ConditionalFormattingWizard = {
       
       return this.mlEnabled;
     } catch (error) {
-      console.error('Error initializing ML for anomaly detection:', error);
+      Logger.error('Error initializing ML for anomaly detection:', error);
       return false;
     }
   },
@@ -49,7 +49,7 @@ const ConditionalFormattingWizard = {
         numCols: range.getNumColumns()
       };
     } catch (error) {
-      console.error('Error getting selection:', error);
+      Logger.error('Error getting selection:', error);
       return null;
     }
   },
@@ -121,7 +121,7 @@ const ConditionalFormattingWizard = {
       }
       
     } catch (error) {
-      console.error('Error applying conditional formatting:', error);
+      Logger.error('Error applying conditional formatting:', error);
       return {
         success: false,
         error: error.toString()
@@ -417,7 +417,7 @@ const ConditionalFormattingWizard = {
       return relevantRules;
       
     } catch (error) {
-      console.error('Error getting existing rules:', error);
+      Logger.error('Error getting existing rules:', error);
       return [];
     }
   },
@@ -437,7 +437,7 @@ const ConditionalFormattingWizard = {
       return {success: true};
       
     } catch (error) {
-      console.error('Error deleting rule:', error);
+      Logger.error('Error deleting rule:', error);
       return {success: false, error: error.toString()};
     }
   },
@@ -463,7 +463,7 @@ const ConditionalFormattingWizard = {
       };
       
     } catch (error) {
-      console.error('Error clearing rules:', error);
+      Logger.error('Error clearing rules:', error);
       return {success: false, error: error.toString()};
     }
   },
@@ -668,7 +668,7 @@ const ConditionalFormattingWizard = {
       };
       
     } catch (error) {
-      console.error('Error detecting anomalies:', error);
+      Logger.error('Error detecting anomalies:', error);
       return {
         success: false,
         error: error.toString()
@@ -934,7 +934,7 @@ const ConditionalFormattingWizard = {
       };
       
     } catch (error) {
-      console.error('Error applying anomaly formatting:', error);
+      Logger.error('Error applying anomaly formatting:', error);
       return {
         success: false,
         error: error.toString()
@@ -967,7 +967,7 @@ const ConditionalFormattingWizard = {
       );
       
     } catch (error) {
-      console.error('Error saving anomaly history:', error);
+      Logger.error('Error saving anomaly history:', error);
     }
   },
   
@@ -1014,7 +1014,7 @@ const ConditionalFormattingWizard = {
       return stats;
       
     } catch (error) {
-      console.error('Error getting anomaly stats:', error);
+      Logger.error('Error getting anomaly stats:', error);
       return null;
     }
   },
@@ -1058,7 +1058,7 @@ const ConditionalFormattingWizard = {
       return true;
       
     } catch (error) {
-      console.error('Error learning from anomaly feedback:', error);
+      Logger.error('Error learning from anomaly feedback:', error);
       return false;
     }
   }
