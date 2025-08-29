@@ -56,45 +56,45 @@ const Hero = () => {
           </div>
           
           {/* Feature cards - more compact */}
-          <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 mt-10 mb-8 transition-all duration-700 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <div className="glass-card p-3 sm:p-4 rounded-xl flex items-center md:flex-col md:text-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pastel-sky/30 to-pastel-sky/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 mb-6 transition-all duration-700 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            <div className="glass-card p-2 sm:p-3 rounded-xl flex items-center md:flex-col md:text-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pastel-sky/30 to-pastel-sky/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-neutral-800 text-sm">Lightning Fast</h3>
-                <p className="text-xs text-neutral-600 mt-0.5">Process thousands of rows in seconds</p>
+                <h3 className="font-semibold text-neutral-800 text-xs">Lightning Fast</h3>
+                <p className="text-xs text-neutral-600">Process thousands of rows in seconds</p>
               </div>
             </div>
-            <div className="glass-card p-3 sm:p-4 rounded-xl flex items-center md:flex-col md:text-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pastel-mint/30 to-pastel-mint/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="glass-card p-2 sm:p-3 rounded-xl flex items-center md:flex-col md:text-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pastel-mint/30 to-pastel-mint/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-neutral-800 text-sm">Zero Setup</h3>
-                <p className="text-xs text-neutral-600 mt-0.5">Works instantly with any Google Sheet</p>
+                <h3 className="font-semibold text-neutral-800 text-xs">Zero Setup</h3>
+                <p className="text-xs text-neutral-600">Works instantly with any Google Sheet</p>
               </div>
             </div>
-            <div className="glass-card p-3 sm:p-4 rounded-xl flex items-center md:flex-col md:text-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pastel-lavender/30 to-pastel-lavender/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="glass-card p-2 sm:p-3 rounded-xl flex items-center md:flex-col md:text-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pastel-lavender/30 to-pastel-lavender/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-neutral-800 text-sm">AI-Powered</h3>
-                <p className="text-xs text-neutral-600 mt-0.5">Smart suggestions and auto-detection</p>
+                <h3 className="font-semibold text-neutral-800 text-xs">AI-Powered</h3>
+                <p className="text-xs text-neutral-600">Smart suggestions and auto-detection</p>
               </div>
             </div>
           </div>
 
 
           {/* Preview Window */}
-          <div className={`mt-8 sm:mt-12 mb-12 sm:mb-16 transition-all duration-700 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <div className={`mt-6 sm:mt-8 mb-8 sm:mb-12 transition-all duration-700 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <div className="relative w-full">
               <div className="bg-white/85 backdrop-blur-md rounded-xl sm:rounded-2xl p-0.5 sm:p-1 animate-float shadow-xl sm:shadow-2xl border border-neutral-400/40">
                 <div className="bg-gradient-to-br from-white to-neutral-50/50 rounded-lg sm:rounded-xl p-3 sm:p-5">
