@@ -212,6 +212,5 @@ const InteractiveDemo = () => {
     </section>
   )
 }
-}
 
 export default InteractiveDemo
