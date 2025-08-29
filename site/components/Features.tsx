@@ -73,7 +73,7 @@ const Features = () => {
       
       {/* Removed grid pattern - using global grid */}
       
-      <div className="container-wrapper relative z-10 h-full flex flex-col justify-start pt-16 lg:pt-20">
+      <div className="container-wrapper relative z-10 flex-grow flex flex-col justify-center">
         <div className="w-full">
           <ScrollObserver className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-3 sm:mb-4">

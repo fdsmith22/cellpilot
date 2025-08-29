@@ -59,20 +59,39 @@
     scroll-behavior: smooth;
   }
   
-  /* Desktop-only scroll snap with proper alignment */
+  /* Professional Layout System - Prevents Header Overlap */
+  /* Method 1: Box Model Approach (Currently Active) */
   @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
     html {
-      scroll-snap-type: y proximity; /* Changed to proximity for better footer access */
-      scroll-padding-top: var(--header-height); /* Use CSS variable */
+      scroll-snap-type: y proximity;
+      scroll-padding-top: var(--header-height);
     }
     
-    /* Only snap main content sections, not CTA or footer */
-    section.snap-section:not(:last-child) {
+    /* Sections use border-box sizing with padding for header space */
+    section.snap-section {
       scroll-snap-align: start;
-      scroll-snap-stop: always;
-      height: 100vh;
-      padding-top: var(--header-height); /* Push content below header */
+      min-height: 100vh;
+      /* Use box-sizing to include padding in height calculation */
+      box-sizing: border-box;
+      /* Padding creates space for fixed header */
+      padding-top: calc(var(--header-height) + 2rem);
+      padding-bottom: 2rem;
+      /* Content container should NOT use items-center */
+      display: flex;
+      flex-direction: column;
     }
+    
+    /* Alternative Method 2: Margin Approach (commented out) */
+    /* section.snap-section {
+      margin-top: var(--header-height);
+      min-height: calc(100vh - var(--header-height));
+    } */
+    
+    /* Alternative Method 3: Grid Approach (commented out) */
+    /* body {
+      display: grid;
+      grid-template-rows: var(--header-height) 1fr auto;
+    } */
     
     /* Last section (CTA) should have flexible height for footer access */
     section.snap-section:last-child {

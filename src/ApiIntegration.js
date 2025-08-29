@@ -5,8 +5,24 @@
 
 const ApiIntegration = {
   // API configuration
-  API_URL: 'https://api.cellpilot.io', // Update in production
-  API_KEY: PropertiesService.getScriptProperties().getProperty('CELLPILOT_API_KEY') || 'dev-key',
+  API_URL: 'https://api.cellpilot.io',
+  
+  /**
+   * Get API key from script properties
+   * Returns null if not configured (beta mode allows null)
+   */
+  getApiKey: function() {
+    try {
+      const key = PropertiesService.getScriptProperties().getProperty('CELLPILOT_API_KEY');
+      if (!key && typeof FeatureGate !== 'undefined' && FeatureGate.isBetaPeriod()) {
+        // In beta, API key is optional
+        return null;
+      }
+      return key;
+    } catch (e) {
+      return null;
+    }
+  },
   
   /**
    * Track installation event
@@ -59,13 +75,23 @@ const ApiIntegration = {
    */
   checkSubscription: function() {
     try {
+      const apiKey = this.getApiKey();
+      
+      // In beta mode without API key, return free tier
+      if (!apiKey) {
+        if (typeof FeatureGate !== 'undefined' && FeatureGate.isBetaPeriod()) {
+          return { plan: 'beta', operationsLimit: -1 };
+        }
+        return { plan: 'free', operationsLimit: 25 };
+      }
+      
       const userId = this.getUserId();
       const response = UrlFetchApp.fetch(
         `${this.API_URL}/api/subscription?userId=${userId}`,
         {
           method: 'GET',
           headers: {
-            'x-api-key': this.API_KEY,
+            'x-api-key': apiKey,
             'Content-Type': 'application/json'
           },
           muteHttpExceptions: true
@@ -94,12 +120,20 @@ const ApiIntegration = {
    */
   sendTrackingEvent: function(data) {
     try {
+      const apiKey = this.getApiKey();
+      
+      // Skip tracking if no API key (beta mode)
+      if (!apiKey) {
+        Logger.info('Skipping tracking - no API key configured');
+        return true;
+      }
+      
       const response = UrlFetchApp.fetch(
         `${this.API_URL}/api/track`,
         {
           method: 'POST',
           headers: {
-            'x-api-key': this.API_KEY,
+            'x-api-key': apiKey,
             'Content-Type': 'application/json'
           },
           payload: JSON.stringify(data),

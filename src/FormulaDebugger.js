@@ -314,10 +314,69 @@ const FormulaDebugger = {
         }
       }
       
-      // TODO: Check for indirect circular references
+      // Check for indirect circular references (limited to 2 levels deep)
+      const indirectRefs = this.checkIndirectCircularReferences(formula, cellRef, 2);
+      if (indirectRefs) {
+        return indirectRefs;
+      }
       
     } catch (error) {
       Logger.error('Error checking circular reference:', error);
+    }
+    
+    return null;
+  },
+  
+  /**
+   * Check for indirect circular references
+   */
+  checkIndirectCircularReferences: function(formula, cellRef, maxDepth = 2) {
+    try {
+      const sheet = SpreadsheetApp.getActiveSheet();
+      const refs = this.extractReferences(formula);
+      const visited = new Set([cellRef]);
+      
+      const checkDepth = (ref, depth) => {
+        if (depth > maxDepth) return null;
+        if (visited.has(ref)) {
+          return {
+            type: 'error',
+            category: 'circular_reference',
+            message: `Indirect circular reference detected: ${cellRef} -> ... -> ${ref}`,
+            severity: 'error',
+            fixes: [{
+              description: 'Remove circular dependency',
+              formula: formula
+            }]
+          };
+        }
+        
+        visited.add(ref);
+        
+        try {
+          const targetCell = sheet.getRange(ref);
+          const targetFormula = targetCell.getFormula();
+          if (targetFormula) {
+            const targetRefs = this.extractReferences(targetFormula);
+            for (const targetRef of targetRefs) {
+              const result = checkDepth(targetRef, depth + 1);
+              if (result) return result;
+            }
+          }
+        } catch (e) {
+          // Invalid reference, skip
+        }
+        
+        return null;
+      };
+      
+      for (const ref of refs) {
+        const result = checkDepth(ref, 1);
+        if (result) return result;
+      }
+      
+    } catch (error) {
+      Logger.error('Error checking indirect circular references:', error);
     }
     
     return null;

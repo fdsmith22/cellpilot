@@ -332,9 +332,36 @@ const DataCleaner = {
    */
   showDateFormattingOptions: function() {
     return Utils.safeExecute(() => {
-      // TODO: Implement date formatting UI
-      return UIComponents.buildLoadingCard('Date formatting coming soon...');
-    }, Utils.handleError(new Error('Feature unavailable'), 'Date formatting not yet available'), 'showDateFormattingOptions');
+      // Build date formatting options card
+      const card = CardService.newCardBuilder()
+        .setHeader(CardService.newCardHeader()
+          .setTitle('Date Formatting')
+          .setSubtitle('Standardize date formats'));
+      
+      const section = CardService.newCardSection()
+        .setHeader('Format Options');
+      
+      const formatSelect = CardService.newSelectionInput()
+        .setType(CardService.SelectionInputType.DROPDOWN)
+        .setTitle('Target Format')
+        .setFieldName('dateFormat')
+        .addItem('ISO (YYYY-MM-DD)', 'ISO', true)
+        .addItem('US (MM/DD/YYYY)', 'US', false)
+        .addItem('EU (DD/MM/YYYY)', 'EU', false)
+        .addItem('Written (Jan 1, 2024)', 'written', false);
+      
+      section.addWidget(formatSelect);
+      
+      const applyButton = CardService.newTextButton()
+        .setText('Apply Format')
+        .setOnClickAction(CardService.newAction()
+          .setFunctionName('applyDateFormatting'));
+      
+      section.addWidget(applyButton);
+      card.addSection(section);
+      
+      return card.build();
+    }, Utils.handleError(new Error('Feature unavailable'), 'Date formatting not available'), 'showDateFormattingOptions');
   },
   
   /**

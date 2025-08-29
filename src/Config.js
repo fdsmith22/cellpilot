@@ -160,11 +160,13 @@ const Config = {
   
   // Feature access by tier
   FEATURE_ACCESS: {
-    data_cleaning: ['free', 'starter', 'professional', 'business'],
-    formula_builder: ['free', 'starter', 'professional', 'business'], // Temporarily allow free for testing
-    automation: ['professional', 'business'],
-    industry_tools: ['professional', 'business'],
-    team_features: ['business']
+    data_cleaning: ['free', 'starter', 'professional', 'business', 'beta'],
+    formula_builder: ['free', 'starter', 'professional', 'business', 'beta'], // Temporarily allow free for testing
+    automation: ['professional', 'business', 'beta'],
+    industry_tools: ['professional', 'business', 'beta'],
+    advanced_analysis: ['professional', 'business', 'beta'],
+    data_pipeline: ['business', 'beta'],
+    team_features: ['business', 'beta']
   },
   
   // Performance settings

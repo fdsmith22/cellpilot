@@ -54,9 +54,8 @@ const Hero = () => {
         <div className="blob-shape w-96 h-96 bg-pastel-sky bottom-0 left-1/2 animation-delay-4000"></div>
       </div>
 
-      {/* Removed grid pattern - now using global grid */}
-      
-      <div className="container-wrapper relative z-10 h-full flex items-center justify-center py-8 sm:py-12">
+      {/* Content wrapper - uses flex-grow to center content in available space */}
+      <div className="container-wrapper relative z-10 flex-grow flex flex-col justify-center">
         <div className="max-w-5xl mx-auto">
           
           {/* Heading with new layout */}

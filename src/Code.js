@@ -14,6 +14,11 @@ function onOpen(e) {
   Logger.info('CellPilot initializing...');
   UserSettings.initialize();
   
+  // Initialize Feature Gate system
+  if (typeof FeatureGate !== 'undefined') {
+    FeatureGate.initialize();
+  }
+  
   // Create fallback menu for development/independent installation
   createCellPilotMenu();
   
@@ -25,7 +30,10 @@ function onOpen(e) {
   
   // Check subscription status (async)
   try {
-    ApiIntegration.checkSubscription();
+    const subscription = ApiIntegration.checkSubscription();
+    if (subscription && subscription.plan) {
+      UserSettings.save('userTier', subscription.plan);
+    }
   } catch (error) {
     Logger.info('Could not check subscription:', error);
   }
@@ -47,7 +55,7 @@ function buildHomepage(e) {
         .setTitle('CellPilot')
         .setSubtitle('Smart Spreadsheet Assistant')
         .setImageStyle(CardService.ImageStyle.SQUARE)
-        .setImageUrl('https://www.cellpilot.io/logo/icon-64x64.png')) // TODO: Update with hosted logo URL
+        .setImageUrl('https://fonts.gstatic.com/s/i/materialicons/table_chart/v6/24px.svg'))
       .addSection(CardService.newCardSection()
         .addWidget(CardService.newTextButton()
           .setText('Launch CellPilot Dashboard')
@@ -174,7 +182,7 @@ function buildMainCard(context) {
     .setHeader(CardService.newCardHeader()
       .setTitle('CellPilot')
       .setSubtitle('Spreadsheet Automation Made Simple')
-      .setImageUrl('https://www.cellpilot.io/logo/icon-64x64.png')); // TODO: Update with hosted logo URL
+      .setImageUrl('https://fonts.gstatic.com/s/i/materialicons/table_chart/v6/24px.svg'));
 
   // Context info section
   if (context && context.hasSelection) {
@@ -1377,12 +1385,13 @@ function previewDuplicates(options) {
  */
 function showFormulaBuilder() {
   try {
-    // Check tier access
-    const userTier = UserSettings.load('userTier', 'free');
-    if (!Config.FEATURE_ACCESS.formula_builder.includes(userTier)) {
-      showUpgradeDialog();
-      return;
+    // Check feature access with FeatureGate
+    if (!FeatureGate.enforceAccess('formula_builder')) {
+      return; // FeatureGate will show upgrade dialog
     }
+    
+    // Track feature usage
+    ApiIntegration.trackUsage('formula_builder', 'open');
 
     const html = HtmlService.createTemplateFromFile('FormulaBuilderTemplate')
       .evaluate()
@@ -1483,6 +1492,14 @@ function insertFormulaIntoCell(formulaText) {
  */
 function showAutomation() {
   try {
+    // Check feature access with FeatureGate
+    if (!FeatureGate.enforceAccess('automation')) {
+      return; // FeatureGate will show upgrade dialog
+    }
+    
+    // Track feature usage
+    ApiIntegration.trackUsage('automation', 'open');
+    
     const html = HtmlService.createTemplateFromFile('AutomationTemplate')
       .evaluate()
       .setTitle('Smart Automation')
@@ -2406,6 +2423,14 @@ function getCurrentUserContext() {
  */
 function showIndustryTemplate(category) {
   try {
+    // Check feature access with FeatureGate
+    if (!FeatureGate.enforceAccess('industry_tools')) {
+      return; // FeatureGate will show upgrade dialog
+    }
+    
+    // Track feature usage
+    ApiIntegration.trackUsage('industry_templates', 'open', 1);
+    
     const template = HtmlService.createTemplateFromFile('IndustryTemplatesTemplate');
     template.defaultCategory = category || 'real-estate';
     
@@ -3532,6 +3557,14 @@ function showConditionalFormattingWizard() {
  */
 function showPivotTableAssistant() {
   try {
+    // Check feature access with FeatureGate
+    if (!FeatureGate.enforceAccess('advanced_analysis')) {
+      return; // FeatureGate will show upgrade dialog
+    }
+    
+    // Track feature usage
+    ApiIntegration.trackUsage('pivot_table_assistant', 'open');
+    
     const html = HtmlService.createTemplateFromFile('PivotTableAssistantTemplate');
     const ui = HtmlService.createHtmlOutput(html.evaluate())
       .setTitle('Pivot Table Assistant')
