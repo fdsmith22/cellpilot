@@ -75,7 +75,7 @@ const Features = () => {
       
       <div className="container-wrapper relative z-10 py-16 sm:py-20 lg:py-24">
         <div className="w-full">
-          <ScrollObserver className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4">
+          <ScrollObserver className="text-center mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-3 sm:mb-4">
             Tools That Actually Help
           </h2>
@@ -85,7 +85,7 @@ const Features = () => {
           </p>
         </ScrollObserver>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 px-4 sm:px-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
           {features.map((feature, index) => (
             <ScrollObserver
               key={index}

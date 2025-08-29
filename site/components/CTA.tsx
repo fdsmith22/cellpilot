@@ -21,14 +21,14 @@ const CTA = () => {
       {/* Removed grid pattern - using global grid */}
       
       <div className="container-wrapper relative z-10 py-16 sm:py-20 lg:py-24">
-        <ScrollObserver className="max-w-4xl mx-auto text-center px-4">
+        <ScrollObserver className="text-center">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
             <span className="text-gradient">Transform</span>
             <span className="text-neutral-900"> Your Spreadsheets </span>
             <span className="text-gradient">Today</span>
           </h2>
           
-          <p className="text-base sm:text-lg md:text-xl text-neutral-600 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-neutral-600 mb-8 sm:mb-10 leading-relaxed max-w-3xl mx-auto">
             Save hours every week with intelligent automation tools designed for Google Sheets power users.
           </p>
           

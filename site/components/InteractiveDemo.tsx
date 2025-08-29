@@ -101,7 +101,7 @@ const InteractiveDemo = () => {
       </div>
       
       <div className="container-wrapper relative z-10">
-        <ScrollObserver className="text-center max-w-3xl mx-auto mb-12">
+        <ScrollObserver className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-neutral-900 mb-4">
             How It Works
           </h2>
@@ -110,7 +110,7 @@ const InteractiveDemo = () => {
           </p>
         </ScrollObserver>
 
-        <div className="max-w-6xl mx-auto">
+        <div className="w-full">
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             {/* Feature selector */}
             <div className="space-y-4">
@@ -154,7 +154,7 @@ const InteractiveDemo = () => {
         {/* Live spreadsheet interaction */}
         <div className="mt-16">
           <ScrollObserver>
-            <div className="bg-white/95 border border-neutral-200 shadow-lg rounded-2xl p-6 max-w-4xl mx-auto">
+            <div className="bg-white/95 border border-neutral-200 shadow-lg rounded-2xl p-6 max-w-5xl mx-auto">
               <h3 className="text-xl font-semibold text-neutral-900 mb-4 text-center">
                 Try It Yourself - Hover Over Cells
               </h3>
@@ -211,6 +211,7 @@ const InteractiveDemo = () => {
       </div>
     </section>
   )
+}
 }
 
 export default InteractiveDemo

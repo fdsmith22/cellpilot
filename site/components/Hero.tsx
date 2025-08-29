@@ -56,11 +56,11 @@ const Hero = () => {
 
       {/* Content wrapper with proper top padding to avoid header */}
       <div className="container-wrapper relative z-10 pt-20 sm:pt-24 lg:pt-28 pb-12 sm:pb-16 lg:pb-20">
-        <div className="max-w-5xl mx-auto">
+        <div className="w-full">
           
           {/* Heading with new layout */}
           <div className={`mb-8 sm:mb-10 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <div className="text-sm sm:text-base uppercase tracking-[0.3em] text-primary-600 font-semibold text-center mb-4">Google Sheets</div>
+            <div className="text-lg sm:text-xl md:text-2xl uppercase tracking-[0.2em] text-primary-600 font-bold text-center mb-4">Google Sheets</div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center mb-6">
               <div className="flex gap-2 sm:gap-3 md:gap-4 items-center justify-center flex-wrap max-w-full px-2">
                 {['R', 'e', 'i', 'm', 'a', 'g', 'i', 'n', 'e', 'd'].map((letter, index) => (
@@ -82,7 +82,7 @@ const Hero = () => {
           </div>
           
           {/* Feature cards */}
-          <div className={`grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 max-w-4xl mx-auto px-4 transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 mb-8 transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <div className="glass-card p-4 rounded-xl text-center">
               <div className="w-12 h-12 mx-auto mb-2 rounded-lg bg-gradient-to-br from-pastel-sky/30 to-pastel-sky/20 flex items-center justify-center">
                 <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,7 +181,7 @@ const Hero = () => {
 
           {/* Preview Window */}
           <div className={`mt-8 sm:mt-12 mb-12 sm:mb-16 transition-all duration-700 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <div className="relative mx-auto max-w-6xl px-2 sm:px-4">
+            <div className="relative w-full">
               <div className="bg-white/85 backdrop-blur-md rounded-xl sm:rounded-2xl p-0.5 sm:p-1 animate-float shadow-xl sm:shadow-2xl border border-neutral-400/40">
                 <div className="bg-gradient-to-br from-white to-neutral-50/50 rounded-lg sm:rounded-xl p-3 sm:p-5">
                   {/* Spreadsheet toolbar */}

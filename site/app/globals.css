@@ -148,7 +148,7 @@
 
 @layer components {
   .container-wrapper {
-    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden;
+    @apply w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8;
   }
 
   .section-padding {
