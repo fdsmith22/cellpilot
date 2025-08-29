@@ -55,6 +55,14 @@ function onInstall(e) {
 CellPilot.onInstall(e);
 }
 
+/**
+* Reset beta notification for testing
+* This allows the beta welcome message to show again
+*/
+function resetBetaNotification() {
+  return CellPilot.resetBetaNotification();
+}
+
 // ============================================
 // MAIN SIDEBAR & NAVIGATION
 // ============================================

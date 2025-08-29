@@ -25,8 +25,8 @@ const Header = () => {
   return (
     <header className={`sticky top-0 z-header transition-all duration-500 pt-safe-top ${
       scrolled 
-        ? 'bg-gradient-to-b from-white/98 via-white/92 to-transparent backdrop-blur-2xl border-b border-neutral-200/30 shadow-sm' 
-        : 'bg-gradient-to-b from-white/85 via-white/70 to-transparent backdrop-blur-xl'
+        ? 'bg-white/95 backdrop-blur-xl border-b border-neutral-200/30 shadow-sm' 
+        : 'bg-white/90 backdrop-blur-lg border-b border-neutral-200/20'
     }`}>
       {/* Grid pattern that fades into header */}
       <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" 

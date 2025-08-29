@@ -42,6 +42,16 @@ function onOpen(e) {
 }
 
 /**
+ * Reset beta notification for testing
+ * This allows the beta welcome message to show again
+ */
+function resetBetaNotification() {
+  UserSettings.remove('betaNotificationShown');
+  UserSettings.remove('betaJoinDate');
+  SpreadsheetApp.getUi().alert('Beta notification reset. Reload the spreadsheet to see the welcome message.');
+}
+
+/**
  * CardService homepage for Google Workspace Add-on
  * Called automatically when add-on is opened from sidebar
  */
@@ -168,6 +178,8 @@ function createCellPilotMenu() {
       .addSeparator()
       .addItem('Settings', prefix + 'showSettings')
       .addItem('Help', prefix + 'showHelp')
+      .addSeparator()
+      .addItem('Reset Beta Welcome (Testing)', prefix + 'resetBetaNotification')
       .addToUi();
   } catch (error) {
     Logger.error('Error creating menu:', error);

@@ -54,26 +54,26 @@ const Hero = () => {
         <div className="blob-shape w-96 h-96 bg-pastel-sky bottom-0 left-1/2 animation-delay-4000"></div>
       </div>
 
-      {/* Clean content wrapper - no complex positioning needed */}
-      <div className="container-wrapper relative z-10 py-12 sm:py-16 lg:py-20">
+      {/* Content wrapper with proper top padding to avoid header */}
+      <div className="container-wrapper relative z-10 pt-20 sm:pt-24 lg:pt-28 pb-12 sm:pb-16 lg:pb-20">
         <div className="max-w-5xl mx-auto">
           
           {/* Heading with new layout */}
           <div className={`mb-8 sm:mb-10 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <div className="text-sm sm:text-base uppercase tracking-[0.3em] text-primary-600 font-semibold text-center mb-4">Google Sheets</div>
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-center mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center mb-6">
               <div className="flex gap-2 sm:gap-3 md:gap-4 items-center justify-center flex-wrap max-w-full px-2">
                 {['R', 'e', 'i', 'm', 'a', 'g', 'i', 'n', 'e', 'd'].map((letter, index) => (
                   <span
                     key={index}
-                    className="inline-block px-3 sm:px-4 md:px-5 lg:px-6 py-2 sm:py-3 md:py-4 bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-sm border-2 border-primary-300/60 rounded-xl shadow-lg hover:shadow-2xl hover:scale-110 hover:-translate-y-2 transition-all cursor-default"
+                    className="inline-block px-2 sm:px-3 md:px-4 lg:px-5 py-1.5 sm:py-2 md:py-3 bg-gradient-to-br from-white/95 to-white/85 backdrop-blur-sm border-2 border-primary-300/60 rounded-xl shadow-lg hover:shadow-2xl hover:scale-110 hover:-translate-y-2 transition-all cursor-default"
                   style={{
                     opacity: 0,
                     animation: mounted ? `letterPop 0.6s ease-out ${800 + (index * 150)}ms forwards` : 'none',
                     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                   }}
                 >
-                  <span className="text-gradient font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">{letter}</span>
+                  <span className="text-gradient font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl">{letter}</span>
                 </span>
               ))}
               </div>
