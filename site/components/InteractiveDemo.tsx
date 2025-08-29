@@ -128,13 +128,12 @@ const InteractiveDemo = () => {
                     }`}
                   >
                     <div>
-                        <h3 className="text-lg font-semibold text-neutral-900 mb-2">
-                          {feature.title}
-                        </h3>
-                        <p className="text-sm text-neutral-600">
-                          {feature.description}
-                        </p>
-                      </div>
+                      <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+                        {feature.title}
+                      </h3>
+                      <p className="text-sm text-neutral-600">
+                        {feature.description}
+                      </p>
                     </div>
                   </button>
                 </ScrollObserver>
