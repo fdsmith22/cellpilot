@@ -28,7 +28,7 @@ const Footer = () => {
   }
 
   return (
-    <footer className="relative overflow-hidden bg-gradient-to-b from-white via-pastel-lavender/5 to-pastel-lavender/10" style={{scrollSnapAlign: 'none', scrollSnapStop: 'normal'}}>
+    <footer className="relative overflow-hidden bg-gradient-to-b from-white via-pastel-lavender/5 to-pastel-lavender/10 flex-shrink-0">
       {/* Subtle animated background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-pastel-mint/20 rounded-full blur-3xl"></div>

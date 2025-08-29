@@ -25,8 +25,10 @@ export default function Home() {
           <Features />
           <InteractiveDemo />
           <Pricing />
-          <CTA />
-          <Footer />
+          <div className="snap-section min-h-screen flex flex-col">
+            <CTA />
+            <Footer />
+          </div>
         </div>
       </div>
     </ViewportProvider>
