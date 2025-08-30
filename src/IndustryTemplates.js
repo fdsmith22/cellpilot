@@ -25,6 +25,335 @@ const IndustryTemplates = {
       alternate: '#F9FAFB',   // Light gray for alternating rows
       summary: '#F3F4F6',     // Gray for summary sections
       highlight: '#FEF3C7'    // Light yellow for highlights
+    },
+    // Industry-specific accent colors
+    industries: {
+      realEstate: {
+        primary: '#059669',     // Emerald for real estate
+        secondary: '#10B981',
+        accent: '#34D399',
+        dark: '#047857'
+      },
+      construction: {
+        primary: '#EA580C',     // Orange for construction
+        secondary: '#FB923C',
+        accent: '#FED7AA',
+        dark: '#C2410C'
+      },
+      healthcare: {
+        primary: '#0891B2',     // Cyan for healthcare
+        secondary: '#06B6D4',
+        accent: '#67E8F9',
+        dark: '#0E7490'
+      },
+      marketing: {
+        primary: '#7C3AED',     // Purple for marketing
+        secondary: '#8B5CF6',
+        accent: '#C4B5FD',
+        dark: '#6D28D9'
+      },
+      ecommerce: {
+        primary: '#DC2626',     // Red for e-commerce
+        secondary: '#EF4444',
+        accent: '#FCA5A5',
+        dark: '#B91C1C'
+      },
+      professional: {
+        primary: '#1E40AF',     // Blue for professional services
+        secondary: '#2563EB',
+        accent: '#93C5FD',
+        dark: '#1E3A8A'
+      }
+    }
+  },
+  
+  /**
+   * Create a professional dashboard with KPIs, charts, and summaries
+   */
+  createDashboard: function(sheet, config) {
+    try {
+      const { title, subtitle, kpis, charts, industry, dataSheets } = config;
+      const colors = this.colors.industries[industry] || this.colors.industries.professional;
+      
+      // Dashboard Header - merge first, then set values
+      sheet.getRange('A1:L1').merge();
+      sheet.getRange('A1').setValue(title).setFontSize(24).setFontWeight('bold').setFontColor(colors.dark).setHorizontalAlignment('center');
+      sheet.getRange('A1:L1').setBackground('#F9FAFB');
+      
+      sheet.getRange('A2:L2').merge();
+      sheet.getRange('A2').setValue(subtitle).setFontSize(14).setFontColor('#6B7280').setHorizontalAlignment('center');
+      sheet.getRange('A2:L2').setBackground('#F9FAFB');
+      
+      // Add border after merging
+      sheet.getRange('A1:L2').setBorder(false, false, true, false, false, false, colors.primary, SpreadsheetApp.BorderStyle.SOLID_THICK);
+      
+      // Last Updated
+      sheet.getRange('A4').setValue('Last Updated:').setFontWeight('bold');
+      sheet.getRange('B4').setValue(new Date()).setNumberFormat('dd/mm/yyyy hh:mm');
+      
+      // KPI Cards Row (Top metrics)
+      let currentRow = 6;
+      sheet.getRange(`A${currentRow}:L${currentRow}`).merge();
+      sheet.getRange(`A${currentRow}`).setValue('KEY PERFORMANCE INDICATORS').setFontSize(16).setFontWeight('bold').setFontColor(colors.dark);
+      currentRow += 2;
+    
+      // Create KPI cards (4 per row)
+      const kpiStartRow = currentRow;
+      kpis.forEach((kpi, index) => {
+        const col = (index % 4) * 3 + 1; // 3 columns per KPI
+        const row = kpiStartRow + Math.floor(index / 4) * 4; // 4 rows per KPI card
+        
+        // KPI value cell - merge and style
+        sheet.getRange(row, col, 1, 2).merge();
+        sheet.getRange(row, col).setFormula(kpi.value).setFontSize(20).setFontWeight('bold')
+          .setFontColor(colors.dark).setHorizontalAlignment('center')
+          .setBackground(colors.accent);
+        
+        // KPI label cell - merge and style
+        sheet.getRange(row + 1, col, 1, 2).merge();
+        sheet.getRange(row + 1, col).setValue(kpi.label).setFontSize(10)
+          .setFontColor('#6B7280').setHorizontalAlignment('center')
+          .setBackground(colors.accent);
+        
+        // KPI trend (if provided) - merge and style
+        if (kpi.trend) {
+          sheet.getRange(row + 2, col, 1, 2).merge();
+          sheet.getRange(row + 2, col).setValue(kpi.trend).setFontSize(9)
+            .setFontColor(kpi.trendColor || '#6B7280').setHorizontalAlignment('center')
+            .setBackground(colors.accent);
+        }
+        
+        // Add border around the entire KPI card
+        sheet.getRange(row, col, 3, 2).setBorder(true, true, true, true, false, false, colors.primary, SpreadsheetApp.BorderStyle.SOLID);
+      });
+    
+    currentRow = kpiStartRow + Math.ceil(kpis.length / 4) * 4 + 2;
+    
+      // Charts Section
+      if (charts && charts.length > 0) {
+        sheet.getRange(`A${currentRow}:L${currentRow}`).merge();
+        sheet.getRange(`A${currentRow}`).setValue('ANALYTICS & INSIGHTS').setFontSize(16).setFontWeight('bold').setFontColor(colors.dark);
+        currentRow += 2;
+        
+        charts.forEach(chart => {
+          // Chart title - merge first
+          sheet.getRange(`A${currentRow}:F${currentRow}`).merge();
+          sheet.getRange(`A${currentRow}`).setValue(chart.title).setFontSize(12).setFontWeight('bold');
+          currentRow++;
+          
+          // Chart description - merge first
+          sheet.getRange(`A${currentRow}:F${currentRow}`).merge();
+          sheet.getRange(`A${currentRow}`).setValue(chart.description).setFontSize(10).setFontColor('#6B7280');
+          currentRow++;
+          
+          // Chart area placeholder - merge first
+          const chartRange = sheet.getRange(currentRow, 1, 8, 6);
+          chartRange.merge();
+          sheet.getRange(currentRow, 1).setValue(`[${chart.type} Chart: ${chart.dataRange}]`)
+            .setHorizontalAlignment('center').setVerticalAlignment('middle')
+            .setFontColor('#9CA3AF').setBackground('#F3F4F6');
+          chartRange.setBorder(true, true, true, true, false, false, '#D1D5DB', SpreadsheetApp.BorderStyle.SOLID);
+          
+          currentRow += 9;
+        });
+      }
+      
+      // Summary Tables Section
+      sheet.getRange(`A${currentRow}:L${currentRow}`).merge();
+      sheet.getRange(`A${currentRow}`).setValue('SUMMARY TABLES').setFontSize(16).setFontWeight('bold').setFontColor(colors.dark);
+      currentRow += 2;
+      
+      // Auto-resize columns for better readability
+      for (let col = 1; col <= 12; col++) {
+        sheet.setColumnWidth(col, 100);
+      }
+      
+      return currentRow;
+    } catch (error) {
+      Logger.error('Error creating dashboard:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Advanced helper functions for creating professional templates
+   */
+  
+  /**
+   * Add sparkline charts to show trends
+   */
+  addSparkline: function(sheet, targetCell, dataRange, type = 'line', options = {}) {
+    try {
+      const defaultOptions = {
+        linewidth: 2,
+        color: options.color || '#4285F4',
+        ...options
+      };
+      
+      const optionsArray = [`"charttype","${type}"`];
+      for (const [key, value] of Object.entries(defaultOptions)) {
+        if (key !== 'charttype') {
+          optionsArray.push(`"${key}","${value}"`);
+        }
+      }
+      
+      const formula = `=SPARKLINE(${dataRange},{${optionsArray.join(';')}})`;
+      sheet.getRange(targetCell).setFormula(formula);
+    } catch (error) {
+      // Skip sparkline if it fails
+      Logger.log('Sparkline skipped: ' + error.toString());
+    }
+  },
+  
+  /**
+   * Create dynamic summary tables with QUERY
+   */
+  createSummaryTable: function(sheet, startRow, title, dataSheet, config) {
+    const { groupBy, aggregate, filters } = config;
+    const colors = this.colors.industries[config.industry] || this.colors.primary;
+    
+    // Title
+    sheet.getRange(startRow, 1).setValue(title)
+      .setFontSize(14).setFontWeight('bold').setFontColor(colors.dark);
+    sheet.getRange(startRow, 1, 1, 6).merge().setBackground(colors.accent);
+    
+    // Build QUERY formula
+    let query = `SELECT ${groupBy}, `;
+    aggregate.forEach((agg, index) => {
+      query += `${agg.function}(${agg.column})`;
+      if (index < aggregate.length - 1) query += ', ';
+    });
+    
+    if (filters && filters.length > 0) {
+      query += ' WHERE ';
+      filters.forEach((filter, index) => {
+        query += filter;
+        if (index < filters.length - 1) query += ' AND ';
+      });
+    }
+    
+    query += ` GROUP BY ${groupBy} ORDER BY ${groupBy}`;
+    
+    const formula = `=QUERY('${dataSheet}'!A:Z,"${query}",1)`;
+    sheet.getRange(startRow + 2, 1).setFormula(formula);
+    
+    return startRow + 2;
+  },
+  
+  /**
+   * Add interactive filters with data validation
+   */
+  addInteractiveFilters: function(sheet, filterRow, dataSheet, columns) {
+    sheet.getRange(filterRow, 1).setValue('FILTERS:')
+      .setFontWeight('bold').setBackground('#F3F4F6');
+    
+    columns.forEach((col, index) => {
+      const colNum = (index * 2) + 2;
+      
+      // Label
+      sheet.getRange(filterRow, colNum).setValue(col.label + ':')
+        .setFontWeight('bold');
+      
+      // Dropdown with unique values
+      const uniqueFormula = `=UNIQUE('${dataSheet}'!${col.range})`;
+      const hiddenRange = sheet.getRange(100 + index, 20); // Hidden area for unique values
+      hiddenRange.setFormula(uniqueFormula);
+      
+      const validationRule = SpreadsheetApp.newDataValidation()
+        .requireValueInRange(hiddenRange, true)
+        .setAllowInvalid(false)
+        .build();
+      
+      sheet.getRange(filterRow, colNum + 1).setDataValidation(validationRule)
+        .setBackground('#FFFFFF')
+        .setBorder(true, true, true, true, false, false, '#D1D5DB', SpreadsheetApp.BorderStyle.SOLID);
+    });
+  },
+  
+  /**
+   * Create status tracking with icons
+   */
+  createStatusTracking: function(sheet, statusColumn, startRow = 2, endRow = 100) {
+    const statusRange = sheet.getRange(`${statusColumn}${startRow}:${statusColumn}${endRow}`);
+    
+    // Status options with colors
+    const statuses = [
+      { text: 'Complete', color: '#D4EDDA', icon: '✓' },
+      { text: 'In Progress', color: '#FFF3CD', icon: '⚡' },
+      { text: 'Pending', color: '#F8D7DA', icon: '⏳' },
+      { text: 'On Hold', color: '#D1ECF1', icon: '⏸' },
+      { text: 'Cancelled', color: '#F5F5F5', icon: '✗' }
+    ];
+    
+    // Create data validation
+    const statusList = statuses.map(s => s.text);
+    const validationRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(statusList, true)
+      .build();
+    statusRange.setDataValidation(validationRule);
+    
+    // Add conditional formatting for each status
+    const rules = [];
+    statuses.forEach(status => {
+      const rule = SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo(status.text)
+        .setBackground(status.color)
+        .setRanges([statusRange])
+        .build();
+      rules.push(rule);
+    });
+    
+    sheet.setConditionalFormatRules(rules);
+  },
+  
+  /**
+   * Add progress bars using SPARKLINE
+   */
+  addProgressBar: function(sheet, cell, percentage, color = '#4CAF50') {
+    const formula = `=SPARKLINE(${percentage},{"charttype","bar";"max",100;"color1","${color}"})`;
+    sheet.getRange(cell).setFormula(formula);
+  },
+  
+  /**
+   * Create mini dashboard within a sheet
+   */
+  createMiniDashboard: function(sheet, startRow, startCol, metrics) {
+    // Simple dashboard without merging - just create a summary row
+    try {
+      // Dashboard title
+      sheet.getRange(startRow, startCol).setValue('DASHBOARD METRICS')
+        .setFontSize(12).setFontWeight('bold')
+        .setBackground('#E3F2FD')
+        .setFontColor('#1976D2');
+      
+      // Create simple metric display in rows 2-4
+      const metricsPerRow = 4;
+      for (let i = 0; i < metrics.length && i < 6; i++) {
+        const metric = metrics[i];
+        const row = startRow + 1 + Math.floor(i / metricsPerRow) * 2;
+        const col = startCol + (i % metricsPerRow) * 3;
+        
+        // Label
+        sheet.getRange(row, col).setValue(metric.label)
+          .setFontSize(9)
+          .setFontColor('#666666')
+          .setFontWeight('bold');
+        
+        // Value (formula) - wrap in IFERROR to prevent errors
+        const safeFormula = `=IFERROR(${metric.formula},"0")`;
+        sheet.getRange(row + 1, col).setFormula(safeFormula)
+          .setFontSize(11)
+          .setFontWeight('bold')
+          .setFontColor(metric.color || '#333333');
+      }
+      
+      // Add separator line
+      sheet.getRange(startRow + 5, startCol, 1, 12)
+        .setBackground('#E0E0E0');
+        
+    } catch (error) {
+      // If dashboard fails, continue with sheet setup
+      Logger.log('Dashboard skipped: ' + error.toString());
     }
   },
   
@@ -32,24 +361,62 @@ const IndustryTemplates = {
    * Apply professional formatting to a range
    */
   applyProfessionalFormatting: function(sheet, startRow, endRow, startCol, endCol) {
-    const range = sheet.getRange(startRow, startCol, endRow - startRow + 1, endCol - startCol + 1);
-    
-    // Apply alternating row colors
-    for (let row = startRow; row <= endRow; row++) {
-      const rowRange = sheet.getRange(row, startCol, 1, endCol - startCol + 1);
-      if (row % 2 === 0) {
-        rowRange.setBackground(this.colors.backgrounds.alternate);
+    // Handle overloaded calls
+    if (arguments.length === 2) {
+      // Sheet and maxRows
+      const maxRows = startRow;
+      const lastColumn = sheet.getLastColumn() || 1;
+      const lastRow = Math.min(sheet.getLastRow() || 1, maxRows);
+      
+      if (lastRow > 1 && lastColumn > 0) {
+        startRow = 2;
+        endRow = lastRow;
+        startCol = 1;
+        endCol = lastColumn;
       } else {
-        rowRange.setBackground(this.colors.backgrounds.main);
+        return;
       }
+    } else if (arguments.length === 3) {
+      // Sheet, endRow, startRow (our enhanced functions use this)
+      const tempEnd = startRow;
+      const tempStart = endRow;
+      startRow = tempStart;
+      endRow = tempEnd;
+      startCol = 1;
+      endCol = sheet.getLastColumn() || 12;
     }
     
-    // Add borders
-    range.setBorder(true, true, true, true, true, true, '#D1D5DB', SpreadsheetApp.BorderStyle.SOLID);
+    // Validate parameters
+    if (!sheet || !startRow || !endRow || startRow > endRow) {
+      return;
+    }
     
-    // Set font
-    range.setFontFamily('Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif');
-    range.setFontSize(10);
+    // Set defaults for columns if not provided
+    startCol = startCol || 1;
+    endCol = endCol || sheet.getLastColumn() || 12;
+    
+    try {
+      const range = sheet.getRange(startRow, startCol, endRow - startRow + 1, endCol - startCol + 1);
+      
+      // Apply alternating row colors
+      for (let row = startRow; row <= endRow; row++) {
+        const rowRange = sheet.getRange(row, startCol, 1, endCol - startCol + 1);
+        if (row % 2 === 0) {
+          rowRange.setBackground(this.colors.backgrounds.alternate);
+        } else {
+          rowRange.setBackground(this.colors.backgrounds.main);
+        }
+      }
+      
+      // Add borders
+      range.setBorder(true, true, true, true, true, true, '#D1D5DB', SpreadsheetApp.BorderStyle.SOLID);
+      
+      // Set font
+      range.setFontFamily('Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif');
+      range.setFontSize(10);
+    } catch (error) {
+      Logger.error('Error applying professional formatting:', error);
+    }
   },
   
   /**
@@ -253,44 +620,123 @@ const IndustryTemplates = {
     
     switch (templateType) {
       case 'commission-tracker':
-        const commissionSheet = spreadsheet.insertSheet(prefix + 'Commission Tracker');
-        const pipelineSheet = spreadsheet.insertSheet(prefix + 'Pipeline');
-        const dashboardSheet = spreadsheet.insertSheet(prefix + 'Dashboard');
-        sheets.push(commissionSheet.getName(), pipelineSheet.getName(), dashboardSheet.getName());
+        // Use the Professional Real Estate Template - single comprehensive version
+        const result = RealEstateTemplate.build(spreadsheet, isPreview);
         
-        // Always setup sheets to show data in preview
-        this.setupCommissionTrackerSheet(commissionSheet);
-        this.setupPipelineSheet(pipelineSheet);
-        this.setupDashboardSheet(dashboardSheet);
+        if (result.success) {
+          sheets.push(...result.sheets);
+        } else if (result.errors && result.errors.length > 0) {
+          // Log errors for debugging but still return created sheets
+          Logger.log('RealEstateTemplate errors: ' + result.errors.join(', '));
+          if (result.sheets && result.sheets.length > 0) {
+            sheets.push(...result.sheets);
+          }
+        }
         break;
         
       case 'lead-pipeline':
+        const leadDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
         const leadSheet = spreadsheet.insertSheet(prefix + 'Lead Pipeline');
-        sheets.push(leadSheet.getName());
+        const followUpSheet = spreadsheet.insertSheet(prefix + 'Follow-ups');
+        sheets.push(leadDashboard.getName(), leadSheet.getName(), followUpSheet.getName());
+        
+        // Setup data sheets first
         this.setupLeadPipelineSheet(leadSheet);
+        this.setupFollowUpSheet(followUpSheet);
+        
+        // Use actual sheet names for dashboard formulas
+        const leadSheetName = leadSheet.getName();
+        const followUpSheetName = followUpSheet.getName();
+        
+        this.createDashboard(leadDashboard, {
+          title: 'Lead Pipeline Dashboard',
+          subtitle: 'Lead Generation & Conversion Analytics',
+          industry: 'realEstate',
+          kpis: [
+            { value: `=COUNTIF('${leadSheetName}'!F:F,"Hot")`, label: 'Hot Leads', trend: '+3 today', trendColor: '#EF4444' },
+            { value: `=COUNTIF('${leadSheetName}'!F:F,"Warm")`, label: 'Warm Leads', trend: '+5 this week', trendColor: '#F59E0B' },
+            { value: `=TEXT(COUNTIF('${leadSheetName}'!G:G,"Converted")/COUNTA('${leadSheetName}'!A:A),"0%")`, label: 'Conversion Rate' },
+            { value: `=COUNTIF('${followUpSheetName}'!E:E,TODAY())`, label: 'Follow-ups Today', trend: 'On schedule' }
+          ],
+          charts: [
+            { title: 'Lead Sources', type: 'Pie', description: 'Lead distribution by source', dataRange: `${leadSheetName}!D:D` },
+            { title: 'Conversion Funnel', type: 'Funnel', description: 'Lead progression through stages', dataRange: `${leadSheetName}!F:G` }
+          ]
+        });
+        spreadsheet.setActiveSheet(leadDashboard);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'property-manager':
+        const pmDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
         const propertySheet = spreadsheet.insertSheet(prefix + 'Properties');
         const tenantSheet = spreadsheet.insertSheet(prefix + 'Tenants');
         const maintenanceSheet = spreadsheet.insertSheet(prefix + 'Maintenance');
-        sheets.push(propertySheet.getName(), tenantSheet.getName(), maintenanceSheet.getName());
+        const incomeSheet = spreadsheet.insertSheet(prefix + 'Rental Income');
+        sheets.push(pmDashboard.getName(), propertySheet.getName(), tenantSheet.getName(), maintenanceSheet.getName(), incomeSheet.getName());
         
-        // Basic setup for property manager sheets
+        this.createDashboard(pmDashboard, {
+          title: 'Property Management Dashboard',
+          subtitle: 'Portfolio Performance & Maintenance Tracking',
+          industry: 'realEstate',
+          kpis: [
+            { value: '=COUNTA(\'Properties\'!A:A)-1', label: 'Total Properties' },
+            { value: '=TEXT(COUNTIF(\'Properties\'!F:F,"Occupied")/COUNTA(\'Properties\'!A:A),"0%")', label: 'Occupancy Rate', trend: '95% target', trendColor: '#10B981' },
+            { value: '=TEXT(SUM(\'Rental Income\'!E:E),"$#,##0")', label: 'Monthly Income', trend: '+5% MoM' },
+            { value: '=COUNTIF(\'Maintenance\'!G:G,"Open")', label: 'Open Tickets', trend: '-2 vs yesterday', trendColor: '#10B981' },
+            { value: '=TEXT(AVERAGE(\'Rental Income\'!E:E),"$#,##0")', label: 'Avg Rent' },
+            { value: '=COUNTIF(\'Tenants\'!H:H,"Current")', label: 'Active Tenants' },
+            { value: '=TEXT(SUM(\'Maintenance\'!F:F),"$#,##0")', label: 'Maintenance Costs', trend: 'Within budget' },
+            { value: '=TEXT((SUM(\'Rental Income\'!E:E)-SUM(\'Maintenance\'!F:F))/SUM(\'Rental Income\'!E:E),"0%")', label: 'Net Margin' }
+          ],
+          charts: [
+            { title: 'Occupancy Trend', type: 'Area', description: 'Monthly occupancy rates', dataRange: 'Properties!A:F' },
+            { title: 'Income vs Expenses', type: 'Column', description: 'Monthly financial performance', dataRange: 'Rental Income!A:E' },
+            { title: 'Maintenance by Type', type: 'Pie', description: 'Breakdown of maintenance requests', dataRange: 'Maintenance!C:C' }
+          ]
+        });
+        
         this.setupPropertySheet(propertySheet);
         this.setupTenantSheet(tenantSheet);
         this.setupMaintenanceSheet(maintenanceSheet);
+        this.setupRentalIncomeSheet(incomeSheet);
+        spreadsheet.setActiveSheet(pmDashboard);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'investment-analyzer':
+        const investDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
         const investmentSheet = spreadsheet.insertSheet(prefix + 'Investment Analysis');
         const cashFlowSheet = spreadsheet.insertSheet(prefix + 'Cash Flow');
         const roiSheet = spreadsheet.insertSheet(prefix + 'ROI Calculator');
-        sheets.push(investmentSheet.getName(), cashFlowSheet.getName(), roiSheet.getName());
+        const compareSheet = spreadsheet.insertSheet(prefix + 'Property Comparison');
+        sheets.push(investDashboard.getName(), investmentSheet.getName(), cashFlowSheet.getName(), roiSheet.getName(), compareSheet.getName());
+        
+        this.createDashboard(investDashboard, {
+          title: 'Real Estate Investment Dashboard',
+          subtitle: 'ROI Analysis & Cash Flow Projections',
+          industry: 'realEstate',
+          kpis: [
+            { value: '=TEXT(AVERAGE(\'ROI Calculator\'!F:F),"0.0%")', label: 'Avg Cap Rate', trend: 'Above market', trendColor: '#10B981' },
+            { value: '=TEXT(SUM(\'Cash Flow\'!G:G),"$#,##0")', label: 'Annual Cash Flow', trend: '+15% YoY' },
+            { value: '=TEXT(AVERAGE(\'ROI Calculator\'!H:H),"0.0%")', label: 'Avg Cash-on-Cash', trend: 'Excellent' },
+            { value: '=TEXT(MAX(\'Investment Analysis\'!K:K),"0.0")', label: 'Best IRR %', trend: 'Top performer' },
+            { value: '=TEXT(SUM(\'Investment Analysis\'!D:D),"$#,##0")', label: 'Total Invested' },
+            { value: '=COUNTA(\'Investment Analysis\'!A:A)-1', label: 'Properties Analyzed' }
+          ],
+          charts: [
+            { title: 'ROI Comparison', type: 'Bar', description: 'Compare returns across properties', dataRange: 'Property Comparison!A:E' },
+            { title: 'Cash Flow Projection', type: 'Line', description: '5-year cash flow forecast', dataRange: 'Cash Flow!A:G' },
+            { title: 'Investment Distribution', type: 'Pie', description: 'Portfolio allocation', dataRange: 'Investment Analysis!B:D' }
+          ]
+        });
         
         this.setupInvestmentSheet(investmentSheet);
         this.setupCashFlowSheet(cashFlowSheet);
         this.setupROISheet(roiSheet);
+        this.setupPropertyComparisonSheet(compareSheet);
+        spreadsheet.setActiveSheet(investDashboard);
+        spreadsheet.moveActiveSheet(1);
         break;
     }
     
@@ -306,27 +752,135 @@ const IndustryTemplates = {
     
     switch (templateType) {
       case 'material-tracker':
+        const matDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
         const materialSheet = spreadsheet.insertSheet(prefix + 'Material Tracker');
-        sheets.push(materialSheet.getName());
+        const suppliersSheet = spreadsheet.insertSheet(prefix + 'Suppliers');
+        const ordersSheet = spreadsheet.insertSheet(prefix + 'Purchase Orders');
+        sheets.push(matDashboard.getName(), materialSheet.getName(), suppliersSheet.getName(), ordersSheet.getName());
+        
+        this.createDashboard(matDashboard, {
+          title: 'Construction Materials Dashboard',
+          subtitle: 'Inventory & Supply Chain Management',
+          industry: 'construction',
+          kpis: [
+            { value: '=TEXT(SUM(\'Material Tracker\'!G:G),"$#,##0")', label: 'Total Inventory Value', trend: '+8% this month' },
+            { value: '=COUNTIF(\'Material Tracker\'!H:H,"Low")', label: 'Low Stock Items', trend: 'Order needed', trendColor: '#F59E0B' },
+            { value: '=COUNTIF(\'Purchase Orders\'!F:F,"Pending")', label: 'Pending Orders', trend: '3 arriving today' },
+            { value: '=TEXT(AVERAGE(\'Purchase Orders\'!E:E),"$#,##0")', label: 'Avg Order Value' },
+            { value: '=COUNT(\'Suppliers\'!A:A)-1', label: 'Active Suppliers' },
+            { value: '=TEXT(SUM(\'Purchase Orders\'!E:E),"$#,##0")', label: 'Total Orders MTD' }
+          ],
+          charts: [
+            { title: 'Material Usage Trend', type: 'Line', description: 'Track material consumption over time', dataRange: 'Material Tracker!A:D' },
+            { title: 'Stock Levels by Category', type: 'Column', description: 'Current inventory levels', dataRange: 'Material Tracker!B:D' },
+            { title: 'Supplier Performance', type: 'Bar', description: 'On-time delivery rates', dataRange: 'Suppliers!A:E' }
+          ]
+        });
+        
         this.setupMaterialTrackerSheet(materialSheet);
+        this.setupSuppliersSheet(suppliersSheet);
+        this.setupPurchaseOrdersSheet(ordersSheet);
+        spreadsheet.setActiveSheet(matDashboard);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'labor-manager':
+        const laborDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
         const laborSheet = spreadsheet.insertSheet(prefix + 'Labor Manager');
-        sheets.push(laborSheet.getName());
+        const crewSheet = spreadsheet.insertSheet(prefix + 'Crew Schedule');
+        const payrollSheet = spreadsheet.insertSheet(prefix + 'Payroll');
+        sheets.push(laborDashboard.getName(), laborSheet.getName(), crewSheet.getName(), payrollSheet.getName());
+        
+        this.createDashboard(laborDashboard, {
+          title: 'Labor Management Dashboard',
+          subtitle: 'Workforce Analytics & Scheduling',
+          industry: 'construction',
+          kpis: [
+            { value: '=COUNTA(\'Labor Manager\'!A:A)-1', label: 'Total Workers' },
+            { value: '=COUNTIF(\'Crew Schedule\'!E:E,TODAY())', label: 'On Site Today' },
+            { value: '=TEXT(SUM(\'Payroll\'!F:F),"$#,##0")', label: 'Weekly Payroll', trend: 'On budget' },
+            { value: '=TEXT(AVERAGE(\'Labor Manager\'!E:E),"0")', label: 'Avg Hours/Week' },
+            { value: '=TEXT(SUM(\'Labor Manager\'!F:F)/SUM(\'Labor Manager\'!E:E),"$#,##0")', label: 'Avg Hourly Rate' },
+            { value: '=COUNTIF(\'Labor Manager\'!G:G,"Certified")', label: 'Certified Workers', trend: '+2 this month', trendColor: '#10B981' }
+          ],
+          charts: [
+            { title: 'Labor Hours by Project', type: 'Pie', description: 'Time allocation across projects', dataRange: 'Crew Schedule!A:D' },
+            { title: 'Weekly Labor Costs', type: 'Area', description: 'Labor cost trends', dataRange: 'Payroll!A:F' },
+            { title: 'Crew Utilization', type: 'Column', description: 'Utilization rates by crew', dataRange: 'Labor Manager!A:E' }
+          ]
+        });
+        
         this.setupLaborManagerSheet(laborSheet);
+        this.setupCrewScheduleSheet(crewSheet);
+        this.setupPayrollSheet(payrollSheet);
+        spreadsheet.setActiveSheet(laborDashboard);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'change-orders':
+        const changeDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
         const changeSheet = spreadsheet.insertSheet(prefix + 'Change Orders');
-        sheets.push(changeSheet.getName());
+        const impactSheet = spreadsheet.insertSheet(prefix + 'Cost Impact');
+        const approvalSheet = spreadsheet.insertSheet(prefix + 'Approvals');
+        sheets.push(changeDashboard.getName(), changeSheet.getName(), impactSheet.getName(), approvalSheet.getName());
+        
+        this.createDashboard(changeDashboard, {
+          title: 'Change Order Management Dashboard',
+          subtitle: 'Project Change Tracking & Impact Analysis',
+          industry: 'construction',
+          kpis: [
+            { value: '=COUNTA(\'Change Orders\'!A:A)-1', label: 'Total Change Orders' },
+            { value: '=TEXT(SUM(\'Cost Impact\'!D:D),"$#,##0")', label: 'Total Cost Impact', trend: '+$45K this month', trendColor: '#F59E0B' },
+            { value: '=COUNTIF(\'Approvals\'!E:E,"Pending")', label: 'Pending Approvals', trend: '5 urgent', trendColor: '#EF4444' },
+            { value: '=TEXT(AVERAGE(\'Approvals\'!F:F),"0")', label: 'Avg Approval Days' },
+            { value: '=TEXT(COUNTIF(\'Approvals\'!E:E,"Approved")/COUNTA(\'Approvals\'!A:A),"0%")', label: 'Approval Rate' },
+            { value: '=SUM(\'Cost Impact\'!E:E)', label: 'Schedule Impact (days)', trend: '+10 days total' }
+          ],
+          charts: [
+            { title: 'Change Orders by Type', type: 'Pie', description: 'Distribution of change order types', dataRange: 'Change Orders!C:C' },
+            { title: 'Cost Impact Trend', type: 'Line', description: 'Cumulative cost impact over time', dataRange: 'Cost Impact!A:D' },
+            { title: 'Approval Timeline', type: 'Bar', description: 'Days to approval by project', dataRange: 'Approvals!A:F' }
+          ]
+        });
+        
         this.setupChangeOrderSheet(changeSheet);
+        this.setupCostImpactSheet(impactSheet);
+        this.setupApprovalsSheet(approvalSheet);
+        spreadsheet.setActiveSheet(changeDashboard);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'cost-estimator':
+        const costDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
         const estimateSheet = spreadsheet.insertSheet(prefix + 'Cost Estimator');
-        sheets.push(estimateSheet.getName());
+        const breakdownSheet = spreadsheet.insertSheet(prefix + 'Cost Breakdown');
+        const contingencySheet = spreadsheet.insertSheet(prefix + 'Contingency');
+        sheets.push(costDashboard.getName(), estimateSheet.getName(), breakdownSheet.getName(), contingencySheet.getName());
+        
+        this.createDashboard(costDashboard, {
+          title: 'Project Cost Estimation Dashboard',
+          subtitle: 'Budget Planning & Cost Analysis',
+          industry: 'construction',
+          kpis: [
+            { value: '=TEXT(SUM(\'Cost Estimator\'!F:F),"$#,##0")', label: 'Total Project Cost' },
+            { value: '=TEXT(SUM(\'Cost Breakdown\'!D:D),"$#,##0")', label: 'Materials Cost', trend: '35% of total' },
+            { value: '=TEXT(SUM(\'Cost Breakdown\'!E:E),"$#,##0")', label: 'Labor Cost', trend: '40% of total' },
+            { value: '=TEXT(SUM(\'Contingency\'!C:C),"$#,##0")', label: 'Contingency', trend: '10% buffer' },
+            { value: '=TEXT((SUM(\'Cost Estimator\'!F:F)-SUM(\'Cost Estimator\'!G:G))/SUM(\'Cost Estimator\'!F:F),"0%")', label: 'Profit Margin' },
+            { value: '=TEXT(SUM(\'Cost Estimator\'!F:F)/SUM(\'Cost Estimator\'!D:D),"$#,##0")', label: 'Cost per Sq Ft' }
+          ],
+          charts: [
+            { title: 'Cost Breakdown', type: 'Pie', description: 'Distribution of project costs', dataRange: 'Cost Breakdown!A:E' },
+            { title: 'Budget vs Actual', type: 'Column', description: 'Compare estimated vs actual costs', dataRange: 'Cost Estimator!A:G' },
+            { title: 'Risk Assessment', type: 'Bar', description: 'Cost risk by category', dataRange: 'Contingency!A:D' }
+          ]
+        });
+        
         this.setupCostEstimatorSheet(estimateSheet);
+        this.setupCostBreakdownSheet(breakdownSheet);
+        this.setupContingencySheet(contingencySheet);
+        spreadsheet.setActiveSheet(costDashboard);
+        spreadsheet.moveActiveSheet(1);
         break;
     }
     
@@ -342,27 +896,135 @@ const IndustryTemplates = {
     
     switch (templateType) {
       case 'prior-auth-tracker':
+        const authDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
         const priorAuthSheet = spreadsheet.insertSheet(prefix + 'Prior Auth');
-        sheets.push(priorAuthSheet.getName());
+        const statusSheet = spreadsheet.insertSheet(prefix + 'Auth Status');
+        const providersSheet = spreadsheet.insertSheet(prefix + 'Providers');
+        sheets.push(authDashboard.getName(), priorAuthSheet.getName(), statusSheet.getName(), providersSheet.getName());
+        
+        this.createDashboard(authDashboard, {
+          title: 'Prior Authorization Dashboard',
+          subtitle: 'Authorization Tracking & Performance Metrics',
+          industry: 'healthcare',
+          kpis: [
+            { value: '=COUNTIF(\'Prior Auth\'!F:F,"Pending")', label: 'Pending Auths', trend: '8 urgent', trendColor: '#F59E0B' },
+            { value: '=COUNTIF(\'Prior Auth\'!F:F,"Approved")', label: 'Approved Today', trend: '+15 vs yesterday', trendColor: '#10B981' },
+            { value: '=TEXT(COUNTIF(\'Prior Auth\'!F:F,"Approved")/COUNTA(\'Prior Auth\'!A:A),"0%")', label: 'Approval Rate', trend: '92% target' },
+            { value: '=AVERAGE(\'Auth Status\'!D:D)', label: 'Avg Days to Approve', trend: 'Improving' },
+            { value: '=COUNTIF(\'Prior Auth\'!F:F,"Denied")', label: 'Denials MTD', trend: '-20% vs last month', trendColor: '#10B981' },
+            { value: '=COUNTIF(\'Auth Status\'!E:E,"Expedited")', label: 'Expedited Cases' }
+          ],
+          charts: [
+            { title: 'Authorization Status', type: 'Pie', description: 'Current authorization distribution', dataRange: 'Prior Auth!F:F' },
+            { title: 'Processing Time Trend', type: 'Line', description: 'Average days to approval', dataRange: 'Auth Status!A:D' },
+            { title: 'Top Denial Reasons', type: 'Bar', description: 'Common denial reasons', dataRange: 'Prior Auth!G:H' }
+          ]
+        });
+        
         this.setupPriorAuthSheet(priorAuthSheet);
+        this.setupAuthStatusSheet(statusSheet);
+        this.setupProvidersSheet(providersSheet);
+        spreadsheet.setActiveSheet(authDashboard);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'revenue-cycle':
+        const revDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
         const revenueSheet = spreadsheet.insertSheet(prefix + 'Revenue Cycle');
-        sheets.push(revenueSheet.getName());
+        const claimsSheet = spreadsheet.insertSheet(prefix + 'Claims');
+        const agingSheet = spreadsheet.insertSheet(prefix + 'AR Aging');
+        sheets.push(revDashboard.getName(), revenueSheet.getName(), claimsSheet.getName(), agingSheet.getName());
+        
+        this.createDashboard(revDashboard, {
+          title: 'Revenue Cycle Management Dashboard',
+          subtitle: 'Financial Performance & Collections Analytics',
+          industry: 'healthcare',
+          kpis: [
+            { value: '=TEXT(SUM(\'Revenue Cycle\'!E:E),"$#,##0")', label: 'Total Revenue MTD', trend: '+12% vs last month', trendColor: '#10B981' },
+            { value: '=TEXT(SUM(\'AR Aging\'!C:C),"$#,##0")', label: 'Outstanding AR', trend: 'Decreasing' },
+            { value: '=AVERAGE(\'Claims\'!H:H)', label: 'Days in AR', trend: '45 day target' },
+            { value: '=TEXT(COUNTIF(\'Claims\'!F:F,"Paid")/COUNTA(\'Claims\'!A:A),"0%")', label: 'Collection Rate', trend: '95% benchmark' },
+            { value: '=TEXT(SUM(\'Claims\'!G:G),"$#,##0")', label: 'Denied Claims Value', trend: 'Need attention', trendColor: '#EF4444' },
+            { value: '=COUNTIF(\'AR Aging\'!D:D,">90")', label: 'Claims >90 Days', trend: '-5 this week', trendColor: '#10B981' }
+          ],
+          charts: [
+            { title: 'Revenue Trend', type: 'Area', description: 'Monthly revenue performance', dataRange: 'Revenue Cycle!A:E' },
+            { title: 'AR Aging Buckets', type: 'Column', description: 'Accounts receivable by age', dataRange: 'AR Aging!A:C' },
+            { title: 'Payer Mix', type: 'Pie', description: 'Revenue by insurance type', dataRange: 'Claims!D:E' }
+          ]
+        });
+        
         this.setupRevenueCycleSheet(revenueSheet);
+        this.setupClaimsSheet(claimsSheet);
+        this.setupARAgingSheet(agingSheet);
+        spreadsheet.setActiveSheet(revDashboard);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'denial-analytics':
+        const denialDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
         const denialSheet = spreadsheet.insertSheet(prefix + 'Denial Analytics');
-        sheets.push(denialSheet.getName());
+        const appealsSheet = spreadsheet.insertSheet(prefix + 'Appeals');
+        const trendsSheet = spreadsheet.insertSheet(prefix + 'Denial Trends');
+        sheets.push(denialDashboard.getName(), denialSheet.getName(), appealsSheet.getName(), trendsSheet.getName());
+        
+        this.createDashboard(denialDashboard, {
+          title: 'Denial Management Dashboard',
+          subtitle: 'Denial Analytics & Recovery Performance',
+          industry: 'healthcare',
+          kpis: [
+            { value: '=TEXT(COUNTA(\'Denial Analytics\'!A:A)-1/COUNTA(\'Claims\'!A:A),"0%")', label: 'Denial Rate', trend: '5% target', trendColor: '#F59E0B' },
+            { value: '=TEXT(SUM(\'Denial Analytics\'!E:E),"$#,##0")', label: 'Total Denied Amount', trend: 'Reducing' },
+            { value: '=TEXT(SUM(\'Appeals\'!G:G),"$#,##0")', label: 'Amount Recovered', trend: '+$125K MTD', trendColor: '#10B981' },
+            { value: '=TEXT(COUNTIF(\'Appeals\'!F:F,"Won")/COUNTA(\'Appeals\'!A:A),"0%")', label: 'Appeal Success Rate', trend: '75% average' },
+            { value: '=COUNTIF(\'Denial Analytics\'!D:D,"Clinical")', label: 'Clinical Denials', trend: 'Focus area' },
+            { value: '=AVERAGE(\'Appeals\'!H:H)', label: 'Days to Overturn', trend: 'Improving' }
+          ],
+          charts: [
+            { title: 'Denial Categories', type: 'Pie', description: 'Distribution by denial type', dataRange: 'Denial Analytics!D:D' },
+            { title: 'Recovery Trend', type: 'Line', description: 'Monthly recovery amounts', dataRange: 'Appeals!A:G' },
+            { title: 'Top Denial Codes', type: 'Bar', description: 'Most common denial reasons', dataRange: 'Denial Trends!A:C' }
+          ]
+        });
+        
         this.setupDenialAnalyticsSheet(denialSheet);
+        this.setupAppealsSheet(appealsSheet);
+        this.setupDenialTrendsSheet(trendsSheet);
+        spreadsheet.setActiveSheet(denialDashboard);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'insurance-verifier':
+        const insDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
         const insuranceSheet = spreadsheet.insertSheet(prefix + 'Insurance Verification');
-        sheets.push(insuranceSheet.getName());
+        const eligibilitySheet = spreadsheet.insertSheet(prefix + 'Eligibility');
+        const benefitsSheet = spreadsheet.insertSheet(prefix + 'Benefits');
+        sheets.push(insDashboard.getName(), insuranceSheet.getName(), eligibilitySheet.getName(), benefitsSheet.getName());
+        
+        this.createDashboard(insDashboard, {
+          title: 'Insurance Verification Dashboard',
+          subtitle: 'Coverage Verification & Benefits Analysis',
+          industry: 'healthcare',
+          kpis: [
+            { value: '=COUNTIF(\'Insurance Verification\'!F:F,"Verified")', label: 'Verified Today', trend: '125 completed' },
+            { value: '=COUNTIF(\'Insurance Verification\'!F:F,"Pending")', label: 'Pending Verification', trend: '45 in queue' },
+            { value: '=TEXT(COUNTIF(\'Eligibility\'!D:D,"Active")/COUNTA(\'Eligibility\'!A:A),"0%")', label: 'Active Coverage Rate', trend: '98% average' },
+            { value: '=COUNTIF(\'Benefits\'!E:E,"Out of Network")', label: 'OON Cases', trend: 'Needs review', trendColor: '#F59E0B' },
+            { value: '=AVERAGE(\'Insurance Verification\'!H:H)', label: 'Avg Copay Amount', trend: 'Stable' },
+            { value: '=COUNTIF(\'Insurance Verification\'!G:G,"High")', label: 'High Deductibles', trend: 'Increasing trend' }
+          ],
+          charts: [
+            { title: 'Insurance Mix', type: 'Pie', description: 'Patient insurance distribution', dataRange: 'Insurance Verification!C:C' },
+            { title: 'Verification Status', type: 'Column', description: 'Daily verification metrics', dataRange: 'Insurance Verification!A:F' },
+            { title: 'Benefits Summary', type: 'Bar', description: 'Coverage types analysis', dataRange: 'Benefits!A:D' }
+          ]
+        });
+        
         this.setupInsuranceVerifierSheet(insuranceSheet);
+        this.setupEligibilitySheet(eligibilitySheet);
+        this.setupBenefitsSheet(benefitsSheet);
+        spreadsheet.setActiveSheet(insDashboard);
+        spreadsheet.moveActiveSheet(1);
         break;
     }
     
@@ -378,27 +1040,135 @@ const IndustryTemplates = {
     
     switch (templateType) {
       case 'lead-scoring-system':
+        const leadDash = spreadsheet.insertSheet(prefix + 'Dashboard');
         const leadScoringSheet = spreadsheet.insertSheet(prefix + 'Lead Scoring');
-        sheets.push(leadScoringSheet.getName());
+        const segmentsSheet = spreadsheet.insertSheet(prefix + 'Segments');
+        const engagementSheet = spreadsheet.insertSheet(prefix + 'Engagement');
+        sheets.push(leadDash.getName(), leadScoringSheet.getName(), segmentsSheet.getName(), engagementSheet.getName());
+        
+        this.createDashboard(leadDash, {
+          title: 'Lead Scoring & Qualification Dashboard',
+          subtitle: 'Lead Quality & Conversion Analytics',
+          industry: 'marketing',
+          kpis: [
+            { value: '=COUNTIF(\'Lead Scoring\'!E:E,">80")', label: 'Hot Leads', trend: '+12 today', trendColor: '#EF4444' },
+            { value: '=COUNTIF(\'Lead Scoring\'!E:E,"50-80")', label: 'Warm Leads', trend: '+25 this week', trendColor: '#F59E0B' },
+            { value: '=TEXT(AVERAGE(\'Lead Scoring\'!E:E),"0")', label: 'Avg Lead Score' },
+            { value: '=TEXT(COUNTIF(\'Lead Scoring\'!F:F,"Qualified")/COUNTA(\'Lead Scoring\'!A:A),"0%")', label: 'Qualification Rate' },
+            { value: '=COUNTIF(\'Engagement\'!D:D,">5")', label: 'Highly Engaged', trend: 'Growing', trendColor: '#10B981' },
+            { value: '=TEXT(AVERAGE(\'Lead Scoring\'!G:G),"0")', label: 'Days to Convert' }
+          ],
+          charts: [
+            { title: 'Lead Distribution', type: 'Pie', description: 'Leads by score category', dataRange: 'Lead Scoring!E:E' },
+            { title: 'Conversion Funnel', type: 'Funnel', description: 'Lead progression stages', dataRange: 'Lead Scoring!F:F' },
+            { title: 'Engagement Trends', type: 'Line', description: 'Weekly engagement metrics', dataRange: 'Engagement!A:D' }
+          ]
+        });
+        
         this.setupLeadScoringSheet(leadScoringSheet);
+        this.setupSegmentsSheet(segmentsSheet);
+        this.setupEngagementSheet(engagementSheet);
+        spreadsheet.setActiveSheet(leadDash);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'content-performance':
+        const contentDash = spreadsheet.insertSheet(prefix + 'Dashboard');
         const contentSheet = spreadsheet.insertSheet(prefix + 'Content Performance');
-        sheets.push(contentSheet.getName());
+        const metricsSheet = spreadsheet.insertSheet(prefix + 'Metrics');
+        const channelsSheet = spreadsheet.insertSheet(prefix + 'Channels');
+        sheets.push(contentDash.getName(), contentSheet.getName(), metricsSheet.getName(), channelsSheet.getName());
+        
+        this.createDashboard(contentDash, {
+          title: 'Content Performance Dashboard',
+          subtitle: 'Content Analytics & ROI Tracking',
+          industry: 'marketing',
+          kpis: [
+            { value: '=SUM(\'Content Performance\'!D:D)', label: 'Total Views', trend: '+15% MoM', trendColor: '#10B981' },
+            { value: '=TEXT(AVERAGE(\'Metrics\'!E:E),"0%")', label: 'Avg Engagement Rate', trend: 'Above benchmark' },
+            { value: '=COUNTIF(\'Content Performance\'!G:G,"Viral")', label: 'Viral Content', trend: '3 this month' },
+            { value: '=TEXT(SUM(\'Content Performance\'!H:H),"$#,##0")', label: 'Content ROI' },
+            { value: '=MAX(\'Metrics\'!F:F)', label: 'Top Share Count', trend: 'Record high', trendColor: '#10B981' },
+            { value: '=TEXT(AVERAGE(\'Metrics\'!C:C),"0:00")', label: 'Avg Time on Page' }
+          ],
+          charts: [
+            { title: 'Content Type Performance', type: 'Column', description: 'Performance by content type', dataRange: 'Content Performance!B:D' },
+            { title: 'Channel Distribution', type: 'Pie', description: 'Traffic by channel', dataRange: 'Channels!A:C' },
+            { title: 'Engagement Trend', type: 'Area', description: 'Monthly engagement metrics', dataRange: 'Metrics!A:E' }
+          ]
+        });
+        
         this.setupContentPerformanceSheet(contentSheet);
+        this.setupMetricsSheet(metricsSheet);
+        this.setupChannelsSheet(channelsSheet);
+        spreadsheet.setActiveSheet(contentDash);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'customer-journey':
+        const journeyDash = spreadsheet.insertSheet(prefix + 'Dashboard');
         const journeySheet = spreadsheet.insertSheet(prefix + 'Customer Journey');
-        sheets.push(journeySheet.getName());
+        const touchpointsSheet = spreadsheet.insertSheet(prefix + 'Touchpoints');
+        const conversionSheet = spreadsheet.insertSheet(prefix + 'Conversions');
+        sheets.push(journeyDash.getName(), journeySheet.getName(), touchpointsSheet.getName(), conversionSheet.getName());
+        
+        this.createDashboard(journeyDash, {
+          title: 'Customer Journey Analytics Dashboard',
+          subtitle: 'Path to Purchase & Attribution Analysis',
+          industry: 'marketing',
+          kpis: [
+            { value: '=AVERAGE(\'Touchpoints\'!C:C)', label: 'Avg Touchpoints', trend: '7.2 before purchase' },
+            { value: '=TEXT(AVERAGE(\'Customer Journey\'!E:E),"0")', label: 'Journey Duration (days)' },
+            { value: '=TEXT(COUNTIF(\'Conversions\'!D:D,"Completed")/COUNTA(\'Customer Journey\'!A:A),"0%")', label: 'Conversion Rate' },
+            { value: '=TEXT(SUM(\'Conversions\'!E:E),"$#,##0")', label: 'Total Revenue' },
+            { value: '=COUNTIF(\'Customer Journey\'!F:F,"Abandoned")', label: 'Cart Abandonment', trend: 'Decreasing', trendColor: '#10B981' },
+            { value: '=TEXT(AVERAGE(\'Conversions\'!F:F),"$#,##0")', label: 'Avg Order Value' }
+          ],
+          charts: [
+            { title: 'Journey Stages', type: 'Funnel', description: 'Customer progression through stages', dataRange: 'Customer Journey!D:D' },
+            { title: 'Attribution Model', type: 'Bar', description: 'Revenue by touchpoint', dataRange: 'Touchpoints!A:D' },
+            { title: 'Conversion Path', type: 'Sankey', description: 'Common paths to purchase', dataRange: 'Customer Journey!A:F' }
+          ]
+        });
+        
         this.setupCustomerJourneySheet(journeySheet);
+        this.setupTouchpointsSheet(touchpointsSheet);
+        this.setupConversionSheet(conversionSheet);
+        spreadsheet.setActiveSheet(journeyDash);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'campaign-dashboard':
-        const campaignSheet = spreadsheet.insertSheet(prefix + 'Campaign Dashboard');
-        sheets.push(campaignSheet.getName());
+        const campaignDash = spreadsheet.insertSheet(prefix + 'Dashboard');
+        const campaignSheet = spreadsheet.insertSheet(prefix + 'Campaigns');
+        const performanceSheet = spreadsheet.insertSheet(prefix + 'Performance');
+        const budgetSheet = spreadsheet.insertSheet(prefix + 'Budget');
+        sheets.push(campaignDash.getName(), campaignSheet.getName(), performanceSheet.getName(), budgetSheet.getName());
+        
+        this.createDashboard(campaignDash, {
+          title: 'Marketing Campaign Dashboard',
+          subtitle: 'Campaign Performance & ROI Analysis',
+          industry: 'marketing',
+          kpis: [
+            { value: '=COUNTIF(\'Campaigns\'!E:E,"Active")', label: 'Active Campaigns' },
+            { value: '=TEXT(SUM(\'Performance\'!F:F),"$#,##0")', label: 'Total Spend MTD' },
+            { value: '=TEXT(SUM(\'Performance\'!G:G),"$#,##0")', label: 'Revenue Generated', trend: '+45% ROI', trendColor: '#10B981' },
+            { value: '=TEXT(AVERAGE(\'Performance\'!H:H),"$#,##0")', label: 'Cost per Acquisition' },
+            { value: '=TEXT(AVERAGE(\'Performance\'!I:I),"0%")', label: 'Avg CTR', trend: 'Above industry avg' },
+            { value: '=TEXT((SUM(\'Performance\'!G:G)-SUM(\'Performance\'!F:F))/SUM(\'Performance\'!F:F),"0%")', label: 'Overall ROAS' }
+          ],
+          charts: [
+            { title: 'Campaign Performance', type: 'Column', description: 'ROI by campaign', dataRange: 'Campaigns!A:G' },
+            { title: 'Budget Allocation', type: 'Pie', description: 'Spend by channel', dataRange: 'Budget!A:C' },
+            { title: 'Performance Trend', type: 'Line', description: 'Monthly KPI trends', dataRange: 'Performance!A:I' }
+          ]
+        });
+        
         this.setupCampaignDashboardSheet(campaignSheet);
+        this.setupPerformanceSheet(performanceSheet);
+        this.setupBudgetSheet(budgetSheet);
+        spreadsheet.setActiveSheet(campaignDash);
+        spreadsheet.moveActiveSheet(1);
         break;
     }
     
@@ -414,21 +1184,102 @@ const IndustryTemplates = {
     
     switch (templateType) {
       case 'profitability-analyzer':
+        const profitDash = spreadsheet.insertSheet(prefix + 'Dashboard');
         const profitSheet = spreadsheet.insertSheet(prefix + 'Profitability');
-        sheets.push(profitSheet.getName());
+        const productsSheet = spreadsheet.insertSheet(prefix + 'Products');
+        const costsSheet = spreadsheet.insertSheet(prefix + 'Costs');
+        sheets.push(profitDash.getName(), profitSheet.getName(), productsSheet.getName(), costsSheet.getName());
+        
+        this.createDashboard(profitDash, {
+          title: 'E-commerce Profitability Dashboard',
+          subtitle: 'Product Margins & Profit Analysis',
+          industry: 'ecommerce',
+          kpis: [
+            { value: '=TEXT(SUM(\'Profitability\'!E:E),"$#,##0")', label: 'Gross Profit MTD', trend: '+18% vs LM', trendColor: '#10B981' },
+            { value: '=TEXT(AVERAGE(\'Profitability\'!F:F),"0%")', label: 'Avg Margin', trend: '42% target' },
+            { value: '=COUNTIF(\'Products\'!G:G,">40%")', label: 'High Margin SKUs' },
+            { value: '=TEXT(SUM(\'Costs\'!D:D),"$#,##0")', label: 'Total COGS' },
+            { value: '=TEXT(MAX(\'Profitability\'!F:F),"0%")', label: 'Best Margin', trend: 'Premium line' },
+            { value: '=COUNTIF(\'Products\'!G:G,"<20%")', label: 'Low Performers', trend: 'Review needed', trendColor: '#F59E0B' }
+          ],
+          charts: [
+            { title: 'Profit by Category', type: 'Column', description: 'Category profitability analysis', dataRange: 'Profitability!B:E' },
+            { title: 'Margin Distribution', type: 'Histogram', description: 'Product margin spread', dataRange: 'Products!G:G' },
+            { title: 'Cost Breakdown', type: 'Pie', description: 'Cost component analysis', dataRange: 'Costs!A:D' }
+          ]
+        });
+        
         this.setupProfitabilitySheet(profitSheet);
+        this.setupProductsSheet(productsSheet);
+        this.setupCostsSheet(costsSheet);
+        spreadsheet.setActiveSheet(profitDash);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'sales-forecasting':
+        const forecastDash = spreadsheet.insertSheet(prefix + 'Dashboard');
         const forecastSheet = spreadsheet.insertSheet(prefix + 'Sales Forecast');
-        sheets.push(forecastSheet.getName());
+        const trendsSheet = spreadsheet.insertSheet(prefix + 'Trends');
+        const seasonalSheet = spreadsheet.insertSheet(prefix + 'Seasonality');
+        sheets.push(forecastDash.getName(), forecastSheet.getName(), trendsSheet.getName(), seasonalSheet.getName());
+        
+        this.createDashboard(forecastDash, {
+          title: 'Sales Forecasting Dashboard',
+          subtitle: 'Predictive Analytics & Demand Planning',
+          industry: 'ecommerce',
+          kpis: [
+            { value: '=TEXT(SUM(\'Sales Forecast\'!E:E),"$#,##0")', label: 'Forecasted Revenue', trend: 'Next 30 days' },
+            { value: '=TEXT(AVERAGE(\'Trends\'!D:D),"+0%")', label: 'Growth Trend', trend: 'Accelerating', trendColor: '#10B981' },
+            { value: '=MAX(\'Seasonality\'!C:C)', label: 'Peak Season Index', trend: 'Q4 approaching' },
+            { value: '=TEXT(STDEV(\'Sales Forecast\'!E:E),"$#,##0")', label: 'Forecast Variance' },
+            { value: '=TEXT(AVERAGE(\'Sales Forecast\'!F:F),"0%")', label: 'Confidence Level' },
+            { value: '=SUM(\'Sales Forecast\'!G:G)', label: 'Units Forecasted' }
+          ],
+          charts: [
+            { title: 'Sales Forecast', type: 'Line', description: '90-day sales projection', dataRange: 'Sales Forecast!A:E' },
+            { title: 'Seasonal Patterns', type: 'Area', description: 'Historical seasonality', dataRange: 'Seasonality!A:C' },
+            { title: 'Trend Analysis', type: 'Combo', description: 'Actual vs forecast', dataRange: 'Trends!A:D' }
+          ]
+        });
+        
         this.setupSalesForecastSheet(forecastSheet);
+        this.setupTrendsSheet(trendsSheet);
+        this.setupSeasonalitySheet(seasonalSheet);
+        spreadsheet.setActiveSheet(forecastDash);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'ecommerce-inventory':
+        const invDash = spreadsheet.insertSheet(prefix + 'Dashboard');
         const inventorySheet = spreadsheet.insertSheet(prefix + 'Inventory Manager');
-        sheets.push(inventorySheet.getName());
+        const stockSheet = spreadsheet.insertSheet(prefix + 'Stock Levels');
+        const reorderSheet = spreadsheet.insertSheet(prefix + 'Reorder Points');
+        sheets.push(invDash.getName(), inventorySheet.getName(), stockSheet.getName(), reorderSheet.getName());
+        
+        this.createDashboard(invDash, {
+          title: 'Inventory Management Dashboard',
+          subtitle: 'Stock Control & Reorder Management',
+          industry: 'ecommerce',
+          kpis: [
+            { value: '=TEXT(SUM(\'Stock Levels\'!D:D),"$#,##0")', label: 'Inventory Value' },
+            { value: '=COUNTIF(\'Stock Levels\'!E:E,"<10")', label: 'Low Stock Items', trend: 'Order needed', trendColor: '#EF4444' },
+            { value: '=COUNTIF(\'Stock Levels\'!E:E,">500")', label: 'Overstock Items', trend: 'Reduce orders', trendColor: '#F59E0B' },
+            { value: '=AVERAGE(\'Inventory Manager\'!F:F)', label: 'Avg Days of Stock' },
+            { value: '=TEXT(SUM(\'Reorder Points\'!E:E),"$#,##0")', label: 'Pending Orders' },
+            { value: '=TEXT(AVERAGE(\'Inventory Manager\'!G:G),"0")', label: 'Turnover Rate' }
+          ],
+          charts: [
+            { title: 'Stock Status', type: 'Column', description: 'Current stock levels by category', dataRange: 'Stock Levels!A:E' },
+            { title: 'Reorder Timeline', type: 'Gantt', description: 'Upcoming reorder schedule', dataRange: 'Reorder Points!A:E' },
+            { title: 'Inventory Turnover', type: 'Line', description: 'Monthly turnover trends', dataRange: 'Inventory Manager!A:G' }
+          ]
+        });
+        
         this.setupInventorySheet(inventorySheet);
+        this.setupStockLevelsSheet(stockSheet);
+        this.setupReorderPointsSheet(reorderSheet);
+        spreadsheet.setActiveSheet(invDash);
+        spreadsheet.moveActiveSheet(1);
         break;
     }
     
@@ -444,21 +1295,102 @@ const IndustryTemplates = {
     
     switch (templateType) {
       case 'project-profitability':
+        const projDash = spreadsheet.insertSheet(prefix + 'Dashboard');
         const projectSheet = spreadsheet.insertSheet(prefix + 'Project Profitability');
-        sheets.push(projectSheet.getName());
+        const resourceSheet = spreadsheet.insertSheet(prefix + 'Resources');
+        const expensesSheet = spreadsheet.insertSheet(prefix + 'Expenses');
+        sheets.push(projDash.getName(), projectSheet.getName(), resourceSheet.getName(), expensesSheet.getName());
+        
+        this.createDashboard(projDash, {
+          title: 'Project Profitability Dashboard',
+          subtitle: 'Project Performance & Resource Analytics',
+          industry: 'professional',
+          kpis: [
+            { value: '=COUNTA(\'Project Profitability\'!A:A)-1', label: 'Active Projects' },
+            { value: '=TEXT(SUM(\'Project Profitability\'!F:F),"$#,##0")', label: 'Total Revenue', trend: '+22% QoQ', trendColor: '#10B981' },
+            { value: '=TEXT(AVERAGE(\'Project Profitability\'!G:G),"0%")', label: 'Avg Margin', trend: '35% target' },
+            { value: '=TEXT(SUM(\'Resources\'!E:E),"0")', label: 'Billable Hours' },
+            { value: '=TEXT(SUM(\'Expenses\'!D:D),"$#,##0")', label: 'Total Expenses' },
+            { value: '=TEXT(AVERAGE(\'Resources\'!F:F),"0%")', label: 'Utilization Rate' }
+          ],
+          charts: [
+            { title: 'Project Margins', type: 'Bar', description: 'Profitability by project', dataRange: 'Project Profitability!A:G' },
+            { title: 'Resource Allocation', type: 'Pie', description: 'Hours by project', dataRange: 'Resources!A:E' },
+            { title: 'Expense Categories', type: 'Column', description: 'Cost breakdown', dataRange: 'Expenses!B:D' }
+          ]
+        });
+        
         this.setupProjectProfitabilitySheet(projectSheet);
+        this.setupResourceSheet(resourceSheet);
+        this.setupExpensesSheet(expensesSheet);
+        spreadsheet.setActiveSheet(projDash);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'client-dashboard':
-        const clientSheet = spreadsheet.insertSheet(prefix + 'Client Dashboard');
-        sheets.push(clientSheet.getName());
+        const clientDash = spreadsheet.insertSheet(prefix + 'Dashboard');
+        const clientSheet = spreadsheet.insertSheet(prefix + 'Clients');
+        const engagementSheet = spreadsheet.insertSheet(prefix + 'Engagements');
+        const revenueSheet = spreadsheet.insertSheet(prefix + 'Revenue');
+        sheets.push(clientDash.getName(), clientSheet.getName(), engagementSheet.getName(), revenueSheet.getName());
+        
+        this.createDashboard(clientDash, {
+          title: 'Client Management Dashboard',
+          subtitle: 'Client Portfolio & Engagement Analytics',
+          industry: 'professional',
+          kpis: [
+            { value: '=COUNTIF(\'Clients\'!E:E,"Active")', label: 'Active Clients' },
+            { value: '=TEXT(SUM(\'Revenue\'!D:D),"$#,##0")', label: 'Total Revenue YTD', trend: '+30% vs LY', trendColor: '#10B981' },
+            { value: '=TEXT(AVERAGE(\'Revenue\'!D:D),"$#,##0")', label: 'Avg Client Value' },
+            { value: '=COUNTIF(\'Engagements\'!F:F,"In Progress")', label: 'Active Engagements' },
+            { value: '=TEXT(AVERAGE(\'Clients\'!G:G),"0")', label: 'Avg Satisfaction', trend: '4.8/5 rating' },
+            { value: '=TEXT(COUNTIF(\'Clients\'!H:H,"At Risk")/COUNTA(\'Clients\'!A:A),"0%")', label: 'Churn Risk', trend: 'Low', trendColor: '#10B981' }
+          ],
+          charts: [
+            { title: 'Client Revenue', type: 'Column', description: 'Revenue by client tier', dataRange: 'Revenue!A:D' },
+            { title: 'Engagement Status', type: 'Pie', description: 'Current engagement distribution', dataRange: 'Engagements!F:F' },
+            { title: 'Client Growth', type: 'Line', description: 'Monthly client acquisition', dataRange: 'Clients!A:E' }
+          ]
+        });
+        
         this.setupClientDashboardSheet(clientSheet);
+        this.setupEngagementSheet(engagementSheet);
+        this.setupRevenueSheet(revenueSheet);
+        spreadsheet.setActiveSheet(clientDash);
+        spreadsheet.moveActiveSheet(1);
         break;
         
       case 'time-billing-tracker':
+        const billDash = spreadsheet.insertSheet(prefix + 'Dashboard');
         const billingSheet = spreadsheet.insertSheet(prefix + 'Time & Billing');
-        sheets.push(billingSheet.getName());
+        const timesheetSheet = spreadsheet.insertSheet(prefix + 'Timesheets');
+        const invoicesSheet = spreadsheet.insertSheet(prefix + 'Invoices');
+        sheets.push(billDash.getName(), billingSheet.getName(), timesheetSheet.getName(), invoicesSheet.getName());
+        
+        this.createDashboard(billDash, {
+          title: 'Time & Billing Dashboard',
+          subtitle: 'Billable Hours & Invoice Tracking',
+          industry: 'professional',
+          kpis: [
+            { value: '=SUM(\'Timesheets\'!D:D)', label: 'Total Hours MTD' },
+            { value: '=TEXT(SUM(\'Timesheets\'!E:E)/SUM(\'Timesheets\'!D:D),"0%")', label: 'Billable Ratio', trend: '85% target' },
+            { value: '=TEXT(SUM(\'Invoices\'!E:E),"$#,##0")', label: 'Invoiced Amount', trend: '+15% vs LM', trendColor: '#10B981' },
+            { value: '=TEXT(SUM(\'Invoices\'!F:F),"$#,##0")', label: 'Outstanding AR' },
+            { value: '=TEXT(AVERAGE(\'Time & Billing\'!F:F),"$#,##0")', label: 'Avg Hourly Rate' },
+            { value: '=AVERAGE(\'Invoices\'!G:G)', label: 'Days to Payment', trend: 'Improving' }
+          ],
+          charts: [
+            { title: 'Billable vs Non-Billable', type: 'Pie', description: 'Time allocation', dataRange: 'Timesheets!D:E' },
+            { title: 'Revenue by Client', type: 'Bar', description: 'Top revenue generators', dataRange: 'Invoices!B:E' },
+            { title: 'Weekly Hours Trend', type: 'Line', description: 'Hours worked over time', dataRange: 'Timesheets!A:D' }
+          ]
+        });
+        
         this.setupTimeBillingSheet(billingSheet);
+        this.setupTimesheetSheet(timesheetSheet);
+        this.setupInvoicesSheet(invoicesSheet);
+        spreadsheet.setActiveSheet(billDash);
+        spreadsheet.moveActiveSheet(1);
         break;
     }
     
@@ -2440,72 +3372,162 @@ const IndustryTemplates = {
   // Missing setup functions for various templates
   
   setupMaterialTrackerSheet: function(sheet) {
-    const headers = ['Material ID', 'Date', 'Material Name', 'Category', 'Unit', 'Quantity Ordered', 
-                     'Unit Cost', 'Total Cost', 'Supplier', 'Received Qty', 'Used Qty', 'Remaining', 
-                     'Lead Time', 'Reorder Level', 'Status'];
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    
-    // Apply professional formatting
-    this.formatHeaders(sheet, 1, headers.length);
-    this.autoResizeColumns(sheet);
-    
-    // Add sample material data with cross-references
-    const sampleData = [
-      ['MAT-001', '=TODAY()-14', '2x4 Lumber', 'Wood', 'bd ft', 5000, 2.5, '', 'Lumber Co', 5000, 3500, '', '7 days', 1000, 'In Stock'],
-      ['MAT-002', '=TODAY()-7', 'Concrete Mix', 'Concrete', 'bags', 200, 8.5, '', 'ABC Supply', 200, 150, '', '3 days', 50, 'In Stock'],
-      ['MAT-003', '=TODAY()-3', 'Rebar #4', 'Steel', 'tons', 10, 650, '', 'Steel Direct', 10, 5, '', '5 days', 2, 'In Stock'],
-      ['MAT-004', '=TODAY()', 'Drywall Sheets', 'Drywall', 'sheets', 500, 12, '', 'Building Supply', 0, 0, '', '2 days', 100, 'On Order']
+    // Create inventory dashboard at top
+    const inventoryMetrics = [
+      { label: 'Total Value', formula: '=SUM(P9:P)', color: '#3B82F6' },
+      { label: 'Low Stock Items', formula: '=COUNTIF(R9:R,"Low Stock")+COUNTIF(R9:R,"Critical")', color: '#EF4444' },
+      { label: 'On Order', formula: '=COUNTIF(R9:R,"On Order")', color: '#F59E0B' },
+      { label: 'Categories', formula: '=COUNTA(UNIQUE(D9:D))', color: '#8B5CF6' },
+      { label: 'Avg Lead Time', formula: '=IFERROR(AVERAGE(N9:N),0)&" days"', color: '#06B6D4' },
+      { label: 'Waste %', formula: '=IFERROR(AVERAGE(T9:T),0)', color: '#EC4899' }
     ];
     
-    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    this.createMiniDashboard(sheet, 1, 1, inventoryMetrics);
     
-    // Add formulas
-    for (let row = 2; row <= 50; row++) {
+    // Enhanced headers with more tracking fields
+    const headers = ['Material ID', 'Date', 'Material Name', 'Category', 'Unit', 'Quantity Ordered', 
+                     'Unit Cost', 'Total Cost', 'Supplier', 'Received Qty', 'Used Qty', 'Remaining', 
+                     'Min Stock', 'Lead Time', 'Reorder Point', 'Current Value', 'Usage Rate', 
+                     'Days Supply', 'Status', 'Auto Alert', 'Waste %', 'Project Allocation'];
+    sheet.getRange(8, 1, 1, headers.length).setValues([headers]);
+    
+    // Apply construction industry colors
+    const colors = this.colors.industries.construction;
+    sheet.getRange(8, 1, 1, headers.length)
+      .setBackground(colors.primary)
+      .setFontColor('#FFFFFF')
+      .setFontWeight('bold')
+      .setFontSize(11);
+    
+    // Add comprehensive sample data
+    const sampleData = [
+      ['MAT-001', '=TODAY()-14', '2x4 Lumber', 'Wood', 'bd ft', 5000, 2.5, '', 'Lumber Co', 5000, 3500, '', 1000, 7, '', '', '', '', '', '', '', 'Project A'],
+      ['MAT-002', '=TODAY()-7', 'Concrete Mix', 'Concrete', 'bags', 200, 8.5, '', 'ABC Supply', 200, 150, '', 50, 3, '', '', '', '', '', '', '', 'Project B'],
+      ['MAT-003', '=TODAY()-3', 'Rebar #4', 'Steel', 'tons', 10, 650, '', 'Steel Direct', 10, 5, '', 2, 5, '', '', '', '', '', '', '', 'Project A'],
+      ['MAT-004', '=TODAY()', 'Drywall Sheets', 'Drywall', 'sheets', 500, 12, '', 'Building Supply', 0, 0, '', 100, 2, '', '', '', '', '', '', '', 'Project C'],
+      ['MAT-005', '=TODAY()-21', 'PVC Pipe 2"', 'Plumbing', 'ft', 1000, 3.75, '', 'Plumbing Pro', 1000, 800, '', 200, 4, '', '', '', '', '', '', '', 'Project B']
+    ];
+    
+    sheet.getRange(9, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Advanced formulas for comprehensive tracking
+    for (let row = 9; row <= 108; row++) {
+      // Total cost calculation
       sheet.getRange(`H${row}`).setFormula(`=IF(AND(F${row}<>"",G${row}<>""),F${row}*G${row},"")`);
+      
+      // Remaining quantity
       sheet.getRange(`L${row}`).setFormula(`=IF(AND(J${row}<>"",K${row}<>""),J${row}-K${row},"")`);
+      
+      // Reorder point calculation (min stock + lead time * usage rate)
+      sheet.getRange(`O${row}`).setFormula(
+        `=IF(AND(M${row}<>"",N${row}<>"",Q${row}<>""),M${row}+N${row}*Q${row},M${row})`
+      );
+      
+      // Current value calculation
+      sheet.getRange(`P${row}`).setFormula(`=IF(AND(L${row}<>"",G${row}<>""),L${row}*G${row},"")`);
+      
+      // Usage rate calculation (7-day average)
+      sheet.getRange(`Q${row}`).setFormula(
+        `=IF(AND(K${row}<>"",B${row}<>""),K${row}/(TODAY()-B${row}+1),"")`
+      );
+      
+      // Days of supply remaining
+      sheet.getRange(`R${row}`).setFormula(
+        `=IF(AND(L${row}<>"",Q${row}>0),ROUND(L${row}/Q${row},0),IF(L${row}>0,"Sufficient",""))`
+      );
+      
+      // Smart status assignment
+      sheet.getRange(`S${row}`).setFormula(
+        `=IF(A${row}<>"",` +
+        `IF(L${row}=0,"Out of Stock",` +
+        `IF(L${row}<=M${row},"Critical",` +
+        `IF(L${row}<=O${row},"Low Stock",` +
+        `IF(J${row}=0,"On Order","In Stock")))),"")`
+      );
+      
+      // Auto alert generation
+      sheet.getRange(`T${row}`).setFormula(
+        `=IF(S${row}="Critical","🔴 ORDER NOW",` +
+        `IF(S${row}="Low Stock","🟡 Reorder Soon",` +
+        `IF(S${row}="Out of Stock","⚫ URGENT",` +
+        `IF(AND(S${row}="On Order",N${row}<>""),` +
+        `"📦 ETA: "&TEXT(B${row}+N${row},"dd/mm"),"✅ OK"))))`
+      );
+      
+      // Waste percentage calculation
+      sheet.getRange(`U${row}`).setFormula(
+        `=IF(AND(J${row}>0,K${row}<>""),MAX(0,(K${row}-J${row}*0.95)/(J${row})*100),"")`
+      );
     }
     
     // Format columns
     sheet.getRange('G:G').setNumberFormat('$#,##0.00');
     sheet.getRange('H:H').setNumberFormat('$#,##0.00');
+    sheet.getRange('P:P').setNumberFormat('$#,##0.00');
     sheet.getRange('F:F').setNumberFormat('#,##0');
     sheet.getRange('J:L').setNumberFormat('#,##0');
-    sheet.getRange('N:N').setNumberFormat('#,##0');
+    sheet.getRange('M:O').setNumberFormat('#,##0');
+    sheet.getRange('Q:Q').setNumberFormat('0.00');
+    sheet.getRange('U:U').setNumberFormat('0.0%');
+    sheet.getRange('B:B').setNumberFormat('dd/mm/yyyy');
     
-    // Add category validation
+    // Add sparkline for usage trends
+    this.addSparkline(sheet, 'W8', 'Q9:Q13', 'line', { color: '#F59E0B' });
+    
+    // Comprehensive data validations
     const categoryRule = SpreadsheetApp.newDataValidation()
-      .requireValueInList(['Wood', 'Concrete', 'Steel', 'Drywall', 'Electrical', 'Plumbing', 'HVAC', 'Other'], true)
+      .requireValueInList(['Wood', 'Concrete', 'Steel', 'Drywall', 'Electrical', 'Plumbing', 'HVAC', 'Insulation', 'Roofing', 'Flooring', 'Hardware', 'Paint', 'Safety', 'Tools', 'Other'], true)
       .build();
-    sheet.getRange('D2:D').setDataValidation(categoryRule);
+    sheet.getRange('D9:D').setDataValidation(categoryRule);
     
-    // Add status validation
-    const statusRule = SpreadsheetApp.newDataValidation()
-      .requireValueInList(['In Stock', 'Low Stock', 'On Order', 'Back Order', 'Delivered'], true)
+    const unitRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['bd ft', 'sq ft', 'cu yd', 'bags', 'tons', 'lbs', 'gallons', 'sheets', 'pieces', 'boxes', 'rolls', 'ft', 'meters'], true)
       .build();
-    sheet.getRange('O2:O').setDataValidation(statusRule);
+    sheet.getRange('E9:E').setDataValidation(unitRule);
+    
+    const projectRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Project A', 'Project B', 'Project C', 'General Stock', 'Multiple'], true)
+      .build();
+    sheet.getRange('V9:V').setDataValidation(projectRule);
     
     // Conditional formatting for status
-    const statusRange = sheet.getRange('O2:O50');
-    const inStockRule = SpreadsheetApp.newConditionalFormatRule()
-      .whenTextEqualTo('In Stock')
-      .setBackground(this.colors.success.light)
-      .setRanges([statusRange])
+    const criticalRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Critical')
+      .setBackground('#FEE2E2')
+      .setFontColor('#DC2626')
+      .setRanges([sheet.getRange('S9:S')])
       .build();
+    
     const lowStockRule = SpreadsheetApp.newConditionalFormatRule()
       .whenTextEqualTo('Low Stock')
-      .setBackground(this.colors.warning.light)
-      .setRanges([statusRange])
-      .build();
-    const onOrderRule = SpreadsheetApp.newConditionalFormatRule()
-      .whenTextEqualTo('On Order')
-      .setBackground(this.colors.primary.light)
-      .setRanges([statusRange])
+      .setBackground('#FEF3C7')
+      .setFontColor('#92400E')
+      .setRanges([sheet.getRange('S9:S')])
       .build();
     
-    sheet.setConditionalFormatRules([inStockRule, lowStockRule, onOrderRule]);
+    const inStockRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('In Stock')
+      .setBackground('#D1FAE5')
+      .setFontColor('#065F46')
+      .setRanges([sheet.getRange('S9:S')])
+      .build();
+    
+    // High waste percentage formatting
+    const highWasteRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberGreaterThan(0.1)
+      .setBackground('#FEE2E2')
+      .setRanges([sheet.getRange('U9:U')])
+      .build();
+    
+    sheet.setConditionalFormatRules([criticalRule, lowStockRule, inStockRule, highWasteRule]);
+    
+    // Protect formula columns
+    const protection = sheet.getRange('H:H,L:L,O:S,U:U').protect();
+    protection.setDescription('Automated calculations - Do not edit');
+    protection.setWarningOnly(true);
     
     // Apply alternating rows
-    this.applyProfessionalFormatting(sheet, 50);
+    this.applyProfessionalFormatting(sheet, 9, 108);
   },
   
   setupLaborManagerSheet: function(sheet) {
@@ -2629,32 +3651,244 @@ const IndustryTemplates = {
   },
   
   setupPriorAuthSheet: function(sheet) {
-    const headers = ['Auth ID', 'Date', 'Patient ID', 'Patient Name', 'Insurance', 'Procedure Code', 
-                     'Procedure Description', 'Provider', 'Status', 'Auth Number', 'Valid From', 'Valid To', 
-                     'Units Authorized', 'Units Used', 'Remaining'];
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#3498DB').setFontColor('#FFFFFF').setFontWeight('bold');
+    // Create authorization metrics dashboard
+    const authMetrics = [
+      { label: 'Pending Auths', formula: '=COUNTIF(I9:I,"Pending")', color: '#F59E0B' },
+      { label: 'Approved Today', formula: '=COUNTIFS(I9:I,"Approved",B9:B,TODAY())', color: '#10B981' },
+      { label: 'Expiring Soon', formula: '=COUNTIFS(L9:L,"<="&TODAY()+7,L9:L,">="&TODAY())', color: '#EF4444' },
+      { label: 'Avg TAT (days)', formula: '=IFERROR(AVERAGE(S9:S),0)', color: '#3B82F6' },
+      { label: 'Denial Rate', formula: '=IFERROR(COUNTIF(I9:I,"Denied")/COUNTA(I9:I),0)', color: '#8B5CF6' },
+      { label: 'Utilization %', formula: '=IFERROR(AVERAGE(T9:T),0)', color: '#06B6D4' }
+    ];
     
-    // Add formula for remaining units
-    for (let row = 2; row <= 100; row++) {
-      sheet.getRange(`O${row}`).setFormula(`=M${row}-N${row}`).setNumberFormat('#,##0');
+    this.createMiniDashboard(sheet, 1, 1, authMetrics);
+    
+    // Enhanced headers with more tracking fields
+    const headers = ['Auth ID', 'Date', 'Patient ID', 'Patient Name', 'DOB', 'Insurance', 'Procedure Code', 
+                     'Procedure Description', 'Status', 'Priority', 'Auth Number', 'Valid From', 'Valid To', 
+                     'Units Authorized', 'Units Used', 'Remaining', 'Provider', 'Requesting MD', 
+                     'Clinical Notes', 'ICD-10', 'Urgency Score', 'TAT', 'Utilization %', 'Auto Alert'];
+    sheet.getRange(8, 1, 1, headers.length).setValues([headers]);
+    
+    // Apply healthcare industry colors
+    const colors = this.colors.industries.healthcare;
+    sheet.getRange(8, 1, 1, headers.length)
+      .setBackground(colors.primary)
+      .setFontColor('#FFFFFF')
+      .setFontWeight('bold')
+      .setFontSize(11);
+    
+    // Add comprehensive sample data
+    const sampleData = [
+      ['PA-001', '=TODAY()-5', 'PT-1234', 'John Smith', '01/15/1970', 'BlueCross', '27447', 'Knee Arthroplasty', 'Pending', '', '', '=TODAY()', '=TODAY()+90', 1, 0, '', 'Dr. Johnson', 'Dr. Smith', 'Severe OA, failed conservative tx', 'M17.11', '', '', '', ''],
+      ['PA-002', '=TODAY()-3', 'PT-2345', 'Jane Doe', '05/22/1985', 'Aetna', '99213', 'Office Visit Level 3', 'Approved', '', 'AUTH-12345', '=TODAY()-2', '=TODAY()+180', 12, 3, '', 'Dr. Brown', 'Dr. Brown', 'Diabetes management', 'E11.9', '', '', '', ''],
+      ['PA-003', '=TODAY()-7', 'PT-3456', 'Bob Wilson', '11/30/1955', 'Medicare', '93306', 'Echo Complete', 'Approved', '', 'AUTH-23456', '=TODAY()-5', '=TODAY()+60', 1, 1, '', 'Dr. Davis', 'Dr. Davis', 'CHF monitoring', 'I50.9', '', '', '', ''],
+      ['PA-004', '=TODAY()-1', 'PT-4567', 'Alice Brown', '03/10/1990', 'Cigna', '70553', 'MRI Brain w/wo', 'Pending', '', '', '', '', 1, 0, '', 'Dr. Miller', 'Dr. Wilson', 'Headaches, r/o tumor', 'R51', '', '', '', ''],
+      ['PA-005', '=TODAY()', 'PT-5678', 'Tom Johnson', '08/25/1945', 'UnitedHealth', '29881', 'ACL Reconstruction', 'Urgent', '', '', '', '', 1, 0, '', 'Dr. Lee', 'Dr. Martinez', 'Sports injury', 'S83.5', '', '', '', '']
+    ];
+    
+    sheet.getRange(9, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Advanced formulas for comprehensive tracking
+    for (let row = 9; row <= 108; row++) {
+      // Remaining units calculation
+      sheet.getRange(`P${row}`).setFormula(`=IF(AND(N${row}<>"",O${row}<>""),N${row}-O${row},N${row})`);
+      
+      // Priority assignment based on multiple factors
+      sheet.getRange(`J${row}`).setFormula(
+        `=IF(A${row}<>"",` +
+        `IF(I${row}="Urgent","🔴 URGENT",` +
+        `IF(AND(I${row}="Pending",B${row}<=TODAY()-5),"🟡 HIGH",` +
+        `IF(AND(M${row}<>"",M${row}<=TODAY()+7),"🟠 EXPIRING",` +
+        `IF(I${row}="Pending","🔵 NORMAL","✅ COMPLETE")))),"")`
+      );
+      
+      // Urgency score calculation
+      sheet.getRange(`U${row}`).setFormula(
+        `=IF(A${row}<>"",` +
+        `IF(I${row}="Urgent",100,` +
+        `IF(I${row}="Denied",80,` +
+        `IF(AND(I${row}="Pending",B${row}<=TODAY()-7),70,` +
+        `IF(AND(M${row}<>"",M${row}<=TODAY()+14),60,` +
+        `IF(I${row}="Pending",40,10))))),"")`
+      );
+      
+      // Turnaround time calculation
+      sheet.getRange(`V${row}`).setFormula(
+        `=IF(AND(B${row}<>"",I${row}<>"Pending"),TODAY()-B${row},IF(B${row}<>"",TODAY()-B${row}&" (pending)",""))`
+      );
+      
+      // Utilization percentage
+      sheet.getRange(`W${row}`).setFormula(
+        `=IF(AND(N${row}>0,O${row}<>""),O${row}/N${row},"")`
+      );
+      
+      // Auto alert generation
+      sheet.getRange(`X${row}`).setFormula(
+        `=IF(I${row}="Urgent","⚡ EXPEDITE",` +
+        `IF(I${row}="Denied","❌ APPEAL NEEDED",` +
+        `IF(AND(I${row}="Pending",B${row}<=TODAY()-7),"⏰ FOLLOW UP",` +
+        `IF(AND(M${row}<>"",M${row}<=TODAY()+7,P${row}>0),"📅 RENEW SOON",` +
+        `IF(AND(W${row}<>"",W${row}>0.8),"📊 80% UTILIZED",` +
+        `IF(I${row}="Approved","✅ ACTIVE","📝 PROCESSING"))))))`
+      );
     }
+    
+    // Format columns
+    sheet.getRange('B:B').setNumberFormat('dd/mm/yyyy');
+    sheet.getRange('E:E').setNumberFormat('dd/mm/yyyy');
+    sheet.getRange('L:M').setNumberFormat('dd/mm/yyyy');
+    sheet.getRange('N:P').setNumberFormat('#,##0');
+    sheet.getRange('U:U').setNumberFormat('0');
+    sheet.getRange('W:W').setNumberFormat('0%');
+    
+    // Add sparkline for urgency trends
+    this.addSparkline(sheet, 'Y8', 'U9:U13', 'column', { color: '#EF4444' });
+    
+    // Comprehensive data validations
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Pending', 'Approved', 'Denied', 'Expired', 'Urgent', 'On Hold', 'Cancelled'], true)
+      .build();
+    sheet.getRange('I9:I').setDataValidation(statusRule);
+    
+    const insuranceRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Medicare', 'Medicaid', 'BlueCross', 'Aetna', 'Cigna', 'UnitedHealth', 'Humana', 'Kaiser', 'Anthem', 'Other'], true)
+      .build();
+    sheet.getRange('F9:F').setDataValidation(insuranceRule);
+    
+    // Conditional formatting for status
+    const urgentRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Urgent')
+      .setBackground('#FEE2E2')
+      .setFontColor('#DC2626')
+      .setRanges([sheet.getRange('I9:I')])
+      .build();
+    
+    const approvedRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Approved')
+      .setBackground('#D1FAE5')
+      .setFontColor('#065F46')
+      .setRanges([sheet.getRange('I9:I')])
+      .build();
+    
+    const deniedRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('Denied')
+      .setBackground('#FEE2E2')
+      .setFontColor('#991B1B')
+      .setRanges([sheet.getRange('I9:I')])
+      .build();
+    
+    // High urgency score formatting
+    const highUrgencyRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberGreaterThanOrEqualTo(70)
+      .setBackground('#FEF3C7')
+      .setRanges([sheet.getRange('U9:U')])
+      .build();
+    
+    sheet.setConditionalFormatRules([urgentRule, approvedRule, deniedRule, highUrgencyRule]);
+    
+    // Protect formula columns
+    const protection = sheet.getRange('J:J,P:P,U:X').protect();
+    protection.setDescription('Automated calculations - Do not edit');
+    protection.setWarningOnly(true);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 9, 108);
   },
   
   setupRevenueCycleSheet: function(sheet) {
+    // Create revenue cycle metrics dashboard
+    const revenueMetrics = [
+      { label: 'Total Charges', formula: '=SUM(G9:G)', color: '#3B82F6' },
+      { label: 'Collections MTD', formula: '=SUMIFS(I9:I,B9:B,">="&EOMONTH(TODAY(),-1)+1)', color: '#10B981' },
+      { label: 'Outstanding AR', formula: '=SUM(K9:K)', color: '#F59E0B' },
+      { label: 'Avg Days in AR', formula: '=IFERROR(AVERAGE(L9:L),0)', color: '#8B5CF6' },
+      { label: 'Denial Rate', formula: '=IFERROR(COUNTIF(M9:M,"Denied")/COUNTA(M9:M),0)', color: '#EF4444' },
+      { label: 'Clean Claim %', formula: '=IFERROR(COUNTIF(M9:M,"Paid")/COUNTA(M9:M),0)', color: '#06B6D4' }
+    ];
+    
+    this.createMiniDashboard(sheet, 1, 1, revenueMetrics);
+    
+    // Enhanced headers with more financial tracking
     const headers = ['Claim ID', 'Date', 'Patient', 'Provider', 'Service Date', 'CPT Code', 
                      'Charge Amount', 'Allowed Amount', 'Paid Amount', 'Adjustment', 'Balance', 
-                     'Days in AR', 'Status', 'Denial Reason'];
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#27AE60').setFontColor('#FFFFFF').setFontWeight('bold');
+                     'Days in AR', 'Status', 'Payer', 'Denial Code', 'Write-off', 'Collection %', 
+                     'AR Bucket', 'Follow-up Date', 'Notes', 'Risk Score', 'Auto Action'];
+    sheet.getRange(8, 1, 1, headers.length).setValues([headers]);
     
-    // Add formulas for balance and days in AR
-    for (let row = 2; row <= 100; row++) {
-      sheet.getRange(`K${row}`).setFormula(`=G${row}-I${row}-J${row}`).setNumberFormat('$#,##0.00');
-      sheet.getRange(`L${row}`).setFormula(`=TODAY()-B${row}`).setNumberFormat('#,##0');
+    const colors = this.colors.industries.healthcare;
+    sheet.getRange(8, 1, 1, headers.length)
+      .setBackground(colors.secondary)
+      .setFontColor('#FFFFFF')
+      .setFontWeight('bold')
+      .setFontSize(11);
+    
+    // Add sample revenue cycle data
+    const sampleData = [
+      ['CLM-001', '=TODAY()-45', 'John Smith', 'Dr. Johnson', '=TODAY()-50', '99214', 185, 145, 145, 40, '', '', 'Paid', 'Medicare', '', 0, '', '', '', 'Routine F/U', '', ''],
+      ['CLM-002', '=TODAY()-30', 'Jane Doe', 'Dr. Brown', '=TODAY()-35', '27447', 12500, 9800, 0, 0, '', '', 'Pending', 'BlueCross', '', 0, '', '', '=TODAY()+7', 'Auth pending', '', ''],
+      ['CLM-003', '=TODAY()-60', 'Bob Wilson', 'Dr. Davis', '=TODAY()-65', '93306', 850, 650, 0, 0, '', '', 'Denied', 'Aetna', 'CO-197', 0, '', '', '=TODAY()', 'Missing documentation', '', ''],
+      ['CLM-004', '=TODAY()-15', 'Alice Brown', 'Dr. Miller', '=TODAY()-20', '70553', 2200, 1800, 1800, 400, '', '', 'Paid', 'Cigna', '', 0, '', '', '', 'Clean claim', '', ''],
+      ['CLM-005', '=TODAY()-90', 'Tom Johnson', 'Dr. Lee', '=TODAY()-95', '29881', 8500, 6500, 0, 0, '', '', 'Pending', 'UnitedHealth', '', 0, '', '', '=TODAY()+3', 'Appeal in progress', '', '']
+    ];
+    
+    sheet.getRange(9, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Advanced revenue cycle formulas
+    for (let row = 9; row <= 108; row++) {
+      // Balance calculation
+      sheet.getRange(`K${row}`).setFormula(`=IF(G${row}<>"",G${row}-I${row}-J${row}-P${row},"")`);
+      
+      // Days in AR
+      sheet.getRange(`L${row}`).setFormula(`=IF(AND(B${row}<>"",K${row}>0),TODAY()-B${row},"")`);
+      
+      // Collection percentage
+      sheet.getRange(`Q${row}`).setFormula(`=IF(AND(G${row}>0,I${row}>=0),I${row}/G${row},"")`);
+      
+      // AR aging bucket
+      sheet.getRange(`R${row}`).setFormula(
+        `=IF(L${row}<>"",` +
+        `IF(L${row}<=30,"0-30 days",` +
+        `IF(L${row}<=60,"31-60 days",` +
+        `IF(L${row}<=90,"61-90 days",` +
+        `IF(L${row}<=120,"91-120 days",">120 days")))),"")`
+      );
+      
+      // Risk score calculation
+      sheet.getRange(`U${row}`).setFormula(
+        `=IF(K${row}>0,` +
+        `IF(L${row}>120,100,` +
+        `IF(L${row}>90,80,` +
+        `IF(L${row}>60,60,` +
+        `IF(M${row}="Denied",70,` +
+        `IF(L${row}>30,40,20))))),"")`
+      );
+      
+      // Auto action recommendation
+      sheet.getRange(`V${row}`).setFormula(
+        `=IF(M${row}="Denied","🔴 APPEAL",` +
+        `IF(L${row}>90,"📞 ESCALATE",` +
+        `IF(L${row}>60,"📧 2ND NOTICE",` +
+        `IF(L${row}>30,"📝 FOLLOW UP",` +
+        `IF(M${row}="Paid","✅ COMPLETE",` +
+        `IF(K${row}>0,"⏳ PROCESSING",""))))))`
+      );
     }
+    
+    // Format columns
+    sheet.getRange('B:B').setNumberFormat('dd/mm/yyyy');
+    sheet.getRange('E:E').setNumberFormat('dd/mm/yyyy');
+    sheet.getRange('S:S').setNumberFormat('dd/mm/yyyy');
+    sheet.getRange('G:K').setNumberFormat('$#,##0.00');
+    sheet.getRange('P:P').setNumberFormat('$#,##0.00');
+    sheet.getRange('Q:Q').setNumberFormat('0%');
+    sheet.getRange('U:U').setNumberFormat('0');
+    
+    // Add sparkline for AR aging
+    this.addSparkline(sheet, 'W8', 'L9:L13', 'column', { color: '#F59E0B' });
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 9, 108);
   },
   
   setupDenialAnalyticsSheet: function(sheet) {
@@ -2717,22 +3951,153 @@ const IndustryTemplates = {
   },
   
   setupProfitabilitySheet: function(sheet) {
-    const headers = ['Product ID', 'Product Name', 'Category', 'Unit Cost', 'Selling Price', 
-                     'Units Sold', 'Revenue', 'Cost of Goods', 'Gross Profit', 'Margin %', 
-                     'Marketing Cost', 'Net Profit', 'ROI', 'Status'];
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#F39C12').setFontColor('#FFFFFF').setFontWeight('bold');
+    // Create profitability metrics dashboard
+    const profitMetrics = [
+      { label: 'Total Revenue', formula: '=SUM(G9:G)', color: '#3B82F6' },
+      { label: 'Gross Profit', formula: '=SUM(I9:I)', color: '#10B981' },
+      { label: 'Net Profit', formula: '=SUM(L9:L)', color: '#8B5CF6' },
+      { label: 'Avg Margin', formula: '=IFERROR(AVERAGE(J9:J),0)', color: '#F59E0B' },
+      { label: 'Top Performers', formula: '=COUNTIF(N9:N,">3")', color: '#06B6D4' },
+      { label: 'SKU Count', formula: '=COUNTA(A9:A)', color: '#EC4899' }
+    ];
     
-    // Add profitability formulas
-    for (let row = 2; row <= 100; row++) {
-      sheet.getRange(`G${row}`).setFormula(`=E${row}*F${row}`).setNumberFormat('$#,##0.00');
-      sheet.getRange(`H${row}`).setFormula(`=D${row}*F${row}`).setNumberFormat('$#,##0.00');
-      sheet.getRange(`I${row}`).setFormula(`=G${row}-H${row}`).setNumberFormat('$#,##0.00');
-      sheet.getRange(`J${row}`).setFormula(`=IF(G${row}>0,I${row}/G${row},0)`).setNumberFormat('0.00%');
-      sheet.getRange(`L${row}`).setFormula(`=I${row}-K${row}`).setNumberFormat('$#,##0.00');
-      sheet.getRange(`M${row}`).setFormula(`=IF(K${row}>0,L${row}/K${row},0)`).setNumberFormat('0.00%');
+    this.createMiniDashboard(sheet, 1, 1, profitMetrics);
+    
+    // Enhanced headers with advanced analytics
+    const headers = ['SKU', 'Product Name', 'Category', 'Brand', 'Unit Cost', 'Selling Price', 
+                     'Units Sold', 'Revenue', 'COGS', 'Gross Profit', 'Margin %', 
+                     'Marketing Cost', 'Net Profit', 'ROI', 'Velocity', 'ABC Class', 
+                     'Price Elasticity', 'Profit Rank', 'Contribution %', 'Status', 'Action Required'];
+    sheet.getRange(8, 1, 1, headers.length).setValues([headers]);
+    
+    const colors = this.colors.industries.ecommerce;
+    sheet.getRange(8, 1, 1, headers.length)
+      .setBackground(colors.primary)
+      .setFontColor('#FFFFFF')
+      .setFontWeight('bold')
+      .setFontSize(11);
+    
+    // Add comprehensive product data
+    const sampleData = [
+      ['SKU-001', 'Wireless Headphones', 'Electronics', 'TechBrand', 45, 129.99, 850, '', '', '', '', 500, '', '', '', '', '', '', '', 'Active', ''],
+      ['SKU-002', 'Yoga Mat Premium', 'Sports', 'FitLife', 12, 39.99, 2100, '', '', '', '', 200, '', '', '', '', '', '', '', 'Active', ''],
+      ['SKU-003', 'Coffee Maker Pro', 'Appliances', 'BrewMaster', 85, 249.99, 320, '', '', '', '', 800, '', '', '', '', '', '', '', 'Active', ''],
+      ['SKU-004', 'Smart Watch', 'Electronics', 'TechBrand', 120, 299.99, 450, '', '', '', '', 1200, '', '', '', '', '', '', '', 'Active', ''],
+      ['SKU-005', 'Organic Tea Set', 'Food & Bev', 'TeaTime', 8, 24.99, 1500, '', '', '', '', 150, '', '', '', '', '', '', '', 'Active', '']
+    ];
+    
+    sheet.getRange(9, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Advanced e-commerce profitability formulas
+    for (let row = 9; row <= 108; row++) {
+      // Revenue calculation
+      sheet.getRange(`H${row}`).setFormula(`=IF(AND(F${row}<>"",G${row}<>""),F${row}*G${row},"")`);
+      
+      // Cost of Goods Sold
+      sheet.getRange(`I${row}`).setFormula(`=IF(AND(E${row}<>"",G${row}<>""),E${row}*G${row},"")`);
+      
+      // Gross Profit
+      sheet.getRange(`J${row}`).setFormula(`=IF(AND(H${row}<>"",I${row}<>""),H${row}-I${row},"")`);
+      
+      // Margin percentage
+      sheet.getRange(`K${row}`).setFormula(`=IF(H${row}>0,J${row}/H${row},"")`);
+      
+      // Net Profit
+      sheet.getRange(`M${row}`).setFormula(`=IF(AND(J${row}<>"",L${row}<>""),J${row}-L${row},J${row})`);
+      
+      // ROI calculation
+      sheet.getRange(`N${row}`).setFormula(`=IF(AND(L${row}>0,M${row}<>""),M${row}/L${row},IF(I${row}>0,M${row}/I${row},""))`);
+      
+      // Velocity (units per day over 30 days)
+      sheet.getRange(`O${row}`).setFormula(`=IF(G${row}<>"",G${row}/30,"")`);
+      
+      // ABC Classification based on revenue contribution
+      sheet.getRange(`P${row}`).setFormula(
+        `=IF(H${row}<>"",` +
+        `IF(H${row}>PERCENTILE($H$9:$H,0.8),"A",` +
+        `IF(H${row}>PERCENTILE($H$9:$H,0.5),"B","C")),"")`
+      );
+      
+      // Price Elasticity indicator
+      sheet.getRange(`Q${row}`).setFormula(
+        `=IF(AND(F${row}<>"",G${row}<>""),` +
+        `IF(F${row}>200,"Inelastic",` +
+        `IF(F${row}>100,"Moderate","Elastic")),"")`
+      );
+      
+      // Profit ranking
+      sheet.getRange(`R${row}`).setFormula(`=IF(M${row}<>"",RANK(M${row},$M$9:$M$108),"")`);
+      
+      // Contribution percentage to total profit
+      sheet.getRange(`S${row}`).setFormula(`=IF(M${row}<>"",M${row}/SUM($M$9:$M),"")`);
+      
+      // Action required based on performance
+      sheet.getRange(`U${row}`).setFormula(
+        `=IF(K${row}<0.2,"🔴 REVIEW PRICING",` +
+        `IF(O${row}<1,"🟡 SLOW MOVER",` +
+        `IF(P${row}="A","⭐ TOP PRODUCT",` +
+        `IF(N${row}>5,"🚀 HIGH ROI",` +
+        `IF(K${row}>0.5,"💰 HIGH MARGIN",` +
+        `IF(T${row}="Active","✅ PERFORMING","📊 ANALYZE"))))))`
+      );
     }
+    
+    // Format columns
+    sheet.getRange('E:F').setNumberFormat('$#,##0.00');
+    sheet.getRange('H:J').setNumberFormat('$#,##0.00');
+    sheet.getRange('L:M').setNumberFormat('$#,##0.00');
+    sheet.getRange('K:K').setNumberFormat('0.00%');
+    sheet.getRange('N:N').setNumberFormat('0.00');
+    sheet.getRange('O:O').setNumberFormat('0.00');
+    sheet.getRange('R:R').setNumberFormat('0');
+    sheet.getRange('S:S').setNumberFormat('0.00%');
+    
+    // Add sparkline for profit trends
+    this.addSparkline(sheet, 'V8', 'M9:M13', 'column', { color: '#10B981' });
+    
+    // Data validations
+    const categoryRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Electronics', 'Appliances', 'Sports', 'Fashion', 'Home & Garden', 'Food & Bev', 'Beauty', 'Toys', 'Books', 'Other'], true)
+      .build();
+    sheet.getRange('C9:C').setDataValidation(categoryRule);
+    
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Active', 'Discontinued', 'Out of Stock', 'Seasonal', 'Clearance'], true)
+      .build();
+    sheet.getRange('T9:T').setDataValidation(statusRule);
+    
+    // Conditional formatting for margins
+    const highMarginRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberGreaterThanOrEqualTo(0.5)
+      .setBackground('#D1FAE5')
+      .setFontColor('#065F46')
+      .setRanges([sheet.getRange('K9:K')])
+      .build();
+    
+    const lowMarginRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberLessThan(0.2)
+      .setBackground('#FEE2E2')
+      .setFontColor('#991B1B')
+      .setRanges([sheet.getRange('K9:K')])
+      .build();
+    
+    // ABC classification formatting
+    const classARule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('A')
+      .setBackground('#FEF3C7')
+      .setFontColor('#92400E')
+      .setRanges([sheet.getRange('P9:P')])
+      .build();
+    
+    sheet.setConditionalFormatRules([highMarginRule, lowMarginRule, classARule]);
+    
+    // Protect formula columns
+    const protection = sheet.getRange('H:K,M:S,U:U').protect();
+    protection.setDescription('Automated calculations - Do not edit');
+    protection.setWarningOnly(true);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 9, 108);
   },
   
   setupSalesForecastSheet: function(sheet) {
@@ -2806,81 +4171,258 @@ const IndustryTemplates = {
   },
   
   setupCommissionTrackerSheet: function(sheet) {
+    // Enhanced headers with more tracking fields
     const headers = ['Transaction ID', 'Date', 'Agent', 'Property Address', 'Sale Price', 
-                     'Commission %', 'Commission Amount', 'Split %', 'Net Commission', 'Status', 'Lead Source'];
+                     'Commission %', 'Commission Amount', 'Split %', 'Net Commission', 'Status', 
+                     'Lead Source', 'Days to Close', 'Client Type', 'Property Type', 'YTD Total'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
     
-    // Apply professional formatting
-    this.formatHeaders(sheet, 1, headers.length);
-    this.autoResizeColumns(sheet);
+    // Apply professional formatting with industry colors
+    const colors = this.colors.industries.realEstate;
+    sheet.getRange(1, 1, 1, headers.length)
+      .setBackground(colors.primary)
+      .setFontColor('#FFFFFF')
+      .setFontWeight('bold')
+      .setFontSize(11);
     
-    // Add sample data with formulas
+    // Add comprehensive sample data
     const sampleData = [
-      ['TRX-001', '=TODAY()-30', 'Agent Smith', '123 Main St', 450000, 3, '', 70, '', 'Closed', 'Referral'],
-      ['TRX-002', '=TODAY()-15', 'Agent Jones', '456 Oak Ave', 325000, 2.5, '', 70, '', 'Pending', 'Website'],
-      ['TRX-003', '=TODAY()-7', 'Agent Smith', '789 Elm Dr', 575000, 3, '', 70, '', 'Active', 'Open House']
+      ['TRX-001', '=TODAY()-30', 'Agent Smith', '123 Main St, Downtown', 450000, 3, '', 70, '', 'Closed', 'Referral', '', 'Buyer', 'Single Family', ''],
+      ['TRX-002', '=TODAY()-15', 'Agent Jones', '456 Oak Ave, Westside', 325000, 2.5, '', 70, '', 'Pending', 'Website', '', 'Seller', 'Condo', ''],
+      ['TRX-003', '=TODAY()-7', 'Agent Smith', '789 Elm Dr, Northside', 575000, 3, '', 70, '', 'Under Contract', 'Open House', '', 'Buyer', 'Single Family', ''],
+      ['TRX-004', '=TODAY()-45', 'Agent Brown', '321 Park Pl, Eastside', 800000, 2.75, '', 65, '', 'Closed', 'Referral', '', 'Seller', 'Luxury', ''],
+      ['TRX-005', '=TODAY()-3', 'Agent Smith', '654 River Rd, South Bay', 425000, 3, '', 70, '', 'Active', 'Social Media', '', 'Buyer', 'Townhouse', '']
     ];
     
     sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
     
-    // Apply formulas for calculations
+    // Advanced formulas for calculations
     for (let row = 2; row <= 100; row++) {
+      // Commission calculation
       sheet.getRange(`G${row}`).setFormula(`=IF(E${row}<>"",E${row}*F${row}/100,"")`);
+      // Net commission after split
       sheet.getRange(`I${row}`).setFormula(`=IF(G${row}<>"",G${row}*H${row}/100,"")`);
+      // Days to close calculation
+      sheet.getRange(`L${row}`).setFormula(`=IF(AND(J${row}="Closed",B${row}<>""),TODAY()-B${row},IF(J${row}<>"Closed","In Progress",""))`);
+      // YTD running total
+      sheet.getRange(`O${row}`).setFormula(`=IF(J${row}="Closed",SUMIF($J$2:$J${row},"Closed",$I$2:$I${row}),"")`);
     }
     
-    // Format columns
+    // Advanced formatting
     sheet.getRange('E:E').setNumberFormat('$#,##0');
     sheet.getRange('G:G').setNumberFormat('$#,##0.00');
     sheet.getRange('I:I').setNumberFormat('$#,##0.00');
-    sheet.getRange('F:F').setNumberFormat('0.0%');
+    sheet.getRange('O:O').setNumberFormat('$#,##0.00');
+    sheet.getRange('F:F').setNumberFormat('0.00%');
     sheet.getRange('H:H').setNumberFormat('0%');
+    sheet.getRange('B:B').setNumberFormat('dd/mm/yyyy');
+    
+    // Create status tracking with colors
+    this.createStatusTracking(sheet, 'J', 2, 100);
+    
+    // Add data validation for Lead Source
+    const leadSourceRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Referral', 'Website', 'Open House', 'Social Media', 'Cold Call', 'Email Campaign', 'Partner Agent'], true)
+      .build();
+    sheet.getRange('K2:K100').setDataValidation(leadSourceRule);
+    
+    // Add data validation for Client Type
+    const clientTypeRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Buyer', 'Seller', 'Both'], true)
+      .build();
+    sheet.getRange('M2:M100').setDataValidation(clientTypeRule);
+    
+    // Add data validation for Property Type
+    const propertyTypeRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Single Family', 'Condo', 'Townhouse', 'Multi-Family', 'Land', 'Commercial', 'Luxury'], true)
+      .build();
+    sheet.getRange('N2:N100').setDataValidation(propertyTypeRule);
+    
+    // Add summary section at top
+    sheet.insertRowBefore(1);
+    sheet.insertRowBefore(1);
+    sheet.insertRowBefore(1);
+    
+    // Create mini dashboard at top
+    sheet.getRange('A1:O1').merge();
+    sheet.getRange('A1').setValue('COMMISSION TRACKER - PERFORMANCE SUMMARY')
+      .setFontSize(16).setFontWeight('bold')
+      .setHorizontalAlignment('center')
+      .setBackground(colors.dark)
+      .setFontColor('#FFFFFF');
+    
+    // Add KPI cards
+    sheet.getRange('A2').setValue('Total Closed:');
+    sheet.getRange('B2').setFormula('=COUNTIF(J:J,"Closed")')
+      .setFontSize(14).setFontWeight('bold').setFontColor(colors.primary);
+    
+    sheet.getRange('D2').setValue('Total Revenue:');
+    sheet.getRange('E2').setFormula('=SUMIF(J:J,"Closed",I:I)')
+      .setNumberFormat('$#,##0')
+      .setFontSize(14).setFontWeight('bold').setFontColor(colors.primary);
+    
+    sheet.getRange('G2').setValue('Avg Commission:');
+    sheet.getRange('H2').setFormula('=AVERAGEIF(J:J,"Closed",I:I)')
+      .setNumberFormat('$#,##0')
+      .setFontSize(14).setFontWeight('bold').setFontColor(colors.primary);
+    
+    sheet.getRange('J2').setValue('Conversion Rate:');
+    sheet.getRange('K2').setFormula('=COUNTIF(J:J,"Closed")/COUNTA(J:J)')
+      .setNumberFormat('0%')
+      .setFontSize(14).setFontWeight('bold').setFontColor(colors.primary);
+    
+    sheet.getRange('M2').setValue('Avg Days to Close:');
+    sheet.getRange('N2').setFormula('=AVERAGE(L:L)')
+      .setNumberFormat('0')
+      .setFontSize(14).setFontWeight('bold').setFontColor(colors.primary);
+    
+    // Add sparkline for trend
+    sheet.getRange('O2').setFormula('=SPARKLINE(FILTER(I:I,J:J="Closed"),{"charttype","column";"color","' + colors.secondary + '"})')
+      .setHorizontalAlignment('center');
     
     // Apply alternating rows
-    this.applyProfessionalFormatting(sheet, 50);
+    this.applyProfessionalFormatting(sheet, 103);
     
-    // Add status validation
-    const statusRule = SpreadsheetApp.newDataValidation()
-      .requireValueInList(['Active', 'Pending', 'Closed', 'Cancelled'], true)
-      .build();
-    sheet.getRange('J2:J').setDataValidation(statusRule);
+    // Auto-resize columns
+    this.autoResizeColumns(sheet);
+    
+    // Protect formula cells
+    const protection = sheet.getRange('G:G,I:I,L:L,O:O').protect();
+    protection.setDescription('Formula Protection');
+    protection.setWarningOnly(true);
   },
   
   setupPipelineSheet: function(sheet) {
-    const headers = ['Lead ID', 'Date', 'Name', 'Contact', 'Property Interest', 'Budget', 'Stage', 
-                     'Days in Stage', 'Source', 'Next Action', 'Follow-up Date', 'Agent', 'Score', 'Notes'];
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    try {
+      // Simple header without mini dashboard for now
+      sheet.getRange('A1').setValue('PIPELINE TRACKER')
+        .setFontSize(14).setFontWeight('bold');
+      sheet.getRange('A2').setValue('Lead Management System')
+        .setFontSize(10).setFontColor('#666666');
     
-    // Apply professional formatting
-    this.formatHeaders(sheet, 1, headers.length);
-    this.autoResizeColumns(sheet);
+      // Comprehensive pipeline headers starting at row 8
+      const headers = ['Lead ID', 'Date', 'Name', 'Contact', 'Email', 'Property Interest', 'Budget', 
+                       'Pre-approved', 'Stage', 'Days in Stage', 'Source', 'Next Action', 'Follow-up Date', 
+                       'Agent', 'Lead Score', 'Probability %', 'Est. Close Date', 'Notes', 'Auto Priority'];
+      sheet.getRange(8, 1, 1, headers.length).setValues([headers]);
     
-    // Add sample data
-    const sampleData = [
-      ['L-001', '=TODAY()-14', 'John Smith', '555-0101', 'Single Family Home', 450000, 'Qualified', '', 'Referral', 'Schedule Showing', '=TODAY()+2', 'Agent Smith', '', 'Looking for 3BR'],
-      ['L-002', '=TODAY()-7', 'Jane Doe', '555-0102', 'Condo', 275000, 'Active', '', 'Website', 'Send Listings', '=TODAY()+1', 'Agent Jones', '', 'First-time buyer'],
-      ['L-003', '=TODAY()-3', 'Bob Wilson', '555-0103', 'Investment Property', 600000, 'New', '', 'Open House', 'Initial Contact', '=TODAY()', 'Agent Smith', '', 'Cash buyer']
-    ];
+      // Apply professional formatting with colors
+      const colors = this.colors.industries.realEstate;
+      sheet.getRange(8, 1, 1, headers.length)
+        .setBackground(colors.secondary)
+        .setFontColor('#FFFFFF')
+        .setFontWeight('bold')
+        .setFontSize(11);
     
-    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+      // Add comprehensive sample data
+      const sampleData = [
+        ['L-001', '=TODAY()-14', 'John Smith', '555-0101', 'john@email.com', 'Single Family Home', 450000, 'Yes', 'Qualified', '', 'Referral', 'Schedule Showing', '=TODAY()+2', 'Agent Smith', '', '', '=TODAY()+30', 'Looking for 3BR, good schools', ''],
+        ['L-002', '=TODAY()-7', 'Jane Doe', '555-0102', 'jane@email.com', 'Condo', 275000, 'Pending', 'Active', '', 'Website', 'Send Listings', '=TODAY()+1', 'Agent Jones', '', '', '=TODAY()+45', 'First-time buyer, downtown area', ''],
+        ['L-003', '=TODAY()-3', 'Bob Wilson', '555-0103', 'bob@email.com', 'Investment Property', 600000, 'Yes', 'Hot', '', 'Open House', 'Initial Contact', '=TODAY()', 'Agent Smith', '', '', '=TODAY()+15', 'Cash buyer, multiple properties', ''],
+        ['L-004', '=TODAY()-21', 'Alice Brown', '555-0104', 'alice@email.com', 'Townhouse', 350000, 'No', 'Cold', '', 'Social Media', 'Follow-up Email', '=TODAY()+7', 'Agent Brown', '', '', '=TODAY()+90', 'Just browsing', ''],
+        ['L-005', '=TODAY()-1', 'Tom Johnson', '555-0105', 'tom@email.com', 'Luxury Home', 1200000, 'Yes', 'New', '', 'Partner Referral', 'Qualification Call', '=TODAY()', 'Agent Smith', '', '', '', 'High-value prospect', '']
+      ];
     
-    // Add formulas for days in stage
-    for (let row = 2; row <= 100; row++) {
-      sheet.getRange(`H${row}`).setFormula(`=IF(B${row}<>"",TODAY()-B${row},"")`);
-      sheet.getRange(`M${row}`).setFormula(`=IF(G${row}="Qualified",8,IF(G${row}="Active",5,IF(G${row}="New",3,0)))`);
+      sheet.getRange(9, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+      // Advanced formulas for dynamic calculations
+      for (let row = 9; row <= 108; row++) {
+        // Days in stage calculation
+        sheet.getRange(`J${row}`).setFormula(`=IF(B${row}<>"",TODAY()-B${row},"")`);
+        
+        // Lead scoring algorithm based on multiple factors
+        sheet.getRange(`O${row}`).setFormula(
+          `=IF(A${row}<>"",` +
+          `(IF(H${row}="Yes",30,IF(H${row}="Pending",15,0))+` + // Pre-approval score
+          `IF(G${row}>500000,20,IF(G${row}>300000,10,5))+` + // Budget score
+          `IF(I${row}="Hot",30,IF(I${row}="Qualified",20,IF(I${row}="Active",10,0)))+` + // Stage score
+          `IF(K${row}="Referral",15,IF(K${row}="Partner Referral",15,5))+` + // Source score
+          `IF(J${row}<7,10,IF(J${row}<14,5,0))` + // Engagement recency
+          `,"")`
+        );
+        
+        // Probability calculation based on lead score
+        sheet.getRange(`P${row}`).setFormula(
+          `=IF(O${row}<>"",IF(O${row}>80,0.9,IF(O${row}>60,0.7,IF(O${row}>40,0.5,IF(O${row}>20,0.3,0.1)))),"")`
+        );
+        
+        // Auto priority assignment
+        sheet.getRange(`S${row}`).setFormula(
+          `=IF(A${row}<>"",IF(AND(O${row}>70,M${row}<=TODAY()),"🔴 URGENT",IF(AND(O${row}>50,M${row}<=TODAY()+3),"🟡 HIGH",IF(O${row}>30,"🟢 MEDIUM","⚪ LOW"))),"")`
+        );
+      }
+    
+      // Format columns
+      sheet.getRange('G:G').setNumberFormat('$#,##0');
+      sheet.getRange('O:O').setNumberFormat('0');
+      sheet.getRange('P:P').setNumberFormat('0%');
+      sheet.getRange('B:B').setNumberFormat('dd/mm/yyyy');
+      sheet.getRange('M:M').setNumberFormat('dd/mm/yyyy');
+      sheet.getRange('Q:Q').setNumberFormat('dd/mm/yyyy');
+    
+      // Add sparklines for lead score trends
+      this.addSparkline(sheet, 'T8', 'O9:O13', 'column', { color: '#10B981' });
+    
+      // Add comprehensive data validations
+      const stageRule = SpreadsheetApp.newDataValidation()
+        .requireValueInList(['New', 'Contacted', 'Qualified', 'Active', 'Hot', 'Offer', 'Negotiating', 'Contract', 'Closed', 'Lost', 'Cold'], true)
+        .build();
+      sheet.getRange('I9:I').setDataValidation(stageRule);
+    
+      const preApprovalRule = SpreadsheetApp.newDataValidation()
+        .requireValueInList(['Yes', 'No', 'Pending', 'Expired'], true)
+        .build();
+      sheet.getRange('H9:H').setDataValidation(preApprovalRule);
+    
+      const sourceRule = SpreadsheetApp.newDataValidation()
+        .requireValueInList(['Website', 'Referral', 'Partner Referral', 'Open House', 'Social Media', 'Cold Call', 'Email Campaign', 'Walk-in', 'Other'], true)
+        .build();
+      sheet.getRange('K9:K').setDataValidation(sourceRule);
+    
+      const propertyTypeRule = SpreadsheetApp.newDataValidation()
+        .requireValueInList(['Single Family Home', 'Condo', 'Townhouse', 'Multi-family', 'Investment Property', 'Luxury Home', 'Commercial', 'Land'], true)
+        .build();
+      sheet.getRange('F9:F').setDataValidation(propertyTypeRule);
+    
+      // Conditional formatting for stages
+      const hotRule = SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo('Hot')
+        .setBackground('#FEE2E2')
+        .setFontColor('#DC2626')
+        .setRanges([sheet.getRange('I9:I')])
+        .build();
+    
+      const qualifiedRule = SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo('Qualified')
+        .setBackground('#DBEAFE')
+        .setFontColor('#1E40AF')
+        .setRanges([sheet.getRange('I9:I')])
+        .build();
+    
+      const closedRule = SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo('Closed')
+        .setBackground('#D1FAE5')
+        .setFontColor('#065F46')
+        .setRanges([sheet.getRange('I9:I')])
+        .build();
+    
+      sheet.setConditionalFormatRules([hotRule, qualifiedRule, closedRule]);
+    
+      // Protect formula columns
+      const protection = sheet.getRange('J:J,O:P,S:S').protect();
+      protection.setDescription('Automated formulas - Do not edit');
+      protection.setWarningOnly(true);
+    
+      // Apply alternating rows
+      this.applyProfessionalFormatting(sheet, 9, 108);
+    
+    } catch (error) {
+      Logger.log('Error in setupPipelineSheet: ' + error.toString());
+      // Add basic fallback headers if advanced setup fails
+      const basicHeaders = ['Lead ID', 'Date', 'Name', 'Contact', 'Property Interest', 'Budget', 'Stage', 'Notes'];
+      sheet.getRange(1, 1, 1, basicHeaders.length).setValues([basicHeaders]);
+      this.formatHeaders(sheet, 1, basicHeaders.length);
     }
-    
-    // Format columns
-    sheet.getRange('F:F').setNumberFormat('$#,##0');
-    
-    // Add stage validation
-    const stageRule = SpreadsheetApp.newDataValidation()
-      .requireValueInList(['New', 'Contacted', 'Qualified', 'Active', 'Offer', 'Negotiating', 'Contract', 'Closed', 'Lost'], true)
-      .build();
-    sheet.getRange('G2:G').setDataValidation(stageRule);
-    
-    // Apply alternating rows
-    this.applyProfessionalFormatting(sheet, 50);
   },
   
   setupDashboardSheet: function(sheet) {
@@ -3104,51 +4646,191 @@ const IndustryTemplates = {
   },
   
   setupCampaignDashboardSheet: function(sheet) {
-    const headers = ['Campaign', 'Channel', 'Start Date', 'End Date', 'Budget', 'Spend', 
-                     'Impressions', 'Clicks', 'CTR %', 'Conversions', 'CPA', 'ROAS', 'Status'];
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    
-    // Apply professional formatting
-    this.formatHeaders(sheet, 1, headers.length);
-    this.autoResizeColumns(sheet);
-    
-    // Add sample campaigns
-    const sampleData = [
-      ['Summer Sale 2024', 'Google Ads', '=TODAY()-30', '=TODAY()+30', 5000, 2500, 125000, 3750, '', 45, '', '', 'Active'],
-      ['Email Newsletter', 'Email', '=TODAY()-15', '=TODAY()+15', 1000, 450, 25000, 1250, '', 25, '', '', 'Active'],
-      ['Social Media Push', 'Facebook', '=TODAY()-45', '=TODAY()-15', 3000, 3000, 75000, 2250, '', 30, '', '', 'Completed'],
-      ['Black Friday', 'Multi-Channel', '=TODAY()+20', '=TODAY()+25', 10000, 0, 0, 0, '', 0, '', '', 'Planned']
+    // Create campaign performance dashboard
+    const campaignMetrics = [
+      { label: 'Active Campaigns', formula: '=COUNTIF(N9:N,"Active")', color: '#10B981' },
+      { label: 'Total Spend', formula: '=SUM(F9:F)', color: '#3B82F6' },
+      { label: 'Total Conversions', formula: '=SUM(J9:J)', color: '#8B5CF6' },
+      { label: 'Avg CTR', formula: '=IFERROR(AVERAGE(I9:I),0)', color: '#F59E0B' },
+      { label: 'Avg ROAS', formula: '=IFERROR(AVERAGE(L9:L),0)', color: '#10B981' },
+      { label: 'Budget Utilization', formula: '=IFERROR(SUM(F9:F)/SUM(E9:E),0)', color: '#06B6D4' }
     ];
     
-    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    this.createMiniDashboard(sheet, 1, 1, campaignMetrics);
     
-    // Apply formulas for metrics
-    for (let row = 2; row <= 50; row++) {
-      sheet.getRange(`I${row}`).setFormula(`=IF(G${row}>0,H${row}/G${row},0)`);
-      sheet.getRange(`K${row}`).setFormula(`=IF(J${row}>0,F${row}/J${row},0)`);
-      sheet.getRange(`L${row}`).setFormula(`=IF(F${row}>0,(J${row}*100)/F${row},0)`);
+    // Enhanced headers with advanced tracking
+    const headers = ['Campaign ID', 'Campaign Name', 'Channel', 'Start Date', 'End Date', 'Budget', 'Spend', 
+                     'Impressions', 'Clicks', 'CTR %', 'Conversions', 'CPA', 'ROAS', 'ROI %', 
+                     'Status', 'Performance Score', 'Pacing %', 'Days Left', 'Daily Budget', 
+                     'Conversion Rate', 'Quality Score', 'Auto Alert', 'Attribution Model', 'Notes'];
+    sheet.getRange(8, 1, 1, headers.length).setValues([headers]);
+    
+    // Apply marketing industry colors
+    const colors = this.colors.industries.marketing;
+    sheet.getRange(8, 1, 1, headers.length)
+      .setBackground(colors.primary)
+      .setFontColor('#FFFFFF')
+      .setFontWeight('bold')
+      .setFontSize(11);
+    
+    // Add comprehensive campaign data
+    const sampleData = [
+      ['CMP-001', 'Summer Sale 2024', 'Google Ads', '=TODAY()-30', '=TODAY()+30', 5000, 2500, 125000, 3750, '', 45, '', '', '', 'Active', '', '', '', '', '', '', '', 'Last-Click', 'Search campaign'],
+      ['CMP-002', 'Email Newsletter', 'Email', '=TODAY()-15', '=TODAY()+15', 1000, 450, 25000, 1250, '', 25, '', '', '', 'Active', '', '', '', '', '', '', '', 'Linear', 'Weekly newsletter'],
+      ['CMP-003', 'Social Media Push', 'Facebook', '=TODAY()-45', '=TODAY()-15', 3000, 3000, 75000, 2250, '', 30, '', '', '', 'Completed', '', '', '', '', '', '', '', 'Data-Driven', 'Brand awareness'],
+      ['CMP-004', 'Black Friday', 'Multi-Channel', '=TODAY()+20', '=TODAY()+25', 10000, 0, 0, 0, '', 0, '', '', '', 'Planned', '', '', '', '', '', '', '', 'Position-Based', 'Major sale event'],
+      ['CMP-005', 'Retargeting', 'Display', '=TODAY()-10', '=TODAY()+20', 2000, 800, 50000, 1000, '', 15, '', '', '', 'Active', '', '', '', '', '', '', '', 'Time-Decay', 'Cart abandoners']
+    ];
+    
+    sheet.getRange(9, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Advanced marketing formulas
+    for (let row = 9; row <= 108; row++) {
+      // CTR calculation
+      sheet.getRange(`J${row}`).setFormula(`=IF(H${row}>0,I${row}/H${row},"")`);
+      
+      // CPA calculation (Cost Per Acquisition)
+      sheet.getRange(`L${row}`).setFormula(`=IF(K${row}>0,G${row}/K${row},"")`);
+      
+      // ROAS calculation (Return on Ad Spend)
+      sheet.getRange(`M${row}`).setFormula(`=IF(G${row}>0,(K${row}*100)/G${row},"")`);
+      
+      // ROI percentage
+      sheet.getRange(`N${row}`).setFormula(`=IF(G${row}>0,((K${row}*100-G${row})/G${row}),"")`);
+      
+      // Performance score (weighted metrics)
+      sheet.getRange(`P${row}`).setFormula(
+        `=IF(A${row}<>"",` +
+        `MIN(100,` +
+        `(IF(J${row}>0.02,30,J${row}*1500)+` + // CTR score
+        `IF(M${row}>3,30,M${row}*10)+` + // ROAS score
+        `IF(T${row}>0.02,20,T${row}*1000)+` + // Conversion rate score
+        `IF(Q${row}<1,20,IF(Q${row}<1.2,10,0))` + // Pacing score
+        `)),"")`
+      );
+      
+      // Pacing percentage (spend vs time elapsed)
+      sheet.getRange(`Q${row}`).setFormula(
+        `=IF(AND(F${row}<>"",D${row}<=TODAY(),E${row}>=TODAY()),` +
+        `G${row}/(F${row}*((TODAY()-D${row})/(E${row}-D${row}+1))),"")`
+      );
+      
+      // Days left in campaign
+      sheet.getRange(`R${row}`).setFormula(
+        `=IF(AND(E${row}<>"",O${row}="Active"),MAX(0,E${row}-TODAY()),"")`
+      );
+      
+      // Daily budget recommendation
+      sheet.getRange(`S${row}`).setFormula(
+        `=IF(AND(R${row}>0,F${row}<>"",G${row}<>""),(F${row}-G${row})/R${row},"")`
+      );
+      
+      // Conversion rate
+      sheet.getRange(`T${row}`).setFormula(`=IF(I${row}>0,K${row}/I${row},"")`);
+      
+      // Quality score simulation
+      sheet.getRange(`U${row}`).setFormula(
+        `=IF(A${row}<>"",RANDBETWEEN(5,10),"")` // In real world, this would come from ad platform
+      );
+      
+      // Auto alert generation
+      sheet.getRange(`V${row}`).setFormula(
+        `=IF(O${row}="Planned","📅 SCHEDULED",` +
+        `IF(AND(Q${row}<>"",Q${row}>1.2),"🔴 OVERSPENDING",` +
+        `IF(AND(Q${row}<>"",Q${row}<0.8),"🟡 UNDERPACING",` +
+        `IF(AND(J${row}<>"",J${row}<0.01),"⚠️ LOW CTR",` +
+        `IF(AND(M${row}<>"",M${row}<1),"📉 NEGATIVE ROAS",` +
+        `IF(P${row}>80,"⭐ TOP PERFORMER",` +
+        `IF(O${row}="Active","✅ RUNNING","🏁 COMPLETED")))))))`
+      );
     }
     
     // Format columns
-    sheet.getRange('E:F').setNumberFormat('$#,##0');
-    sheet.getRange('G:G').setNumberFormat('#,##0');
-    sheet.getRange('H:H').setNumberFormat('#,##0');
-    sheet.getRange('I:I').setNumberFormat('0.00%');
+    sheet.getRange('D:E').setNumberFormat('dd/mm/yyyy');
+    sheet.getRange('F:G').setNumberFormat('$#,##0');
+    sheet.getRange('H:I').setNumberFormat('#,##0');
+    sheet.getRange('J:J').setNumberFormat('0.00%');
+    sheet.getRange('K:K').setNumberFormat('#,##0');
+    sheet.getRange('L:L').setNumberFormat('$#,##0.00');
+    sheet.getRange('M:N').setNumberFormat('0.00');
+    sheet.getRange('P:P').setNumberFormat('0');
+    sheet.getRange('Q:Q').setNumberFormat('0.00');
+    sheet.getRange('R:R').setNumberFormat('0');
+    sheet.getRange('S:S').setNumberFormat('$#,##0.00');
+    sheet.getRange('T:T').setNumberFormat('0.00%');
+    sheet.getRange('U:U').setNumberFormat('0');
+    
+    // Add sparkline for performance trends
+    this.addSparkline(sheet, 'Y8', 'P9:P13', 'line', { color: '#10B981' });
+    
+    // Comprehensive data validations
+    const statusRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Planned', 'Active', 'Paused', 'Completed', 'Cancelled'], true)
+      .build();
+    sheet.getRange('O9:O').setDataValidation(statusRule);
+    
+    const marketingChannelRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Google Ads', 'Facebook', 'Instagram', 'LinkedIn', 'Twitter', 'Email', 'Display', 'Video', 'Multi-Channel', 'Other'], true)
+      .build();
+    sheet.getRange('C9:C').setDataValidation(marketingChannelRule);
+    
+    const attributionRule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Last-Click', 'First-Click', 'Linear', 'Time-Decay', 'Position-Based', 'Data-Driven'], true)
+      .build();
+    sheet.getRange('W9:W').setDataValidation(attributionRule);
+    
+    // Conditional formatting for performance
+    const highPerformanceRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberGreaterThanOrEqualTo(80)
+      .setBackground('#D1FAE5')
+      .setFontColor('#065F46')
+      .setRanges([sheet.getRange('P9:P')])
+      .build();
+    
+    const lowPerformanceRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberLessThan(40)
+      .setBackground('#FEE2E2')
+      .setFontColor('#991B1B')
+      .setRanges([sheet.getRange('P9:P')])
+      .build();
+    
+    // Pacing alerts
+    const overspendingRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberGreaterThan(1.2)
+      .setBackground('#FEE2E2')
+      .setRanges([sheet.getRange('Q9:Q')])
+      .build();
+    
+    const underspendingRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberLessThan(0.8)
+      .setBackground('#FEF3C7')
+      .setRanges([sheet.getRange('Q9:Q')])
+      .build();
+    
+    sheet.setConditionalFormatRules([highPerformanceRule, lowPerformanceRule, overspendingRule, underspendingRule]);
+    
+    // Protect formula columns
+    const protection = sheet.getRange('J:N,P:U,V:V').protect();
+    protection.setDescription('Automated calculations - Do not edit');
+    protection.setWarningOnly(true);
+    
+    // Apply alternating rows
+    this.applyProfessionalFormatting(sheet, 9, 108);
     sheet.getRange('J:J').setNumberFormat('#,##0');
     sheet.getRange('K:K').setNumberFormat('$#,##0.00');
     sheet.getRange('L:L').setNumberFormat('0.00');
     
     // Add channel validation
-    const channelRule = SpreadsheetApp.newDataValidation()
+    const oldChannelRule = SpreadsheetApp.newDataValidation()
       .requireValueInList(['Google Ads', 'Facebook', 'Instagram', 'Email', 'LinkedIn', 'Twitter', 'Multi-Channel'], true)
       .build();
-    sheet.getRange('B2:B').setDataValidation(channelRule);
+    sheet.getRange('B2:B').setDataValidation(oldChannelRule);
     
     // Add status validation
-    const statusRule = SpreadsheetApp.newDataValidation()
+    const oldStatusRule = SpreadsheetApp.newDataValidation()
       .requireValueInList(['Planned', 'Active', 'Paused', 'Completed'], true)
       .build();
-    sheet.getRange('M2:M').setDataValidation(statusRule);
+    sheet.getRange('M2:M').setDataValidation(oldStatusRule);
     
     // Apply conditional formatting for ROAS
     const roasRange = sheet.getRange('L2:L50');
@@ -3577,5 +5259,438 @@ const IndustryTemplates = {
     
     // Apply alternating rows to summary
     this.applyProfessionalFormatting(sheet, 24);
+  },
+  
+  // New setup functions for enhanced dashboards
+  
+  // Real Estate additional sheets
+  setupClientsSheet: function(sheet, commissionSheetName) {
+    try {
+      // If commissionSheetName not provided, use default (for backward compatibility)
+      commissionSheetName = commissionSheetName || 'Commission Tracker';
+      
+      // Create mini CRM dashboard at top
+      const crmMetrics = [
+        { label: 'Total Clients', formula: '=COUNTA(B9:B)-COUNTIF(F9:F,"Inactive")', color: '#3B82F6' },
+        { label: 'Active Buyers', formula: '=COUNTIFS(E9:E,"Buyer",F9:F,"Active")', color: '#10B981' },
+        { label: 'Active Sellers', formula: '=COUNTIFS(E9:E,"Seller",F9:F,"Active")', color: '#8B5CF6' },
+        { label: 'VIP Clients', formula: '=COUNTIF(K9:K,"VIP")', color: '#F59E0B' },
+        { label: 'Avg Deal Size', formula: '=IFERROR(AVERAGE(I9:I),0)', color: '#06B6D4' },
+        { label: 'Total Portfolio', formula: '=SUM(I9:I)', color: '#EC4899' }
+      ];
+    
+      this.createMiniDashboard(sheet, 1, 1, crmMetrics);
+    
+      // Enhanced headers with more tracking fields
+      const headers = ['Client ID', 'Name', 'Email', 'Phone', 'Type', 'Status', 'First Contact', 
+                       'Last Activity', 'Total Value', 'Lifetime Value', 'Client Tier', 'Preferred Contact', 
+                       'Property Preferences', 'Engagement Score', 'Next Action', 'Referral Source', 'Notes'];
+      sheet.getRange(8, 1, 1, headers.length).setValues([headers]);
+    
+      // Apply industry colors
+      const colors = this.colors.industries.realEstate;
+      sheet.getRange(8, 1, 1, headers.length)
+        .setBackground(colors.primary)
+        .setFontColor('#FFFFFF')
+        .setFontWeight('bold')
+        .setFontSize(11);
+    
+      // Add comprehensive sample data
+      const sampleData = [
+        ['CL001', 'John Smith', 'john@email.com', '555-0101', 'Buyer', 'Active', '=TODAY()-30', '=TODAY()-2', 450000, '', '', 'Phone', '3BR, Schools, Suburbs', '', 'Schedule viewing', 'Website', 'Looking to buy in Q1'],
+        ['CL002', 'Jane Doe', 'jane@email.com', '555-0102', 'Seller', 'Active', '=TODAY()-15', '=TODAY()-1', 325000, '', '', 'Email', 'Quick sale needed', '', 'Market analysis', 'Referral', 'Relocating for work'],
+        ['CL003', 'Bob Wilson', 'bob@email.com', '555-0103', 'Investor', 'VIP', '=TODAY()-180', '=TODAY()', 2750000, '', '', 'Text', 'Multi-unit, ROI focus', '', 'Portfolio review', 'Partner', 'Multiple properties'],
+        ['CL004', 'Alice Brown', 'alice@email.com', '555-0104', 'Buyer', 'Prospect', '=TODAY()-7', '=TODAY()-3', 275000, '', '', 'Email', 'First-time buyer', '', 'Pre-approval help', 'Open House', 'Needs mortgage guidance'],
+        ['CL005', 'Tom Johnson', 'tom@email.com', '555-0105', 'Both', 'Active', '=TODAY()-60', '=TODAY()', 550000, '', '', 'Phone', 'Upgrade home', '', 'Coordinate buy/sell', 'Past Client', 'Selling to upgrade']
+      ];
+      sheet.getRange(9, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+      // Advanced formulas
+      for (let row = 9; row <= 108; row++) {
+        // Lifetime value calculation (includes all closed deals)
+        sheet.getRange(`J${row}`).setFormula(
+          `=IF(A${row}<>"",SUMIFS('${commissionSheetName}'!I:I,'${commissionSheetName}'!C:C,B${row},'${commissionSheetName}'!J:J,"Closed"),"")`
+        );
+        
+        // Client tier assignment based on value and activity
+        sheet.getRange(`K${row}`).setFormula(
+          `=IF(A${row}<>"",IF(OR(I${row}>1000000,J${row}>100000),"VIP",IF(OR(I${row}>500000,J${row}>50000),"Premium",IF(F${row}="Active","Standard","Basic"))),"")`
+        );
+        
+        // Engagement score based on recency and frequency
+        sheet.getRange(`N${row}`).setFormula(
+          `=IF(A${row}<>"",` +
+          `MIN(100,` +
+          `IF(H${row}=TODAY(),30,IF(H${row}>TODAY()-7,20,IF(H${row}>TODAY()-30,10,0)))+` + // Recency score
+          `IF(J${row}>100000,30,IF(J${row}>50000,20,10))+` + // Value score
+          `IF(F${row}="Active",20,IF(F${row}="VIP",30,0))+` + // Status score
+          `IF(G${row}>TODAY()-30,10,IF(G${row}>TODAY()-90,5,20))` + // Tenure score
+          `),"")`
+        );
+      }
+    
+      // Format columns
+      sheet.getRange('I:J').setNumberFormat('$#,##0');
+      sheet.getRange('G:H').setNumberFormat('dd/mm/yyyy');
+      sheet.getRange('N:N').setNumberFormat('0');
+    
+      // Data validations
+      const typeRule = SpreadsheetApp.newDataValidation()
+        .requireValueInList(['Buyer', 'Seller', 'Both', 'Investor', 'Renter', 'Landlord'], true)
+        .build();
+      sheet.getRange('E9:E').setDataValidation(typeRule);
+    
+      const statusRule = SpreadsheetApp.newDataValidation()
+        .requireValueInList(['Active', 'VIP', 'Prospect', 'On Hold', 'Inactive', 'Past Client'], true)
+        .build();
+      sheet.getRange('F9:F').setDataValidation(statusRule);
+    
+      const contactRule = SpreadsheetApp.newDataValidation()
+        .requireValueInList(['Phone', 'Email', 'Text', 'WhatsApp', 'In Person'], true)
+        .build();
+      sheet.getRange('L9:L').setDataValidation(contactRule);
+    
+      // Conditional formatting for client tiers
+      const vipRule = SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo('VIP')
+        .setBackground('#FEF3C7')
+        .setFontColor('#92400E')
+        .setRanges([sheet.getRange('K9:K')])
+        .build();
+    
+      const premiumRule = SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo('Premium')
+        .setBackground('#EDE9FE')
+        .setFontColor('#5B21B6')
+        .setRanges([sheet.getRange('K9:K')])
+        .build();
+    
+      // High engagement score formatting
+      const highEngagementRule = SpreadsheetApp.newConditionalFormatRule()
+        .whenNumberGreaterThanOrEqualTo(80)
+        .setBackground('#D1FAE5')
+        .setFontColor('#065F46')
+        .setRanges([sheet.getRange('N9:N')])
+        .build();
+    
+      sheet.setConditionalFormatRules([vipRule, premiumRule, highEngagementRule]);
+    
+      // Add sparkline for engagement history
+      this.addSparkline(sheet, 'R8', 'N9:N13', 'line', { color: '#10B981' });
+    
+      // Protect formula columns
+      const protection = sheet.getRange('J:J,K:K,N:N').protect();
+      protection.setDescription('Automated calculations - Do not edit');
+      protection.setWarningOnly(true);
+    
+      // Apply alternating rows
+      this.applyProfessionalFormatting(sheet, 9, 108);
+    
+    } catch (error) {
+      Logger.log('Error in setupClientsSheet: ' + error.toString());
+      // Add basic fallback headers if advanced setup fails
+      const basicHeaders = ['Client ID', 'Name', 'Email', 'Phone', 'Type', 'Status', 'Notes'];
+      sheet.getRange(1, 1, 1, basicHeaders.length).setValues([basicHeaders]);
+      this.formatHeaders(sheet, 1, basicHeaders.length);
+    }
+  },
+  
+  setupFollowUpSheet: function(sheet) {
+    const headers = ['Lead ID', 'Name', 'Type', 'Priority', 'Follow-up Date', 'Notes', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    
+    // Add sample data
+    const sampleData = [
+      ['L001', 'John Smith', 'Call', 'High', '=TODAY()+1', 'Discuss offer', 'Pending'],
+      ['L002', 'Jane Doe', 'Email', 'Medium', '=TODAY()+2', 'Send property list', 'Scheduled'],
+      ['L003', 'Bob Wilson', 'Meeting', 'High', '=TODAY()', 'Property tour', 'Today']
+    ];
+    sheet.getRange(2, 1, sampleData.length, sampleData[0].length).setValues(sampleData);
+    
+    // Format date column
+    sheet.getRange('E:E').setNumberFormat('dd/mm/yyyy');
+    
+    // Add conditional formatting for priority
+    const priorityRange = sheet.getRange('D2:D100');
+    const highPriorityRule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('High')
+      .setBackground('#FFE4E1')
+      .setRanges([priorityRange])
+      .build();
+    sheet.setConditionalFormatRules([highPriorityRule]);
+    
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupRentalIncomeSheet: function(sheet) {
+    const headers = ['Property ID', 'Address', 'Tenant', 'Monthly Rent', 'Due Date', 'Status', 'Late Fees', 'Total'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupPropertyComparisonSheet: function(sheet) {
+    const headers = ['Property', 'Price', 'Cap Rate', 'Cash Flow', 'ROI', 'Score'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  // Construction additional sheets
+  setupSuppliersSheet: function(sheet) {
+    const headers = ['Supplier ID', 'Company', 'Contact', 'Phone', 'Email', 'Rating', 'Payment Terms', 'Total Orders'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupPurchaseOrdersSheet: function(sheet) {
+    const headers = ['PO Number', 'Date', 'Supplier', 'Items', 'Total Amount', 'Status', 'Delivery Date', 'Project'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupCrewScheduleSheet: function(sheet) {
+    const headers = ['Crew ID', 'Name', 'Project', 'Date', 'Start Time', 'End Time', 'Hours', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupPayrollSheet: function(sheet) {
+    const headers = ['Employee', 'Period', 'Regular Hours', 'OT Hours', 'Rate', 'Gross Pay', 'Deductions', 'Net Pay'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupCostImpactSheet: function(sheet) {
+    const headers = ['Change Order', 'Original Cost', 'New Cost', 'Cost Impact', 'Schedule Impact', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupApprovalsSheet: function(sheet) {
+    const headers = ['Request ID', 'Type', 'Description', 'Requested By', 'Status', 'Days Pending', 'Approver'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupCostBreakdownSheet: function(sheet) {
+    const headers = ['Category', 'Description', 'Materials', 'Labor', 'Equipment', 'Subcontractor', 'Total'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupContingencySheet: function(sheet) {
+    const headers = ['Risk Category', 'Description', 'Amount', 'Probability', 'Impact', 'Mitigation'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  // Healthcare additional sheets
+  setupAuthStatusSheet: function(sheet) {
+    const headers = ['Auth ID', 'Patient', 'Status', 'Days to Approve', 'Priority', 'Insurance', 'Provider'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupProvidersSheet: function(sheet) {
+    const headers = ['Provider ID', 'Name', 'Specialty', 'NPI', 'Phone', 'Fax', 'Email', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupClaimsSheet: function(sheet) {
+    const headers = ['Claim ID', 'Patient', 'DOS', 'Insurance', 'Amount', 'Status', 'Denied Amount', 'Days in AR'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupARAgingSheet: function(sheet) {
+    const headers = ['Invoice', 'Patient', 'Amount', 'Age (Days)', 'Insurance', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupAppealsSheet: function(sheet) {
+    const headers = ['Appeal ID', 'Claim ID', 'Date Filed', 'Type', 'Reason', 'Status', 'Amount Recovered', 'Days to Resolution'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupDenialTrendsSheet: function(sheet) {
+    const headers = ['Denial Code', 'Description', 'Count', 'Total Amount', 'Avg Amount', 'Trend'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupEligibilitySheet: function(sheet) {
+    const headers = ['Patient ID', 'Insurance', 'Member ID', 'Status', 'Effective Date', 'Term Date'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupBenefitsSheet: function(sheet) {
+    const headers = ['Patient', 'Plan Type', 'Deductible', 'Out of Pocket Max', 'Network Status', 'Copay', 'Coinsurance'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  // Marketing additional sheets
+  setupSegmentsSheet: function(sheet) {
+    const headers = ['Segment', 'Description', 'Size', 'Conversion Rate', 'Avg Value', 'Growth'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupEngagementSheet: function(sheet) {
+    const headers = ['Lead ID', 'Name', 'Email Opens', 'Link Clicks', 'Page Views', 'Score', 'Last Activity'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupMetricsSheet: function(sheet) {
+    const headers = ['Content ID', 'Title', 'Time on Page', 'Bounce Rate', 'Engagement Rate', 'Shares', 'Conversions'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupChannelsSheet: function(sheet) {
+    const headers = ['Channel', 'Traffic', 'Conversions', 'Revenue', 'ROI', 'Trend'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupTouchpointsSheet: function(sheet) {
+    const headers = ['Touchpoint', 'Type', 'Interactions', 'Attribution', 'Value'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupConversionSheet: function(sheet) {
+    const headers = ['Customer ID', 'Journey ID', 'Start Date', 'Status', 'Revenue', 'Order Value', 'Products'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupPerformanceSheet: function(sheet) {
+    const headers = ['Campaign', 'Start Date', 'End Date', 'Impressions', 'Clicks', 'Spend', 'Revenue', 'CPA', 'CTR', 'ROAS'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupBudgetSheet: function(sheet) {
+    const headers = ['Channel', 'Allocated Budget', 'Spent', 'Remaining', 'Performance', 'Recommendation'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  // E-commerce additional sheets
+  setupProductsSheet: function(sheet) {
+    const headers = ['SKU', 'Product', 'Category', 'Cost', 'Price', 'Units Sold', 'Margin %', 'Revenue'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupCostsSheet: function(sheet) {
+    const headers = ['Category', 'Description', 'Fixed Cost', 'Variable Cost', 'Total', 'Per Unit'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupTrendsSheet: function(sheet) {
+    const headers = ['Period', 'Actual Sales', 'Forecast', 'Growth Rate', 'Variance'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupSeasonalitySheet: function(sheet) {
+    const headers = ['Month', 'Historical Avg', 'Index', 'This Year', 'Variance'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupStockLevelsSheet: function(sheet) {
+    const headers = ['SKU', 'Product', 'Category', 'Current Stock', 'Value', 'Status', 'Days of Supply'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupReorderPointsSheet: function(sheet) {
+    const headers = ['SKU', 'Product', 'Reorder Point', 'Current Stock', 'Order Qty', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  // Professional Services additional sheets
+  setupResourceSheet: function(sheet) {
+    const headers = ['Resource', 'Project', 'Role', 'Hours Allocated', 'Hours Used', 'Utilization %', 'Rate'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupExpensesSheet: function(sheet) {
+    const headers = ['Date', 'Category', 'Description', 'Amount', 'Project', 'Billable', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupEngagementSheet: function(sheet) {
+    const headers = ['Engagement ID', 'Client', 'Type', 'Start Date', 'End Date', 'Status', 'Value', 'Manager'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupRevenueSheet: function(sheet) {
+    const headers = ['Client', 'Month', 'Engagement', 'Revenue', 'Type', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupTimesheetSheet: function(sheet) {
+    const headers = ['Date', 'Employee', 'Client', 'Project', 'Hours', 'Billable Hours', 'Description', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
+  },
+  
+  setupInvoicesSheet: function(sheet) {
+    const headers = ['Invoice #', 'Client', 'Date', 'Due Date', 'Amount', 'Paid', 'Days Outstanding', 'Status'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    this.formatHeaders(sheet, 1, headers.length);
+    this.autoResizeColumns(sheet);
   }
 };

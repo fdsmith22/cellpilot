@@ -20,7 +20,7 @@ const Hero = () => {
       </div>
 
       {/* Content wrapper with proper top padding to avoid header */}
-      <div className="container-wrapper relative z-10 pt-12 sm:pt-24 lg:pt-28 pb-12 sm:pb-16 lg:pb-20">
+      <div className="container-wrapper relative z-10 pt-8 sm:pt-24 lg:pt-28 pb-12 sm:pb-16 lg:pb-20">
         <div className="w-full">
           
           {/* Redesigned Hero Layout */}

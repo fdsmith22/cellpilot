@@ -156,7 +156,7 @@ const ApiIntegration = {
     
     if (!userId) {
       // Generate unique ID based on email
-      const email = Session.getActiveUser().getEmail();
+      const email = 'beta-user'; // Removed Session.getActiveUser() for beta testing
       userId = Utilities.computeDigest(
         Utilities.DigestAlgorithm.SHA_256,
         email + 'cellpilot'

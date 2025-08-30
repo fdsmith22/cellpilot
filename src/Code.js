@@ -2547,7 +2547,7 @@ function showFeedback(type) {
         type: type,
         message: response.getResponseText(),
         timestamp: new Date(),
-        userEmail: Session.getActiveUser().getEmail()
+        userEmail: 'beta-user' // Removed Session.getActiveUser() for beta testing
       };
       
       submitFeedback(feedbackData);
@@ -2565,7 +2565,7 @@ function showFeedback(type) {
 function submitFeedback(data) {
   try {
     // Add user info
-    data.userEmail = Session.getActiveUser().getEmail();
+    data.userEmail = 'beta-user'; // Removed Session.getActiveUser() for beta testing
     data.spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().getId();
     data.spreadsheetName = SpreadsheetApp.getActiveSpreadsheet().getName();
     

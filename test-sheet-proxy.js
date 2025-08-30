@@ -333,6 +333,14 @@ function showDateFormatting() {
 CellPilot.showDateFormatting();
 }
 
+// ============================================
+// ADVANCED TEMPLATE HELPER FUNCTIONS
+// ============================================
+
+// Note: These helper functions are internal to IndustryTemplates
+// They are not directly accessible from test sheets
+// Remove these as they're only used internally
+
 /**
 * Preview date formatting changes
 * @param {Object} options - Date formatting options
@@ -968,12 +976,29 @@ return CellPilot.buildFormulaResultCard(result, description);
 }
 
 /**
+* Preview an industry template in the current spreadsheet
+* @param {string} templateType - The type of template to preview
+* @return {Object} Result object with preview sheets
+*/
+function previewIndustryTemplate(templateType) {
+return CellPilot.previewIndustryTemplate(templateType);
+}
+
+/**
 * Apply an industry template to the current spreadsheet
 * @param {string} templateType - The type of template to apply
 * @return {Object} Result object with success status and details
 */
 function applyIndustryTemplate(templateType) {
 return CellPilot.applyIndustryTemplate(templateType);
+}
+
+/**
+* Clean up preview sheets created by industry templates
+* @return {Object} Result object with number of sheets removed
+*/
+function cleanupPreviewSheets() {
+return CellPilot.cleanupPreviewSheets();
 }
 
 /**
@@ -1751,6 +1776,315 @@ function addToPipelineHistory(item) {
 */
 function clearPipelineHistory() {
   return CellPilot.clearPipelineHistory();
+}
+
+/**
+* ================================
+* ENHANCED DASHBOARD FUNCTIONS
+* ================================
+*/
+
+/**
+* Create professional dashboard for templates
+*/
+function createDashboard(sheet, config) {
+  return CellPilot.createDashboard(sheet, config);
+}
+
+/**
+* Setup Clients sheet for Real Estate
+*/
+function setupClientsSheet(sheet) {
+  return CellPilot.setupClientsSheet(sheet);
+}
+
+/**
+* Setup Follow-up sheet for Real Estate
+*/
+function setupFollowUpSheet(sheet) {
+  return CellPilot.setupFollowUpSheet(sheet);
+}
+
+/**
+* Setup Rental Income sheet for Real Estate
+*/
+function setupRentalIncomeSheet(sheet) {
+  return CellPilot.setupRentalIncomeSheet(sheet);
+}
+
+/**
+* Setup Property Comparison sheet for Real Estate
+*/
+function setupPropertyComparisonSheet(sheet) {
+  return CellPilot.setupPropertyComparisonSheet(sheet);
+}
+
+/**
+* Setup Suppliers sheet for Construction
+*/
+function setupSuppliersSheet(sheet) {
+  return CellPilot.setupSuppliersSheet(sheet);
+}
+
+/**
+* Setup Purchase Orders sheet for Construction
+*/
+function setupPurchaseOrdersSheet(sheet) {
+  return CellPilot.setupPurchaseOrdersSheet(sheet);
+}
+
+/**
+* Setup Crew Schedule sheet for Construction
+*/
+function setupCrewScheduleSheet(sheet) {
+  return CellPilot.setupCrewScheduleSheet(sheet);
+}
+
+/**
+* Setup Payroll sheet for Construction
+*/
+function setupPayrollSheet(sheet) {
+  return CellPilot.setupPayrollSheet(sheet);
+}
+
+/**
+* Setup Cost Impact sheet for Construction
+*/
+function setupCostImpactSheet(sheet) {
+  return CellPilot.setupCostImpactSheet(sheet);
+}
+
+/**
+* Setup Approvals sheet for Construction
+*/
+function setupApprovalsSheet(sheet) {
+  return CellPilot.setupApprovalsSheet(sheet);
+}
+
+/**
+* Setup Cost Breakdown sheet for Construction
+*/
+function setupCostBreakdownSheet(sheet) {
+  return CellPilot.setupCostBreakdownSheet(sheet);
+}
+
+/**
+* Setup Contingency sheet for Construction
+*/
+function setupContingencySheet(sheet) {
+  return CellPilot.setupContingencySheet(sheet);
+}
+
+/**
+* Setup Auth Status sheet for Healthcare
+*/
+function setupAuthStatusSheet(sheet) {
+  return CellPilot.setupAuthStatusSheet(sheet);
+}
+
+/**
+* Setup Providers sheet for Healthcare
+*/
+function setupProvidersSheet(sheet) {
+  return CellPilot.setupProvidersSheet(sheet);
+}
+
+/**
+* Setup Claims sheet for Healthcare
+*/
+function setupClaimsSheet(sheet) {
+  return CellPilot.setupClaimsSheet(sheet);
+}
+
+/**
+* Setup AR Aging sheet for Healthcare
+*/
+function setupARAgingSheet(sheet) {
+  return CellPilot.setupARAgingSheet(sheet);
+}
+
+/**
+* Setup Appeals sheet for Healthcare
+*/
+function setupAppealsSheet(sheet) {
+  return CellPilot.setupAppealsSheet(sheet);
+}
+
+/**
+* Setup Denial Trends sheet for Healthcare
+*/
+function setupDenialTrendsSheet(sheet) {
+  return CellPilot.setupDenialTrendsSheet(sheet);
+}
+
+/**
+* Setup Eligibility sheet for Healthcare
+*/
+function setupEligibilitySheet(sheet) {
+  return CellPilot.setupEligibilitySheet(sheet);
+}
+
+/**
+* Setup Benefits sheet for Healthcare
+*/
+function setupBenefitsSheet(sheet) {
+  return CellPilot.setupBenefitsSheet(sheet);
+}
+
+/**
+* Setup Segments sheet for Marketing
+*/
+function setupSegmentsSheet(sheet) {
+  return CellPilot.setupSegmentsSheet(sheet);
+}
+
+/**
+* Setup Engagement sheet for Marketing
+*/
+function setupEngagementSheet(sheet) {
+  return CellPilot.setupEngagementSheet(sheet);
+}
+
+/**
+* Setup Metrics sheet for Marketing
+*/
+function setupMetricsSheet(sheet) {
+  return CellPilot.setupMetricsSheet(sheet);
+}
+
+/**
+* Setup Channels sheet for Marketing
+*/
+function setupChannelsSheet(sheet) {
+  return CellPilot.setupChannelsSheet(sheet);
+}
+
+/**
+* Setup Touchpoints sheet for Marketing
+*/
+function setupTouchpointsSheet(sheet) {
+  return CellPilot.setupTouchpointsSheet(sheet);
+}
+
+/**
+* Setup Conversion sheet for Marketing
+*/
+function setupConversionSheet(sheet) {
+  return CellPilot.setupConversionSheet(sheet);
+}
+
+/**
+* Setup Performance sheet for Marketing
+*/
+function setupPerformanceSheet(sheet) {
+  return CellPilot.setupPerformanceSheet(sheet);
+}
+
+/**
+* Setup Budget sheet for Marketing
+*/
+function setupBudgetSheet(sheet) {
+  return CellPilot.setupBudgetSheet(sheet);
+}
+
+/**
+* Setup Products sheet for E-commerce
+*/
+function setupProductsSheet(sheet) {
+  return CellPilot.setupProductsSheet(sheet);
+}
+
+/**
+* Setup Costs sheet for E-commerce
+*/
+function setupCostsSheet(sheet) {
+  return CellPilot.setupCostsSheet(sheet);
+}
+
+/**
+* Setup Trends sheet for E-commerce
+*/
+function setupTrendsSheet(sheet) {
+  return CellPilot.setupTrendsSheet(sheet);
+}
+
+/**
+* Setup Seasonality sheet for E-commerce
+*/
+function setupSeasonalitySheet(sheet) {
+  return CellPilot.setupSeasonalitySheet(sheet);
+}
+
+/**
+* Setup Stock Levels sheet for E-commerce
+*/
+function setupStockLevelsSheet(sheet) {
+  return CellPilot.setupStockLevelsSheet(sheet);
+}
+
+/**
+* Setup Reorder Points sheet for E-commerce
+*/
+function setupReorderPointsSheet(sheet) {
+  return CellPilot.setupReorderPointsSheet(sheet);
+}
+
+/**
+* Setup Resource sheet for Professional Services
+*/
+function setupResourceSheet(sheet) {
+  return CellPilot.setupResourceSheet(sheet);
+}
+
+/**
+* Setup Expenses sheet for Professional Services
+*/
+function setupExpensesSheet(sheet) {
+  return CellPilot.setupExpensesSheet(sheet);
+}
+
+/**
+* Setup Engagement sheet for Professional Services
+*/
+function setupEngagementSheet(sheet) {
+  return CellPilot.setupEngagementSheet(sheet);
+}
+
+/**
+* Setup Revenue sheet for Professional Services
+*/
+function setupRevenueSheet(sheet) {
+  return CellPilot.setupRevenueSheet(sheet);
+}
+
+/**
+* Setup Timesheet sheet for Professional Services
+*/
+function setupTimesheetSheet(sheet) {
+  return CellPilot.setupTimesheetSheet(sheet);
+}
+
+/**
+* Setup Invoices sheet for Professional Services
+*/
+function setupInvoicesSheet(sheet) {
+  return CellPilot.setupInvoicesSheet(sheet);
+}
+
+/**
+* Template Builder Functions
+* Core template building infrastructure
+*/
+function buildTemplate(spreadsheet, config) {
+  return CellPilot.TemplateBuilder.buildTemplate(spreadsheet, config);
+}
+
+/**
+* Professional Real Estate Template
+* Comprehensive real estate commission tracker with full analytics
+*/
+function buildRealEstateTemplate(spreadsheet, isPreview) {
+  return CellPilot.RealEstateTemplate.build(spreadsheet, isPreview);
 }
 
 /**

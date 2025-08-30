@@ -28,12 +28,11 @@ const Logger = {
    */
   isDevelopment: function() {
     // Check for development indicators
-    const userEmail = Session.getActiveUser().getEmail();
     const isDev = UserSettings.load('developerMode', false);
     const betaMode = typeof FeatureGate !== 'undefined' && FeatureGate.BETA_CONFIG.enabled;
     
-    // Only enable console logging for specific developer emails or if explicitly enabled
-    return isDev || userEmail.includes('@cellpilot.io');
+    // Only enable console logging if explicitly enabled (removed email check for beta)
+    return isDev;
   },
   
   /**
