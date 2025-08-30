@@ -206,28 +206,6 @@ export default function Documentation() {
                 </details>
               </div>
             </div>
-
-            {/* Support */}
-            <div className="glass-card rounded-2xl p-8 space-y-6">
-              <h2 className="text-2xl font-semibold text-neutral-900">Need More Help?</h2>
-              <p className="text-neutral-600">
-                Our support team is here to help you get the most out of CellPilot.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link 
-                  href="/contact" 
-                  className="inline-flex items-center justify-center px-6 py-3 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors"
-                >
-                  Contact Support
-                </Link>
-                <a 
-                  href="https://community.cellpilot.app" 
-                  className="inline-flex items-center justify-center px-6 py-3 border border-neutral-300 text-neutral-700 rounded-full hover:bg-neutral-50 transition-colors"
-                >
-                  Join Community
-                </a>
-              </div>
-            </div>
           </div>
         </div>
       </div>

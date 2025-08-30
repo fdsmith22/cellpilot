@@ -4,6 +4,7 @@ import Link from 'next/link'
 import GridAnimation from '@/components/GridAnimation'
 import SignOutButton from '@/components/SignOutButton'
 import ProfileForm from '@/components/ProfileForm'
+import DangerZone from '@/components/DangerZone'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -90,7 +91,18 @@ export default async function DashboardPage() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center py-3 border-b border-neutral-200">
                   <span className="text-neutral-600">Email</span>
-                  <span className="text-neutral-900 font-medium">{user.email}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-neutral-900 font-medium">{user.email}</span>
+                    {profile?.email_verified ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        Verified
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        Unverified
+                      </span>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="flex justify-between items-center py-3 border-b border-neutral-200">
@@ -131,6 +143,12 @@ export default async function DashboardPage() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Danger Zone */}
+          <div className="glass-card rounded-2xl p-8 border-2 border-red-100 bg-red-50/20">
+            <h2 className="text-xl font-semibold text-red-900 mb-4">Danger Zone</h2>
+            <DangerZone userEmail={user.email || ''} />
           </div>
         </div>
       </div>

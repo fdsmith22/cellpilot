@@ -8,7 +8,18 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient()
-    await supabase.auth.exchangeCodeForSession(code)
+    const { data: { user } } = await supabase.auth.exchangeCodeForSession(code)
+    
+    // Update email_verified status in profiles table
+    if (user) {
+      await supabase
+        .from('profiles')
+        .update({ 
+          email_verified: true,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id)
+    }
   }
 
   // URL to redirect to after sign in process completes
