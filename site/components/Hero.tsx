@@ -20,13 +20,13 @@ const Hero = () => {
       </div>
 
       {/* Content wrapper with proper top padding to avoid header */}
-      <div className="container-wrapper relative z-10 pt-20 sm:pt-24 lg:pt-28 pb-12 sm:pb-16 lg:pb-20">
+      <div className="container-wrapper relative z-10 pt-12 sm:pt-24 lg:pt-28 pb-12 sm:pb-16 lg:pb-20">
         <div className="w-full">
           
           {/* Redesigned Hero Layout */}
-          <div className={`space-y-6 sm:space-y-8 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <div className={`space-y-4 sm:space-y-8 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             {/* Main Title Group */}
-            <div className="space-y-2">
+            <div className="space-y-1 sm:space-y-2">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-800 text-center">
                 Google Sheets
               </h2>
