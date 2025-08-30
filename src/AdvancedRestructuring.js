@@ -5,12 +5,26 @@
 
 const AdvancedRestructuring = {
   
-  // Temporary storage for multi-step processing
-  _sessionData: {
-    originalData: null,
-    processedSections: null,
-    columnConfig: null,
-    previewData: null
+  // Use Properties Service for session storage
+  _getSessionData: function() {
+    const userProperties = PropertiesService.getUserProperties();
+    const data = userProperties.getProperty('restructuring_session');
+    return data ? JSON.parse(data) : {
+      originalData: null,
+      processedSections: null,
+      columnConfig: null,
+      previewData: null
+    };
+  },
+  
+  _setSessionData: function(data) {
+    const userProperties = PropertiesService.getUserProperties();
+    userProperties.setProperty('restructuring_session', JSON.stringify(data));
+  },
+  
+  _clearSessionData: function() {
+    const userProperties = PropertiesService.getUserProperties();
+    userProperties.deleteProperty('restructuring_session');
   },
   
   /**
@@ -28,6 +42,10 @@ const AdvancedRestructuring = {
         return { success: false, error: 'No data found in selection' };
       }
       
+      // Store original values for single-column mode
+      const sessionData = this._getSessionData();
+      sessionData.originalValues = values;
+      
       // Flatten and clean the data
       const rawLines = [];
       values.forEach(row => {
@@ -43,7 +61,8 @@ const AdvancedRestructuring = {
       }
       
       // Store for later use
-      this._sessionData.originalData = rawLines;
+      sessionData.originalData = rawLines;
+      this._setSessionData(sessionData);
       
       // Analyze patterns
       const patterns = this._detectPatterns(rawLines);
@@ -203,9 +222,41 @@ const AdvancedRestructuring = {
    */
   processSectionConfiguration: function(config) {
     try {
-      const lines = this._sessionData.originalData;
-      if (!lines) {
-        return { success: false, error: 'No data to process. Please restart.' };
+      const sessionData = this._getSessionData();
+      
+      // Handle single-column split mode
+      if (config.splitMode) {
+        const originalValues = sessionData.originalValues;
+        if (!originalValues || originalValues.length === 0) {
+          return { success: false, error: 'No data to process. Please restart the analysis.' };
+        }
+        
+        // Process single-column data by splitting each cell
+        const processedData = this._processSingleColumnSplit(originalValues, config);
+        
+        // Store as processed sections for next step
+        sessionData.processedSections = [{
+          name: 'Data',
+          lines: processedData,
+          isSplit: true,
+          splitConfig: config
+        }];
+        this._setSessionData(sessionData);
+        
+        return {
+          success: true,
+          sectionCount: 1,
+          sections: [{
+            name: 'Split Data',
+            lineCount: processedData.length
+          }]
+        };
+      }
+      
+      // Standard multi-column processing
+      const lines = sessionData.originalData;
+      if (!lines || lines.length === 0) {
+        return { success: false, error: 'No data to process. Please restart the analysis.' };
       }
       
       let sections = [];
@@ -234,7 +285,8 @@ const AdvancedRestructuring = {
       }
       
       // Store processed sections
-      this._sessionData.processedSections = sections;
+      sessionData.processedSections = sections;
+      this._setSessionData(sessionData);
       
       return {
         success: true,
@@ -249,6 +301,58 @@ const AdvancedRestructuring = {
       Logger.error('Section processing error:', error);
       return { success: false, error: error.toString() };
     }
+  },
+  
+  /**
+   * Process single-column data by splitting each cell
+   */
+  _processSingleColumnSplit: function(values, config) {
+    const processedRows = [];
+    
+    values.forEach(row => {
+      // Get the first cell (assuming single column)
+      const cellValue = String(row[0] || '');
+      
+      if (cellValue.trim() === '') {
+        // Keep empty rows as empty
+        processedRows.push(['']);
+        return;
+      }
+      
+      let splitValues = [];
+      
+      switch (config.splitMethod) {
+        case 'singleSpace':
+          splitValues = cellValue.split(' ');
+          break;
+          
+        case 'doubleSpace':
+          splitValues = cellValue.split(/\s{2,}/);
+          break;
+          
+        case 'comma':
+          splitValues = cellValue.split(',').map(v => v.trim());
+          break;
+          
+        case 'tab':
+          splitValues = cellValue.split('\t');
+          break;
+          
+        case 'custom':
+          splitValues = cellValue.split(config.customDelimiter);
+          break;
+          
+        default:
+          splitValues = [cellValue];
+      }
+      
+      // Clean up the values
+      splitValues = splitValues.map(v => v.trim()).filter(v => v !== '' || config.preserveEmpty);
+      
+      processedRows.push(splitValues);
+    });
+    
+    return processedRows;
   },
   
   /**
@@ -380,35 +484,47 @@ const AdvancedRestructuring = {
    */
   processColumnConfiguration: function(config) {
     try {
-      const sections = this._sessionData.processedSections;
-      if (!sections) {
-        return { success: false, error: 'No sections to process. Please restart.' };
+      const sessionData = this._getSessionData();
+      const sections = sessionData.processedSections;
+      if (!sections || sections.length === 0) {
+        return { success: false, error: 'No sections to process. Please complete section configuration first.' };
       }
       
       // Store column config
-      this._sessionData.columnConfig = config;
+      sessionData.columnConfig = config;
       
       // Process all sections
       const allRows = [];
       let maxColumns = 0;
       
       sections.forEach(section => {
-        // Add section header as a marked row
-        if (section.headerLine) {
-          const headerRow = this._processLine(section.headerLine, config);
-          headerRow._isSection = true;
-          headerRow._sectionName = section.name;
-          allRows.push(headerRow);
-        }
-        
-        // Process section lines
-        section.lines.forEach(line => {
-          const processedRow = this._processLine(line, config);
-          if (processedRow.length > 0 || config.preserveEmpty) {
-            allRows.push(processedRow);
-            maxColumns = Math.max(maxColumns, processedRow.length);
+        // Check if data is already split (from single-column mode)
+        if (section.isSplit) {
+          // Data is already split into arrays
+          section.lines.forEach(row => {
+            if (Array.isArray(row)) {
+              allRows.push(row);
+              maxColumns = Math.max(maxColumns, row.length);
+            }
+          });
+        } else {
+          // Add section header as a marked row
+          if (section.headerLine) {
+            const headerRow = this._processLine(section.headerLine, config);
+            headerRow._isSection = true;
+            headerRow._sectionName = section.name;
+            allRows.push(headerRow);
           }
-        });
+          
+          // Process section lines
+          section.lines.forEach(line => {
+            const processedRow = this._processLine(line, config);
+            if (processedRow.length > 0 || config.preserveEmpty) {
+              allRows.push(processedRow);
+              maxColumns = Math.max(maxColumns, processedRow.length);
+            }
+          });
+        }
       });
       
       // Normalize column count
@@ -419,7 +535,8 @@ const AdvancedRestructuring = {
       });
       
       // Store preview data
-      this._sessionData.previewData = allRows;
+      sessionData.previewData = allRows;
+      this._setSessionData(sessionData);
       
       // Suggest headers based on data
       const suggestedHeaders = this._suggestHeaders(allRows, maxColumns);
@@ -670,9 +787,10 @@ const AdvancedRestructuring = {
    */
   applyRestructuredData: function(config) {
     try {
-      const data = this._sessionData.previewData;
+      const sessionData = this._getSessionData();
+      const data = sessionData.previewData;
       if (!data || data.length === 0) {
-        return { success: false, error: 'No preview data available. Please restart.' };
+        return { success: false, error: 'No preview data available. Please complete the column configuration first.' };
       }
       
       const range = SpreadsheetApp.getActiveRange();
@@ -733,12 +851,7 @@ const AdvancedRestructuring = {
       }
       
       // Clear session data
-      this._sessionData = {
-        originalData: null,
-        processedSections: null,
-        columnConfig: null,
-        previewData: null
-      };
+      this._clearSessionData();
       
       return {
         success: true,
@@ -768,4 +881,8 @@ function processColumnConfiguration(config) {
 
 function applyRestructuredData(config) {
   return AdvancedRestructuring.applyRestructuredData(config);
+}
+
+function clearRestructuringSession() {
+  return AdvancedRestructuring._clearSessionData();
 }

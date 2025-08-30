@@ -152,49 +152,210 @@ var ConstructionTemplate = {
       horizontalAlignment: 'center'
     });
     
-    // Date and project info
+    // Project Information Bar
     dash.setValue(3, 1, 'Project:');
     dash.setValue(3, 2, 'Main Street Development');
-    dash.setValue(3, 4, 'Estimator:');
-    dash.setValue(3, 5, 'John Smith');
-    dash.setValue(3, 7, 'Date:');
-    dash.setFormula(3, 8, '=TODAY()');
-    dash.format(3, 8, 3, 8, { numberFormat: 'dd/mm/yyyy' });
+    dash.merge(3, 2, 3, 3);
+    dash.setValue(3, 4, 'Client:');
+    dash.setValue(3, 5, 'ABC Corp');
+    dash.merge(3, 5, 3, 6);
+    dash.setValue(3, 7, 'Estimator:');
+    dash.setValue(3, 8, 'John Smith');
+    dash.setValue(3, 10, 'Date:');
+    dash.setFormula(3, 11, '=TODAY()');
+    dash.format(3, 11, 3, 11, { numberFormat: 'dd/mm/yyyy' });
     
-    // KPI Cards
+    // Enhanced KPI Cards Row 1
+    dash.setValue(5, 1, 'FINANCIAL OVERVIEW');
+    dash.merge(5, 1, 5, 12);
+    dash.format(5, 1, 5, 12, {
+      fontSize: 12,
+      fontWeight: 'bold',
+      background: '#FEF3C7'
+    });
+    
+    // KPI Cards with more detail
     const kpis = [
-      { row: 5, col: 1, title: 'Total Estimate', formula: '=SUM({{Materials}}!G:G)+SUM({{Labor}}!H:H)+SUM({{Overhead}}!E:E)', format: '$#,##0', color: '#DC2626' },
-      { row: 5, col: 4, title: 'Material Cost', formula: '=SUM({{Materials}}!G:G)', format: '$#,##0', color: '#EA580C' },
-      { row: 5, col: 7, title: 'Labor Cost', formula: '=SUM({{Labor}}!H:H)', format: '$#,##0', color: '#F59E0B' },
-      { row: 5, col: 10, title: 'Profit Margin', formula: '=IFERROR(({{Markup Calculator}}!E10-{{Estimates}}!D2)/{{Markup Calculator}}!E10,0)', format: '0.0%', color: '#10B981' }
+      { row: 6, col: 1, title: 'Total Estimate', formula: '=SUM({{Estimates}}!E:E)', subformula: '=TEXT((A7-{{Estimates}}!D2)/{{Estimates}}!D2,"↑ +0.0%")', format: '$#,##0', color: '#DC2626' },
+      { row: 6, col: 4, title: 'Material Cost', formula: '=SUM({{Materials}}!G:G)', subformula: '=TEXT(D7/A7,"0.0%")&" of total"', format: '$#,##0', color: '#EA580C' },
+      { row: 6, col: 7, title: 'Labor Cost', formula: '=SUM({{Labor}}!H:H)', subformula: '=TEXT(G7/A7,"0.0%")&" of total"', format: '$#,##0', color: '#F59E0B' },
+      { row: 6, col: 10, title: 'Profit Margin', formula: '=IFERROR(({{Markup Calculator}}!E10-A7)/{{Markup Calculator}}!E10,0)', subformula: '=IF(J7>0.15,"🟢 Target Met","🔴 Below Target")', format: '0.0%', color: '#10B981' }
     ];
     
     kpis.forEach(kpi => {
-      dash.merge(kpi.row, kpi.col, kpi.row + 2, kpi.col + 2);
       dash.setValue(kpi.row, kpi.col, kpi.title);
+      dash.merge(kpi.row, kpi.col, kpi.row, kpi.col + 2);
       dash.setFormula(kpi.row + 1, kpi.col, kpi.formula);
+      dash.merge(kpi.row + 1, kpi.col, kpi.row + 1, kpi.col + 2);
+      dash.setFormula(kpi.row + 2, kpi.col, kpi.subformula);
+      dash.merge(kpi.row + 2, kpi.col, kpi.row + 2, kpi.col + 2);
+      
       dash.format(kpi.row, kpi.col, kpi.row, kpi.col + 2, {
         background: '#FED7AA',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontSize: 11
       });
-      dash.format(kpi.row + 1, kpi.col, kpi.row + 2, kpi.col + 2, {
+      dash.format(kpi.row + 1, kpi.col, kpi.row + 1, kpi.col + 2, {
         fontSize: 20,
         fontWeight: 'bold',
         horizontalAlignment: 'center',
         numberFormat: kpi.format,
         fontColor: kpi.color
       });
+      dash.format(kpi.row + 2, kpi.col, kpi.row + 2, kpi.col + 2, {
+        fontSize: 10,
+        horizontalAlignment: 'center',
+        fontColor: '#6B7280'
+      });
     });
     
-    // Cost Breakdown Chart Area
-    dash.setValue(9, 1, 'Cost Breakdown by Category');
-    dash.format(9, 1, 9, 6, {
-      fontSize: 14,
+    // Cost Breakdown by Phase
+    dash.setValue(10, 1, 'COST BREAKDOWN BY PHASE');
+    dash.merge(10, 1, 10, 6);
+    dash.format(10, 1, 10, 6, {
+      fontSize: 12,
       fontWeight: 'bold',
       background: '#FEF3C7'
     });
     
-    // Breakdown table
+    // Phase breakdown table with visual bars
+    const phases = [
+      ['Phase', 'Budgeted', 'Estimated', 'Variance', '% Complete', 'Visual'],
+      ['Site Prep', 45000, '=SUMIF({{Estimates}}!B:B,A12,{{Estimates}}!E:E)', '=C12-B12', '100%', '=REPT("■",10)'],
+      ['Foundation', 85000, '=SUMIF({{Estimates}}!B:B,A13,{{Estimates}}!E:E)', '=C13-B13', '75%', '=REPT("■",7)&REPT("□",3)'],
+      ['Framing', 120000, '=SUMIF({{Estimates}}!B:B,A14,{{Estimates}}!E:E)', '=C14-B14', '50%', '=REPT("■",5)&REPT("□",5)'],
+      ['Exterior', 95000, '=SUMIF({{Estimates}}!B:B,A15,{{Estimates}}!E:E)', '=C15-B15', '25%', '=REPT("■",2)&REPT("□",8)'],
+      ['Interior', 110000, '=SUMIF({{Estimates}}!B:B,A16,{{Estimates}}!E:E)', '=C16-B16', '0%', '=REPT("□",10)'],
+      ['Mechanical', 75000, '=SUMIF({{Estimates}}!B:B,A17,{{Estimates}}!E:E)', '=C17-B17', '0%', '=REPT("□",10)'],
+      ['Finishing', 65000, '=SUMIF({{Estimates}}!B:B,A18,{{Estimates}}!E:E)', '=C18-B18', '0%', '=REPT("□",10)']
+    ];
+    
+    phases.forEach((phase, idx) => {
+      phase.forEach((cell, col) => {
+        if (typeof cell === 'string' && cell.startsWith('=')) {
+          dash.setFormula(11 + idx, col + 1, cell);
+        } else {
+          dash.setValue(11 + idx, col + 1, cell);
+        }
+      });
+    });
+    
+    dash.format(11, 1, 11, 6, {
+      fontWeight: 'bold',
+      background: '#E5E7EB'
+    });
+    dash.format(12, 2, 18, 4, { numberFormat: '$#,##0' });
+    dash.format(12, 5, 18, 5, { numberFormat: '0%' });
+    
+    // Conditional formatting for variance
+    dash.addConditionalFormat(12, 4, 18, 4, {
+      type: 'gradient',
+      minColor: '#FEE2E2',
+      midColor: '#FFFFFF',
+      maxColor: '#D1FAE5',
+      minValue: '-10000',
+      midValue: '0',
+      maxValue: '10000'
+    });
+    
+    // Risk Analysis Section
+    dash.setValue(10, 7, 'RISK ANALYSIS');
+    dash.merge(10, 7, 10, 12);
+    dash.format(10, 7, 10, 12, {
+      fontSize: 12,
+      fontWeight: 'bold',
+      background: '#FEF3C7'
+    });
+    
+    const risks = [
+      ['Risk Factor', 'Impact', 'Probability', 'Score'],
+      ['Material Price Increase', 'High', '30%', '=IF(B12="High",3,IF(B12="Medium",2,1))*VALUE(SUBSTITUTE(C12,"%",""))/100*10'],
+      ['Labor Shortage', 'Medium', '40%', '=IF(B13="High",3,IF(B13="Medium",2,1))*VALUE(SUBSTITUTE(C13,"%",""))/100*10'],
+      ['Weather Delays', 'Low', '60%', '=IF(B14="High",3,IF(B14="Medium",2,1))*VALUE(SUBSTITUTE(C14,"%",""))/100*10'],
+      ['Permit Issues', 'High', '20%', '=IF(B15="High",3,IF(B15="Medium",2,1))*VALUE(SUBSTITUTE(C15,"%",""))/100*10'],
+      ['Scope Creep', 'Medium', '50%', '=IF(B16="High",3,IF(B16="Medium",2,1))*VALUE(SUBSTITUTE(C16,"%",""))/100*10']
+    ];
+    
+    risks.forEach((risk, idx) => {
+      risk.forEach((cell, col) => {
+        if (typeof cell === 'string' && cell.startsWith('=')) {
+          dash.setFormula(11 + idx, col + 7, cell);
+        } else {
+          dash.setValue(11 + idx, col + 7, cell);
+        }
+      });
+    });
+    
+    dash.format(11, 7, 11, 10, {
+      fontWeight: 'bold',
+      background: '#E5E7EB'
+    });
+    
+    // Timeline Overview
+    dash.setValue(20, 1, 'PROJECT TIMELINE');
+    dash.merge(20, 1, 20, 12);
+    dash.format(20, 1, 20, 12, {
+      fontSize: 12,
+      fontWeight: 'bold',
+      background: '#FEF3C7'
+    });
+    
+    // Gantt-style timeline
+    const timeline = [
+      ['Phase', 'Start', 'End', 'Duration', 'W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8'],
+      ['Site Prep', '=TODAY()', '=B22+7', '7 days', '■', '■', '', '', '', '', '', ''],
+      ['Foundation', '=C22+1', '=B23+14', '14 days', '', '', '■', '■', '■', '■', '', ''],
+      ['Framing', '=C23+1', '=B24+21', '21 days', '', '', '', '', '', '', '■', '■']
+    ];
+    
+    timeline.forEach((row, idx) => {
+      row.forEach((cell, col) => {
+        if (typeof cell === 'string' && cell.startsWith('=')) {
+          dash.setFormula(21 + idx, col + 1, cell);
+        } else {
+          dash.setValue(21 + idx, col + 1, cell);
+        }
+      });
+    });
+    
+    dash.format(21, 1, 21, 12, {
+      fontWeight: 'bold',
+      background: '#E5E7EB'
+    });
+    dash.format(22, 2, 24, 3, { numberFormat: 'dd/mm/yyyy' });
+    
+    // Quick Actions
+    dash.setValue(26, 1, 'QUICK ACTIONS');
+    dash.merge(26, 1, 26, 12);
+    dash.format(26, 1, 26, 12, {
+      fontSize: 12,
+      fontWeight: 'bold',
+      background: '#FEF3C7'
+    });
+    
+    const actions = [
+      '→ Generate Detailed Report',
+      '→ Export to PDF',
+      '→ Send to Client',
+      '→ Update Prices'
+    ];
+    
+    actions.forEach((action, idx) => {
+      dash.setValue(27 + idx, 1, action);
+      dash.merge(27 + idx, 1, 27 + idx, 3);
+      dash.format(27 + idx, 1, 27 + idx, 3, {
+        background: '#DBEAFE',
+        border: true
+      });
+    });
+    
+    // Column widths
+    dash.setColumnWidth(1, 100);
+    for (let col = 2; col <= 12; col++) {
+      dash.setColumnWidth(col, 80);
+    }
+    
+    // Cost Breakdown Chart Area (simplified from original)
     const breakdown = [
       ['Category', 'Budgeted', 'Estimated', 'Variance', '% of Total', 'Status'],
       ['Materials', '=50000', '=SUM({{Materials}}!G:G)', '=B11-C11', '=C11/C$15', '=IF(D11<0,"Over","Under")'],
@@ -276,36 +437,162 @@ var ConstructionTemplate = {
   buildMaterialsCost: function(builder) {
     const materials = builder.sheet('Materials');
     
-    // Headers
-    const headers = [
-      'Item Code', 'Description', 'Category', 'Quantity', 'Unit',
-      'Unit Cost', 'Total Cost', 'Supplier', 'Lead Time', 'Notes'
-    ];
-    
-    materials.setRangeValues(1, 1, [headers]);
-    materials.format(1, 1, 1, 10, {
+    // Title
+    materials.setValue(1, 1, 'Materials Cost Tracker');
+    materials.merge(1, 1, 1, 15);
+    materials.format(1, 1, 1, 15, {
+      fontSize: 16,
+      fontWeight: 'bold',
+      horizontalAlignment: 'center',
       background: '#EA580C',
-      fontColor: '#FFFFFF',
-      fontWeight: 'bold'
+      fontColor: '#FFFFFF'
     });
     
-    // Sample material data
-    const sampleData = [
-      ['MAT001', 'Concrete Mix', 'Foundation', 100, 'cu.yd', 120, '=D2*F2', 'BuildSupply Co', '2 days', 'Grade A'],
-      ['MAT002', 'Steel Beams', 'Structure', 50, 'tons', 800, '=D3*F3', 'SteelWorks Inc', '1 week', 'I-beams'],
-      ['MAT003', 'Lumber 2x4', 'Framing', 500, 'pieces', 8, '=D4*F4', 'WoodMart', '3 days', 'Treated'],
-      ['MAT004', 'Drywall Sheets', 'Interior', 200, 'sheets', 12, '=D5*F5', 'BuildSupply Co', '2 days', '4x8 sheets']
+    // Headers with more detail
+    const headers = [
+      'Item Code', 'Description', 'Category', 'Phase', 'Quantity', 'Unit',
+      'Unit Cost', 'Total Cost', 'Markup %', 'Sell Price', 'Supplier', 
+      'Lead Time', 'Order Date', 'Delivery Date', 'Status', 'Notes'
     ];
     
-    materials.setRangeValues(2, 1, sampleData);
-    materials.format(2, 6, 5, 7, { numberFormat: '$#,##0' });
+    materials.setRangeValues(3, 1, [headers]);
+    materials.format(3, 1, 3, headers.length, {
+      background: '#FED7AA',
+      fontWeight: 'bold',
+      border: true
+    });
     
-    // Category validation
-    materials.addValidation('C2:C100', ['Foundation', 'Structure', 'Framing', 'Exterior', 'Interior', 'Mechanical', 'Electrical', 'Plumbing']);
+    // Enhanced material data with formulas
+    const sampleData = [
+      ['MAT001', 'Concrete Mix (3000 PSI)', 'Foundation', 'Site Prep', 100, 'cu.yd', 120, '=E4*G4', 25, '=H4*(1+I4/100)', 'BuildSupply Co', '2 days', '=TODAY()', '=M4+2', 'Ordered', 'Grade A, pumping included'],
+      ['MAT002', 'Steel Beams W12x26', 'Structure', 'Foundation', 50, 'tons', 800, '=E5*G5', 20, '=H5*(1+I5/100)', 'SteelWorks Inc', '1 week', '=TODAY()+3', '=M5+7', 'Pending', 'I-beams, galvanized'],
+      ['MAT003', 'Lumber 2x4x8 PT', 'Framing', 'Framing', 500, 'pieces', 8.5, '=E6*G6', 30, '=H6*(1+I6/100)', 'WoodMart', '3 days', '=TODAY()+7', '=M6+3', 'Not Ordered', 'Pressure treated'],
+      ['MAT004', 'Lumber 2x6x10 PT', 'Framing', 'Framing', 300, 'pieces', 12.75, '=E7*G7', 30, '=H7*(1+I7/100)', 'WoodMart', '3 days', '=TODAY()+7', '=M7+3', 'Not Ordered', 'Pressure treated'],
+      ['MAT005', 'Plywood 3/4" T&G', 'Framing', 'Framing', 150, 'sheets', 45, '=E8*G8', 25, '=H8*(1+I8/100)', 'WoodMart', '3 days', '=TODAY()+10', '=M8+3', 'Not Ordered', '4x8 sheets, exterior grade'],
+      ['MAT006', 'Drywall 1/2" Regular', 'Interior', 'Interior', 200, 'sheets', 12, '=E9*G9', 35, '=H9*(1+I9/100)', 'BuildSupply Co', '2 days', '=TODAY()+30', '=M9+2', 'Not Ordered', '4x8 sheets'],
+      ['MAT007', 'Drywall 5/8" Fire Rated', 'Interior', 'Interior', 100, 'sheets', 15, '=E10*G10', 35, '=H10*(1+I10/100)', 'BuildSupply Co', '2 days', '=TODAY()+30', '=M10+2', 'Not Ordered', '4x8 sheets, Type X'],
+      ['MAT008', 'Insulation R-19', 'Interior', 'Interior', 5000, 'sq.ft', 0.85, '=E11*G11', 40, '=H11*(1+I11/100)', 'InsulPro', '1 week', '=TODAY()+25', '=M11+7', 'Not Ordered', 'Fiberglass batts'],
+      ['MAT009', 'Roofing Shingles', 'Exterior', 'Exterior', 35, 'squares', 125, '=E12*G12', 30, '=H12*(1+I12/100)', 'RoofMaster', '4 days', '=TODAY()+20', '=M12+4', 'Not Ordered', '30-year architectural'],
+      ['MAT010', 'Vinyl Siding', 'Exterior', 'Exterior', 2500, 'sq.ft', 3.5, '=E13*G13', 35, '=H13*(1+I13/100)', 'SidingPro', '5 days', '=TODAY()+35', '=M13+5', 'Not Ordered', 'Dutch lap style']
+    ];
+    
+    sampleData.forEach((row, idx) => {
+      row.forEach((cell, col) => {
+        if (typeof cell === 'string' && cell.startsWith('=')) {
+          materials.setFormula(4 + idx, col + 1, cell);
+        } else {
+          materials.setValue(4 + idx, col + 1, cell);
+        }
+      });
+    });
+    
+    // Formatting
+    materials.format(4, 7, 13, 8, { numberFormat: '$#,##0.00' });
+    materials.format(4, 9, 13, 9, { numberFormat: '0%' });
+    materials.format(4, 10, 13, 10, { numberFormat: '$#,##0.00' });
+    materials.format(4, 13, 13, 14, { numberFormat: 'dd/mm/yyyy' });
+    
+    // Data validation
+    materials.addValidation('C4:C100', ['Foundation', 'Structure', 'Framing', 'Exterior', 'Interior', 'Mechanical', 'Electrical', 'Plumbing', 'Finishing']);
+    materials.addValidation('D4:D100', ['Site Prep', 'Foundation', 'Framing', 'Exterior', 'Interior', 'Mechanical', 'Finishing']);
+    materials.addValidation('O4:O100', ['Not Ordered', 'Pending', 'Ordered', 'In Transit', 'Delivered', 'Installed']);
+    
+    // Conditional formatting for status
+    materials.addConditionalFormat(4, 15, 100, 15, {
+      type: 'cell',
+      condition: 'TEXT_EQUALS',
+      value: 'Delivered',
+      format: { background: '#10B981', fontColor: '#FFFFFF' }
+    });
+    
+    materials.addConditionalFormat(4, 15, 100, 15, {
+      type: 'cell',
+      condition: 'TEXT_EQUALS',
+      value: 'Ordered',
+      format: { background: '#3B82F6', fontColor: '#FFFFFF' }
+    });
+    
+    // Summary section
+    materials.setValue(16, 1, 'SUMMARY BY CATEGORY');
+    materials.merge(16, 1, 16, 6);
+    materials.format(16, 1, 16, 6, {
+      fontWeight: 'bold',
+      background: '#FEF3C7'
+    });
+    
+    const categories = ['Foundation', 'Structure', 'Framing', 'Exterior', 'Interior', 'Mechanical', 'Electrical', 'Plumbing'];
+    materials.setValue(17, 1, 'Category');
+    materials.setValue(17, 2, 'Items');
+    materials.setValue(17, 3, 'Total Cost');
+    materials.setValue(17, 4, 'With Markup');
+    materials.setValue(17, 5, 'Status');
+    materials.setValue(17, 6, 'Visual');
+    
+    categories.forEach((cat, idx) => {
+      materials.setValue(18 + idx, 1, cat);
+      materials.setFormula(18 + idx, 2, `=COUNTIF(C:C,"${cat}")`);
+      materials.setFormula(18 + idx, 3, `=SUMIF(C:C,"${cat}",H:H)`);
+      materials.setFormula(18 + idx, 4, `=SUMIF(C:C,"${cat}",J:J)`);
+      materials.setFormula(18 + idx, 5, `=IF(COUNTIFS(C:C,"${cat}",O:O,"Delivered")=B${18+idx},"Complete",COUNTIFS(C:C,"${cat}",O:O,"Delivered")&"/"&B${18+idx})`);
+      materials.setFormula(18 + idx, 6, `=REPT("■",ROUND(C${18+idx}/MAX(C$18:C$25)*10,0))`);
+    });
+    
+    materials.format(17, 1, 17, 6, {
+      fontWeight: 'bold',
+      background: '#E5E7EB'
+    });
+    materials.format(18, 3, 25, 4, { numberFormat: '$#,##0' });
+    
+    // Totals row
+    materials.setValue(26, 1, 'TOTAL');
+    materials.setFormula(26, 2, '=SUM(B18:B25)');
+    materials.setFormula(26, 3, '=SUM(C18:C25)');
+    materials.setFormula(26, 4, '=SUM(D18:D25)');
+    materials.format(26, 1, 26, 6, {
+      fontWeight: 'bold',
+      background: '#FED7AA',
+      border: true
+    });
+    
+    // Column widths
+    materials.setColumnWidth(1, 80);
+    materials.setColumnWidth(2, 180);
+    materials.setColumnWidth(3, 100);
+    for (let col = 4; col <= 16; col++) {
+      materials.setColumnWidth(col, 90);
+    }
   },
   
   buildLaborCost: function(builder) {
     const labor = builder.sheet('Labor');
+    
+    // Title
+    labor.setValue(1, 1, 'Labor Cost Analysis');
+    labor.merge(1, 1, 1, 12);
+    labor.format(1, 1, 1, 12, {
+      fontSize: 16,
+      fontWeight: 'bold',
+      horizontalAlignment: 'center',
+      background: '#EA580C',
+      fontColor: '#FFFFFF'
+    });
+    
+    // Summary cards
+    labor.setValue(3, 1, 'Total Labor Hours');
+    labor.setFormula(3, 2, '=SUM(E5:E30)');
+    labor.format(3, 2, 3, 2, { fontSize: 14, fontWeight: 'bold' });
+    
+    labor.setValue(3, 4, 'Total Labor Cost');
+    labor.setFormula(3, 5, '=SUM(H5:H30)');
+    labor.format(3, 5, 3, 5, { fontSize: 14, fontWeight: 'bold', numberFormat: '$#,##0' });
+    
+    labor.setValue(3, 7, 'Avg Hourly Rate');
+    labor.setFormula(3, 8, '=AVERAGE(F5:F30)');
+    labor.format(3, 8, 3, 8, { fontSize: 14, fontWeight: 'bold', numberFormat: '$#,##0.00' });
+    
+    labor.setValue(3, 10, 'Crews Active');
+    labor.setFormula(3, 11, '=COUNTUNIQUE(B5:B30)');
+    labor.format(3, 11, 3, 11, { fontSize: 14, fontWeight: 'bold' });
     
     // Headers
     const headers = [
@@ -916,203 +1203,4 @@ var ConstructionTemplate = {
   }
 };
 
-/**
- * Enhanced Template Builder with Professional Features
- * (Reusing from RealEstateTemplate for consistency)
- */
-class TemplateBuilderPro {
-  constructor(spreadsheet, isPreview) {
-    this.spreadsheet = spreadsheet;
-    this.isPreview = isPreview;
-    this.sheets = {};
-    this.errors = [];
-  }
-  
-  createSheets(names) {
-    names.forEach(name => {
-      const sheetName = this.isPreview ? `[PREVIEW] ${name}` : name;
-      try {
-        const sheet = this.spreadsheet.insertSheet(sheetName);
-        this.sheets[name] = new SheetHelper(sheet, name, this);
-      } catch (error) {
-        this.errors.push(`Failed to create sheet ${name}: ${error.toString()}`);
-      }
-    });
-    return this.sheets;
-  }
-  
-  sheet(name) {
-    return this.sheets[name];
-  }
-  
-  complete() {
-    return {
-      success: this.errors.length === 0,
-      sheets: Object.keys(this.sheets).map(name => 
-        this.isPreview ? `[PREVIEW] ${name}` : name
-      ),
-      errors: this.errors
-    };
-  }
-  
-  resolveSheetReference(formula) {
-    let resolved = formula;
-    for (const [name, helper] of Object.entries(this.sheets)) {
-      const placeholder = `{{${name}}}`;
-      const actualName = this.isPreview ? `'[PREVIEW] ${name}'` : `'${name}'`;
-      resolved = resolved.replace(new RegExp(placeholder, 'g'), actualName);
-    }
-    return resolved;
-  }
-}
-
-/**
- * Sheet Helper Class
- */
-class SheetHelper {
-  constructor(sheet, name, builder) {
-    this.sheet = sheet;
-    this.name = name;
-    this.builder = builder;
-  }
-  
-  setValue(row, col, value) {
-    try {
-      this.sheet.getRange(row, col).setValue(value);
-      return true;
-    } catch (error) {
-      this.builder.errors.push(`Error setting value at ${this.name}[${row},${col}]: ${error.toString()}`);
-      return false;
-    }
-  }
-  
-  setFormula(row, col, formula) {
-    try {
-      const resolved = this.builder.resolveSheetReference(formula);
-      this.sheet.getRange(row, col).setFormula(resolved);
-      return true;
-    } catch (error) {
-      this.builder.errors.push(`Error setting formula at ${this.name}[${row},${col}]: ${error.toString()}`);
-      return false;
-    }
-  }
-  
-  setRangeValues(startRow, startCol, values) {
-    try {
-      if (!values || values.length === 0) return false;
-      const numRows = values.length;
-      const numCols = values[0].length;
-      this.sheet.getRange(startRow, startCol, numRows, numCols).setValues(values);
-      return true;
-    } catch (error) {
-      this.builder.errors.push(`Error setting range values at ${this.name}[${startRow},${startCol}]: ${error.toString()}`);
-      return false;
-    }
-  }
-  
-  format(startRow, startCol, endRow, endCol, formatting) {
-    try {
-      const range = this.sheet.getRange(startRow, startCol, endRow - startRow + 1, endCol - startCol + 1);
-      
-      if (formatting.background) range.setBackground(formatting.background);
-      if (formatting.fontColor) range.setFontColor(formatting.fontColor);
-      if (formatting.fontSize) range.setFontSize(formatting.fontSize);
-      if (formatting.fontWeight) range.setFontWeight(formatting.fontWeight);
-      if (formatting.horizontalAlignment) range.setHorizontalAlignment(formatting.horizontalAlignment);
-      if (formatting.verticalAlignment) range.setVerticalAlignment(formatting.verticalAlignment);
-      if (formatting.numberFormat) range.setNumberFormat(formatting.numberFormat);
-      if (formatting.border) {
-        range.setBorder(true, true, true, true, true, true, '#D1D5DB', SpreadsheetApp.BorderStyle.SOLID);
-      }
-      
-      return true;
-    } catch (error) {
-      this.builder.errors.push(`Error formatting range at ${this.name}: ${error.toString()}`);
-      return false;
-    }
-  }
-  
-  merge(startRow, startCol, endRow, endCol) {
-    try {
-      const range = this.sheet.getRange(startRow, startCol, endRow - startRow + 1, endCol - startCol + 1);
-      range.merge();
-      return true;
-    } catch (error) {
-      this.builder.errors.push(`Error merging cells at ${this.name}: ${error.toString()}`);
-      return false;
-    }
-  }
-  
-  addValidation(rangeA1, values) {
-    try {
-      const rule = SpreadsheetApp.newDataValidation()
-        .requireValueInList(values, true)
-        .build();
-      this.sheet.getRange(rangeA1).setDataValidation(rule);
-      return true;
-    } catch (error) {
-      this.builder.errors.push(`Error adding validation at ${this.name}[${rangeA1}]: ${error.toString()}`);
-      return false;
-    }
-  }
-  
-  addConditionalFormat(startRow, startCol, endRow, endCol, rule) {
-    try {
-      const range = this.sheet.getRange(startRow, startCol, endRow - startRow + 1, endCol - startCol + 1);
-      const rules = this.sheet.getConditionalFormatRules();
-      
-      let newRule;
-      const builder = SpreadsheetApp.newConditionalFormatRule()
-        .setRanges([range]);
-      
-      if (rule.type === 'cell') {
-        switch(rule.condition) {
-          case 'NUMBER_GREATER_THAN':
-            builder.whenNumberGreaterThan(rule.value);
-            break;
-          case 'NUMBER_LESS_THAN':
-            builder.whenNumberLessThan(rule.value);
-            break;
-          case 'TEXT_CONTAINS':
-            builder.whenTextContains(rule.value);
-            break;
-          case 'TEXT_EQUALS':
-            builder.whenTextEqualTo(rule.value);
-            break;
-        }
-        
-        if (rule.format.fontColor) {
-          builder.setFontColor(rule.format.fontColor);
-        }
-        if (rule.format.background) {
-          builder.setBackground(rule.format.background);
-        }
-      } else if (rule.type === 'gradient') {
-        builder.setGradientMaxpointWithValue(
-          rule.maxColor,
-          SpreadsheetApp.InterpolationType.NUMBER,
-          rule.maxValue || '100'
-        );
-        builder.setGradientMidpointWithValue(
-          rule.midColor,
-          SpreadsheetApp.InterpolationType.NUMBER,
-          rule.midValue || '50'
-        );
-        builder.setGradientMinpointWithValue(
-          rule.minColor,
-          SpreadsheetApp.InterpolationType.NUMBER,
-          rule.minValue || '0'
-        );
-      }
-      
-      newRule = builder.build();
-      rules.push(newRule);
-      this.sheet.setConditionalFormatRules(rules);
-      
-      return true;
-    } catch (error) {
-      this.builder.errors.push(`Error adding conditional format at ${this.name}: ${error.toString()}`);
-      return false;
-    }
-  }
-}
+// TemplateBuilderPro and SheetHelper classes are now in TemplateBuilder.js

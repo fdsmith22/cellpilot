@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- CellPilot Logo - Simplified for small size -->
+  <!-- Grid/spreadsheet background -->
+  <rect x="4" y="4" width="40" height="40" rx="4" fill="#f3f4f6"/>
+  
+  <!-- Grid lines -->
+  <path d="M4 16h40M4 28h40M16 4v40M32 4v40" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Center cell highlighted (pilot/navigation concept) -->
+  <rect x="16" y="16" width="16" height="12" fill="#3b82f6" opacity="0.2"/>
+  
+  <!-- Pilot/navigation arrow -->
+  <path d="M24 14l8 8-8 8" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M14 22h18" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Optional: Add "CP" text for branding -->
+  <text x="24" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#1e40af">CP</text>
+</svg>

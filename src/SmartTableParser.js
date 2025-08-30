@@ -17,11 +17,28 @@ const SmartTableParser = {
    */
   initializeML: async function() {
     try {
-      if (typeof window !== 'undefined' && window.CellPilotMLEngine) {
-        this.mlEngine = new window.CellPilotMLEngine();
-        await this.mlEngine.initialize();
+      if (typeof window !== 'undefined' && window.cellpilotML) {
+        this.mlEngine = window.cellpilotML;
+        if (!this.mlEngine.isInitialized) {
+          await this.mlEngine.initialize();
+        }
         this.mlEnabled = true;
         Logger.info('SmartTableParser ML initialized successfully');
+      } else if (typeof window !== 'undefined') {
+        // Wait for ML engine to load
+        await new Promise((resolve) => {
+          window.addEventListener('cellpilot-ml-ready', (e) => {
+            this.mlEngine = e.detail.engine;
+            this.mlEnabled = true;
+            resolve();
+          }, { once: true });
+          
+          // Timeout after 5 seconds
+          setTimeout(() => {
+            this.mlEnabled = false;
+            resolve();
+          }, 5000);
+        });
       }
     } catch (error) {
       Logger.warn('ML initialization failed, falling back to rule-based parsing:', error);

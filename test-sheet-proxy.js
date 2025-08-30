@@ -416,6 +416,14 @@ function applyRestructuredData(config) {
 }
 
 /**
+ * Clear restructuring session data
+ * Called when user leaves the restructuring interface
+ */
+function clearRestructuringSession() {
+  return CellPilot.clearRestructuringSession();
+}
+
+/**
  * Show a toast notification
  * @param {string} message - The message to display
  * @param {string} title - The title of the toast (optional)
@@ -1708,6 +1716,20 @@ function getMLFeedbackHistory() {
 */
 function trackMLFeedback(operation, prediction, userAction, metadata) {
   return CellPilot.trackMLFeedback(operation, prediction, userAction, metadata);
+}
+
+/**
+* Export ML profile for backup
+*/
+function exportMLProfile() {
+  return CellPilot.exportMLProfile();
+}
+
+/**
+* Import ML profile from backup
+*/
+function importMLProfile(data) {
+  return CellPilot.importMLProfile(data);
 }
 
 /**

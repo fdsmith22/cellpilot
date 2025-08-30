@@ -5,6 +5,45 @@
 
 const FormulaBuilder = {
   
+  // ML-enhanced properties
+  mlEngine: null,
+  mlEnabled: false,
+  userFormulaHistory: [],
+  
+  /**
+   * Initialize ML engine for formula suggestions
+   */
+  initializeML: async function() {
+    try {
+      if (typeof window !== 'undefined' && window.cellpilotML) {
+        this.mlEngine = window.cellpilotML;
+        if (!this.mlEngine.isInitialized) {
+          await this.mlEngine.initialize();
+        }
+        this.mlEnabled = true;
+        Logger.info('FormulaBuilder ML initialized successfully');
+      } else if (typeof window !== 'undefined') {
+        // Wait for ML engine to load
+        await new Promise((resolve) => {
+          window.addEventListener('cellpilot-ml-ready', (e) => {
+            this.mlEngine = e.detail.engine;
+            this.mlEnabled = true;
+            resolve();
+          }, { once: true });
+          
+          // Timeout after 5 seconds
+          setTimeout(() => {
+            this.mlEnabled = false;
+            resolve();
+          }, 5000);
+        });
+      }
+    } catch (error) {
+      Logger.warn('ML initialization failed for FormulaBuilder:', error);
+      this.mlEnabled = false;
+    }
+  },
+  
   /**
    * Show natural language formula builder interface
    */
@@ -631,10 +670,11 @@ const FormulaBuilder = {
       const context = this.getCurrentSheetContext();
       
       // Get ML recommendations
-      const recommendations = await this.mlEngine.getPersonalizedFormulas(
-        recentFormulas,
-        context
-      );
+      const recommendations = await this.mlEngine.suggestFormulas({
+        ...context,
+        description: 'personalized recommendations',
+        recentFormulas: recentFormulas
+      });
       
       // Map to template format
       return recommendations.map(rec => ({
@@ -662,10 +702,14 @@ const FormulaBuilder = {
       const context = this.getCurrentSheetContext();
       const recentFormulas = this.userFormulaHistory.slice(-5);
       
-      const prediction = await this.mlEngine.predictNextFormula(
-        recentFormulas,
-        context
-      );
+      // Use suggestFormulas for prediction since predictNextFormula doesn't exist
+      const suggestions = await this.mlEngine.suggestFormulas({
+        ...context,
+        description: 'predict next formula',
+        recentFormulas: recentFormulas
+      });
+      
+      const prediction = suggestions && suggestions.length > 0 ? suggestions[0] : null;
       
       return prediction;
     } catch (error) {
@@ -685,5 +729,143 @@ const FormulaBuilder = {
 • "Find customer name from ID"<br>
 • "Maximum value in column A"<br>
 • "Count how many cells contain 'Yes'"`;
+  },
+  
+  /**
+   * Learn from formula selection for ML improvement
+   */
+  learnFromFormulaSelection: function(formula, description, wasHelpful) {
+    try {
+      // Add to user history
+      this.userFormulaHistory.push({
+        formula: formula,
+        description: description,
+        timestamp: new Date().toISOString(),
+        helpful: wasHelpful
+      });
+      
+      // Keep only last 50 entries
+      if (this.userFormulaHistory.length > 50) {
+        this.userFormulaHistory = this.userFormulaHistory.slice(-50);
+      }
+      
+      // Track with ML Backend if available
+      if (typeof MLBackend !== 'undefined') {
+        MLBackend.trackMLFeedback(
+          'formulaSuggestion',
+          { formula: formula, description: description },
+          wasHelpful ? 'used' : 'ignored',
+          { confidence: this.getFormulaConfidence(formula) }
+        );
+      }
+      
+      // Learn with ML engine if available
+      if (this.mlEnabled && this.mlEngine) {
+        this.mlEngine.learnFromFeedback(
+          'formula_suggestion',
+          { formula: formula, description: description },
+          wasHelpful ? 'accept' : 'reject',
+          { context: this.getCurrentSheetContext() }
+        ).catch(error => {
+          Logger.warn('ML learning failed:', error);
+        });
+      }
+      
+    } catch (error) {
+      Logger.warn('Failed to learn from formula selection:', error);
+    }
+  },
+  
+  /**
+   * Get current sheet context for ML
+   */
+  getCurrentSheetContext: function() {
+    try {
+      const sheet = SpreadsheetApp.getActiveSheet();
+      const range = SpreadsheetApp.getActiveRange();
+      const data = range.getValues();
+      
+      return {
+        sheetName: sheet.getName(),
+        rowCount: sheet.getLastRow(),
+        columnCount: sheet.getLastColumn(),
+        hasNumbers: this.hasNumbers(data),
+        hasDates: this.hasDates(data),
+        hasText: this.hasText(data),
+        selectedRange: range.getA1Notation(),
+        dataTypes: this.analyzeDataTypes(data)
+      };
+    } catch (error) {
+      Logger.warn('Failed to get sheet context:', error);
+      return {
+        hasNumbers: false,
+        hasDates: false,
+        hasText: true,
+        rowCount: 0,
+        columnCount: 0
+      };
+    }
+  },
+  
+  /**
+   * Get formula confidence score
+   */
+  getFormulaConfidence: function(formula) {
+    // Simple heuristic for formula confidence
+    if (formula.includes('SUMIF') || formula.includes('COUNTIF')) return 0.9;
+    if (formula.includes('VLOOKUP')) return 0.85;
+    if (formula.includes('SUM') || formula.includes('AVERAGE')) return 0.95;
+    return 0.7;
+  },
+  
+  /**
+   * Check if data contains numbers
+   */
+  hasNumbers: function(data) {
+    return data.some(row => row.some(cell => typeof cell === 'number' && !isNaN(cell)));
+  },
+  
+  /**
+   * Check if data contains dates
+   */
+  hasDates: function(data) {
+    return data.some(row => row.some(cell => cell instanceof Date));
+  },
+  
+  /**
+   * Check if data contains text
+   */
+  hasText: function(data) {
+    return data.some(row => row.some(cell => typeof cell === 'string' && cell.trim() !== ''));
+  },
+  
+  /**
+   * Analyze data types in range
+   */
+  analyzeDataTypes: function(data) {
+    const types = { numbers: 0, dates: 0, text: 0, empty: 0 };
+    let total = 0;
+    
+    data.forEach(row => {
+      row.forEach(cell => {
+        total++;
+        if (cell === '' || cell === null || cell === undefined) {
+          types.empty++;
+        } else if (typeof cell === 'number') {
+          types.numbers++;
+        } else if (cell instanceof Date) {
+          types.dates++;
+        } else {
+          types.text++;
+        }
+      });
+    });
+    
+    return {
+      numberPercentage: types.numbers / total,
+      datePercentage: types.dates / total,
+      textPercentage: types.text / total,
+      emptyPercentage: types.empty / total
+    };
   }
 };

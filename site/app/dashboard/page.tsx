@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import GridAnimation from '@/components/GridAnimation'
 import SignOutButton from '@/components/SignOutButton'
+import ProfileForm from '@/components/ProfileForm'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -12,6 +13,13 @@ export default async function DashboardPage() {
   if (!user) {
     redirect('/auth')
   }
+
+  // Get user profile data
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single()
 
   return (
     <>
@@ -23,8 +31,13 @@ export default async function DashboardPage() {
           <div className="glass-card rounded-2xl p-8 mb-8">
             <div className="flex justify-between items-start">
               <div>
-                <h1 className="text-3xl font-bold text-neutral-900 mb-2">Welcome back!</h1>
+                <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+                  Welcome back{profile?.full_name ? `, ${profile.full_name.split(' ')[0]}` : ''}!
+                </h1>
                 <p className="text-neutral-600">{user.email}</p>
+                {profile?.company && (
+                  <p className="text-sm text-neutral-500 mt-1">{profile.company}</p>
+                )}
               </div>
               <SignOutButton />
             </div>
@@ -63,43 +76,58 @@ export default async function DashboardPage() {
             </Link>
           </div>
 
-          {/* Account Details */}
-          <div className="glass-card rounded-2xl p-8">
-            <h2 className="text-xl font-semibold text-neutral-900 mb-6">Account Details</h2>
-            
-            <div className="space-y-4">
-              <div className="flex justify-between items-center py-3 border-b border-neutral-200">
-                <span className="text-neutral-600">Email</span>
-                <span className="text-neutral-900 font-medium">{user.email}</span>
-              </div>
-              
-              <div className="flex justify-between items-center py-3 border-b border-neutral-200">
-                <span className="text-neutral-600">User ID</span>
-                <span className="text-neutral-900 font-mono text-sm">{user.id}</span>
-              </div>
-              
-              <div className="flex justify-between items-center py-3 border-b border-neutral-200">
-                <span className="text-neutral-600">Account Created</span>
-                <span className="text-neutral-900">{new Date(user.created_at).toLocaleDateString()}</span>
-              </div>
-              
-              <div className="flex justify-between items-center py-3 border-b border-neutral-200">
-                <span className="text-neutral-600">Current Plan</span>
-                <span className="text-neutral-900 font-medium">Free</span>
-              </div>
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Profile Information */}
+            <div className="glass-card rounded-2xl p-8">
+              <h2 className="text-xl font-semibold text-neutral-900 mb-6">Profile Information</h2>
+              <ProfileForm user={user} profile={profile} />
             </div>
 
-            <div className="mt-8 pt-6 border-t border-neutral-200">
-              <h3 className="text-lg font-semibold text-neutral-900 mb-4">Subscription</h3>
-              <div className="bg-gradient-to-r from-pastel-mint/20 to-pastel-sky/20 rounded-lg p-4 mb-4">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-medium text-neutral-900">Free Plan</p>
-                    <p className="text-sm text-neutral-600">25 operations per month</p>
+            {/* Account Details */}
+            <div className="glass-card rounded-2xl p-8">
+              <h2 className="text-xl font-semibold text-neutral-900 mb-6">Account Details</h2>
+              
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-3 border-b border-neutral-200">
+                  <span className="text-neutral-600">Email</span>
+                  <span className="text-neutral-900 font-medium">{user.email}</span>
+                </div>
+                
+                <div className="flex justify-between items-center py-3 border-b border-neutral-200">
+                  <span className="text-neutral-600">User ID</span>
+                  <span className="text-neutral-900 font-mono text-sm">{user.id}</span>
+                </div>
+                
+                <div className="flex justify-between items-center py-3 border-b border-neutral-200">
+                  <span className="text-neutral-600">Account Created</span>
+                  <span className="text-neutral-900">{new Date(user.created_at).toLocaleDateString()}</span>
+                </div>
+                
+                <div className="flex justify-between items-center py-3 border-b border-neutral-200">
+                  <span className="text-neutral-600">Current Plan</span>
+                  <span className="text-neutral-900 font-medium">{profile?.subscription_tier || 'Free'}</span>
+                </div>
+
+                <div className="flex justify-between items-center py-3">
+                  <span className="text-neutral-600">Operations Used</span>
+                  <span className="text-neutral-900 font-medium">
+                    {profile?.operations_used || 0} / {profile?.operations_limit || 25}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-neutral-200">
+                <h3 className="text-lg font-semibold text-neutral-900 mb-4">Subscription</h3>
+                <div className="bg-gradient-to-r from-pastel-mint/20 to-pastel-sky/20 rounded-lg p-4 mb-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="font-medium text-neutral-900">Free Plan</p>
+                      <p className="text-sm text-neutral-600">25 operations per month</p>
+                    </div>
+                    <Link href="/pricing" className="btn-primary px-4 py-2 text-sm">
+                      Upgrade
+                    </Link>
                   </div>
-                  <Link href="/pricing" className="btn-primary px-4 py-2 text-sm">
-                    Upgrade
-                  </Link>
                 </div>
               </div>
             </div>

@@ -71,6 +71,27 @@ const ApiIntegration = {
   },
   
   /**
+   * Track generic events
+   */
+  trackEvent: function(eventName, eventData = {}) {
+    try {
+      const userId = this.getUserId();
+      const data = {
+        event: eventName,
+        userId: userId,
+        data: {
+          ...eventData,
+          timestamp: new Date().toISOString()
+        }
+      };
+      
+      this.sendTrackingEvent(data);
+    } catch (error) {
+      Logger.error('Failed to track event:', error);
+    }
+  },
+  
+  /**
    * Check subscription status
    */
   checkSubscription: function() {

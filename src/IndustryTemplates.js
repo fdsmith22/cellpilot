@@ -504,18 +504,21 @@ const IndustryTemplates = {
           break;
           
         // Marketing templates
-        case 'campaign-dashboard':
+        case 'campaign-tracker':
         case 'lead-scoring-system':
-        case 'content-performance':
-        case 'customer-journey':
+        case 'competitor-analysis':
+        case 'brand-awareness':
+        case 'customer-lifetime-value':
           const marketingResult = this.createMarketingTemplate(spreadsheet, templateType, true);
           createdSheets.push(...marketingResult.sheets);
           break;
           
         // E-commerce templates
-        case 'ecommerce-inventory':
-        case 'profitability-analyzer':
-        case 'sales-forecasting':
+        case 'sales-dashboard':
+        case 'inventory-manager':
+        case 'customer-analytics':
+        case 'product-performance':
+        case 'financial-tracker':
           const ecommerceResult = this.createEcommerceTemplate(spreadsheet, templateType, true);
           createdSheets.push(...ecommerceResult.sheets);
           break;
@@ -526,6 +529,16 @@ const IndustryTemplates = {
         case 'client-dashboard':
           const consultingResult = this.createConsultingTemplate(spreadsheet, templateType, true);
           createdSheets.push(...consultingResult.sheets);
+          break;
+          
+        // Professional Services templates
+        case 'project-tracker':
+        case 'time-billing':
+        case 'resource-planner':
+        case 'proposal-tracker':
+        case 'financial-dashboard':
+          const professionalResult = this.createProfessionalServicesTemplate(spreadsheet, templateType, true);
+          createdSheets.push(...professionalResult.sheets);
           break;
           
         default:
@@ -652,36 +665,142 @@ const IndustryTemplates = {
     return { sheets: sheets };
   },
   
-  
-  /**
-   * Create Healthcare template sheets
-   */
-  createHealthcareTemplate: function(spreadsheet, templateType, isPreview = false) {
-    const sheets = [];
-    
-    // Use the new HealthcareTemplate module for all healthcare templates
-    const result = HealthcareTemplate.build(spreadsheet, templateType, isPreview);
-    
-    if (result.success) {
-      sheets.push(...result.sheets);
-    } else if (result.errors && result.errors.length > 0) {
-      // Log errors for debugging but still return created sheets
-      Logger.log('HealthcareTemplate errors: ' + result.errors.join(', '));
-      if (result.sheets && result.sheets.length > 0) {
-        sheets.push(...result.sheets);
-      }
-    }
-    
-    return { sheets: sheets };
-  },
-  
-  /**
-   * Create Marketing template sheets - TODO: Replace with new module pattern
-   */
-  createMarketingTemplate: function(spreadsheet, templateType, isPreview = false) {
+  createRealEstateTemplate_OLD: function(spreadsheet, templateType, isPreview = false) {
     const sheets = [];
     const prefix = isPreview ? '[PREVIEW] ' : '';
-    
+
+    switch (templateType) {
+      case 'commission-tracker':
+        // Use the Professional Real Estate Template - single comprehensive version
+        const result = RealEstateTemplate.build(spreadsheet, isPreview);
+
+        if (result.success) {
+          sheets.push(...result.sheets);
+        } else if (result.errors && result.errors.length > 0) {
+          // Log errors for debugging but still return created sheets
+          Logger.log('RealEstateTemplate errors: ' + result.errors.join(', '));
+          if (result.sheets && result.sheets.length > 0) {
+            sheets.push(...result.sheets);
+          }
+        }
+        break;
+
+      case 'lead-pipeline':
+        const leadDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
+        const leadSheet = spreadsheet.insertSheet(prefix + 'Lead Pipeline');
+        const followUpSheet = spreadsheet.insertSheet(prefix + 'Follow-ups');
+        sheets.push(leadDashboard.getName(), leadSheet.getName(), followUpSheet.getName());
+
+        // Setup data sheets first
+        this.setupLeadPipelineSheet(leadSheet);
+        this.setupFollowUpSheet(followUpSheet);
+
+        // Use actual sheet names for dashboard formulas
+        const leadSheetName = leadSheet.getName();
+        const followUpSheetName = followUpSheet.getName();
+
+        this.createDashboard(leadDashboard, {
+          title: 'Lead Pipeline Dashboard',
+          subtitle: 'Lead Generation & Conversion Analytics',
+          industry: 'realEstate',
+          kpis: [
+            { value: `=COUNTIF('${leadSheetName}'!F:F,"Hot")`, label: 'Hot Leads', trend: '+3 today', trendColor: '#EF4444' },
+            { value: `=COUNTIF('${leadSheetName}'!F:F,"Warm")`, label: 'Warm Leads', trend: '+5 this week', trendColor: '#F59E0B' },
+            { value: `=TEXT(COUNTIF('${leadSheetName}'!G:G,"Converted")/COUNTA('${leadSheetName}'!A:A),"0%")`, label: 'Conversion Rate' },
+            { value: `=COUNTIF('${followUpSheetName}'!E:E,TODAY())`, label: 'Follow-ups Today', trend: 'On schedule' }
+          ],
+          charts: [
+            { title: 'Lead Sources', type: 'Pie', description: 'Lead distribution by source', dataRange: `${leadSheetName}!D:D` },
+            { title: 'Conversion Funnel', type: 'Funnel', description: 'Lead progression through stages', dataRange: `${leadSheetName}!F:G` }
+          ]
+        });
+        spreadsheet.setActiveSheet(leadDashboard);
+        spreadsheet.moveActiveSheet(1);
+        break;
+
+      case 'property-manager':
+        const pmDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
+        const propertySheet = spreadsheet.insertSheet(prefix + 'Properties');
+        const tenantSheet = spreadsheet.insertSheet(prefix + 'Tenants');
+        const maintenanceSheet = spreadsheet.insertSheet(prefix + 'Maintenance');
+        const incomeSheet = spreadsheet.insertSheet(prefix + 'Rental Income');
+        sheets.push(pmDashboard.getName(), propertySheet.getName(), tenantSheet.getName(), maintenanceSheet.getName(), incomeSheet.getName());
+
+        this.createDashboard(pmDashboard, {
+          title: 'Property Management Dashboard',
+          subtitle: 'Portfolio Performance & Maintenance Tracking',
+          industry: 'realEstate',
+          kpis: [
+            { value: '=COUNTA(\'Properties\'!A:A)-1', label: 'Total Properties' },
+            { value: '=TEXT(COUNTIF(\'Properties\'!F:F,"Occupied")/COUNTA(\'Properties\'!A:A),"0%")', label: 'Occupancy Rate', trend: '95% target', trendColor: '#10B981' },
+            { value: '=TEXT(SUM(\'Rental Income\'!E:E),"$#,##0")', label: 'Monthly Income', trend: '+5% MoM' },
+            { value: '=COUNTIF(\'Maintenance\'!G:G,"Open")', label: 'Open Tickets', trend: '-2 vs yesterday', trendColor: '#10B981' },
+            { value: '=TEXT(AVERAGE(\'Rental Income\'!E:E),"$#,##0")', label: 'Avg Rent' },
+            { value: '=COUNTIF(\'Tenants\'!H:H,"Current")', label: 'Active Tenants' },
+            { value: '=TEXT(SUM(\'Maintenance\'!F:F),"$#,##0")', label: 'Maintenance Costs', trend: 'Within budget' },
+            { value: '=TEXT((SUM(\'Rental Income\'!E:E)-SUM(\'Maintenance\'!F:F))/SUM(\'Rental Income\'!E:E),"0%")', label: 'Net Margin' }
+          ],
+          charts: [
+            { title: 'Occupancy Trend', type: 'Area', description: 'Monthly occupancy rates', dataRange: 'Properties!A:F' },
+            { title: 'Income vs Expenses', type: 'Column', description: 'Monthly financial performance', dataRange: 'Rental Income!A:E' },
+            { title: 'Maintenance by Type', type: 'Pie', description: 'Breakdown of maintenance requests', dataRange: 'Maintenance!C:C' }
+          ]
+        });
+
+        this.setupPropertySheet(propertySheet);
+        this.setupTenantSheet(tenantSheet);
+        this.setupMaintenanceSheet(maintenanceSheet);
+        this.setupRentalIncomeSheet(incomeSheet);
+        spreadsheet.setActiveSheet(pmDashboard);
+        spreadsheet.moveActiveSheet(1);
+        break;
+
+      case 'investment-analyzer':
+        const investDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
+        const investmentSheet = spreadsheet.insertSheet(prefix + 'Investment Analysis');
+        const cashFlowSheet = spreadsheet.insertSheet(prefix + 'Cash Flow');
+        const roiSheet = spreadsheet.insertSheet(prefix + 'ROI Calculator');
+        const compareSheet = spreadsheet.insertSheet(prefix + 'Property Comparison');
+        sheets.push(investDashboard.getName(), investmentSheet.getName(), cashFlowSheet.getName(), roiSheet.getName(), compareSheet.getName());
+
+        this.createDashboard(investDashboard, {
+          title: 'Real Estate Investment Dashboard',
+          subtitle: 'ROI Analysis & Cash Flow Projections',
+          industry: 'realEstate',
+          kpis: [
+            { value: '=TEXT(AVERAGE(\'ROI Calculator\'!F:F),"0.0%")', label: 'Avg Cap Rate', trend: 'Above market', trendColor: '#10B981' },
+            { value: '=TEXT(SUM(\'Cash Flow\'!G:G),"$#,##0")', label: 'Annual Cash Flow', trend: '+15% YoY' },
+            { value: '=TEXT(AVERAGE(\'ROI Calculator\'!H:H),"0.0%")', label: 'Avg Cash-on-Cash', trend: 'Excellent' },
+            { value: '=TEXT(MAX(\'Investment Analysis\'!K:K),"0.0")', label: 'Best IRR %', trend: 'Top performer' },
+            { value: '=TEXT(SUM(\'Investment Analysis\'!D:D),"$#,##0")', label: 'Total Invested' },
+            { value: '=COUNTA(\'Investment Analysis\'!A:A)-1', label: 'Properties Analyzed' }
+          ],
+          charts: [
+            { title: 'ROI Comparison', type: 'Bar', description: 'Compare returns across properties', dataRange: 'Property Comparison!A:E' },
+            { title: 'Cash Flow Projection', type: 'Line', description: '5-year cash flow forecast', dataRange: 'Cash Flow!A:G' },
+            { title: 'Investment Distribution', type: 'Pie', description: 'Portfolio allocation', dataRange: 'Investment Analysis!B:D' }
+          ]
+        });
+
+        this.setupInvestmentSheet(investmentSheet);
+        this.setupCashFlowSheet(cashFlowSheet);
+        this.setupROISheet(roiSheet);
+        this.setupPropertyComparisonSheet(compareSheet);
+        spreadsheet.setActiveSheet(investDashboard);
+        spreadsheet.moveActiveSheet(1);
+        break;
+    }
+
+    return { sheets };
+  },
+
+  /**
+   * Create Construction template sheets
+   */
+  createConstructionTemplate_OLD: function(spreadsheet, templateType, isPreview = false) {
+    const sheets = [];
+    const prefix = isPreview ? '[PREVIEW] ' : '';
+
     switch (templateType) {
       case 'material-tracker':
         const matDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
@@ -689,7 +808,7 @@ const IndustryTemplates = {
         const suppliersSheet = spreadsheet.insertSheet(prefix + 'Suppliers');
         const ordersSheet = spreadsheet.insertSheet(prefix + 'Purchase Orders');
         sheets.push(matDashboard.getName(), materialSheet.getName(), suppliersSheet.getName(), ordersSheet.getName());
-        
+
         this.createDashboard(matDashboard, {
           title: 'Construction Materials Dashboard',
           subtitle: 'Inventory & Supply Chain Management',
@@ -708,21 +827,21 @@ const IndustryTemplates = {
             { title: 'Supplier Performance', type: 'Bar', description: 'On-time delivery rates', dataRange: 'Suppliers!A:E' }
           ]
         });
-        
+
         this.setupMaterialTrackerSheet(materialSheet);
         this.setupSuppliersSheet(suppliersSheet);
         this.setupPurchaseOrdersSheet(ordersSheet);
         spreadsheet.setActiveSheet(matDashboard);
         spreadsheet.moveActiveSheet(1);
         break;
-        
+
       case 'labor-manager':
         const laborDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
         const laborSheet = spreadsheet.insertSheet(prefix + 'Labor Manager');
         const crewSheet = spreadsheet.insertSheet(prefix + 'Crew Schedule');
         const payrollSheet = spreadsheet.insertSheet(prefix + 'Payroll');
         sheets.push(laborDashboard.getName(), laborSheet.getName(), crewSheet.getName(), payrollSheet.getName());
-        
+
         this.createDashboard(laborDashboard, {
           title: 'Labor Management Dashboard',
           subtitle: 'Workforce Analytics & Scheduling',
@@ -741,21 +860,21 @@ const IndustryTemplates = {
             { title: 'Crew Utilization', type: 'Column', description: 'Utilization rates by crew', dataRange: 'Labor Manager!A:E' }
           ]
         });
-        
+
         this.setupLaborManagerSheet(laborSheet);
         this.setupCrewScheduleSheet(crewSheet);
         this.setupPayrollSheet(payrollSheet);
         spreadsheet.setActiveSheet(laborDashboard);
         spreadsheet.moveActiveSheet(1);
         break;
-        
+
       case 'change-orders':
         const changeDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
         const changeSheet = spreadsheet.insertSheet(prefix + 'Change Orders');
         const impactSheet = spreadsheet.insertSheet(prefix + 'Cost Impact');
         const approvalSheet = spreadsheet.insertSheet(prefix + 'Approvals');
         sheets.push(changeDashboard.getName(), changeSheet.getName(), impactSheet.getName(), approvalSheet.getName());
-        
+
         this.createDashboard(changeDashboard, {
           title: 'Change Order Management Dashboard',
           subtitle: 'Project Change Tracking & Impact Analysis',
@@ -774,21 +893,21 @@ const IndustryTemplates = {
             { title: 'Approval Timeline', type: 'Bar', description: 'Days to approval by project', dataRange: 'Approvals!A:F' }
           ]
         });
-        
-        this.setupChangeOrderSheet(changeSheet);
+
+        this.setupChangeOrdersSheet(changeSheet);
         this.setupCostImpactSheet(impactSheet);
         this.setupApprovalsSheet(approvalSheet);
         spreadsheet.setActiveSheet(changeDashboard);
         spreadsheet.moveActiveSheet(1);
         break;
-        
+
       case 'cost-estimator':
         const costDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
         const estimateSheet = spreadsheet.insertSheet(prefix + 'Cost Estimator');
         const breakdownSheet = spreadsheet.insertSheet(prefix + 'Cost Breakdown');
         const contingencySheet = spreadsheet.insertSheet(prefix + 'Contingency');
         sheets.push(costDashboard.getName(), estimateSheet.getName(), breakdownSheet.getName(), contingencySheet.getName());
-        
+
         this.createDashboard(costDashboard, {
           title: 'Project Cost Estimation Dashboard',
           subtitle: 'Budget Planning & Cost Analysis',
@@ -807,7 +926,7 @@ const IndustryTemplates = {
             { title: 'Risk Assessment', type: 'Bar', description: 'Cost risk by category', dataRange: 'Contingency!A:D' }
           ]
         });
-        
+
         this.setupCostEstimatorSheet(estimateSheet);
         this.setupCostBreakdownSheet(breakdownSheet);
         this.setupContingencySheet(contingencySheet);
@@ -815,19 +934,19 @@ const IndustryTemplates = {
         spreadsheet.moveActiveSheet(1);
         break;
     }
-    
+
     return { sheets };
   },
-  
+
   /**
    * Create Healthcare template sheets
    */
   createHealthcareTemplate: function(spreadsheet, templateType, isPreview = false) {
     const sheets = [];
-    
+
     // Use the new HealthcareTemplate module for all healthcare templates
     const result = HealthcareTemplate.build(spreadsheet, templateType, isPreview);
-    
+
     if (result.success) {
       sheets.push(...result.sheets);
     } else if (result.errors && result.errors.length > 0) {
@@ -837,14 +956,14 @@ const IndustryTemplates = {
         sheets.push(...result.sheets);
       }
     }
-    
+
     return { sheets: sheets };
   },
-  
-  createHealthcareTemplate_OLD_REMOVE: function(spreadsheet, templateType, isPreview = false) {
+
+  createHealthcareTemplate_OLD: function(spreadsheet, templateType, isPreview = false) {
     const sheets = [];
     const prefix = isPreview ? '[PREVIEW] ' : '';
-    
+
     switch (templateType) {
       case 'prior-auth-tracker':
         const authDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
@@ -852,7 +971,7 @@ const IndustryTemplates = {
         const statusSheet = spreadsheet.insertSheet(prefix + 'Auth Status');
         const providersSheet = spreadsheet.insertSheet(prefix + 'Providers');
         sheets.push(authDashboard.getName(), priorAuthSheet.getName(), statusSheet.getName(), providersSheet.getName());
-        
+
         this.createDashboard(authDashboard, {
           title: 'Prior Authorization Dashboard',
           subtitle: 'Authorization Tracking & Performance Metrics',
@@ -986,6 +1105,15 @@ const IndustryTemplates = {
    * Create Marketing template sheets
    */
   createMarketingTemplate: function(spreadsheet, templateType, isPreview = false) {
+    try {
+      return MarketingTemplate.build(spreadsheet, templateType, isPreview);
+    } catch (error) {
+      Logger.error('Error in createMarketingTemplate:', error);
+      return { error: 'Failed to create marketing template: ' + error.message };
+    }
+  },
+
+  createMarketingTemplate_OLD: function(spreadsheet, templateType, isPreview = false) {
     const sheets = [];
     const prefix = isPreview ? '[PREVIEW] ' : '';
     
@@ -1130,6 +1258,15 @@ const IndustryTemplates = {
    * Create E-commerce template sheets
    */
   createEcommerceTemplate: function(spreadsheet, templateType, isPreview = false) {
+    try {
+      return EcommerceTemplate.build(spreadsheet, templateType, isPreview);
+    } catch (error) {
+      Logger.error('Error in createEcommerceTemplate:', error);
+      return { error: 'Failed to create e-commerce template: ' + error.message };
+    }
+  },
+
+  createEcommerceTemplate_OLD: function(spreadsheet, templateType, isPreview = false) {
     const sheets = [];
     const prefix = isPreview ? '[PREVIEW] ' : '';
     
@@ -1235,6 +1372,18 @@ const IndustryTemplates = {
     }
     
     return { sheets };
+  },
+  
+  /**
+   * Create Professional Services template sheets
+   */
+  createProfessionalServicesTemplate: function(spreadsheet, templateType, isPreview = false) {
+    try {
+      return ProfessionalServicesTemplate.build(spreadsheet, templateType, isPreview);
+    } catch (error) {
+      Logger.error('Error in createProfessionalServicesTemplate:', error);
+      return { error: 'Failed to create professional services template: ' + error.message };
+    }
   },
   
   /**
@@ -1391,18 +1540,21 @@ const IndustryTemplates = {
           break;
           
         // Marketing templates
-        case 'campaign-dashboard':
+        case 'campaign-tracker':
         case 'lead-scoring-system':
-        case 'content-performance':
-        case 'customer-journey':
+        case 'competitor-analysis':
+        case 'brand-awareness':
+        case 'customer-lifetime-value':
           const marketingResult = this.createMarketingTemplate(spreadsheet, templateType, false);
           createdSheets.push(...marketingResult.sheets);
           break;
           
         // E-commerce templates
-        case 'ecommerce-inventory':
-        case 'profitability-analyzer':
-        case 'sales-forecasting':
+        case 'sales-dashboard':
+        case 'inventory-manager':
+        case 'customer-analytics':
+        case 'product-performance':
+        case 'financial-tracker':
           const ecommerceResult = this.createEcommerceTemplate(spreadsheet, templateType, false);
           createdSheets.push(...ecommerceResult.sheets);
           break;
@@ -1413,6 +1565,16 @@ const IndustryTemplates = {
         case 'client-dashboard':
           const consultingResult = this.createConsultingTemplate(spreadsheet, templateType, false);
           createdSheets.push(...consultingResult.sheets);
+          break;
+          
+        // Professional Services templates
+        case 'project-tracker':
+        case 'time-billing':
+        case 'resource-planner':
+        case 'proposal-tracker':
+        case 'financial-dashboard':
+          const professionalServicesResult = this.createProfessionalServicesTemplate(spreadsheet, templateType, false);
+          createdSheets.push(...professionalServicesResult.sheets);
           break;
           
         default:

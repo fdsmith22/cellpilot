@@ -10,7 +10,7 @@ type AuthContextType = {
   session: Session | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>
-  signUp: (email: string, password: string) => Promise<{ error: Error | null }>
+  signUp: (email: string, password: string, metadata?: any) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
   signInWithEmail: (email: string) => Promise<{ error: Error | null }>
 }
@@ -44,16 +44,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, metadata?: any) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: metadata,
         },
       })
+      
       if (error) throw error
+      
+      // Update profile with additional data
+      if (data.user && metadata) {
+        await supabase
+          .from('profiles')
+          .update({
+            full_name: metadata.full_name,
+            company: metadata.company,
+            newsletter_subscribed: metadata.newsletter_subscribed,
+          })
+          .eq('id', data.user.id)
+      }
+      
       return { error: null }
     } catch (error) {
       return { error: error as Error }

@@ -914,15 +914,15 @@ function createMainSidebarHtml(context) {
           </div>
           <div class="dropdown-item" onclick="google.script.run.showIndustryTemplate('marketing')">
             Marketing Agency
-            <span class="dropdown-item-badge">4 templates</span>
+            <span class="dropdown-item-badge">5 templates</span>
           </div>
           <div class="dropdown-item" onclick="google.script.run.showIndustryTemplate('ecommerce')">
             E-Commerce
-            <span class="dropdown-item-badge">3 templates</span>
+            <span class="dropdown-item-badge">5 templates</span>
           </div>
-          <div class="dropdown-item" onclick="google.script.run.showIndustryTemplate('consulting')">
-            Consulting
-            <span class="dropdown-item-badge">3 templates</span>
+          <div class="dropdown-item" onclick="google.script.run.showIndustryTemplate('professional')">
+            Professional Services
+            <span class="dropdown-item-badge">5 templates</span>
           </div>
         </div>
       </div>
@@ -2466,7 +2466,7 @@ function formatCategoryName(category) {
     'healthcare': 'Healthcare',
     'marketing': 'Marketing Agency',
     'ecommerce': 'E-Commerce',
-    'consulting': 'Consulting'
+    'professional': 'Professional Services'
   };
   return names[category] || category;
 }
@@ -2884,7 +2884,7 @@ function previewTemplateOld(templateType) {
           'Project profitability analysis',
           'Utilization rate tracking'
         ],
-        sampleData: 'Sample consulting projects with time entries'
+        sampleData: 'Sample professional services projects with time entries'
       }
     };
     

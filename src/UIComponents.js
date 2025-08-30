@@ -381,5 +381,39 @@ const UIComponents = {
         .addWidget(CardService.newTextParagraph()
           .setText(`<i>${message}</i>`)))
       .build();
+  },
+  
+  /**
+   * Show upgrade dialog
+   */
+  showUpgradeDialog: function(upgradePrompt) {
+    try {
+      const ui = SpreadsheetApp.getUi();
+      
+      let message = upgradePrompt.title + '\n\n' + upgradePrompt.subtitle;
+      if (upgradePrompt.description) {
+        message += '\n\n' + upgradePrompt.description;
+      }
+      
+      if (upgradePrompt.benefits && upgradePrompt.benefits.length > 0) {
+        message += '\n\nBenefits:\n';
+        upgradePrompt.benefits.forEach(benefit => {
+          message += '• ' + benefit + '\n';
+        });
+      }
+      
+      message += '\n\nVisit cellpilot.io to upgrade your plan.';
+      
+      ui.alert(
+        upgradePrompt.title,
+        message,
+        ui.ButtonSet.OK
+      );
+      
+      return true;
+    } catch (error) {
+      Logger.error('Failed to show upgrade dialog:', error);
+      return false;
+    }
   }
 };
