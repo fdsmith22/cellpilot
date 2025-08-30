@@ -2083,8 +2083,68 @@ function buildTemplate(spreadsheet, config) {
 * Professional Real Estate Template
 * Comprehensive real estate commission tracker with full analytics
 */
-function buildRealEstateTemplate(spreadsheet, isPreview) {
-  return CellPilot.RealEstateTemplate.build(spreadsheet, isPreview);
+// ============================================
+// TEMPLATE MODULE PROXY FUNCTIONS
+// ============================================
+
+/**
+ * Build Real Estate templates
+ * @param {Spreadsheet} spreadsheet - The spreadsheet object
+ * @param {string} templateType - Type of template (commission-tracker, property-manager, etc.)
+ * @param {boolean} isPreview - Whether this is a preview
+ */
+function buildRealEstateTemplate(spreadsheet, templateType, isPreview) {
+  return CellPilot.RealEstateTemplate.build(spreadsheet, templateType, isPreview);
+}
+
+/**
+ * Build Construction templates
+ * @param {Spreadsheet} spreadsheet - The spreadsheet object
+ * @param {string} templateType - Type of template (cost-estimator, material-tracker, etc.)
+ * @param {boolean} isPreview - Whether this is a preview
+ */
+function buildConstructionTemplate(spreadsheet, templateType, isPreview) {
+  return CellPilot.ConstructionTemplate.build(spreadsheet, templateType, isPreview);
+}
+
+/**
+ * Build Healthcare templates
+ * @param {Spreadsheet} spreadsheet - The spreadsheet object
+ * @param {string} templateType - Type of template (insurance-verifier, prior-auth-tracker, etc.)
+ * @param {boolean} isPreview - Whether this is a preview
+ */
+function buildHealthcareTemplate(spreadsheet, templateType, isPreview) {
+  return CellPilot.HealthcareTemplate.build(spreadsheet, templateType, isPreview);
+}
+
+/**
+ * Build Marketing templates
+ * @param {Spreadsheet} spreadsheet - The spreadsheet object
+ * @param {string} templateType - Type of template (campaign-dashboard, lead-scoring-system, etc.)
+ * @param {boolean} isPreview - Whether this is a preview
+ */
+function buildMarketingTemplate(spreadsheet, templateType, isPreview) {
+  return CellPilot.MarketingTemplate.build(spreadsheet, templateType, isPreview);
+}
+
+/**
+ * Build E-commerce templates
+ * @param {Spreadsheet} spreadsheet - The spreadsheet object
+ * @param {string} templateType - Type of template (ecommerce-inventory, profitability-analyzer, etc.)
+ * @param {boolean} isPreview - Whether this is a preview
+ */
+function buildEcommerceTemplate(spreadsheet, templateType, isPreview) {
+  return CellPilot.EcommerceTemplate.build(spreadsheet, templateType, isPreview);
+}
+
+/**
+ * Build Consulting templates
+ * @param {Spreadsheet} spreadsheet - The spreadsheet object
+ * @param {string} templateType - Type of template (time-billing-tracker, project-profitability, etc.)
+ * @param {boolean} isPreview - Whether this is a preview
+ */
+function buildConsultingTemplate(spreadsheet, templateType, isPreview) {
+  return CellPilot.ConsultingTemplate.build(spreadsheet, templateType, isPreview);
 }
 
 /**

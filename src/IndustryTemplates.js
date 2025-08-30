@@ -616,137 +616,69 @@ const IndustryTemplates = {
    */
   createRealEstateTemplate: function(spreadsheet, templateType, isPreview = false) {
     const sheets = [];
-    const prefix = isPreview ? '[PREVIEW] ' : '';
     
-    switch (templateType) {
-      case 'commission-tracker':
-        // Use the Professional Real Estate Template - single comprehensive version
-        const result = RealEstateTemplate.build(spreadsheet, isPreview);
-        
-        if (result.success) {
-          sheets.push(...result.sheets);
-        } else if (result.errors && result.errors.length > 0) {
-          // Log errors for debugging but still return created sheets
-          Logger.log('RealEstateTemplate errors: ' + result.errors.join(', '));
-          if (result.sheets && result.sheets.length > 0) {
-            sheets.push(...result.sheets);
-          }
-        }
-        break;
-        
-      case 'lead-pipeline':
-        const leadDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
-        const leadSheet = spreadsheet.insertSheet(prefix + 'Lead Pipeline');
-        const followUpSheet = spreadsheet.insertSheet(prefix + 'Follow-ups');
-        sheets.push(leadDashboard.getName(), leadSheet.getName(), followUpSheet.getName());
-        
-        // Setup data sheets first
-        this.setupLeadPipelineSheet(leadSheet);
-        this.setupFollowUpSheet(followUpSheet);
-        
-        // Use actual sheet names for dashboard formulas
-        const leadSheetName = leadSheet.getName();
-        const followUpSheetName = followUpSheet.getName();
-        
-        this.createDashboard(leadDashboard, {
-          title: 'Lead Pipeline Dashboard',
-          subtitle: 'Lead Generation & Conversion Analytics',
-          industry: 'realEstate',
-          kpis: [
-            { value: `=COUNTIF('${leadSheetName}'!F:F,"Hot")`, label: 'Hot Leads', trend: '+3 today', trendColor: '#EF4444' },
-            { value: `=COUNTIF('${leadSheetName}'!F:F,"Warm")`, label: 'Warm Leads', trend: '+5 this week', trendColor: '#F59E0B' },
-            { value: `=TEXT(COUNTIF('${leadSheetName}'!G:G,"Converted")/COUNTA('${leadSheetName}'!A:A),"0%")`, label: 'Conversion Rate' },
-            { value: `=COUNTIF('${followUpSheetName}'!E:E,TODAY())`, label: 'Follow-ups Today', trend: 'On schedule' }
-          ],
-          charts: [
-            { title: 'Lead Sources', type: 'Pie', description: 'Lead distribution by source', dataRange: `${leadSheetName}!D:D` },
-            { title: 'Conversion Funnel', type: 'Funnel', description: 'Lead progression through stages', dataRange: `${leadSheetName}!F:G` }
-          ]
-        });
-        spreadsheet.setActiveSheet(leadDashboard);
-        spreadsheet.moveActiveSheet(1);
-        break;
-        
-      case 'property-manager':
-        const pmDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
-        const propertySheet = spreadsheet.insertSheet(prefix + 'Properties');
-        const tenantSheet = spreadsheet.insertSheet(prefix + 'Tenants');
-        const maintenanceSheet = spreadsheet.insertSheet(prefix + 'Maintenance');
-        const incomeSheet = spreadsheet.insertSheet(prefix + 'Rental Income');
-        sheets.push(pmDashboard.getName(), propertySheet.getName(), tenantSheet.getName(), maintenanceSheet.getName(), incomeSheet.getName());
-        
-        this.createDashboard(pmDashboard, {
-          title: 'Property Management Dashboard',
-          subtitle: 'Portfolio Performance & Maintenance Tracking',
-          industry: 'realEstate',
-          kpis: [
-            { value: '=COUNTA(\'Properties\'!A:A)-1', label: 'Total Properties' },
-            { value: '=TEXT(COUNTIF(\'Properties\'!F:F,"Occupied")/COUNTA(\'Properties\'!A:A),"0%")', label: 'Occupancy Rate', trend: '95% target', trendColor: '#10B981' },
-            { value: '=TEXT(SUM(\'Rental Income\'!E:E),"$#,##0")', label: 'Monthly Income', trend: '+5% MoM' },
-            { value: '=COUNTIF(\'Maintenance\'!G:G,"Open")', label: 'Open Tickets', trend: '-2 vs yesterday', trendColor: '#10B981' },
-            { value: '=TEXT(AVERAGE(\'Rental Income\'!E:E),"$#,##0")', label: 'Avg Rent' },
-            { value: '=COUNTIF(\'Tenants\'!H:H,"Current")', label: 'Active Tenants' },
-            { value: '=TEXT(SUM(\'Maintenance\'!F:F),"$#,##0")', label: 'Maintenance Costs', trend: 'Within budget' },
-            { value: '=TEXT((SUM(\'Rental Income\'!E:E)-SUM(\'Maintenance\'!F:F))/SUM(\'Rental Income\'!E:E),"0%")', label: 'Net Margin' }
-          ],
-          charts: [
-            { title: 'Occupancy Trend', type: 'Area', description: 'Monthly occupancy rates', dataRange: 'Properties!A:F' },
-            { title: 'Income vs Expenses', type: 'Column', description: 'Monthly financial performance', dataRange: 'Rental Income!A:E' },
-            { title: 'Maintenance by Type', type: 'Pie', description: 'Breakdown of maintenance requests', dataRange: 'Maintenance!C:C' }
-          ]
-        });
-        
-        this.setupPropertySheet(propertySheet);
-        this.setupTenantSheet(tenantSheet);
-        this.setupMaintenanceSheet(maintenanceSheet);
-        this.setupRentalIncomeSheet(incomeSheet);
-        spreadsheet.setActiveSheet(pmDashboard);
-        spreadsheet.moveActiveSheet(1);
-        break;
-        
-      case 'investment-analyzer':
-        const investDashboard = spreadsheet.insertSheet(prefix + 'Dashboard');
-        const investmentSheet = spreadsheet.insertSheet(prefix + 'Investment Analysis');
-        const cashFlowSheet = spreadsheet.insertSheet(prefix + 'Cash Flow');
-        const roiSheet = spreadsheet.insertSheet(prefix + 'ROI Calculator');
-        const compareSheet = spreadsheet.insertSheet(prefix + 'Property Comparison');
-        sheets.push(investDashboard.getName(), investmentSheet.getName(), cashFlowSheet.getName(), roiSheet.getName(), compareSheet.getName());
-        
-        this.createDashboard(investDashboard, {
-          title: 'Real Estate Investment Dashboard',
-          subtitle: 'ROI Analysis & Cash Flow Projections',
-          industry: 'realEstate',
-          kpis: [
-            { value: '=TEXT(AVERAGE(\'ROI Calculator\'!F:F),"0.0%")', label: 'Avg Cap Rate', trend: 'Above market', trendColor: '#10B981' },
-            { value: '=TEXT(SUM(\'Cash Flow\'!G:G),"$#,##0")', label: 'Annual Cash Flow', trend: '+15% YoY' },
-            { value: '=TEXT(AVERAGE(\'ROI Calculator\'!H:H),"0.0%")', label: 'Avg Cash-on-Cash', trend: 'Excellent' },
-            { value: '=TEXT(MAX(\'Investment Analysis\'!K:K),"0.0")', label: 'Best IRR %', trend: 'Top performer' },
-            { value: '=TEXT(SUM(\'Investment Analysis\'!D:D),"$#,##0")', label: 'Total Invested' },
-            { value: '=COUNTA(\'Investment Analysis\'!A:A)-1', label: 'Properties Analyzed' }
-          ],
-          charts: [
-            { title: 'ROI Comparison', type: 'Bar', description: 'Compare returns across properties', dataRange: 'Property Comparison!A:E' },
-            { title: 'Cash Flow Projection', type: 'Line', description: '5-year cash flow forecast', dataRange: 'Cash Flow!A:G' },
-            { title: 'Investment Distribution', type: 'Pie', description: 'Portfolio allocation', dataRange: 'Investment Analysis!B:D' }
-          ]
-        });
-        
-        this.setupInvestmentSheet(investmentSheet);
-        this.setupCashFlowSheet(cashFlowSheet);
-        this.setupROISheet(roiSheet);
-        this.setupPropertyComparisonSheet(compareSheet);
-        spreadsheet.setActiveSheet(investDashboard);
-        spreadsheet.moveActiveSheet(1);
-        break;
+    // Use the new RealEstateTemplate module for all real estate templates
+    const result = RealEstateTemplate.build(spreadsheet, templateType, isPreview);
+    
+    if (result.success) {
+      sheets.push(...result.sheets);
+    } else if (result.errors && result.errors.length > 0) {
+      // Log errors for debugging but still return created sheets
+      Logger.log('RealEstateTemplate errors: ' + result.errors.join(', '));
+      if (result.sheets && result.sheets.length > 0) {
+        sheets.push(...result.sheets);
+      }
     }
     
-    return { sheets };
+    return { sheets: sheets };
+  },
+  
+  createConstructionTemplate: function(spreadsheet, templateType, isPreview = false) {
+    const sheets = [];
+    
+    // Use the new ConstructionTemplate module for all construction templates
+    const result = ConstructionTemplate.build(spreadsheet, templateType, isPreview);
+    
+    if (result.success) {
+      sheets.push(...result.sheets);
+    } else if (result.errors && result.errors.length > 0) {
+      // Log errors for debugging but still return created sheets
+      Logger.log('ConstructionTemplate errors: ' + result.errors.join(', '));
+      if (result.sheets && result.sheets.length > 0) {
+        sheets.push(...result.sheets);
+      }
+    }
+    
+    return { sheets: sheets };
+  },
+  
+  
+  /**
+   * Create Healthcare template sheets
+   */
+  createHealthcareTemplate: function(spreadsheet, templateType, isPreview = false) {
+    const sheets = [];
+    
+    // Use the new HealthcareTemplate module for all healthcare templates
+    const result = HealthcareTemplate.build(spreadsheet, templateType, isPreview);
+    
+    if (result.success) {
+      sheets.push(...result.sheets);
+    } else if (result.errors && result.errors.length > 0) {
+      // Log errors for debugging but still return created sheets
+      Logger.log('HealthcareTemplate errors: ' + result.errors.join(', '));
+      if (result.sheets && result.sheets.length > 0) {
+        sheets.push(...result.sheets);
+      }
+    }
+    
+    return { sheets: sheets };
   },
   
   /**
-   * Create Construction template sheets
+   * Create Marketing template sheets - TODO: Replace with new module pattern
    */
-  createConstructionTemplate: function(spreadsheet, templateType, isPreview = false) {
+  createMarketingTemplate: function(spreadsheet, templateType, isPreview = false) {
     const sheets = [];
     const prefix = isPreview ? '[PREVIEW] ' : '';
     
@@ -891,6 +823,25 @@ const IndustryTemplates = {
    * Create Healthcare template sheets
    */
   createHealthcareTemplate: function(spreadsheet, templateType, isPreview = false) {
+    const sheets = [];
+    
+    // Use the new HealthcareTemplate module for all healthcare templates
+    const result = HealthcareTemplate.build(spreadsheet, templateType, isPreview);
+    
+    if (result.success) {
+      sheets.push(...result.sheets);
+    } else if (result.errors && result.errors.length > 0) {
+      // Log errors for debugging but still return created sheets
+      Logger.log('HealthcareTemplate errors: ' + result.errors.join(', '));
+      if (result.sheets && result.sheets.length > 0) {
+        sheets.push(...result.sheets);
+      }
+    }
+    
+    return { sheets: sheets };
+  },
+  
+  createHealthcareTemplate_OLD_REMOVE: function(spreadsheet, templateType, isPreview = false) {
     const sheets = [];
     const prefix = isPreview ? '[PREVIEW] ' : '';
     

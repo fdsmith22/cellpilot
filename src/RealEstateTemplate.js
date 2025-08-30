@@ -1,15 +1,33 @@
 /**
- * Professional Real Estate Commission Tracker Template
- * Complete suite for real estate professionals with advanced analytics
+ * Professional Real Estate Templates Suite
+ * Complete templates for all real estate professionals
  */
 
 var RealEstateTemplate = {
   /**
-   * Build comprehensive Real Estate template
+   * Build comprehensive Real Estate template based on type
    */
-  build: function(spreadsheet, isPreview = false) {
+  build: function(spreadsheet, templateType = 'commission-tracker', isPreview = false) {
     const builder = new TemplateBuilderPro(spreadsheet, isPreview);
     
+    switch(templateType) {
+      case 'commission-tracker':
+        return this.buildCommissionTrackerTemplate(builder);
+      case 'property-manager':
+        return this.buildPropertyManagerTemplate(builder);
+      case 'investment-analyzer':
+        return this.buildInvestmentAnalyzerTemplate(builder);
+      case 'lead-pipeline':
+        return this.buildLeadPipelineTemplate(builder);
+      default:
+        return this.buildCommissionTrackerTemplate(builder);
+    }
+  },
+  
+  /**
+   * Commission Tracker Template
+   */
+  buildCommissionTrackerTemplate: function(builder) {
     // Create all sheets
     const sheets = builder.createSheets([
       'Dashboard',
@@ -31,6 +49,90 @@ var RealEstateTemplate = {
     this.buildMarketInsights(builder);
     this.buildGoalsTargets(builder);
     this.buildReports(builder);
+    
+    return builder.complete();
+  },
+  
+  /**
+   * Property Manager Template
+   */
+  buildPropertyManagerTemplate: function(builder) {
+    // Create sheets for property management
+    const sheets = builder.createSheets([
+      'Dashboard',
+      'Properties',
+      'Tenants',
+      'Lease Tracker',
+      'Maintenance',
+      'Financials',
+      'Vendors',
+      'Reports'
+    ]);
+    
+    this.buildPropertyDashboard(builder);
+    this.buildPropertiesSheet(builder);
+    this.buildTenantsSheet(builder);
+    this.buildLeaseTracker(builder);
+    this.buildMaintenanceLog(builder);
+    this.buildPropertyFinancials(builder);
+    this.buildVendorsSheet(builder);
+    this.buildPropertyReports(builder);
+    
+    return builder.complete();
+  },
+  
+  /**
+   * Investment Analyzer Template
+   */
+  buildInvestmentAnalyzerTemplate: function(builder) {
+    // Create sheets for investment analysis
+    const sheets = builder.createSheets([
+      'Dashboard',
+      'Properties',
+      'Cash Flow Analysis',
+      'ROI Calculator',
+      'Market Comps',
+      'Financing',
+      'Tax Analysis',
+      'Reports'
+    ]);
+    
+    this.buildInvestmentDashboard(builder);
+    this.buildInvestmentProperties(builder);
+    this.buildCashFlowAnalysis(builder);
+    this.buildROICalculator(builder);
+    this.buildMarketComps(builder);
+    this.buildFinancingSheet(builder);
+    this.buildTaxAnalysis(builder);
+    this.buildInvestmentReports(builder);
+    
+    return builder.complete();
+  },
+  
+  /**
+   * Lead Pipeline Template
+   */
+  buildLeadPipelineTemplate: function(builder) {
+    // Create sheets for lead management
+    const sheets = builder.createSheets([
+      'Dashboard',
+      'Lead Pipeline',
+      'Contact Log',
+      'Lead Sources',
+      'Follow-ups',
+      'Conversion Analytics',
+      'Marketing ROI',
+      'Reports'
+    ]);
+    
+    this.buildLeadDashboard(builder);
+    this.buildLeadPipelineSheet(builder);
+    this.buildContactLog(builder);
+    this.buildLeadSources(builder);
+    this.buildFollowUps(builder);
+    this.buildConversionAnalytics(builder);
+    this.buildMarketingROI(builder);
+    this.buildLeadReports(builder);
     
     return builder.complete();
   },
@@ -1167,7 +1269,7 @@ var RealEstateTemplate = {
       fontColor: '#FFFFFF',
       fontWeight: 'bold'
     });
-    reports.format(62, 5, 66, 6, { numberFormat: 'mm/dd/yyyy' });
+    reports.format(62, 5, 66, 6, { numberFormat: 'dd/mm/yyyy' });
     
     // Instructions
     reports.setValue(68, 1, 'Report Generation Instructions:');
@@ -1178,6 +1280,423 @@ var RealEstateTemplate = {
     
     reports.format(68, 1, 68, 1, { fontWeight: 'bold' });
     reports.format(69, 1, 72, 8, { fontColor: '#6B7280', fontSize: 9 });
+  },
+  
+  // ========================================
+  // PROPERTY MANAGER TEMPLATE BUILDERS
+  // ========================================
+  
+  buildPropertyDashboard: function(builder) {
+    const dash = builder.sheet('Dashboard');
+    
+    // Header
+    dash.merge(1, 1, 2, 12);
+    dash.setValue(1, 1, 'Property Management Command Center');
+    dash.format(1, 1, 2, 12, {
+      background: '#059669',
+      fontColor: '#FFFFFF',
+      fontSize: 18,
+      fontWeight: 'bold',
+      horizontalAlignment: 'center'
+    });
+    
+    // KPI Cards
+    const kpis = [
+      { row: 4, col: 1, title: 'Total Properties', formula: '=COUNTA({{Properties}}!A:A)-1', format: '#,##0', color: '#10B981' },
+      { row: 4, col: 4, title: 'Occupied Units', formula: '=COUNTIF({{Tenants}}!H:H,"Active")', format: '#,##0', color: '#3B82F6' },
+      { row: 4, col: 7, title: 'Monthly Revenue', formula: '=SUMIF({{Lease Tracker}}!G:G,"Active",{{Lease Tracker}}!D:D)', format: '$#,##0', color: '#8B5CF6' },
+      { row: 4, col: 10, title: 'Occupancy Rate', formula: '=COUNTIF({{Tenants}}!H:H,"Active")/COUNTA({{Properties}}!A:A)-1', format: '0%', color: '#F59E0B' }
+    ];
+    
+    kpis.forEach(kpi => {
+      dash.merge(kpi.row, kpi.col, kpi.row + 2, kpi.col + 2);
+      dash.setValue(kpi.row, kpi.col, kpi.title);
+      dash.setFormula(kpi.row + 1, kpi.col, kpi.formula);
+      dash.format(kpi.row, kpi.col, kpi.row + 2, kpi.col + 2, {
+        background: kpi.color,
+        fontColor: '#FFFFFF',
+        fontWeight: 'bold',
+        horizontalAlignment: 'center',
+        numberFormat: kpi.format
+      });
+    });
+  },
+  
+  buildPropertiesSheet: function(builder) {
+    const props = builder.sheet('Properties');
+    
+    // Headers
+    const headers = [
+      'Property ID', 'Address', 'Type', 'Units', 'Purchase Date', 'Purchase Price',
+      'Current Value', 'Monthly Revenue', 'Operating Expenses', 'NOI', 'Cap Rate', 'Status'
+    ];
+    
+    props.setRangeValues(1, 1, [headers]);
+    props.format(1, 1, 1, 12, {
+      background: '#059669',
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
+    });
+    
+    // Sample data
+    const sampleData = [
+      ['PROP001', '123 Main St', 'Multi-Family', 4, '2020-01-15', 450000, 525000, 4800, 1200, '=H2-I2', '=J2*12/G2', 'Active'],
+      ['PROP002', '456 Oak Ave', 'Single-Family', 1, '2021-06-20', 275000, 310000, 2200, 400, '=H3-I3', '=J3*12/G3', 'Active'],
+      ['PROP003', '789 Elm Dr', 'Commercial', 6, '2019-03-10', 850000, 920000, 8500, 2100, '=H4-I4', '=J4*12/G4', 'Active']
+    ];
+    
+    props.setRangeValues(2, 1, sampleData);
+    props.format(2, 5, 4, 5, { numberFormat: 'dd/mm/yyyy' });
+    props.format(2, 6, 4, 10, { numberFormat: '$#,##0' });
+    props.format(2, 11, 4, 11, { numberFormat: '0.00%' });
+  },
+  
+  buildTenantsSheet: function(builder) {
+    const tenants = builder.sheet('Tenants');
+    
+    // Headers
+    const headers = [
+      'Tenant ID', 'Name', 'Property', 'Unit', 'Lease Start', 'Lease End',
+      'Monthly Rent', 'Status', 'Security Deposit', 'Contact', 'Email', 'Notes'
+    ];
+    
+    tenants.setRangeValues(1, 1, [headers]);
+    tenants.format(1, 1, 1, 12, {
+      background: '#059669',
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
+    });
+  },
+  
+  buildLeaseTracker: function(builder) {
+    const lease = builder.sheet('Lease Tracker');
+    
+    // Headers
+    const headers = [
+      'Lease ID', 'Property', 'Tenant', 'Monthly Rent', 'Start Date', 'End Date',
+      'Status', 'Days Remaining', 'Total Paid', 'Outstanding', 'Last Payment', 'Next Due'
+    ];
+    
+    lease.setRangeValues(1, 1, [headers]);
+    lease.format(1, 1, 1, 12, {
+      background: '#059669',
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
+    });
+  },
+  
+  buildMaintenanceLog: function(builder) {
+    const maint = builder.sheet('Maintenance');
+    
+    // Headers
+    const headers = [
+      'Request ID', 'Date', 'Property', 'Unit', 'Category', 'Priority',
+      'Description', 'Status', 'Assigned To', 'Cost', 'Completed Date', 'Notes'
+    ];
+    
+    maint.setRangeValues(1, 1, [headers]);
+    maint.format(1, 1, 1, 12, {
+      background: '#059669',
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
+    });
+  },
+  
+  buildPropertyFinancials: function(builder) {
+    const fin = builder.sheet('Financials');
+    
+    // Headers
+    const headers = [
+      'Month', 'Property', 'Rental Income', 'Other Income', 'Total Income',
+      'Mortgage', 'Insurance', 'Taxes', 'Maintenance', 'Utilities', 'Management',
+      'Total Expenses', 'Net Income', 'Cash Flow'
+    ];
+    
+    fin.setRangeValues(1, 1, [headers]);
+    fin.format(1, 1, 1, 14, {
+      background: '#059669',
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
+    });
+  },
+  
+  buildVendorsSheet: function(builder) {
+    const vendors = builder.sheet('Vendors');
+    
+    // Headers
+    const headers = [
+      'Vendor ID', 'Company', 'Contact', 'Service Type', 'Phone', 'Email',
+      'Rating', 'Total Spent', 'Last Service', 'Status', 'Notes'
+    ];
+    
+    vendors.setRangeValues(1, 1, [headers]);
+    vendors.format(1, 1, 1, 11, {
+      background: '#059669',
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
+    });
+  },
+  
+  buildPropertyReports: function(builder) {
+    const reports = builder.sheet('Reports');
+    
+    // Report sections
+    reports.setValue(1, 1, 'Property Performance Reports');
+    reports.format(1, 1, 1, 8, {
+      fontSize: 16,
+      fontWeight: 'bold',
+      background: '#059669',
+      fontColor: '#FFFFFF'
+    });
+  },
+  
+  // ========================================
+  // INVESTMENT ANALYZER TEMPLATE BUILDERS
+  // ========================================
+  
+  buildInvestmentDashboard: function(builder) {
+    const dash = builder.sheet('Dashboard');
+    
+    // Header
+    dash.merge(1, 1, 2, 12);
+    dash.setValue(1, 1, 'Real Estate Investment Analysis Suite');
+    dash.format(1, 1, 2, 12, {
+      background: '#047857',
+      fontColor: '#FFFFFF',
+      fontSize: 18,
+      fontWeight: 'bold',
+      horizontalAlignment: 'center'
+    });
+  },
+  
+  buildInvestmentProperties: function(builder) {
+    const props = builder.sheet('Properties');
+    
+    // Investment property analysis headers
+    const headers = [
+      'Property ID', 'Address', 'Type', 'Purchase Price', 'Down Payment',
+      'Loan Amount', 'Interest Rate', 'Monthly Payment', 'Rental Income',
+      'Cash Flow', 'Cap Rate', 'ROI', 'IRR'
+    ];
+    
+    props.setRangeValues(1, 1, [headers]);
+    props.format(1, 1, 1, 13, {
+      background: '#047857',
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
+    });
+  },
+  
+  buildCashFlowAnalysis: function(builder) {
+    const cash = builder.sheet('Cash Flow Analysis');
+    
+    // Monthly cash flow projection
+    cash.setValue(1, 1, 'Monthly Cash Flow Projection');
+    cash.format(1, 1, 1, 12, {
+      fontSize: 14,
+      fontWeight: 'bold',
+      background: '#047857',
+      fontColor: '#FFFFFF'
+    });
+  },
+  
+  buildROICalculator: function(builder) {
+    const roi = builder.sheet('ROI Calculator');
+    
+    // ROI calculation framework
+    roi.setValue(1, 1, 'Return on Investment Calculator');
+    roi.format(1, 1, 1, 8, {
+      fontSize: 14,
+      fontWeight: 'bold',
+      background: '#047857',
+      fontColor: '#FFFFFF'
+    });
+  },
+  
+  buildMarketComps: function(builder) {
+    const comps = builder.sheet('Market Comps');
+    
+    // Comparable properties analysis
+    const headers = [
+      'Address', 'Sale Date', 'Sale Price', 'Sq Ft', 'Price/Sq Ft',
+      'Bedrooms', 'Bathrooms', 'Year Built', 'Days on Market', 'Notes'
+    ];
+    
+    comps.setRangeValues(1, 1, [headers]);
+    comps.format(1, 1, 1, 10, {
+      background: '#047857',
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
+    });
+  },
+  
+  buildFinancingSheet: function(builder) {
+    const finance = builder.sheet('Financing');
+    
+    // Loan comparison and analysis
+    finance.setValue(1, 1, 'Financing Options Analysis');
+    finance.format(1, 1, 1, 10, {
+      fontSize: 14,
+      fontWeight: 'bold',
+      background: '#047857',
+      fontColor: '#FFFFFF'
+    });
+  },
+  
+  buildTaxAnalysis: function(builder) {
+    const tax = builder.sheet('Tax Analysis');
+    
+    // Tax benefits and deductions
+    tax.setValue(1, 1, 'Tax Analysis & Deductions');
+    tax.format(1, 1, 1, 8, {
+      fontSize: 14,
+      fontWeight: 'bold',
+      background: '#047857',
+      fontColor: '#FFFFFF'
+    });
+  },
+  
+  buildInvestmentReports: function(builder) {
+    const reports = builder.sheet('Reports');
+    
+    // Investment performance reports
+    reports.setValue(1, 1, 'Investment Performance Reports');
+    reports.format(1, 1, 1, 10, {
+      fontSize: 16,
+      fontWeight: 'bold',
+      background: '#047857',
+      fontColor: '#FFFFFF'
+    });
+  },
+  
+  // ========================================
+  // LEAD PIPELINE TEMPLATE BUILDERS
+  // ========================================
+  
+  buildLeadDashboard: function(builder) {
+    const dash = builder.sheet('Dashboard');
+    
+    // Header
+    dash.merge(1, 1, 2, 12);
+    dash.setValue(1, 1, 'Lead Generation & Conversion Center');
+    dash.format(1, 1, 2, 12, {
+      background: '#065F46',
+      fontColor: '#FFFFFF',
+      fontSize: 18,
+      fontWeight: 'bold',
+      horizontalAlignment: 'center'
+    });
+  },
+  
+  buildLeadPipelineSheet: function(builder) {
+    const pipeline = builder.sheet('Lead Pipeline');
+    
+    // Lead tracking headers
+    const headers = [
+      'Lead ID', 'Date', 'Name', 'Source', 'Type', 'Budget', 'Location',
+      'Stage', 'Score', 'Agent', 'Next Action', 'Last Contact', 'Notes'
+    ];
+    
+    pipeline.setRangeValues(1, 1, [headers]);
+    pipeline.format(1, 1, 1, 13, {
+      background: '#065F46',
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
+    });
+  },
+  
+  buildContactLog: function(builder) {
+    const contact = builder.sheet('Contact Log');
+    
+    // Contact history tracking
+    const headers = [
+      'Date', 'Lead ID', 'Lead Name', 'Contact Type', 'Duration',
+      'Agent', 'Outcome', 'Follow-up Date', 'Notes'
+    ];
+    
+    contact.setRangeValues(1, 1, [headers]);
+    contact.format(1, 1, 1, 9, {
+      background: '#065F46',
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
+    });
+  },
+  
+  buildLeadSources: function(builder) {
+    const sources = builder.sheet('Lead Sources');
+    
+    // Lead source tracking and ROI
+    const headers = [
+      'Source', 'Leads Generated', 'Qualified Leads', 'Conversions',
+      'Revenue', 'Cost', 'ROI', 'Conversion Rate', 'Avg Deal Size'
+    ];
+    
+    sources.setRangeValues(1, 1, [headers]);
+    sources.format(1, 1, 1, 9, {
+      background: '#065F46',
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
+    });
+  },
+  
+  buildFollowUps: function(builder) {
+    const followup = builder.sheet('Follow-ups');
+    
+    // Follow-up schedule
+    const headers = [
+      'Date', 'Lead ID', 'Lead Name', 'Type', 'Priority',
+      'Agent', 'Status', 'Completed', 'Outcome', 'Notes'
+    ];
+    
+    followup.setRangeValues(1, 1, [headers]);
+    followup.format(1, 1, 1, 10, {
+      background: '#065F46',
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
+    });
+  },
+  
+  buildConversionAnalytics: function(builder) {
+    const analytics = builder.sheet('Conversion Analytics');
+    
+    // Conversion funnel analysis
+    analytics.setValue(1, 1, 'Lead Conversion Analytics');
+    analytics.format(1, 1, 1, 10, {
+      fontSize: 14,
+      fontWeight: 'bold',
+      background: '#065F46',
+      fontColor: '#FFFFFF'
+    });
+  },
+  
+  buildMarketingROI: function(builder) {
+    const roi = builder.sheet('Marketing ROI');
+    
+    // Marketing campaign ROI analysis
+    const headers = [
+      'Campaign', 'Start Date', 'End Date', 'Budget', 'Spent',
+      'Leads', 'Conversions', 'Revenue', 'ROI', 'CPL', 'CAC'
+    ];
+    
+    roi.setRangeValues(1, 1, [headers]);
+    roi.format(1, 1, 1, 11, {
+      background: '#065F46',
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
+    });
+  },
+  
+  buildLeadReports: function(builder) {
+    const reports = builder.sheet('Reports');
+    
+    // Lead generation reports
+    reports.setValue(1, 1, 'Lead Generation & Conversion Reports');
+    reports.format(1, 1, 1, 10, {
+      fontSize: 16,
+      fontWeight: 'bold',
+      background: '#065F46',
+      fontColor: '#FFFFFF'
+    });
   }
 };
 

@@ -28,6 +28,35 @@ test-*.js
 test-*.html
 *-test.js
 *-test.html
+test-sheet-proxy.js
+test-sheet-proxy.js.backup
 
 # Ignore html folder (files are at root for Apps Script)
 html/**
+
+# Ignore shell scripts
+*.sh
+update_styles.sh
+replace_console_logs.sh
+
+# Ignore backup files
+*.backup
+*.bak
+
+# Ignore logo and image files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.svg
+*.webp
+public/**
+
+# Ignore package files
+package.json
+package-lock.json
+tsconfig.json
+tailwind.config.js
+postcss.config.js
+next.config.js

@@ -3,6 +3,7 @@
 <head>
   <base target="_top">
   <?!= include('SharedStyles'); ?>
+  <?!= include('MLEngineLoader'); ?>
   <style>
     /* Settings page specific styles */
     .settings-section {
@@ -390,19 +391,64 @@
       const mlStorageInfo = document.getElementById('mlStorageInfo');
       
       if (enabled) {
+        // Check if ML Engine is available
+        if (window.cellpilotML && window.cellpilotML.isInitialized) {
+          // ML is already initialized
+          enableMLInBackend();
+        } else if (window.cellpilotML) {
+          // ML Engine exists but needs initialization
+          showStatus('Initializing ML Engine...', 'info');
+          window.cellpilotML.initialize().then(() => {
+            enableMLInBackend();
+          }).catch(error => {
+            showStatus('Failed to initialize ML Engine: ' + error.message, 'error');
+            document.getElementById('mlEnabled').checked = false;
+          });
+        } else {
+          // Wait for ML Engine to load
+          showStatus('Loading ML Engine...', 'info');
+          window.addEventListener('cellpilot-ml-ready', function(e) {
+            enableMLInBackend();
+          }, { once: true });
+          
+          // Timeout if ML doesn't load
+          setTimeout(() => {
+            if (!window.cellpilotML) {
+              showStatus('ML Engine failed to load. Please refresh and try again.', 'error');
+              document.getElementById('mlEnabled').checked = false;
+            }
+          }, 5000);
+        }
+      } else {
+        disableMLInBackend();
+      }
+      
+      function enableMLInBackend() {
         google.script.run
           .withSuccessHandler(function(result) {
             showStatus('ML Features enabled! CellPilot will now learn from your usage.', 'success');
             mlStorageInfo.style.display = 'flex';
             updateMLStorageInfo();
             saveSettings();
+            
+            // Update ML status indicator
+            const mlStatus = document.createElement('span');
+            mlStatus.className = 'ml-badge ml-learning';
+            mlStatus.textContent = 'ML Active';
+            mlStatus.id = 'mlStatusBadge';
+            const header = document.querySelector('.settings-header');
+            if (header && !document.getElementById('mlStatusBadge')) {
+              header.appendChild(mlStatus);
+            }
           })
           .withFailureHandler(function(error) {
             showStatus('Failed to enable ML features', 'error');
             document.getElementById('mlEnabled').checked = false;
           })
           .enableMLFeatures();
-      } else {
+      }
+      
+      function disableMLInBackend() {
         google.script.run
           .withSuccessHandler(function() {
             showStatus('ML Features disabled', 'info');
@@ -411,6 +457,17 @@
             document.getElementById('personalizedRecs').checked = false;
             document.getElementById('predictiveActions').checked = false;
             saveSettings();
+            
+            // Remove ML status indicator
+            const mlBadge = document.getElementById('mlStatusBadge');
+            if (mlBadge) {
+              mlBadge.remove();
+            }
+            
+            // Clean up ML engine if loaded
+            if (window.cellpilotML && window.cellpilotML.dispose) {
+              window.cellpilotML.dispose();
+            }
           })
           .withFailureHandler(function(error) {
             showStatus('Failed to disable ML features', 'error');
