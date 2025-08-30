@@ -1,0 +1,292 @@
+<!-- 
+  CELLPILOT SUPABASE EMAIL TEMPLATES
+  ===================================
+  Copy each template into the corresponding Supabase email template editor
+  Go to: Authentication → Email Templates in your Supabase dashboard
+-->
+
+<!-- ============================================ -->
+<!-- 1. CONFIRM SIGNUP EMAIL -->
+<!-- ============================================ -->
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
+  <!-- Header with gradient -->
+  <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 40px 30px; text-align: center;">
+    <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Welcome to CellPilot! 🚀</h1>
+  </div>
+  
+  <!-- Content -->
+  <div style="padding: 40px 30px;">
+    <p style="color: #374151; font-size: 16px; line-height: 24px; margin: 0 0 20px;">
+      Hi there,
+    </p>
+    
+    <p style="color: #374151; font-size: 16px; line-height: 24px; margin: 0 0 30px;">
+      Thanks for signing up for CellPilot! You're just one click away from transforming your Google Sheets workflow with powerful automation tools.
+    </p>
+    
+    <!-- CTA Button -->
+    <div style="text-align: center; margin: 40px 0;">
+      <a href="{{ .ConfirmationURL }}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+        Confirm Your Email
+      </a>
+    </div>
+    
+    <p style="color: #6b7280; font-size: 14px; line-height: 20px; margin: 30px 0 0;">
+      Or copy and paste this link into your browser:<br>
+      <span style="color: #6366f1; word-break: break-all;">{{ .ConfirmationURL }}</span>
+    </p>
+    
+    <!-- Features -->
+    <div style="margin-top: 40px; padding: 20px; background-color: #f9fafb; border-radius: 8px;">
+      <h3 style="color: #1f2937; font-size: 18px; margin: 0 0 15px;">What's next?</h3>
+      <ul style="color: #4b5563; font-size: 14px; line-height: 22px; margin: 0; padding-left: 20px;">
+        <li>Access your personal dashboard</li>
+        <li>Install CellPilot for Google Sheets</li>
+        <li>Start with 25 free operations per month</li>
+        <li>Explore our powerful automation tools</li>
+      </ul>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <div style="background-color: #f3f4f6; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+    <p style="color: #6b7280; font-size: 12px; margin: 0 0 10px;">
+      © 2025 CellPilot. All rights reserved.
+    </p>
+    <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+      Questions? Contact us at support@cellpilot.io
+    </p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- 2. INVITE USER EMAIL -->
+<!-- ============================================ -->
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
+  <!-- Header -->
+  <div style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%); padding: 40px 30px; text-align: center;">
+    <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">You're Invited to CellPilot! 🎉</h1>
+  </div>
+  
+  <!-- Content -->
+  <div style="padding: 40px 30px;">
+    <p style="color: #374151; font-size: 16px; line-height: 24px; margin: 0 0 20px;">
+      Hi there,
+    </p>
+    
+    <p style="color: #374151; font-size: 16px; line-height: 24px; margin: 0 0 30px;">
+      {{ .InviterEmail }} has invited you to join CellPilot and revolutionize how you work with Google Sheets.
+    </p>
+    
+    <!-- CTA Button -->
+    <div style="text-align: center; margin: 40px 0;">
+      <a href="{{ .ConfirmationURL }}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #10b981 0%, #34d399 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+        Accept Invitation
+      </a>
+    </div>
+    
+    <p style="color: #6b7280; font-size: 14px; line-height: 20px; margin: 30px 0 0;">
+      This invitation link will expire in 7 days.
+    </p>
+  </div>
+  
+  <!-- Footer -->
+  <div style="background-color: #f3f4f6; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+    <p style="color: #6b7280; font-size: 12px; margin: 0;">
+      © 2025 CellPilot | <a href="https://www.cellpilot.io" style="color: #6366f1; text-decoration: none;">www.cellpilot.io</a>
+    </p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- 3. MAGIC LINK EMAIL -->
+<!-- ============================================ -->
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
+  <!-- Header -->
+  <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 40px 30px; text-align: center;">
+    <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Your Magic Link is Here! ✨</h1>
+  </div>
+  
+  <!-- Content -->
+  <div style="padding: 40px 30px;">
+    <p style="color: #374151; font-size: 16px; line-height: 24px; margin: 0 0 20px;">
+      Hi there,
+    </p>
+    
+    <p style="color: #374151; font-size: 16px; line-height: 24px; margin: 0 0 30px;">
+      Click the button below to instantly sign in to your CellPilot account. No password needed!
+    </p>
+    
+    <!-- CTA Button -->
+    <div style="text-align: center; margin: 40px 0;">
+      <a href="{{ .ConfirmationURL }}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+        Sign In to CellPilot
+      </a>
+    </div>
+    
+    <!-- Security Notice -->
+    <div style="background-color: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 15px; margin: 30px 0;">
+      <p style="color: #92400e; font-size: 14px; margin: 0;">
+        <strong>🔒 Security Notice:</strong> This link expires in 1 hour and can only be used once. If you didn't request this, please ignore this email.
+      </p>
+    </div>
+    
+    <p style="color: #6b7280; font-size: 14px; line-height: 20px; margin: 20px 0 0;">
+      Or copy this link into your browser:<br>
+      <span style="color: #6366f1; word-break: break-all; font-size: 12px;">{{ .ConfirmationURL }}</span>
+    </p>
+  </div>
+  
+  <!-- Footer -->
+  <div style="background-color: #f3f4f6; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+    <p style="color: #6b7280; font-size: 12px; margin: 0;">
+      © 2025 CellPilot | Secure authentication powered by Supabase
+    </p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- 4. CHANGE EMAIL ADDRESS -->
+<!-- ============================================ -->
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
+  <!-- Header -->
+  <div style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); padding: 40px 30px; text-align: center;">
+    <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Confirm Email Change 📧</h1>
+  </div>
+  
+  <!-- Content -->
+  <div style="padding: 40px 30px;">
+    <p style="color: #374151; font-size: 16px; line-height: 24px; margin: 0 0 20px;">
+      Hi there,
+    </p>
+    
+    <p style="color: #374151; font-size: 16px; line-height: 24px; margin: 0 0 30px;">
+      You've requested to change your CellPilot account email address. Please confirm this change by clicking the button below.
+    </p>
+    
+    <!-- Email Change Info -->
+    <div style="background-color: #f9fafb; border-radius: 8px; padding: 20px; margin: 20px 0;">
+      <p style="color: #4b5563; font-size: 14px; margin: 0 0 10px;">
+        <strong>Current email:</strong> {{ .Email }}
+      </p>
+      <p style="color: #4b5563; font-size: 14px; margin: 0;">
+        <strong>New email:</strong> {{ .NewEmail }}
+      </p>
+    </div>
+    
+    <!-- CTA Button -->
+    <div style="text-align: center; margin: 40px 0;">
+      <a href="{{ .ConfirmationURL }}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+        Confirm Email Change
+      </a>
+    </div>
+    
+    <p style="color: #dc2626; font-size: 14px; line-height: 20px; margin: 30px 0 0;">
+      <strong>Important:</strong> If you didn't request this change, please secure your account immediately by changing your password.
+    </p>
+  </div>
+  
+  <!-- Footer -->
+  <div style="background-color: #f3f4f6; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+    <p style="color: #6b7280; font-size: 12px; margin: 0;">
+      © 2025 CellPilot | Need help? Contact support@cellpilot.io
+    </p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- 5. RESET PASSWORD EMAIL -->
+<!-- ============================================ -->
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
+  <!-- Header -->
+  <div style="background: linear-gradient(135deg, #ef4444 0%, #f87171 100%); padding: 40px 30px; text-align: center;">
+    <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Reset Your Password 🔐</h1>
+  </div>
+  
+  <!-- Content -->
+  <div style="padding: 40px 30px;">
+    <p style="color: #374151; font-size: 16px; line-height: 24px; margin: 0 0 20px;">
+      Hi there,
+    </p>
+    
+    <p style="color: #374151; font-size: 16px; line-height: 24px; margin: 0 0 30px;">
+      We received a request to reset your CellPilot password. Click the button below to create a new password.
+    </p>
+    
+    <!-- CTA Button -->
+    <div style="text-align: center; margin: 40px 0;">
+      <a href="{{ .ConfirmationURL }}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #ef4444 0%, #f87171 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+        Reset Password
+      </a>
+    </div>
+    
+    <!-- Security Info -->
+    <div style="background-color: #fee2e2; border: 1px solid #fca5a5; border-radius: 8px; padding: 15px; margin: 30px 0;">
+      <p style="color: #991b1b; font-size: 14px; margin: 0;">
+        <strong>⚠️ Security Alert:</strong> This link expires in 1 hour. If you didn't request a password reset, you can safely ignore this email. Your password won't be changed.
+      </p>
+    </div>
+    
+    <p style="color: #6b7280; font-size: 14px; line-height: 20px; margin: 20px 0 0;">
+      Having trouble? Copy this link into your browser:<br>
+      <span style="color: #6366f1; word-break: break-all; font-size: 12px;">{{ .ConfirmationURL }}</span>
+    </p>
+  </div>
+  
+  <!-- Footer -->
+  <div style="background-color: #f3f4f6; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+    <p style="color: #6b7280; font-size: 12px; margin: 0 0 10px;">
+      For security reasons, this link will expire in 1 hour
+    </p>
+    <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+      © 2025 CellPilot | <a href="https://www.cellpilot.io/security" style="color: #6366f1; text-decoration: none;">Security Center</a>
+    </p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- 6. REAUTHENTICATION EMAIL -->
+<!-- ============================================ -->
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
+  <!-- Header -->
+  <div style="background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%); padding: 40px 30px; text-align: center;">
+    <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Verify Your Identity 🔒</h1>
+  </div>
+  
+  <!-- Content -->
+  <div style="padding: 40px 30px;">
+    <p style="color: #374151; font-size: 16px; line-height: 24px; margin: 0 0 20px;">
+      Hi there,
+    </p>
+    
+    <p style="color: #374151; font-size: 16px; line-height: 24px; margin: 0 0 30px;">
+      For your security, we need to verify your identity before proceeding with your recent request. This is an extra security measure to protect your CellPilot account.
+    </p>
+    
+    <!-- CTA Button -->
+    <div style="text-align: center; margin: 40px 0;">
+      <a href="{{ .ConfirmationURL }}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+        Verify Identity
+      </a>
+    </div>
+    
+    <!-- Info Box -->
+    <div style="background-color: #eff6ff; border: 1px solid #93c5fd; border-radius: 8px; padding: 15px; margin: 30px 0;">
+      <p style="color: #1e40af; font-size: 14px; margin: 0;">
+        <strong>Why am I seeing this?</strong><br>
+        You're attempting to perform a sensitive action that requires additional verification. This helps keep your account secure.
+      </p>
+    </div>
+    
+    <p style="color: #6b7280; font-size: 14px; line-height: 20px; margin: 20px 0 0;">
+      This verification link expires in 15 minutes for your security.
+    </p>
+  </div>
+  
+  <!-- Footer -->
+  <div style="background-color: #f3f4f6; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+    <p style="color: #6b7280; font-size: 12px; margin: 0;">
+      © 2025 CellPilot | Your security is our priority
+    </p>
+  </div>
+</div>
