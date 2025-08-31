@@ -40,9 +40,9 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
   }
 
   const installCellPilot = () => {
-    // Open the Beta Installer Web App (v1.2 - fixed code loading, no emojis)
+    // Open the Beta Installer Web App (v1.3 - better error messages)
     window.open(
-      'https://script.google.com/macros/s/AKfycbwIjQkQYeU30fH3lZmrovz07PkN-Hj6kRlvAJTikThvmlxwoqGrSrUDZ1qG8IrYKLXo/exec',
+      'https://script.google.com/macros/s/AKfycbyaf7tm3ZrEkRSCQmJ9TKGjVV6i0YbnX-qKoi_fziDv98gw4hAJL2lLhrfJf3_EUkM6/exec',
       '_blank'
     )
   }

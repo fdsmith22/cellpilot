@@ -140,7 +140,31 @@ function onOpen() {
   try {
     CellPilot.onOpen();
   } catch (e) {
-    SpreadsheetApp.getUi().alert('Please add CellPilot library. See instructions above.');
+    SpreadsheetApp.getUi().alert(
+      'CellPilot Library Not Found\\n\\n' +
+      'Please add the library:\\n' +
+      '1. In Apps Script, click Libraries (+)\\n' +
+      '2. Script ID: 1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O\\n' +
+      '3. Click "Look up"\\n' +
+      '4. Version: 10 (or HEAD)\\n' +
+      '5. IMPORTANT: Identifier must be: CellPilot\\n' +
+      '6. Click "Add"\\n' +
+      '7. Save project (Ctrl+S)\\n' +
+      '8. Refresh this sheet'
+    );
+  }
+}
+
+// Test function to verify library is installed
+function testLibrary() {
+  try {
+    if (typeof CellPilot === 'undefined') {
+      return 'Library not found. Please add it with identifier "CellPilot"';
+    }
+    const version = CellPilot.getVersion ? CellPilot.getVersion() : 'Unknown';
+    return 'CellPilot library is installed! Version: ' + version;
+  } catch (e) {
+    return 'Error: ' + e.toString();
   }
 }
 
