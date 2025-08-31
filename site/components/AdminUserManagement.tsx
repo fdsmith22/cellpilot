@@ -131,7 +131,7 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
 
       // Update profile with additional settings
       if (data.user) {
-        await supabase
+        const { data: updatedProfile } = await supabase
           .from('profiles')
           .update({
             full_name: newUser.full_name,
@@ -147,6 +147,13 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
               newUser.subscription_tier === 'enterprise' ? 999999 : 25
           })
           .eq('id', data.user.id)
+          .select()
+          .single()
+
+        // Add the new user to the local state immediately
+        if (updatedProfile) {
+          setUsers([updatedProfile, ...users])
+        }
       }
 
       setShowAddUser(false)
@@ -172,12 +179,21 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
       {/* Add User Button */}
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold text-neutral-900">User Management</h2>
-        <button
-          onClick={() => setShowAddUser(!showAddUser)}
-          className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
-        >
-          {showAddUser ? 'Cancel' : 'Add User'}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => router.refresh()}
+            className="px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition-colors font-medium"
+            title="Refresh user list"
+          >
+            Refresh
+          </button>
+          <button
+            onClick={() => setShowAddUser(!showAddUser)}
+            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+          >
+            {showAddUser ? 'Cancel' : 'Add User'}
+          </button>
+        </div>
       </div>
 
       {/* Add User Form */}

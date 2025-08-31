@@ -65,7 +65,7 @@ export default async function DashboardPage() {
           )}
 
           {/* Quick Actions */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
             <Link href="/install" className="glass-card rounded-xl p-6 hover:shadow-xl transition-all hover:scale-102">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,16 +84,6 @@ export default async function DashboardPage() {
               </div>
               <h3 className="text-lg font-semibold text-neutral-900 mb-2">Documentation</h3>
               <p className="text-sm text-neutral-600">Learn how to use CellPilot effectively</p>
-            </Link>
-
-            <Link href="/support" className="glass-card rounded-xl p-6 hover:shadow-xl transition-all hover:scale-102">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-pastel-lavender/30 to-pastel-lavender/20 flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-neutral-900 mb-2">Get Support</h3>
-              <p className="text-sm text-neutral-600">Need help? Contact our support team</p>
             </Link>
           </div>
 
