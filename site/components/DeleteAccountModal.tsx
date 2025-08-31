@@ -64,8 +64,13 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-modal bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
+    <div className="fixed inset-0 z-modal bg-black/50 overflow-y-auto">
+      <div className="flex min-h-full items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div 
+          className="fixed inset-0" 
+          onClick={!loading && !success ? onClose : undefined}
+        />
+        <div className="relative bg-white rounded-2xl max-w-md w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto">
         {success ? (
           <div className="text-center py-8">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -130,6 +135,7 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
         </div>
         </>
         )}
+        </div>
       </div>
     </div>
   )
