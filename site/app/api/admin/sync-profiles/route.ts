@@ -57,18 +57,15 @@ export async function POST(request: Request) {
     if (missingProfiles.length > 0) {
       const profilesToCreate = missingProfiles.map(user => {
         console.log(`Creating profile for user: ${user.email}`)
+        // Only include fields that exist in the database
         return {
           id: user.id,
           email: user.email || '',
-          full_name: user.user_metadata?.full_name || null,
-          first_name: user.user_metadata?.first_name || null,
-          surname: user.user_metadata?.surname || null,
-          company: user.user_metadata?.company || null,
+          full_name: user.user_metadata?.full_name || '',
+          first_name: user.user_metadata?.first_name || '',
+          surname: user.user_metadata?.surname || '',
+          company: user.user_metadata?.company || '',
           newsletter_subscribed: user.user_metadata?.newsletter_subscribed || false,
-          email_verified: !!user.email_confirmed_at,
-          subscription_tier: 'free',
-          operations_limit: 25,
-          operations_used: 0,
           created_at: user.created_at || new Date().toISOString(),
           updated_at: new Date().toISOString()
         }
@@ -76,17 +73,36 @@ export async function POST(request: Request) {
       
       console.log('Profiles to create:', JSON.stringify(profilesToCreate, null, 2))
       
-      const { error: insertError } = await serviceClient
-        .from('profiles')
-        .insert(profilesToCreate)
+      // Try to insert one by one to identify which user causes the error
+      const results = []
+      const errors = []
       
-      if (insertError) {
-        console.error('Insert error:', insertError)
+      for (const profile of profilesToCreate) {
+        const { data, error: insertError } = await serviceClient
+          .from('profiles')
+          .insert(profile)
+          .select()
+          .single()
+        
+        if (insertError) {
+          console.error(`Failed to create profile for ${profile.email}:`, insertError)
+          errors.push({
+            email: profile.email,
+            error: insertError.message,
+            code: insertError.code
+          })
+        } else {
+          results.push(data)
+        }
+      }
+      
+      if (errors.length > 0) {
         return NextResponse.json({ 
-          error: 'Failed to create profiles', 
-          details: insertError.message,
-          code: insertError.code
-        }, { status: 500 })
+          error: 'Some profiles failed to create', 
+          details: errors,
+          succeeded: results.length,
+          failed: errors.length
+        }, { status: 207 }) // 207 Multi-Status
       }
     }
     

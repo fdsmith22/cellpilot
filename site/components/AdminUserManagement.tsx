@@ -61,8 +61,16 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
       if (response.ok) {
         alert(`Success: ${data.message}`)
         window.location.reload()
+      } else if (response.status === 207) {
+        // Partial success
+        console.error('Sync details:', data)
+        alert(`Partial success: ${data.succeeded} profiles created, ${data.failed} failed. Check console for details.`)
+        if (data.succeeded > 0) {
+          window.location.reload()
+        }
       } else {
-        alert(`Error: ${data.error}`)
+        console.error('Sync error details:', data)
+        alert(`Error: ${data.error}\n\nDetails: ${JSON.stringify(data.details, null, 2)}`)
       }
     } catch (error) {
       console.error('Sync error:', error)
