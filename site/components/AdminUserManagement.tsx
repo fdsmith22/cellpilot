@@ -15,10 +15,8 @@ interface User {
   email_verified: boolean
   newsletter_subscribed: boolean
   created_at: string
+  last_login?: string | null
   is_admin?: boolean
-  beta_access?: boolean
-  beta_requested_at?: string
-  beta_approved_at?: string
 }
 
 export default function AdminUserManagement({ users: initialUsers }: { users: User[] }) {
@@ -34,8 +32,7 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
     full_name: '',
     company: '',
     subscription_tier: 'free',
-    is_admin: false,
-    beta_access: false
+    is_admin: false
   })
   const router = useRouter()
   const supabase = createClient()
@@ -87,8 +84,7 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
       company: user.company || '',
       subscription_tier: user.subscription_tier,
       email_verified: user.email_verified,
-      is_admin: user.is_admin || false,
-      beta_access: user.beta_access || false
+      is_admin: user.is_admin || false
     })
   }
 
@@ -103,8 +99,6 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
           subscription_tier: editForm.subscription_tier,
           email_verified: editForm.email_verified,
           is_admin: editForm.is_admin,
-          beta_access: editForm.beta_access,
-          beta_approved_at: editForm.beta_access ? new Date().toISOString() : null,
           operations_limit: 
             editForm.subscription_tier === 'beta' ? 1000 :
             editForm.subscription_tier === 'pro' ? 5000 :
@@ -189,8 +183,7 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
         full_name: '',
         company: '',
         subscription_tier: 'free',
-        is_admin: false,
-        beta_access: false
+        is_admin: false
       })
       router.refresh()
     } catch (error) {
@@ -286,15 +279,6 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
                   className="mr-2"
                 />
                 <span className="text-sm font-medium text-neutral-700">Admin Access</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={newUser.beta_access}
-                  onChange={(e) => setNewUser({ ...newUser, beta_access: e.target.checked })}
-                  className="mr-2"
-                />
-                <span className="text-sm font-medium text-neutral-700">Beta Access</span>
               </label>
             </div>
           </div>
@@ -406,15 +390,6 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
                           />
                           Admin
                         </label>
-                        <label className="flex items-center text-xs">
-                          <input
-                            type="checkbox"
-                            checked={editForm.beta_access}
-                            onChange={(e) => setEditForm({ ...editForm, beta_access: e.target.checked })}
-                            className="mr-1"
-                          />
-                          Beta
-                        </label>
                       </>
                     ) : (
                       <>
@@ -426,11 +401,6 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
                         {user.is_admin && (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                             Admin
-                          </span>
-                        )}
-                        {user.beta_access && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            Beta
                           </span>
                         )}
                       </>

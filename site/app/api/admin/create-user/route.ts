@@ -55,68 +55,39 @@ export async function POST(request: Request) {
     
     // Create profile with additional settings
     if (data.user) {
-      // First create the basic profile with only the fields from the trigger
-      const basicProfileData = {
+      // Create profile with all fields that exist in the database
+      const profileData = {
         id: data.user.id,
         email: data.user.email || '',
         full_name: full_name || '',
         company: company || '',
+        subscription_tier: subscription_tier || 'free',
+        operations_used: 0,
+        operations_limit: 
+          subscription_tier === 'beta' ? 1000 :
+          subscription_tier === 'pro' ? 5000 :
+          subscription_tier === 'enterprise' ? 999999 : 25,
+        email_verified: true,
         newsletter_subscribed: false,
+        is_admin: is_admin || false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }
       
-      // Insert basic profile first
-      const { error: basicInsertError } = await serviceClient
+      const { data: newProfile, error: profileError } = await serviceClient
         .from('profiles')
-        .insert(basicProfileData)
+        .insert(profileData)
+        .select()
+        .single()
       
-      if (basicInsertError) {
-        console.error('Error creating basic profile:', basicInsertError)
+      if (profileError) {
+        console.error('Error creating profile:', profileError)
         // Try to delete the auth user if profile creation fails
         await serviceClient.auth.admin.deleteUser(data.user.id)
         return NextResponse.json({ 
           error: 'Failed to create user profile', 
-          details: basicInsertError.message 
+          details: profileError.message 
         }, { status: 500 })
-      }
-      
-      // Now update with additional fields that might exist
-      const updateData: any = {
-        subscription_tier: subscription_tier || 'free',
-        is_admin: is_admin || false,
-        beta_access: beta_access || false,
-        updated_at: new Date().toISOString()
-      }
-      
-      // Add optional fields if they're supposed to be set
-      if (beta_access) {
-        updateData.beta_approved_at = new Date().toISOString()
-      }
-      
-      // Add operations fields if they exist in the table
-      updateData.operations_limit = 
-        subscription_tier === 'beta' ? 1000 :
-        subscription_tier === 'pro' ? 5000 :
-        subscription_tier === 'enterprise' ? 999999 : 25
-      updateData.operations_used = 0
-      updateData.email_verified = true
-      
-      const { data: newProfile, error: updateError } = await serviceClient
-        .from('profiles')
-        .update(updateData)
-        .eq('id', data.user.id)
-        .select()
-        .single()
-      
-      if (updateError) {
-        console.error('Error updating profile with additional fields:', updateError)
-        // Profile was created but couldn't be updated - return partial success
-        return NextResponse.json({ 
-          success: true, 
-          user: basicProfileData,
-          warning: 'Profile created but some fields could not be set'
-        })
       }
       
       return NextResponse.json({ 

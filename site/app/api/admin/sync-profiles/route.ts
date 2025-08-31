@@ -57,15 +57,18 @@ export async function POST(request: Request) {
     if (missingProfiles.length > 0) {
       const profilesToCreate = missingProfiles.map(user => {
         console.log(`Creating profile for user: ${user.email}`)
-        // Only include fields that exist in the database
+        // Only include fields that actually exist in the profiles table
         return {
           id: user.id,
           email: user.email || '',
           full_name: user.user_metadata?.full_name || '',
-          first_name: user.user_metadata?.first_name || '',
-          surname: user.user_metadata?.surname || '',
           company: user.user_metadata?.company || '',
-          newsletter_subscribed: user.user_metadata?.newsletter_subscribed || false,
+          subscription_tier: 'free',
+          operations_used: 0,
+          operations_limit: 25,
+          email_verified: !!user.email_confirmed_at,
+          newsletter_subscribed: user.user_metadata?.newsletter_subscribed || true,
+          is_admin: false,
           created_at: user.created_at || new Date().toISOString(),
           updated_at: new Date().toISOString()
         }
@@ -92,29 +95,7 @@ export async function POST(request: Request) {
             code: insertError.code
           })
         } else {
-          // Try to update with additional fields that might exist
-          const updateData = {
-            subscription_tier: 'free',
-            operations_limit: 25,
-            operations_used: 0,
-            email_verified: false,
-            is_admin: false,
-            beta_access: false
-          }
-          
-          const { data: updatedProfile, error: updateError } = await serviceClient
-            .from('profiles')
-            .update(updateData)
-            .eq('id', profile.id)
-            .select()
-            .single()
-          
-          if (updateError) {
-            console.log(`Could not update additional fields for ${profile.email}:`, updateError.message)
-            results.push(data) // Use original data if update fails
-          } else {
-            results.push(updatedProfile)
-          }
+          results.push(data)
         }
       }
       
