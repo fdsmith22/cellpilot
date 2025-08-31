@@ -58,15 +58,34 @@ export default async function AdminPage() {
                 <p className="text-neutral-600">Manage users and subscriptions</p>
               </div>
               <div className="flex gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary-600">{users?.length || 0}</div>
+                <div className="text-center px-4">
+                  <div className="text-3xl font-bold text-primary-600">{users?.length || 0}</div>
                   <div className="text-sm text-neutral-600">Total Users</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">
+                <div className="h-12 w-px bg-neutral-200"></div>
+                <div className="text-center px-3">
+                  <div className="text-2xl font-bold text-neutral-500">
+                    {users?.filter(u => u.subscription_tier === 'free').length || 0}
+                  </div>
+                  <div className="text-sm text-neutral-600">Free</div>
+                </div>
+                <div className="text-center px-3">
+                  <div className="text-2xl font-bold text-purple-600">
                     {users?.filter(u => u.subscription_tier === 'beta').length || 0}
                   </div>
-                  <div className="text-sm text-neutral-600">Beta Users</div>
+                  <div className="text-sm text-neutral-600">Beta</div>
+                </div>
+                <div className="text-center px-3">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {users?.filter(u => u.subscription_tier === 'pro').length || 0}
+                  </div>
+                  <div className="text-sm text-neutral-600">Pro</div>
+                </div>
+                <div className="text-center px-3">
+                  <div className="text-2xl font-bold text-green-600">
+                    {users?.filter(u => u.subscription_tier === 'enterprise').length || 0}
+                  </div>
+                  <div className="text-sm text-neutral-600">Enterprise</div>
                 </div>
               </div>
             </div>
@@ -82,14 +101,23 @@ export default async function AdminPage() {
             <div className="glass-card rounded-xl p-6">
               <h3 className="font-semibold text-neutral-900 mb-2">Subscription Tiers</h3>
               <ul className="space-y-2 text-sm text-neutral-600">
-                <li><span className="font-medium">Free:</span> 25 operations/month</li>
-                <li><span className="font-medium">Beta:</span> 1,000 operations/month (Early access)</li>
-                <li><span className="font-medium">Pro:</span> 5,000 operations/month (Coming soon)</li>
-                <li><span className="font-medium">Enterprise:</span> Unlimited (Coming soon)</li>
+                <li className="flex justify-between">
+                  <span><span className="font-medium">Free:</span> 25 ops/month</span>
+                  <span className="text-neutral-500">{users?.filter(u => u.subscription_tier === 'free').length || 0} users</span>
+                </li>
+                <li className="flex justify-between">
+                  <span><span className="font-medium text-purple-600">Beta:</span> 1,000 ops/month</span>
+                  <span className="text-purple-600">{users?.filter(u => u.subscription_tier === 'beta').length || 0} users</span>
+                </li>
+                <li className="flex justify-between">
+                  <span><span className="font-medium text-blue-600">Pro:</span> 5,000 ops/month</span>
+                  <span className="text-blue-600">{users?.filter(u => u.subscription_tier === 'pro').length || 0} users</span>
+                </li>
+                <li className="flex justify-between">
+                  <span><span className="font-medium text-green-600">Enterprise:</span> Unlimited</span>
+                  <span className="text-green-600">{users?.filter(u => u.subscription_tier === 'enterprise').length || 0} users</span>
+                </li>
               </ul>
-              <p className="text-xs text-neutral-500 mt-3 pt-3 border-t">
-                Note: Beta is a subscription tier, not admin access
-              </p>
             </div>
 
             <div className="glass-card rounded-xl p-6">
