@@ -51,32 +51,41 @@ export async function POST(request: Request) {
     // Find users without profiles
     const missingProfiles = authUsers.filter(u => !existingIds.has(u.id))
     
+    console.log(`Found ${missingProfiles.length} users without profiles`)
+    
     // Create profiles for missing users
     if (missingProfiles.length > 0) {
-      const profilesToCreate = missingProfiles.map(user => ({
-        id: user.id,
-        email: user.email || '',
-        full_name: user.user_metadata?.full_name || '',
-        first_name: user.user_metadata?.first_name || '',
-        surname: user.user_metadata?.surname || '',
-        company: user.user_metadata?.company || '',
-        newsletter_subscribed: user.user_metadata?.newsletter_subscribed || false,
-        email_verified: !!user.email_confirmed_at,
-        subscription_tier: 'free',
-        operations_limit: 25,
-        operations_used: 0,
-        created_at: user.created_at,
-        updated_at: new Date().toISOString()
-      }))
+      const profilesToCreate = missingProfiles.map(user => {
+        console.log(`Creating profile for user: ${user.email}`)
+        return {
+          id: user.id,
+          email: user.email || '',
+          full_name: user.user_metadata?.full_name || null,
+          first_name: user.user_metadata?.first_name || null,
+          surname: user.user_metadata?.surname || null,
+          company: user.user_metadata?.company || null,
+          newsletter_subscribed: user.user_metadata?.newsletter_subscribed || false,
+          email_verified: !!user.email_confirmed_at,
+          subscription_tier: 'free',
+          operations_limit: 25,
+          operations_used: 0,
+          created_at: user.created_at || new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+      })
       
-      const { error: insertError } = await supabase
+      console.log('Profiles to create:', JSON.stringify(profilesToCreate, null, 2))
+      
+      const { error: insertError } = await serviceClient
         .from('profiles')
         .insert(profilesToCreate)
       
       if (insertError) {
+        console.error('Insert error:', insertError)
         return NextResponse.json({ 
           error: 'Failed to create profiles', 
-          details: insertError.message 
+          details: insertError.message,
+          code: insertError.code
         }, { status: 500 })
       }
     }
