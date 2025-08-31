@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
@@ -12,20 +13,67 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     
-    // Auto-approve beta access
-    const now = new Date().toISOString()
-    const { data, error } = await supabase
+    // Create service client to bypass RLS
+    const serviceClient = createServiceClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
+    
+    // Check if profile exists first
+    const { data: existingProfile } = await serviceClient
       .from('profiles')
-      .update({ 
-        beta_requested_at: now,
-        beta_approved_at: now,
-        beta_access: true,
-        beta_notes: 'Auto-approved via API',
-        subscription_tier: 'beta'
-      })
+      .select('id')
       .eq('id', user.id)
-      .select()
       .single()
+    
+    const now = new Date().toISOString()
+    let data, error
+    
+    if (!existingProfile) {
+      // Create profile with beta access if it doesn't exist
+      const result = await serviceClient
+        .from('profiles')
+        .insert({
+          id: user.id,
+          email: user.email,
+          beta_requested_at: now,
+          beta_approved_at: now,
+          beta_access: true,
+          beta_notes: 'Auto-approved via API',
+          subscription_tier: 'beta',
+          created_at: now,
+          updated_at: now
+        })
+        .select()
+        .single()
+      
+      data = result.data
+      error = result.error
+    } else {
+      // Update existing profile
+      const result = await serviceClient
+        .from('profiles')
+        .update({ 
+          beta_requested_at: now,
+          beta_approved_at: now,
+          beta_access: true,
+          beta_notes: 'Auto-approved via API',
+          subscription_tier: 'beta',
+          updated_at: now
+        })
+        .eq('id', user.id)
+        .select()
+        .single()
+      
+      data = result.data
+      error = result.error
+    }
     
     if (error) {
       console.error('Error approving beta access:', error)
