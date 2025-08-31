@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import AdminUserManagement from '@/components/AdminUserManagement'
-import AdminBetaRequests from '@/components/AdminBetaRequests'
 import GridAnimation from '@/components/GridAnimation'
 
 export default async function AdminPage() {
@@ -45,12 +44,6 @@ export default async function AdminPage() {
 
   console.log('Fetched ALL users from database:', users?.length)
 
-  // Get beta requests (using service client to ensure we see all)
-  const { data: betaRequests } = await serviceClient
-    .from('profiles')
-    .select('id, email, full_name, created_at')
-    .order('created_at', { ascending: false })
-
   return (
     <>
       <GridAnimation />
@@ -77,11 +70,6 @@ export default async function AdminPage() {
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Beta Access Requests */}
-          <div className="mb-8">
-            <AdminBetaRequests requests={betaRequests || []} />
           </div>
 
           {/* User Management Table */}
