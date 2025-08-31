@@ -14,6 +14,7 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
   const [confirmEmail, setConfirmEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -27,45 +28,35 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
     setError(null)
 
     try {
-      // Delete user profile first (due to foreign key constraint)
-      const { data: { user } } = await supabase.auth.getUser()
+      // Call the delete account API endpoint
+      const response = await fetch('/api/user/delete-account', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          confirmEmail: confirmEmail
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete account')
+      }
+
+      // Success - show success message
+      setSuccess(true)
+      setError(null)
       
-      if (!user) {
-        throw new Error('No authenticated user found')
-      }
-
-      // Delete from profiles table
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', user.id)
-
-      if (profileError) {
-        throw profileError
-      }
-
-      // Delete the user account
-      const { error: deleteError } = await supabase.rpc('delete_user')
-
-      if (deleteError) {
-        // If custom function doesn't exist, try signing out
-        // Note: Full account deletion requires a server-side function
-        throw new Error('Account deletion requires contacting support. We\'ve logged you out for now.')
-      }
-
-      // Sign out and redirect
-      await supabase.auth.signOut()
-      router.push('/')
+      // Sign out and redirect to home after showing success
+      setTimeout(async () => {
+        await supabase.auth.signOut()
+        router.push('/')
+      }, 2000)
+      
     } catch (err: any) {
       setError(err.message)
-      // If error mentions support, still sign out
-      if (err.message.includes('support')) {
-        setTimeout(async () => {
-          await supabase.auth.signOut()
-          router.push('/')
-        }, 3000)
-      }
-    } finally {
       setLoading(false)
     }
   }
@@ -75,6 +66,18 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
   return (
     <div className="fixed inset-0 z-modal bg-black/50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
+        {success ? (
+          <div className="text-center py-8">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-neutral-900 mb-2">Account Deleted Successfully</h3>
+            <p className="text-neutral-600">Your account has been permanently deleted. Redirecting...</p>
+          </div>
+        ) : (
+          <>
         <h2 className="text-xl font-bold text-neutral-900 mb-4">Delete Account</h2>
         
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
@@ -125,6 +128,8 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
             {loading ? 'Deleting...' : 'Delete Account'}
           </button>
         </div>
+        </>
+        )}
       </div>
     </div>
   )
