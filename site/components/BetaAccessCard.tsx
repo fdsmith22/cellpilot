@@ -19,16 +19,22 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
   const requestBetaAccess = async () => {
     setLoading(true)
     try {
+      // Auto-approve beta access for immediate installation
+      const now = new Date().toISOString()
       const { error } = await supabase
         .from('profiles')
         .update({ 
-          beta_requested_at: new Date().toISOString(),
-          beta_notes: 'Requested via dashboard'
+          beta_requested_at: now,
+          beta_approved_at: now,
+          beta_access: true,
+          beta_notes: 'Auto-approved via dashboard',
+          subscription_tier: 'beta'
         })
         .eq('id', userId)
 
       if (error) throw error
       
+      setApproved(true)
       setRequested(true)
       router.refresh()
     } catch (error) {
@@ -40,9 +46,9 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
   }
 
   const installCellPilot = () => {
-    // Open the Apps Script project directly with test deployment
+    // Open the Apps Script project for test deployment installation
     window.open(
-      'https://script.google.com/d/1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O/edit',
+      'https://script.google.com/d/1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O/edit?showDeploy=true',
       '_blank'
     )
   }
@@ -77,15 +83,27 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
           </button>
           
           <details className="group">
-            <summary className="cursor-pointer text-sm text-green-700 hover:text-green-800">
-              Installation Instructions
+            <summary className="cursor-pointer text-sm text-green-700 hover:text-green-800 font-medium">
+              📋 Installation Instructions (click to expand)
             </summary>
-            <div className="mt-3 space-y-2 text-sm text-green-600">
-              <p>1. Click "Install CellPilot Now" above</p>
-              <p>2. In the Apps Script editor, click Deploy → Test deployments</p>
-              <p>3. Click "Install" under Sheets application</p>
-              <p>4. Authorize the permissions</p>
-              <p>5. Open any Google Sheet and find CellPilot in Extensions menu</p>
+            <div className="mt-3 space-y-3 text-sm text-green-600 bg-white/50 rounded-lg p-4">
+              <p className="font-medium text-green-800">Quick Install Steps:</p>
+              <ol className="space-y-2 ml-4">
+                <li>1. Click "Install CellPilot Now" above</li>
+                <li>2. In the Apps Script editor that opens:
+                  <ul className="ml-4 mt-1 text-xs">
+                    <li>• Click <strong>Deploy</strong> → <strong>Test deployments</strong></li>
+                    <li>• Click <strong>Install</strong> button</li>
+                    <li>• Click <strong>Done</strong></li>
+                  </ul>
+                </li>
+                <li>3. Open any Google Sheet</li>
+                <li>4. Look for <strong>CellPilot</strong> in the <strong>Extensions</strong> menu</li>
+                <li>5. Click any CellPilot menu item to authorize (first time only)</li>
+              </ol>
+              <p className="text-xs text-amber-600 mt-3">
+                💡 Tip: You may need to refresh your Google Sheet for the menu to appear
+              </p>
             </div>
           </details>
         </div>

@@ -182,7 +182,7 @@ export default function InstallContent() {
                   
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                     <p className="text-sm text-green-800">
-                      <strong>✨ Simplified Beta Access:</strong> Install CellPilot as a test add-on - no coding required!
+                      <strong>✨ Instant Beta Access:</strong> Get CellPilot now - auto-approval for all beta testers!
                     </p>
                   </div>
                   
@@ -192,17 +192,17 @@ export default function InstallContent() {
                         1
                       </div>
                       <div className="ml-4">
-                        <h3 className="font-semibold text-neutral-900 mb-2">Request Beta Access</h3>
-                        <p className="text-neutral-600 mb-3">Contact us with your Google account email to be added as a beta tester</p>
-                        <a 
-                          href="mailto:support@cellpilot.io?subject=Beta%20Access%20Request"
+                        <h3 className="font-semibold text-neutral-900 mb-2">Sign In to Dashboard</h3>
+                        <p className="text-neutral-600 mb-3">Sign in to your account and request instant beta access from your dashboard</p>
+                        <Link 
+                          href="/auth"
                           className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                         >
-                          Request Beta Access
+                          Go to Dashboard
                           <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                           </svg>
-                        </a>
+                        </Link>
                       </div>
                     </div>
 
@@ -211,8 +211,8 @@ export default function InstallContent() {
                         2
                       </div>
                       <div className="ml-4">
-                        <h3 className="font-semibold text-neutral-900 mb-2">Receive Installation Link</h3>
-                        <p className="text-neutral-600">Once approved, you'll receive a direct installation link via email</p>
+                        <h3 className="font-semibold text-neutral-900 mb-2">Get Instant Beta Access</h3>
+                        <p className="text-neutral-600">Click "Request Beta Access" and get approved instantly - no waiting!</p>
                       </div>
                     </div>
 
@@ -221,8 +221,8 @@ export default function InstallContent() {
                         3
                       </div>
                       <div className="ml-4">
-                        <h3 className="font-semibold text-neutral-900 mb-2">Click Install</h3>
-                        <p className="text-neutral-600">Click the installation link and authorize CellPilot for your Google account</p>
+                        <h3 className="font-semibold text-neutral-900 mb-2">Install as Test Add-on</h3>
+                        <p className="text-neutral-600">Follow the simple installation steps to add CellPilot to your Google Sheets</p>
                       </div>
                     </div>
 
