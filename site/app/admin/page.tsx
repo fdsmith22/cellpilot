@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import AdminUserTable from '@/components/AdminUserTable'
+import AdminUserManagement from '@/components/AdminUserManagement'
 import AdminBetaRequests from '@/components/AdminBetaRequests'
 import GridAnimation from '@/components/GridAnimation'
 
@@ -72,8 +72,7 @@ export default async function AdminPage() {
 
           {/* User Management Table */}
           <div className="glass-card rounded-2xl p-8">
-            <h2 className="text-xl font-semibold text-neutral-900 mb-6">User Management</h2>
-            <AdminUserTable users={users || []} />
+            <AdminUserManagement users={users || []} />
           </div>
 
           {/* Quick Actions */}
