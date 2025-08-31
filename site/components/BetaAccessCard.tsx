@@ -40,9 +40,9 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
   }
 
   const installCellPilot = () => {
-    // Open the Beta Installer Web App (v1.3 - better error messages)
+    // Open the Beta Installer Web App (v1.4 - authorization handling)
     window.open(
-      'https://script.google.com/macros/s/AKfycbyaf7tm3ZrEkRSCQmJ9TKGjVV6i0YbnX-qKoi_fziDv98gw4hAJL2lLhrfJf3_EUkM6/exec',
+      'https://script.google.com/macros/s/AKfycbx-KJZ39QYApAjT4HyC-wZsfUGL_sbK3AtcLKw9iorvhzC6Z9ANPHdPB0_8LgAWADTd/exec',
       '_blank'
     )
   }
