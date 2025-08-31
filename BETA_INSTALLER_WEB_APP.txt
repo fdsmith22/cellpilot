@@ -1,0 +1,19 @@
+CellPilot Beta Installer Web App
+=================================
+Created: 2025-08-31
+
+Script ID: 1PAypZbjwbnMf22dyHXItxbyRIhCZgIME4JtR8REpzk_PfvH17sg-h33f
+Deployment ID: AKfycbyYmb4q9b8vTJPkUpupFxNzEMhZPdVp5_HLwDNcWvHObYB0zm7VvWlnaFGq8IrZN429
+Version: 1
+Description: Beta Installer Web App v1.0
+
+Web App URL (to share with beta testers):
+https://script.google.com/macros/s/AKfycbyYmb4q9b8vTJPkUpupFxNzEMhZPdVp5_HLwDNcWvHObYB0zm7VvWlnaFGq8IrZN429/exec
+
+Script Editor URL (for management):
+https://script.google.com/d/1PAypZbjwbnMf22dyHXItxbyRIhCZgIME4JtR8REpzk_PfvH17sg-h33f/edit
+
+To update the web app:
+1. Make changes to the files
+2. Run: npx clasp push
+3. Run: npx clasp deploy

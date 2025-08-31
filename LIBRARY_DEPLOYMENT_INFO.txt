@@ -1,0 +1,15 @@
+CellPilot Beta Library Deployment Information
+==============================================
+Created: 2025-08-31
+
+Script ID: 1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O
+Deployment ID: AKfycbwOYw_aMnfUSm3eh_6AKglhqFEOm-KT2qq_IqhDZlLo6U7lN718jfF9iX0vSysen-hBnA
+Version: 10
+Description: CellPilot Beta Library v1.0
+
+To use this library in other scripts:
+1. Click Libraries (+) in Apps Script editor
+2. Add Script ID: 1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O
+3. Select Version: 10 (or "HEAD" for latest)
+4. Set Identifier: CellPilot
+5. Click Add

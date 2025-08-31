@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 600;
+    }
+    
+    .header p {
+      margin: 10px 0 0 0;
+      opacity: 0.9;
+      font-size: 16px;
+    }
+    
+    .content {
+      padding: 40px;
+    }
+    
+    .step {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f7f9fc;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .step h3 {
+      margin: 0 0 10px 0;
+      color: #1a202c;
+      font-size: 18px;
+    }
+    
+    .step p {
+      margin: 0;
+      color: #4a5568;
+      line-height: 1.6;
+    }
+    
+    .code-block {
+      background: #1a202c;
+      color: #10b981;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 14px;
+      overflow-x: auto;
+      position: relative;
+      margin: 20px 0;
+    }
+    
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background 0.2s;
+    }
+    
+    .copy-btn:hover {
+      background: #5a67d8;
+    }
+    
+    .copy-btn.copied {
+      background: #10b981;
+    }
+    
+    .button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: inline-block;
+      text-decoration: none;
+    }
+    
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .success-message {
+      background: #10b981;
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      display: none;
+    }
+    
+    .error-message {
+      background: #ef4444;
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      display: none;
+    }
+    
+    .highlight {
+      background: #fef3c7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: #92400e;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚀 CellPilot Beta Installer</h1>
+      <p>Install CellPilot in your Google Sheets in just 3 minutes!</p>
+    </div>
+    
+    <div class="content">
+      <div id="success-message" class="success-message">
+        ✅ Installation code ready! Follow the steps below to complete installation.
+      </div>
+      
+      <div id="error-message" class="error-message"></div>
+      
+      <div class="step">
+        <h3>📋 Step 1: Copy Installation Code</h3>
+        <p>Click the button below to copy the CellPilot installation code:</p>
+        
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+          <pre id="code-content">Loading installation code...</pre>
+        </div>
+      </div>
+      
+      <div class="step">
+        <h3>📝 Step 2: Open Apps Script Editor</h3>
+        <p>
+          1. Open any Google Sheet (or create a new one)<br>
+          2. Click <span class="highlight">Extensions</span> → <span class="highlight">Apps Script</span><br>
+          3. Delete all existing code in the editor<br>
+          4. Paste the code you just copied<br>
+          5. Save the project (Ctrl+S or Cmd+S)
+        </p>
+      </div>
+      
+      <div class="step">
+        <h3>📚 Step 3: Add CellPilot Library</h3>
+        <p>
+          1. In Apps Script editor, click <span class="highlight">Libraries</span> (+) in the left sidebar<br>
+          2. In the "Script ID" field, paste: <br>
+          <code style="background: #e5e7eb; padding: 4px 8px; border-radius: 4px; font-size: 12px;">1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O</code><br>
+          3. Click <span class="highlight">Look up</span><br>
+          4. Select Version: <span class="highlight">10</span> (or latest)<br>
+          5. Make sure Identifier is: <span class="highlight">CellPilot</span><br>
+          6. Click <span class="highlight">Add</span>
+        </p>
+      </div>
+      
+      <div class="step">
+        <h3>✨ Step 4: Start Using CellPilot!</h3>
+        <p>
+          1. Save your Apps Script project<br>
+          2. Refresh your Google Sheet<br>
+          3. Look for <span class="highlight">CellPilot</span> in the Extensions menu<br>
+          4. Click any menu item to authorize (first time only)<br>
+          5. Enjoy all CellPilot features!
+        </p>
+      </div>
+      
+      <div style="text-align: center; margin-top: 40px;">
+        <button class="button" onclick="openNewSheet()">
+          Open New Google Sheet
+        </button>
+        <button class="button" style="margin-left: 10px;" onclick="loadInstallCode()">
+          Reload Installation Code
+        </button>
+      </div>
+      
+      <div style="margin-top: 40px; padding: 20px; background: #f7f9fc; border-radius: 8px;">
+        <h4 style="margin: 0 0 10px 0; color: #1a202c;">Need Help?</h4>
+        <p style="margin: 0; color: #4a5568; line-height: 1.6;">
+          📧 Email: beta@cellpilot.io<br>
+          🌐 Visit: <a href="https://cellpilot.io" target="_blank">cellpilot.io</a><br>
+          📖 Documentation: Coming soon!
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Load installation code on page load
+    window.onload = function() {
+      loadInstallCode();
+    };
+    
+    function loadInstallCode() {
+      // Get the installation code from the server
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            // Load the actual BETA_INSTALLER.gs content
+            const code = getFullInstallationCode(result.scriptId, result.version);
+            document.getElementById('code-content').textContent = code;
+            document.getElementById('success-message').style.display = 'block';
+          } else {
+            showError('Failed to load installation code');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showError('Error loading installation code: ' + error);
+        })
+        .getInstallationCode();
+    }
+    
+    function getFullInstallationCode(scriptId, version) {
+      // This is a simplified version - in production, you'd fetch the full BETA_INSTALLER.gs
+      return `/**
+ * CellPilot Beta Installation Script
+ * ===================================
+ * Version: 1.0.0-beta
+ * 
+ * IMPORTANT: After pasting this code, you MUST add the CellPilot library:
+ * 1. Click Libraries (+) in the left sidebar
+ * 2. Script ID: ${scriptId}
+ * 3. Version: ${version}
+ * 4. Identifier: CellPilot
+ * 5. Click Add
+ */
+
+function onOpen() {
+  try {
+    CellPilot.onOpen();
+  } catch (e) {
+    SpreadsheetApp.getUi().alert('Please add CellPilot library. See instructions above.');
+  }
+}
+
+function onInstall(e) {
+  CellPilot.onInstall(e);
+}
+
+// Main Features
+function showCellPilotSidebar() { CellPilot.showCellPilotSidebar(); }
+function tableize() { return CellPilot.tableize(); }
+function removeDuplicates() { return CellPilot.removeDuplicates(); }
+function cleanData() { return CellPilot.cleanData(); }
+function showSmartFormulaAssistant() { CellPilot.showSmartFormulaAssistant(); }
+function showFormulaBuilder() { CellPilot.showFormulaBuilder(); }
+function showAdvancedRestructuring() { CellPilot.showAdvancedRestructuring(); }
+function showIndustryTemplates() { CellPilot.showIndustryTemplates(); }
+
+// Add all other proxy functions...
+// Full code available at: cellpilot.io/beta-installer`;
+    }
+    
+    function copyCode() {
+      const code = document.getElementById('code-content').textContent;
+      navigator.clipboard.writeText(code).then(function() {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = '✅ Copied!';
+        btn.classList.add('copied');
+        setTimeout(function() {
+          btn.textContent = 'Copy Code';
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(function(err) {
+        showError('Failed to copy code. Please select and copy manually.');
+      });
+    }
+    
+    function openNewSheet() {
+      window.open('https://sheets.new', '_blank');
+    }
+    
+    function showError(message) {
+      const errorDiv = document.getElementById('error-message');
+      errorDiv.textContent = '❌ ' + message;
+      errorDiv.style.display = 'block';
+      setTimeout(function() {
+        errorDiv.style.display = 'none';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

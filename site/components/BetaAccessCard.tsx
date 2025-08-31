@@ -40,9 +40,9 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
   }
 
   const installCellPilot = () => {
-    // Open the Apps Script project for test deployment installation
+    // Open the Beta Installer Web App
     window.open(
-      'https://script.google.com/d/1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O/edit?showDeploy=true',
+      'https://script.google.com/macros/s/AKfycbyYmb4q9b8vTJPkUpupFxNzEMhZPdVp5_HLwDNcWvHObYB0zm7VvWlnaFGq8IrZN429/exec',
       '_blank'
     )
   }
@@ -84,19 +84,17 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
               <p className="font-medium text-green-800">Quick Install Steps:</p>
               <ol className="space-y-2 ml-4">
                 <li>1. Click "Install CellPilot Now" above</li>
-                <li>2. In the Apps Script editor that opens:
-                  <ul className="ml-4 mt-1 text-xs">
-                    <li>• Click <strong>Deploy</strong> → <strong>Test deployments</strong></li>
-                    <li>• Click <strong>Install</strong> button</li>
-                    <li>• Click <strong>Done</strong></li>
-                  </ul>
-                </li>
-                <li>3. Open any Google Sheet</li>
-                <li>4. Look for <strong>CellPilot</strong> in the <strong>Extensions</strong> menu</li>
-                <li>5. Click any CellPilot menu item to authorize (first time only)</li>
+                <li>2. Sign in with your Google account (same email as CellPilot signup)</li>
+                <li>3. Copy the installation code shown</li>
+                <li>4. Open any Google Sheet</li>
+                <li>5. Go to <strong>Extensions</strong> → <strong>Apps Script</strong></li>
+                <li>6. Delete existing code and paste the installation code</li>
+                <li>7. Add the CellPilot library (instructions provided)</li>
+                <li>8. Save and refresh your Google Sheet</li>
+                <li>9. Find <strong>CellPilot</strong> in the <strong>Extensions</strong> menu!</li>
               </ol>
               <p className="text-xs text-amber-600 mt-3">
-                💡 Tip: You may need to refresh your Google Sheet for the menu to appear
+                💡 Important: Use the same Google account email that you used to sign up for CellPilot
               </p>
             </div>
           </details>
