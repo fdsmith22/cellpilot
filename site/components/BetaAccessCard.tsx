@@ -17,8 +17,8 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
   const requestBetaAccess = async () => {
     setLoading(true)
     try {
-      // Use API endpoint to handle beta approval (bypasses RLS)
-      const response = await fetch('/api/beta/approve', {
+      // Use API endpoint to submit beta request
+      const response = await fetch('/api/beta/request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -28,11 +28,10 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to approve beta access')
+        throw new Error(data.error || 'Failed to submit beta request')
       }
 
-      console.log('Beta access granted:', data)
-      setApproved(true)
+      console.log('Beta access requested:', data)
       setRequested(true)
       
       // Refresh the page to update the UI
@@ -111,26 +110,28 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
     )
   }
 
-  if (requested) {
+  if (requested && !approved) {
     return (
       <div className="glass-card rounded-2xl p-8 bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-200">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-amber-900 mb-2">Beta Access Requested</h2>
+            <h2 className="text-xl font-semibold text-amber-900 mb-2">Beta Access Pending Approval</h2>
             <p className="text-amber-700 mb-4">
-              Your beta access request is being reviewed. We'll notify you once approved!
+              Your beta access request has been submitted to the admin for review. You'll be able to install CellPilot once approved!
             </p>
             <p className="text-sm text-amber-600">
-              Requested on: {profile.beta_requested_at ? new Date(profile.beta_requested_at).toLocaleDateString() : 'Just now'}
+              Requested on: {profile?.beta_requested_at ? new Date(profile.beta_requested_at).toLocaleDateString() : 'Just now'}
             </p>
           </div>
           <svg className="w-8 h-8 text-amber-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
-        <p className="text-xs text-amber-600 mt-4">
-          Typical approval time: Within 24 hours
-        </p>
+        <div className="mt-4 p-3 bg-amber-100 rounded-lg">
+          <p className="text-xs text-amber-700">
+            <strong>What happens next?</strong> An admin will review your request and approve access. You'll see the install button here once approved.
+          </p>
+        </div>
       </div>
     )
   }

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 interface BetaRequest {
@@ -23,20 +22,23 @@ export default function AdminBetaRequests({ requests: initialRequests }: AdminBe
   const [requests, setRequests] = useState(initialRequests)
   const [loading, setLoading] = useState<string | null>(null)
   const router = useRouter()
-  const supabase = createClient()
 
   const approveBetaAccess = async (userId: string) => {
     setLoading(userId)
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          beta_access: true,
-          beta_approved_at: new Date().toISOString()
-        })
-        .eq('id', userId)
+      const response = await fetch('/api/admin/beta/approve', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      })
 
-      if (error) throw error
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to approve beta access')
+      }
       
       // Update local state
       setRequests(prev => prev.map(req => 
@@ -46,26 +48,32 @@ export default function AdminBetaRequests({ requests: initialRequests }: AdminBe
       ))
       
       router.refresh()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error approving beta access:', error)
-      alert('Failed to approve beta access')
+      alert(`Failed to approve beta access: ${error.message}`)
     } finally {
       setLoading(null)
     }
   }
 
   const revokeBetaAccess = async (userId: string) => {
+    if (!confirm('Are you sure you want to revoke beta access for this user?')) return
+    
     setLoading(userId)
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          beta_access: false,
-          beta_approved_at: null
-        })
-        .eq('id', userId)
+      const response = await fetch('/api/admin/beta/reject', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      })
 
-      if (error) throw error
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to revoke beta access')
+      }
       
       // Update local state
       setRequests(prev => prev.map(req => 
@@ -75,9 +83,9 @@ export default function AdminBetaRequests({ requests: initialRequests }: AdminBe
       ))
       
       router.refresh()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error revoking beta access:', error)
-      alert('Failed to revoke beta access')
+      alert(`Failed to revoke beta access: ${error.message}`)
     } finally {
       setLoading(null)
     }
