@@ -24,7 +24,7 @@ export default function AuthPage() {
     isVerified ? 'Email verified! You can now sign in.' : null
   )
   
-  const { signIn, signUp, signInWithEmail } = useAuth()
+  const { signIn, signUp } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,20 +67,6 @@ export default function AuthPage() {
     setLoading(false)
   }
 
-  const handleMagicLink = async () => {
-    setLoading(true)
-    setError(null)
-    setSuccess(null)
-
-    const { error } = await signInWithEmail(email)
-    if (error) {
-      setError(error.message)
-    } else {
-      setSuccess('Check your email for the login link!')
-    }
-    
-    setLoading(false)
-  }
 
   return (
     <>
@@ -243,23 +229,6 @@ export default function AuthPage() {
                 {loading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Sign In')}
               </button>
             </form>
-
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-neutral-300"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-neutral-500">Or</span>
-              </div>
-            </div>
-
-            <button
-              onClick={handleMagicLink}
-              disabled={loading || !email}
-              className="w-full py-3 px-4 bg-white border border-neutral-300 text-neutral-700 font-medium rounded-lg hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            >
-              Send Magic Link to Email
-            </button>
 
             <p className="mt-6 text-center text-sm text-neutral-600">
               {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}

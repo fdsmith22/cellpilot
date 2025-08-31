@@ -110,21 +110,11 @@ const Header = () => {
                   </>
                 ) : (
                   <>
-                    {/* Sign In Button */}
+                    {/* Get Started Button */}
                     <div className="relative">
                       <div className="absolute -top-2 -left-2 text-[10px] text-neutral-500/70 font-mono">D1</div>
                       <Link 
                         href="/auth" 
-                        className="block px-5 py-2.5 bg-gradient-to-br from-neutral-100 to-neutral-50 backdrop-blur-md border border-neutral-300 rounded-xl hover:shadow-lg hover:scale-105 transition-all text-sm font-medium text-neutral-700 hover:text-primary-700"
-                      >
-                        Sign In
-                      </Link>
-                    </div>
-                    {/* Get Started Button */}
-                    <div className="relative">
-                      <div className="absolute -top-2 -left-2 text-[10px] text-neutral-500/70 font-mono">E1</div>
-                      <Link 
-                        href="/auth?signup=true" 
                         className="block px-6 py-2.5 bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-xl border border-primary-600/30 hover:from-primary-600 hover:to-primary-700 hover:shadow-xl hover:scale-105 transition-all text-sm font-semibold shadow-lg backdrop-blur-sm"
                       >
                         Get Started
@@ -222,16 +212,6 @@ const Header = () => {
                         <div className="absolute -top-1 left-0 text-[10px] text-neutral-400 font-mono">D1</div>
                         <Link
                           href="/auth"
-                          className="block px-4 py-3 bg-gradient-to-br from-neutral-100 to-neutral-50 backdrop-blur-sm border border-neutral-300 rounded-lg text-center font-medium text-neutral-700"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          Sign In
-                        </Link>
-                      </div>
-                      <div className="relative px-2">
-                        <div className="absolute -top-1 left-0 text-[10px] text-neutral-400 font-mono">E1</div>
-                        <Link
-                          href="/auth?signup=true"
                           className="block px-4 py-3 bg-gradient-to-br from-primary-500/95 to-primary-600/95 text-white rounded-lg border border-primary-600/50 text-center font-medium shadow-md backdrop-blur-sm"
                           onClick={() => setMobileMenuOpen(false)}
                         >
