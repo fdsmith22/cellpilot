@@ -24,7 +24,9 @@ export async function POST(request: Request) {
     
     // Get request body
     const body = await request.json()
-    const { email, full_name, company, subscription_tier, is_admin, beta_access } = body
+    const { email, full_name, company, subscription_tier, is_admin } = body
+    
+    console.log('Creating user with data:', { email, full_name, company, subscription_tier, is_admin })
     
     // Create service client for admin operations
     const serviceClient = createServiceClient(
@@ -56,23 +58,26 @@ export async function POST(request: Request) {
     // Create profile with additional settings
     if (data.user) {
       // Create profile with all fields that exist in the database
+      const tier = subscription_tier || 'free'
       const profileData = {
         id: data.user.id,
         email: data.user.email || '',
         full_name: full_name || '',
         company: company || '',
-        subscription_tier: subscription_tier || 'free',
+        subscription_tier: tier,
         operations_used: 0,
         operations_limit: 
-          subscription_tier === 'beta' ? 1000 :
-          subscription_tier === 'pro' ? 5000 :
-          subscription_tier === 'enterprise' ? 999999 : 25,
+          tier === 'beta' ? 1000 :
+          tier === 'pro' ? 5000 :
+          tier === 'enterprise' ? 999999 : 25,
         email_verified: true,
         newsletter_subscribed: false,
         is_admin: is_admin || false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }
+      
+      console.log('Creating profile with data:', profileData)
       
       const { data: newProfile, error: profileError } = await serviceClient
         .from('profiles')
@@ -82,11 +87,14 @@ export async function POST(request: Request) {
       
       if (profileError) {
         console.error('Error creating profile:', profileError)
+        console.error('Profile data that failed:', profileData)
         // Try to delete the auth user if profile creation fails
         await serviceClient.auth.admin.deleteUser(data.user.id)
         return NextResponse.json({ 
-          error: 'Failed to create user profile', 
-          details: profileError.message 
+          error: `Failed to create user profile: ${profileError.message}`, 
+          details: profileError.message,
+          code: profileError.code,
+          hint: profileError.hint
         }, { status: 500 })
       }
       

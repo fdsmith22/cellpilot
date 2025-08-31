@@ -188,7 +188,8 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
       router.refresh()
     } catch (error) {
       console.error('Error adding user:', error)
-      alert('Failed to add user: ' + (error as Error).message)
+      const errorMessage = (error as Error).message
+      alert(`Failed to add user: ${errorMessage}\n\nCheck browser console for details.`)
     } finally {
       setLoading(false)
     }
