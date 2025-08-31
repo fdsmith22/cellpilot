@@ -43,6 +43,18 @@ export default async function AdminPage() {
     .order('created_at', { ascending: false })
 
   console.log('Fetched ALL users from database:', users?.length)
+  
+  // Get tier counts efficiently (optional - for future optimization)
+  // This could replace the filter counts if you have many users
+  const tierCounts = {
+    free: users?.filter(u => u.subscription_tier === 'free').length || 0,
+    beta: users?.filter(u => u.subscription_tier === 'beta').length || 0,
+    pro: users?.filter(u => u.subscription_tier === 'pro').length || 0,
+    enterprise: users?.filter(u => u.subscription_tier === 'enterprise').length || 0,
+    total: users?.length || 0
+  }
+  
+  console.log('User tier distribution:', tierCounts)
 
   return (
     <>
@@ -59,31 +71,31 @@ export default async function AdminPage() {
               </div>
               <div className="flex gap-4">
                 <div className="text-center px-4">
-                  <div className="text-3xl font-bold text-primary-600">{users?.length || 0}</div>
+                  <div className="text-3xl font-bold text-primary-600">{tierCounts.total}</div>
                   <div className="text-sm text-neutral-600">Total Users</div>
                 </div>
                 <div className="h-12 w-px bg-neutral-200"></div>
                 <div className="text-center px-3">
                   <div className="text-2xl font-bold text-neutral-500">
-                    {users?.filter(u => u.subscription_tier === 'free').length || 0}
+                    {tierCounts.free}
                   </div>
                   <div className="text-sm text-neutral-600">Free</div>
                 </div>
                 <div className="text-center px-3">
                   <div className="text-2xl font-bold text-purple-600">
-                    {users?.filter(u => u.subscription_tier === 'beta').length || 0}
+                    {tierCounts.beta}
                   </div>
                   <div className="text-sm text-neutral-600">Beta</div>
                 </div>
                 <div className="text-center px-3">
                   <div className="text-2xl font-bold text-blue-600">
-                    {users?.filter(u => u.subscription_tier === 'pro').length || 0}
+                    {tierCounts.pro}
                   </div>
                   <div className="text-sm text-neutral-600">Pro</div>
                 </div>
                 <div className="text-center px-3">
                   <div className="text-2xl font-bold text-green-600">
-                    {users?.filter(u => u.subscription_tier === 'enterprise').length || 0}
+                    {tierCounts.enterprise}
                   </div>
                   <div className="text-sm text-neutral-600">Enterprise</div>
                 </div>
@@ -103,19 +115,19 @@ export default async function AdminPage() {
               <ul className="space-y-2 text-sm text-neutral-600">
                 <li className="flex justify-between">
                   <span><span className="font-medium">Free:</span> 25 ops/month</span>
-                  <span className="text-neutral-500">{users?.filter(u => u.subscription_tier === 'free').length || 0} users</span>
+                  <span className="text-neutral-500">{tierCounts.free} users</span>
                 </li>
                 <li className="flex justify-between">
                   <span><span className="font-medium text-purple-600">Beta:</span> 1,000 ops/month</span>
-                  <span className="text-purple-600">{users?.filter(u => u.subscription_tier === 'beta').length || 0} users</span>
+                  <span className="text-purple-600">{tierCounts.beta} users</span>
                 </li>
                 <li className="flex justify-between">
                   <span><span className="font-medium text-blue-600">Pro:</span> 5,000 ops/month</span>
-                  <span className="text-blue-600">{users?.filter(u => u.subscription_tier === 'pro').length || 0} users</span>
+                  <span className="text-blue-600">{tierCounts.pro} users</span>
                 </li>
                 <li className="flex justify-between">
                   <span><span className="font-medium text-green-600">Enterprise:</span> Unlimited</span>
-                  <span className="text-green-600">{users?.filter(u => u.subscription_tier === 'enterprise').length || 0} users</span>
+                  <span className="text-green-600">{tierCounts.enterprise} users</span>
                 </li>
               </ul>
             </div>
