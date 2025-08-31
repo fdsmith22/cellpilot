@@ -1,14 +1,20 @@
 CellPilot Beta Installer Web App
 =================================
 Created: 2025-08-31
+Updated: 2025-08-31
 
 Script ID: 1PAypZbjwbnMf22dyHXItxbyRIhCZgIME4JtR8REpzk_PfvH17sg-h33f
-Deployment ID: AKfycbyYmb4q9b8vTJPkUpupFxNzEMhZPdVp5_HLwDNcWvHObYB0zm7VvWlnaFGq8IrZN429
-Version: 1
-Description: Beta Installer Web App v1.0
+
+CURRENT DEPLOYMENT (v1.1):
+Deployment ID: AKfycbzvsOpM-GJvXvdyV18HvgsE13ts4JKwSMLDcMKtHk8HMBh7IAH8ZQ58zV2h6xqtj39W
+Version: 2
+Description: Beta Installer v1.1 - Fixed email detection
 
 Web App URL (to share with beta testers):
-https://script.google.com/macros/s/AKfycbyYmb4q9b8vTJPkUpupFxNzEMhZPdVp5_HLwDNcWvHObYB0zm7VvWlnaFGq8IrZN429/exec
+https://script.google.com/macros/s/AKfycbzvsOpM-GJvXvdyV18HvgsE13ts4JKwSMLDcMKtHk8HMBh7IAH8ZQ58zV2h6xqtj39W/exec
+
+Previous deployment (v1.0):
+Deployment ID: AKfycbyYmb4q9b8vTJPkUpupFxNzEMhZPdVp5_HLwDNcWvHObYB0zm7VvWlnaFGq8IrZN429
 
 Script Editor URL (for management):
 https://script.google.com/d/1PAypZbjwbnMf22dyHXItxbyRIhCZgIME4JtR8REpzk_PfvH17sg-h33f/edit
