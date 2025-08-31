@@ -134,102 +134,132 @@ function getFullBetaInstallerCode(scriptId, version) {
  * 3. Version: ${version}
  * 4. Identifier: CellPilot
  * 5. Click Add
+ * 6. SAVE THE PROJECT (Ctrl+S or Cmd+S)
+ * 7. CLOSE AND REOPEN THE SPREADSHEET
  */
 
-function onOpen() {
+function onOpen(e) {
   try {
-    // Check if CellPilot is defined
+    // Create a simple menu first
+    const ui = SpreadsheetApp.getUi();
+    
+    // Try to access CellPilot
+    if (typeof CellPilot !== 'undefined' && CellPilot && CellPilot.onOpen) {
+      // Library is loaded, call it
+      CellPilot.onOpen(e);
+    } else {
+      // Library not found, create setup menu
+      ui.createMenu('⚠️ CellPilot Setup')
+        .addItem('Initialize CellPilot', 'initializeCellPilot')
+        .addItem('Test Library Connection', 'testLibrary')
+        .addSeparator()
+        .addItem('Show Instructions', 'showInstructions')
+        .addToUi();
+        
+      // Don't show alert on every open, just create the menu
+    }
+  } catch (error) {
+    // If there's an error, create a setup menu
+    try {
+      SpreadsheetApp.getUi()
+        .createMenu('⚠️ CellPilot Setup')
+        .addItem('Initialize CellPilot', 'initializeCellPilot')
+        .addItem('Test Library Connection', 'testLibrary')
+        .addItem('Show Error Details', 'showError')
+        .addToUi();
+    } catch (e) {
+      // Even menu creation failed, do nothing
+    }
+  }
+}
+
+// Initialize CellPilot - this helps trigger authorization
+function initializeCellPilot() {
+  const ui = SpreadsheetApp.getUi();
+  
+  try {
     if (typeof CellPilot === 'undefined') {
-      SpreadsheetApp.getUi().alert(
-        'CellPilot Library Not Found\\n\\n' +
-        'Please add the library:\\n' +
-        '1. In Apps Script, click Libraries (+)\\n' +
-        '2. Script ID: 1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O\\n' +
-        '3. Click "Look up"\\n' +
-        '4. Version: 10 (or HEAD)\\n' +
-        '5. IMPORTANT: Identifier must be: CellPilot\\n' +
-        '6. Click "Add"\\n' +
-        '7. Save project (Ctrl+S)\\n' +
-        '8. Refresh this sheet'
+      ui.alert(
+        'Library Not Found',
+        'Please add the CellPilot library first:\\n\\n' +
+        '1. Click Libraries (+)\\n' +
+        '2. Add Script ID: 1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O\\n' +
+        '3. Set Identifier to: CellPilot\\n' +
+        '4. Save project\\n' +
+        '5. Close and reopen this sheet',
+        ui.ButtonSet.OK
       );
       return;
     }
     
-    // Try to call the library
-    CellPilot.onOpen();
+    // Try to call a library function to trigger auth
+    CellPilot.getCurrentUserContext();
     
+    ui.alert(
+      'Success!',
+      'CellPilot is initialized!\\n\\nPlease close and reopen this spreadsheet to see the CellPilot menu.',
+      ui.ButtonSet.OK
+    );
   } catch (e) {
-    // Check if it's an authorization error
-    const errorMsg = e.toString();
-    if (errorMsg.includes('Authorization') || errorMsg.includes('permission')) {
-      // Create a menu to trigger authorization
-      const ui = SpreadsheetApp.getUi();
-      ui.createMenu('CellPilot Setup')
-        .addItem('Authorize CellPilot', 'authorizeCellPilot')
-        .addItem('Test Library', 'testLibrary')
-        .addToUi();
-      
-      ui.alert(
-        'Authorization Required\\n\\n' +
-        'CellPilot needs authorization to run.\\n\\n' +
-        'Please:\\n' +
-        '1. Click "CellPilot Setup" in the menu bar\\n' +
-        '2. Click "Authorize CellPilot"\\n' +
-        '3. Follow the authorization prompts\\n' +
-        '4. Refresh this sheet after authorizing'
-      );
-    } else {
-      // Some other error
-      SpreadsheetApp.getUi().alert(
-        'Error Loading CellPilot\\n\\n' +
-        'Error: ' + errorMsg + '\\n\\n' +
-        'Try:\\n' +
-        '1. Run testLibrary() in Apps Script editor\\n' +
-        '2. Make sure library identifier is "CellPilot"\\n' +
-        '3. Save and refresh sheet'
-      );
-    }
-  }
-}
-
-// Function to trigger authorization
-function authorizeCellPilot() {
-  try {
-    // Try to access the library to trigger auth
-    if (typeof CellPilot !== 'undefined') {
-      CellPilot.getCurrentUserContext();
-      SpreadsheetApp.getUi().alert(
-        'Success!\\n\\n' +
-        'CellPilot is now authorized.\\n' +
-        'Please refresh this sheet to see the CellPilot menu.'
-      );
-    } else {
-      SpreadsheetApp.getUi().alert('CellPilot library not found. Please add it first.');
-    }
-  } catch (e) {
-    SpreadsheetApp.getUi().alert(
-      'Please authorize CellPilot:\\n\\n' +
-      'Follow the authorization prompts that appear.\\n' +
-      'After authorizing, refresh this sheet.'
+    ui.alert(
+      'Authorization Needed',
+      'Please authorize CellPilot to access your spreadsheets.\\n\\nAfter authorizing, close and reopen this sheet.',
+      ui.ButtonSet.OK
     );
   }
 }
 
+// Show instructions
+function showInstructions() {
+  const ui = SpreadsheetApp.getUi();
+  ui.alert(
+    'CellPilot Installation Instructions',
+    '1. Click Libraries (+) in Apps Script\\n' +
+    '2. Script ID: 1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O\\n' +
+    '3. Identifier MUST be: CellPilot\\n' +
+    '4. Version: 10 or HEAD\\n' +
+    '5. Click Add\\n' +
+    '6. Save project (Ctrl+S)\\n' +
+    '7. CLOSE and REOPEN this spreadsheet\\n\\n' +
+    'If still not working:\\n' +
+    '- Click "Initialize CellPilot" in the Setup menu\\n' +
+    '- Authorize when prompted\\n' +
+    '- Close and reopen sheet',
+    ui.ButtonSet.OK
+  );
+}
+
 // Test function to verify library is installed
 function testLibrary() {
+  const ui = SpreadsheetApp.getUi();
   try {
     if (typeof CellPilot === 'undefined') {
-      return 'Library not found. Please add it with identifier "CellPilot"';
+      ui.alert('Test Result', 'Library not found. Please add it with identifier "CellPilot"', ui.ButtonSet.OK);
+      return;
     }
     const version = CellPilot.getVersion ? CellPilot.getVersion() : 'Unknown';
-    return 'CellPilot library is installed! Version: ' + version;
+    ui.alert('Test Result', 'CellPilot library is installed! Version: ' + version, ui.ButtonSet.OK);
   } catch (e) {
-    return 'Error: ' + e.toString();
+    ui.alert('Test Result', 'Error: ' + e.toString(), ui.ButtonSet.OK);
+  }
+}
+
+// Show error details
+function showError() {
+  const ui = SpreadsheetApp.getUi();
+  try {
+    if (typeof CellPilot === 'undefined') {
+      ui.alert('Error Details', 'CellPilot is undefined. Library not properly linked.', ui.ButtonSet.OK);
+    } else {
+      ui.alert('Error Details', 'CellPilot is defined but there may be an authorization issue.', ui.ButtonSet.OK);
+    }
+  } catch (e) {
+    ui.alert('Error Details', e.toString(), ui.ButtonSet.OK);
   }
 }
 
 function onInstall(e) {
-  CellPilot.onInstall(e);
+  onOpen(e);
 }
 
 // Main Features
