@@ -81,21 +81,61 @@ export async function POST(request: Request) {
       const errors = []
       
       for (const profile of profilesToCreate) {
-        const { data, error: insertError } = await serviceClient
+        // First check if profile already exists (in case our check missed it)
+        const { data: existingProfile } = await serviceClient
           .from('profiles')
-          .insert(profile)
-          .select()
+          .select('*')
+          .eq('id', profile.id)
           .single()
         
-        if (insertError) {
-          console.error(`Failed to create profile for ${profile.email}:`, insertError)
-          errors.push({
-            email: profile.email,
-            error: insertError.message,
-            code: insertError.code
-          })
+        if (existingProfile) {
+          console.log(`Profile already exists for ${profile.email}, updating instead`)
+          // Update existing profile
+          const { data: updatedProfile, error: updateError } = await serviceClient
+            .from('profiles')
+            .update({
+              email: profile.email,
+              full_name: profile.full_name || existingProfile.full_name,
+              company: profile.company || existingProfile.company,
+              subscription_tier: existingProfile.subscription_tier || 'free',
+              operations_limit: existingProfile.operations_limit || 25,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', profile.id)
+            .select()
+            .single()
+          
+          if (updateError) {
+            console.error(`Failed to update profile for ${profile.email}:`, updateError)
+            errors.push({
+              email: profile.email,
+              error: `Update failed: ${updateError.message}`,
+              code: updateError.code,
+              hint: updateError.hint
+            })
+          } else {
+            results.push(updatedProfile)
+          }
         } else {
-          results.push(data)
+          // Try to insert new profile
+          const { data, error: insertError } = await serviceClient
+            .from('profiles')
+            .insert(profile)
+            .select()
+            .single()
+          
+          if (insertError) {
+            console.error(`Failed to create profile for ${profile.email}:`, insertError)
+            errors.push({
+              email: profile.email,
+              error: insertError.message,
+              code: insertError.code,
+              hint: insertError.hint,
+              details: insertError.details
+            })
+          } else {
+            results.push(data)
+          }
         }
       }
       
