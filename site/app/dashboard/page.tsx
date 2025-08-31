@@ -44,6 +44,21 @@ export default async function DashboardPage() {
             </div>
           </div>
 
+          {/* Admin Link if user is admin */}
+          {profile?.is_admin && (
+            <div className="mb-6">
+              <Link 
+                href="/admin" 
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 font-medium text-sm transition-all"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
+                Admin Dashboard
+              </Link>
+            </div>
+          )}
+
           {/* Quick Actions */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <Link href="/install" className="glass-card rounded-xl p-6 hover:shadow-xl transition-all hover:scale-102">
@@ -145,9 +160,8 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          {/* Danger Zone */}
-          <div className="glass-card rounded-2xl p-8 border-2 border-red-100 bg-red-50/20">
-            <h2 className="text-xl font-semibold text-red-900 mb-4">Danger Zone</h2>
+          {/* Danger Zone - Smaller and subtle */}
+          <div className="glass-card rounded-xl p-4 border border-red-100 bg-red-50/10">
             <DangerZone userEmail={user.email || ''} />
           </div>
         </div>
