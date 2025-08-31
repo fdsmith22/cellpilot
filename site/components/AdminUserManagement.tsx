@@ -129,20 +129,25 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
 
     setLoading(true)
     try {
-      // Delete from profiles (auth.users will cascade)
-      const { error } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', userId)
-
-      if (error) throw error
+      const response = await fetch(`/api/admin/delete-user?userId=${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete user')
+      }
 
       // Update local state
       setUsers(users.filter(user => user.id !== userId))
       router.refresh()
     } catch (error) {
       console.error('Error deleting user:', error)
-      alert('Failed to delete user')
+      alert('Failed to delete user: ' + (error as Error).message)
     } finally {
       setLoading(false)
     }
@@ -151,43 +156,23 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
   const handleAddUser = async () => {
     setLoading(true)
     try {
-      // Create user via admin API
-      const { data, error } = await supabase.auth.admin.createUser({
-        email: newUser.email,
-        email_confirm: true,
-        user_metadata: {
-          full_name: newUser.full_name,
-          company: newUser.company
-        }
+      const response = await fetch('/api/admin/create-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newUser)
       })
+      
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create user')
+      }
 
-      if (error) throw error
-
-      // Update profile with additional settings
+      // Add the new user to the local state immediately
       if (data.user) {
-        const { data: updatedProfile } = await supabase
-          .from('profiles')
-          .update({
-            full_name: newUser.full_name,
-            company: newUser.company,
-            subscription_tier: newUser.subscription_tier,
-            is_admin: newUser.is_admin,
-            beta_access: newUser.beta_access,
-            beta_approved_at: newUser.beta_access ? new Date().toISOString() : null,
-            email_verified: true,
-            operations_limit: 
-              newUser.subscription_tier === 'beta' ? 1000 :
-              newUser.subscription_tier === 'pro' ? 5000 :
-              newUser.subscription_tier === 'enterprise' ? 999999 : 25
-          })
-          .eq('id', data.user.id)
-          .select()
-          .single()
-
-        // Add the new user to the local state immediately
-        if (updatedProfile) {
-          setUsers([updatedProfile, ...users])
-        }
+        setUsers([data.user, ...users])
       }
 
       setShowAddUser(false)
@@ -202,7 +187,7 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
       router.refresh()
     } catch (error) {
       console.error('Error adding user:', error)
-      alert('Failed to add user: ' + (error as any).message)
+      alert('Failed to add user: ' + (error as Error).message)
     } finally {
       setLoading(false)
     }
