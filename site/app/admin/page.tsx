@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import AdminUserTable from '@/components/AdminUserTable'
+import AdminBetaRequests from '@/components/AdminBetaRequests'
 import GridAnimation from '@/components/GridAnimation'
 
 export default async function AdminPage() {
@@ -29,6 +30,13 @@ export default async function AdminPage() {
     .select('*')
     .order('created_at', { ascending: false })
 
+  // Get beta requests
+  const { data: betaRequests } = await supabase
+    .from('profiles')
+    .select('id, email, full_name, beta_requested_at, beta_approved_at, beta_access, beta_notes, created_at')
+    .not('beta_requested_at', 'is', null)
+    .order('beta_requested_at', { ascending: false })
+
   return (
     <>
       <GridAnimation />
@@ -55,6 +63,11 @@ export default async function AdminPage() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Beta Access Requests */}
+          <div className="mb-8">
+            <AdminBetaRequests requests={betaRequests || []} />
           </div>
 
           {/* User Management Table */}

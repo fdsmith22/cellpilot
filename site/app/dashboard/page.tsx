@@ -5,6 +5,7 @@ import GridAnimation from '@/components/GridAnimation'
 import SignOutButton from '@/components/SignOutButton'
 import ProfileForm from '@/components/ProfileForm'
 import DangerZone from '@/components/DangerZone'
+import BetaAccessCard from '@/components/BetaAccessCard'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -91,6 +92,13 @@ export default async function DashboardPage() {
               <p className="text-sm text-neutral-600">Need help? Contact our support team</p>
             </Link>
           </div>
+
+          {/* Beta Access Card - Show for all beta users */}
+          {(profile?.beta_requested_at || profile?.beta_access) && (
+            <div className="mb-8">
+              <BetaAccessCard profile={profile} userId={user.id} />
+            </div>
+          )}
 
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Profile Information */}
