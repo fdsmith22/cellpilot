@@ -40,20 +40,40 @@ export async function POST(request: Request) {
       }
     )
     
-    // Create user via admin API
-    const { data, error } = await serviceClient.auth.admin.createUser({
-      email,
-      email_confirm: true,
-      user_metadata: {
-        full_name,
-        company
-      }
-    })
+    // First check if user already exists with this email
+    const { data: { users }, error: listError } = await serviceClient.auth.admin.listUsers()
     
-    if (error) {
-      console.error('Error creating user:', error)
-      return NextResponse.json({ error: error.message }, { status: 400 })
+    if (listError) {
+      return NextResponse.json({ error: `Failed to check existing users: ${listError.message}` }, { status: 500 })
     }
+    
+    const existingUser = users.find(u => u.email === email)
+    
+    let userData
+    
+    if (existingUser) {
+      console.log(`User already exists with email ${email}, using existing user`)
+      userData = { user: existingUser }
+    } else {
+      // Create user via admin API
+      const { data, error } = await serviceClient.auth.admin.createUser({
+        email,
+        email_confirm: true,
+        user_metadata: {
+          full_name,
+          company
+        }
+      })
+      
+      if (error) {
+        console.error('Error creating user:', error)
+        return NextResponse.json({ error: error.message }, { status: 400 })
+      }
+      
+      userData = data
+    }
+    
+    const data = userData
     
     // Create profile with additional settings
     if (data.user) {
@@ -79,23 +99,63 @@ export async function POST(request: Request) {
       
       console.log('Creating profile with data:', profileData)
       
-      const { data: newProfile, error: profileError } = await serviceClient
+      // First check if profile already exists
+      const { data: existingProfile } = await serviceClient
         .from('profiles')
-        .insert(profileData)
-        .select()
+        .select('id')
+        .eq('id', data.user.id)
         .single()
       
-      if (profileError) {
-        console.error('Error creating profile:', profileError)
-        console.error('Profile data that failed:', profileData)
-        // Try to delete the auth user if profile creation fails
-        await serviceClient.auth.admin.deleteUser(data.user.id)
-        return NextResponse.json({ 
-          error: `Failed to create user profile: ${profileError.message}`, 
-          details: profileError.message,
-          code: profileError.code,
-          hint: profileError.hint
-        }, { status: 500 })
+      let newProfile
+      
+      if (existingProfile) {
+        console.log('Profile already exists, updating instead')
+        // Update existing profile
+        const { data: updated, error: updateError } = await serviceClient
+          .from('profiles')
+          .update({
+            email: profileData.email,
+            full_name: profileData.full_name,
+            company: profileData.company,
+            subscription_tier: profileData.subscription_tier,
+            operations_limit: profileData.operations_limit,
+            email_verified: profileData.email_verified,
+            is_admin: profileData.is_admin,
+            updated_at: profileData.updated_at
+          })
+          .eq('id', data.user.id)
+          .select()
+          .single()
+        
+        if (updateError) {
+          console.error('Error updating profile:', updateError)
+          return NextResponse.json({ 
+            error: `Failed to update existing profile: ${updateError.message}`, 
+            details: updateError.message
+          }, { status: 500 })
+        }
+        newProfile = updated
+      } else {
+        // Create new profile
+        const { data: created, error: profileError } = await serviceClient
+          .from('profiles')
+          .insert(profileData)
+          .select()
+          .single()
+        
+        if (profileError) {
+          console.error('Error creating profile:', profileError)
+          console.error('Profile data that failed:', profileData)
+          // Try to delete the auth user if profile creation fails
+          await serviceClient.auth.admin.deleteUser(data.user.id)
+          return NextResponse.json({ 
+            error: `Failed to create user profile: ${profileError.message}`, 
+            details: profileError.message,
+            code: profileError.code,
+            hint: profileError.hint
+          }, { status: 500 })
+        }
+        newProfile = created
       }
       
       return NextResponse.json({ 

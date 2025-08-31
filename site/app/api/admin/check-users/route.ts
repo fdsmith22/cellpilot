@@ -56,12 +56,17 @@ export async function GET(request: Request) {
     
     // Analyze the data
     const analysis = {
-      authUsersCount: authUsers.length,
-      profilesCount: profiles?.length || 0,
+      summary: {
+        authUsersCount: authUsers.length,
+        profilesCount: profiles?.length || 0,
+        missingProfilesCount: authUsers.filter(u => !profileMap.has(u.id)).length,
+        orphanProfilesCount: profiles?.filter(p => !authUsers.find(u => u.id === p.id)).length || 0
+      },
       authUsers: authUsers.map(u => ({
         id: u.id,
         email: u.email,
         created_at: u.created_at,
+        email_confirmed: u.email_confirmed_at ? true : false,
         hasProfile: profileMap.has(u.id)
       })),
       profiles: profiles?.map(p => ({
@@ -74,11 +79,13 @@ export async function GET(request: Request) {
       })),
       missingProfiles: authUsers.filter(u => !profileMap.has(u.id)).map(u => ({
         id: u.id,
-        email: u.email
+        email: u.email,
+        action: 'Run Sync Profiles to create profile for this auth user'
       })),
       orphanProfiles: profiles?.filter(p => !authUsers.find(u => u.id === p.id)).map(p => ({
         id: p.id,
-        email: p.email
+        email: p.email,
+        action: 'This profile has no auth user - consider deleting'
       }))
     }
     
