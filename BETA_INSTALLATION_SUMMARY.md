@@ -24,8 +24,8 @@
 - **Version**: 10
 - **Identifier**: CellPilot
 
-### Beta Installer Web App (v1.1)
-- **URL**: https://script.google.com/macros/s/AKfycbzvsOpM-GJvXvdyV18HvgsE13ts4JKwSMLDcMKtHk8HMBh7IAH8ZQ58zV2h6xqtj39W/exec
+### Beta Installer Web App (v1.2)
+- **URL**: https://script.google.com/macros/s/AKfycbwIjQkQYeU30fH3lZmrovz07PkN-Hj6kRlvAJTikThvmlxwoqGrSrUDZ1qG8IrYKLXo/exec
 - **Script ID**: `1PAypZbjwbnMf22dyHXItxbyRIhCZgIME4JtR8REpzk_PfvH17sg-h33f`
 - **Features**:
   - Email-based beta access verification

@@ -28,7 +28,7 @@ function doGet(e) {
     return HtmlService.createHtmlOutput(`
       <div style="font-family: Arial, sans-serif; padding: 40px; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-          <h1 style="margin: 0;">🚀 CellPilot Beta</h1>
+          <h1 style="margin: 0;">CellPilot Beta</h1>
         </div>
         <div style="background: white; padding: 30px; border: 1px solid #e5e7eb; border-radius: 0 0 16px 16px;">
           <h2 style="color: #1a202c; margin-top: 0;">Beta Access Required</h2>
@@ -104,15 +104,75 @@ function checkBetaAccess(email) {
  * Get the installation code
  */
 function getInstallationCode() {
-  // Read the BETA_INSTALLER.gs content
   const scriptId = '1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O';
   const version = '10';
+  
+  // Return the full installation code
+  const code = getFullBetaInstallerCode(scriptId, version);
   
   return {
     scriptId: scriptId,
     version: version,
+    code: code,
     success: true
   };
+}
+
+/**
+ * Get the full beta installer code
+ */
+function getFullBetaInstallerCode(scriptId, version) {
+  // Return the complete proxy code that users will paste
+  return `/**
+ * CellPilot Beta Installation Script
+ * ===================================
+ * Version: 1.0.0-beta
+ * 
+ * IMPORTANT: After pasting this code, you MUST add the CellPilot library:
+ * 1. Click Libraries (+) in the left sidebar
+ * 2. Script ID: ${scriptId}
+ * 3. Version: ${version}
+ * 4. Identifier: CellPilot
+ * 5. Click Add
+ */
+
+function onOpen() {
+  try {
+    CellPilot.onOpen();
+  } catch (e) {
+    SpreadsheetApp.getUi().alert('Please add CellPilot library. See instructions above.');
+  }
+}
+
+function onInstall(e) {
+  CellPilot.onInstall(e);
+}
+
+// Main Features
+function showCellPilotSidebar() { CellPilot.showCellPilotSidebar(); }
+function tableize() { return CellPilot.tableize(); }
+function removeDuplicates() { return CellPilot.removeDuplicates(); }
+function cleanData() { return CellPilot.cleanData(); }
+function showSmartFormulaAssistant() { CellPilot.showSmartFormulaAssistant(); }
+function showFormulaBuilder() { CellPilot.showFormulaBuilder(); }
+function showAdvancedRestructuring() { CellPilot.showAdvancedRestructuring(); }
+function showIndustryTemplates() { CellPilot.showIndustryTemplates(); }
+function showConditionalFormattingWizard() { CellPilot.showConditionalFormattingWizard(); }
+function showCrossSheetFormulaBuilder() { CellPilot.showCrossSheetFormulaBuilder(); }
+function showDataPipeline() { CellPilot.showDataPipeline(); }
+function showDataValidationGenerator() { CellPilot.showDataValidationGenerator(); }
+function showSmartFormulaDebugger() { CellPilot.showSmartFormulaDebugger(); }
+function showPivotTableAssistant() { CellPilot.showPivotTableAssistant(); }
+function showSettings() { CellPilot.showSettings(); }
+function showHelpFeedback() { CellPilot.showHelpFeedback(); }
+
+// Supporting Functions
+function include(filename) { return CellPilot.include(filename); }
+function getCurrentUserContext() { return CellPilot.getCurrentUserContext(); }
+function getExtendedUserContext() { return CellPilot.getExtendedUserContext(); }
+
+// For complete list of 200+ functions, visit:
+// https://www.cellpilot.io/docs/functions`;
 }
 
 /**

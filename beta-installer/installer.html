@@ -166,19 +166,19 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>🚀 CellPilot Beta Installer</h1>
+      <h1>CellPilot Beta Installer</h1>
       <p>Install CellPilot in your Google Sheets in just 3 minutes!</p>
     </div>
     
     <div class="content">
       <div id="success-message" class="success-message">
-        ✅ Installation code ready! Follow the steps below to complete installation.
+        Installation code ready! Follow the steps below to complete installation.
       </div>
       
       <div id="error-message" class="error-message"></div>
       
       <div class="step">
-        <h3>📋 Step 1: Copy Installation Code</h3>
+        <h3>Step 1: Copy Installation Code</h3>
         <p>Click the button below to copy the CellPilot installation code:</p>
         
         <div class="code-block">
@@ -188,7 +188,7 @@
       </div>
       
       <div class="step">
-        <h3>📝 Step 2: Open Apps Script Editor</h3>
+        <h3>Step 2: Open Apps Script Editor</h3>
         <p>
           1. Open any Google Sheet (or create a new one)<br>
           2. Click <span class="highlight">Extensions</span> → <span class="highlight">Apps Script</span><br>
@@ -199,7 +199,7 @@
       </div>
       
       <div class="step">
-        <h3>📚 Step 3: Add CellPilot Library</h3>
+        <h3>Step 3: Add CellPilot Library</h3>
         <p>
           1. In Apps Script editor, click <span class="highlight">Libraries</span> (+) in the left sidebar<br>
           2. In the "Script ID" field, paste: <br>
@@ -212,7 +212,7 @@
       </div>
       
       <div class="step">
-        <h3>✨ Step 4: Start Using CellPilot!</h3>
+        <h3>Step 4: Start Using CellPilot!</h3>
         <p>
           1. Save your Apps Script project<br>
           2. Refresh your Google Sheet<br>
@@ -231,14 +231,6 @@
         </button>
       </div>
       
-      <div style="margin-top: 40px; padding: 20px; background: #f7f9fc; border-radius: 8px;">
-        <h4 style="margin: 0 0 10px 0; color: #1a202c;">Need Help?</h4>
-        <p style="margin: 0; color: #4a5568; line-height: 1.6;">
-          📧 Email: beta@cellpilot.io<br>
-          🌐 Visit: <a href="https://cellpilot.io" target="_blank">cellpilot.io</a><br>
-          📖 Documentation: Coming soon!
-        </p>
-      </div>
     </div>
   </div>
   
@@ -252,10 +244,9 @@
       // Get the installation code from the server
       google.script.run
         .withSuccessHandler(function(result) {
-          if (result.success) {
-            // Load the actual BETA_INSTALLER.gs content
-            const code = getFullInstallationCode(result.scriptId, result.version);
-            document.getElementById('code-content').textContent = code;
+          if (result.success && result.code) {
+            // Display the code from the server
+            document.getElementById('code-content').textContent = result.code;
             document.getElementById('success-message').style.display = 'block';
           } else {
             showError('Failed to load installation code');
@@ -265,47 +256,6 @@
           showError('Error loading installation code: ' + error);
         })
         .getInstallationCode();
-    }
-    
-    function getFullInstallationCode(scriptId, version) {
-      // This is a simplified version - in production, you'd fetch the full BETA_INSTALLER.gs
-      return `/**
- * CellPilot Beta Installation Script
- * ===================================
- * Version: 1.0.0-beta
- * 
- * IMPORTANT: After pasting this code, you MUST add the CellPilot library:
- * 1. Click Libraries (+) in the left sidebar
- * 2. Script ID: ${scriptId}
- * 3. Version: ${version}
- * 4. Identifier: CellPilot
- * 5. Click Add
- */
-
-function onOpen() {
-  try {
-    CellPilot.onOpen();
-  } catch (e) {
-    SpreadsheetApp.getUi().alert('Please add CellPilot library. See instructions above.');
-  }
-}
-
-function onInstall(e) {
-  CellPilot.onInstall(e);
-}
-
-// Main Features
-function showCellPilotSidebar() { CellPilot.showCellPilotSidebar(); }
-function tableize() { return CellPilot.tableize(); }
-function removeDuplicates() { return CellPilot.removeDuplicates(); }
-function cleanData() { return CellPilot.cleanData(); }
-function showSmartFormulaAssistant() { CellPilot.showSmartFormulaAssistant(); }
-function showFormulaBuilder() { CellPilot.showFormulaBuilder(); }
-function showAdvancedRestructuring() { CellPilot.showAdvancedRestructuring(); }
-function showIndustryTemplates() { CellPilot.showIndustryTemplates(); }
-
-// Add all other proxy functions...
-// Full code available at: cellpilot.io/beta-installer`;
     }
     
     function copyCode() {
