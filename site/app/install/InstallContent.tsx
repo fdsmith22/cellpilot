@@ -292,61 +292,6 @@ export default function InstallContent() {
                         </div>
                       </div>
                     </details>
-                  </div>
-                          <li>Click <strong>"Look up"</strong></li>
-                          <li>Select the latest version</li>
-                          <li>Make sure the identifier is set to <strong>"CellPilot"</strong></li>
-                          <li>Click <strong>"Add"</strong></li>
-                        </ol>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-semibold text-sm">
-                        6
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="font-semibold text-neutral-900 mb-2">Save and Authorize</h3>
-                        <p className="text-neutral-600 mb-3">
-                          Click the <strong>Save</strong> button (💾) and then <strong>Run</strong> → <strong>onInstall</strong>
-                        </p>
-                        <p className="text-neutral-600">
-                          You'll be prompted to authorize. Click through the authorization screens.
-                        </p>
-                        <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                          <p className="text-sm text-amber-800">
-                            <strong>Note:</strong> You may see "This app isn't verified" - click "Advanced" → "Go to CellPilot (unsafe)" to proceed. This is normal for beta apps.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="font-semibold text-neutral-900 mb-2">Ready to Use!</h3>
-                        <p className="text-neutral-600 mb-2">
-                          Close the Apps Script tab and refresh your Google Sheet. 
-                        </p>
-                        <p className="text-neutral-600">
-                          You'll now see <strong>CellPilot</strong> in your Extensions menu!
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-8 p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <h4 className="font-semibold text-green-900 mb-2">🎉 Beta Benefits</h4>
-                    <ul className="space-y-1 text-sm text-green-800">
-                      <li>• All features unlocked during beta period</li>
-                      <li>• Help shape the product with your feedback</li>
-                      <li>• Special pricing when we launch</li>
-                    </ul>
-                  </div>
                 </div>
               )}
             </div>
