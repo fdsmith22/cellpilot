@@ -9,7 +9,8 @@ import Image from 'next/image'
 
 export default function AuthPage() {
   const searchParams = useSearchParams()
-  const [isSignUp, setIsSignUp] = useState(searchParams.get('signup') === 'true')
+  const isVerified = searchParams.get('verified') === 'true'
+  const [isSignUp, setIsSignUp] = useState(!isVerified && searchParams.get('signup') === 'true')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
@@ -18,8 +19,10 @@ export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [newsletter, setNewsletter] = useState(true)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(searchParams.get('error'))
+  const [success, setSuccess] = useState<string | null>(
+    isVerified ? 'Email verified! You can now sign in.' : null
+  )
   
   const { signIn, signUp, signInWithEmail } = useAuth()
   const router = useRouter()
@@ -45,11 +48,12 @@ export default function AuthPage() {
         setError(error.message)
       } else {
         setSuccess('Check your email to confirm your account!')
-        // Auto-switch to sign in after 3 seconds
-        setTimeout(() => {
-          setIsSignUp(false)
-          setSuccess('Email confirmed! You can now sign in.')
-        }, 3000)
+        // Clear form but stay on signup
+        setEmail('')
+        setPassword('')
+        setFirstName('')
+        setSurname('')
+        setCompany('')
       }
     } else {
       const { error } = await signIn(email, password)

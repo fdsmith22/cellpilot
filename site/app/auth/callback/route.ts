@@ -37,8 +37,8 @@ export async function GET(request: Request) {
         new Date(profile.created_at).getTime() > Date.now() - 60000 // Created within last minute
       
       if (isNewUser) {
-        // New user email confirmation - redirect to dashboard with welcome message
-        return NextResponse.redirect(`${origin}/dashboard?welcome=true`)
+        // New user email confirmation - redirect to auth page with success message
+        return NextResponse.redirect(`${origin}/auth?verified=true`)
       }
     }
   }
