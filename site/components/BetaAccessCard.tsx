@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 
 interface BetaAccessCardProps {
   profile: any
@@ -10,35 +11,29 @@ interface BetaAccessCardProps {
 
 export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps) {
   const [loading, setLoading] = useState(false)
-  const [requested, setRequested] = useState(!!profile?.beta_requested_at)
-  const [approved, setApproved] = useState(!!profile?.beta_access)
+  const [hasBetaAccess, setHasBetaAccess] = useState(profile?.subscription_tier === 'beta')
   const router = useRouter()
+  const supabase = createClient()
 
-  const requestBetaAccess = async () => {
+  const activateBetaAccess = async () => {
     setLoading(true)
     try {
-      // Use API endpoint to submit beta request
-      const response = await fetch('/api/beta/request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      // Simple update to set user as beta tier
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          subscription_tier: 'beta',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId)
 
-      const data = await response.json()
+      if (error) throw error
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to submit beta request')
-      }
-
-      console.log('Beta access requested:', data)
-      setRequested(true)
-      
-      // Refresh the page to update the UI
+      setHasBetaAccess(true)
       router.refresh()
     } catch (error: any) {
-      console.error('Error requesting beta access:', error)
-      alert(`Failed to request beta access: ${error.message || 'Unknown error'}`)
+      console.error('Error activating beta access:', error)
+      alert('Failed to activate beta access. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -52,17 +47,17 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
     )
   }
 
-  if (approved) {
+  if (hasBetaAccess) {
     return (
       <div className="glass-card rounded-2xl p-8 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-green-900 mb-2">Beta Access Approved!</h2>
+            <h2 className="text-xl font-semibold text-green-900 mb-2">Beta Access Active!</h2>
             <p className="text-green-700 mb-4">
-              You have been approved for CellPilot beta access. Click below to install.
+              You have full access to all CellPilot features. Click below to install.
             </p>
             <p className="text-sm text-green-600 mb-6">
-              Approved on: {profile.beta_approved_at ? new Date(profile.beta_approved_at).toLocaleDateString() : 'Recently'}
+              Subscription: Beta Tier (Full Access)
             </p>
           </div>
           <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,58 +105,33 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
     )
   }
 
-  if (requested && !approved) {
-    return (
-      <div className="glass-card rounded-2xl p-8 bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-200">
-        <div className="flex items-start justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-amber-900 mb-2">Beta Access Pending Approval</h2>
-            <p className="text-amber-700 mb-4">
-              Your beta access request has been submitted to the admin for review. You'll be able to install CellPilot once approved!
-            </p>
-            <p className="text-sm text-amber-600">
-              Requested on: {profile?.beta_requested_at ? new Date(profile.beta_requested_at).toLocaleDateString() : 'Just now'}
-            </p>
-          </div>
-          <svg className="w-8 h-8 text-amber-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <div className="mt-4 p-3 bg-amber-100 rounded-lg">
-          <p className="text-xs text-amber-700">
-            <strong>What happens next?</strong> An admin will review your request and approve access. You'll see the install button here once approved.
-          </p>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="glass-card rounded-2xl p-8 bg-gradient-to-br from-primary-50 to-blue-50 border-2 border-primary-200">
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-primary-900 mb-2">Get Beta Access</h2>
+          <h2 className="text-xl font-semibold text-primary-900 mb-2">Start Beta Testing</h2>
           <p className="text-primary-700 mb-4">
-            Join the CellPilot beta program and get early access to all features!
+            Get instant access to all CellPilot features during our beta phase!
           </p>
           <ul className="space-y-2 text-sm text-primary-600 mb-6">
             <li className="flex items-center">
               <svg className="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              All premium features unlocked
+              Full access to all features
             </li>
             <li className="flex items-center">
               <svg className="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              Direct feedback channel to shape the product
+              No payment required during beta
             </li>
             <li className="flex items-center">
               <svg className="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              Special pricing when we launch
+              Help shape the product with your feedback
             </li>
           </ul>
         </div>
@@ -171,11 +141,11 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
       </div>
       
       <button
-        onClick={requestBetaAccess}
+        onClick={activateBetaAccess}
         disabled={loading}
         className="w-full px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? 'Requesting...' : 'Request Beta Access'}
+        {loading ? 'Activating...' : 'Activate Beta Access'}
       </button>
     </div>
   )
