@@ -13,13 +13,13 @@ export default function DangerZone({ userEmail }: DangerZoneProps) {
 
   return (
     <>
-      <details className="group">
+      <details 
+        className="group"
+        open={isExpanded}
+        onToggle={(e) => setIsExpanded((e.target as HTMLDetailsElement).open)}
+      >
         <summary 
           className="flex items-center justify-between cursor-pointer text-sm font-medium text-red-800 hover:text-red-900"
-          onClick={(e) => {
-            e.preventDefault()
-            setIsExpanded(!isExpanded)
-          }}
         >
           <span className="flex items-center gap-2">
             <svg 
@@ -34,24 +34,22 @@ export default function DangerZone({ userEmail }: DangerZoneProps) {
           </span>
         </summary>
         
-        {isExpanded && (
-          <div className="mt-4 pt-4 border-t border-red-200">
-            <div className="flex items-start justify-between">
-              <div>
-                <h4 className="text-sm font-medium text-red-900">Delete Account</h4>
-                <p className="text-xs text-red-700 mt-1">
-                  Permanently delete your account and all data
-                </p>
-              </div>
-              <button
-                onClick={() => setShowDeleteModal(true)}
-                className="px-3 py-1.5 bg-red-600 text-white rounded text-xs hover:bg-red-700 font-medium transition-colors"
-              >
-                Delete
-              </button>
+        <div className="mt-4 pt-4 border-t border-red-200">
+          <div className="flex items-start justify-between">
+            <div>
+              <h4 className="text-sm font-medium text-red-900">Delete Account</h4>
+              <p className="text-xs text-red-700 mt-1">
+                Permanently delete your account and all data
+              </p>
             </div>
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="px-3 py-1.5 bg-red-600 text-white rounded text-xs hover:bg-red-700 font-medium transition-colors"
+            >
+              Delete
+            </button>
           </div>
-        )}
+        </div>
       </details>
 
       <DeleteAccountModal
