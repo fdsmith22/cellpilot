@@ -45,6 +45,11 @@ export default function AuthPage() {
         setError(error.message)
       } else {
         setSuccess('Check your email to confirm your account!')
+        // Auto-switch to sign in after 3 seconds
+        setTimeout(() => {
+          setIsSignUp(false)
+          setSuccess('Email confirmed! You can now sign in.')
+        }, 3000)
       }
     } else {
       const { error } = await signIn(email, password)

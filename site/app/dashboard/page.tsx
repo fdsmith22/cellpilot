@@ -6,6 +6,7 @@ import SignOutButton from '@/components/SignOutButton'
 import ProfileForm from '@/components/ProfileForm'
 import DangerZone from '@/components/DangerZone'
 import BetaAccessCard from '@/components/BetaAccessCard'
+import WelcomeMessage from '@/components/WelcomeMessage'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -29,6 +30,9 @@ export default async function DashboardPage() {
       
       <div className="min-h-screen bg-gradient-to-b from-white/60 via-white/70 to-white/80">
         <div className="container-wrapper py-12">
+          {/* Welcome message for new users */}
+          <WelcomeMessage />
+          
           {/* Dashboard Header */}
           <div className="glass-card rounded-2xl p-8 mb-8">
             <div className="flex justify-between items-start">
