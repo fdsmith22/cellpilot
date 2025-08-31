@@ -106,7 +106,13 @@ export default function InstallContent() {
                     Install from Marketplace
                   </h2>
                   
-                  <div className="space-y-8">
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+                    <p className="text-sm text-amber-800">
+                      <strong>⏳ Coming Soon:</strong> CellPilot is currently under review for the Google Workspace Marketplace. For now, please use the manual installation method.
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-8 opacity-50">
                     <div className="flex items-start">
                       <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-semibold text-sm">
                         1
@@ -114,16 +120,15 @@ export default function InstallContent() {
                       <div className="ml-4">
                         <h3 className="font-semibold text-neutral-900 mb-2">Visit the Marketplace</h3>
                         <p className="text-neutral-600 mb-3">Go to the Google Workspace Marketplace</p>
-                        <Link 
-                          href="https://workspace.google.com/marketplace"
-                          target="_blank"
-                          className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                        <button 
+                          disabled
+                          className="inline-flex items-center px-4 py-2 bg-neutral-300 text-neutral-500 rounded-lg cursor-not-allowed"
                         >
-                          Open Marketplace
+                          Coming Soon
                           <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
-                        </Link>
+                        </button>
                       </div>
                     </div>
 
@@ -159,12 +164,27 @@ export default function InstallContent() {
                       </div>
                     </div>
                   </div>
+                  
+                  <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      <strong>💡 Tip:</strong> Use the <button 
+                        onClick={() => setSelectedMethod('manual')}
+                        className="underline font-semibold hover:text-blue-900"
+                      >manual installation method</button> to get started with CellPilot today!
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <div>
                   <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-6">
-                    Manual Installation
+                    Manual Installation (Beta Access)
                   </h2>
+                  
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <p className="text-sm text-blue-800">
+                      <strong>🚀 Beta Version:</strong> Install CellPilot as a library while we await marketplace approval
+                    </p>
+                  </div>
                   
                   <div className="space-y-8">
                     <div className="flex items-start">
@@ -182,8 +202,9 @@ export default function InstallContent() {
                         2
                       </div>
                       <div className="ml-4">
-                        <h3 className="font-semibold text-neutral-900 mb-2">Go to Extensions</h3>
-                        <p className="text-neutral-600">Click on <strong>Extensions</strong> → <strong>Add-ons</strong> → <strong>Get add-ons</strong></p>
+                        <h3 className="font-semibold text-neutral-900 mb-2">Open Apps Script Editor</h3>
+                        <p className="text-neutral-600 mb-2">Click <strong>Extensions</strong> → <strong>Apps Script</strong></p>
+                        <p className="text-sm text-neutral-500">This opens the script editor in a new tab</p>
                       </div>
                     </div>
 
@@ -192,8 +213,8 @@ export default function InstallContent() {
                         3
                       </div>
                       <div className="ml-4">
-                        <h3 className="font-semibold text-neutral-900 mb-2">Find CellPilot</h3>
-                        <p className="text-neutral-600 mb-3">Search for "CellPilot" in the add-ons store</p>
+                        <h3 className="font-semibold text-neutral-900 mb-2">Clear Default Code</h3>
+                        <p className="text-neutral-600 mb-3">Delete any existing code in the editor (usually just a few lines)</p>
                       </div>
                     </div>
 
@@ -202,11 +223,88 @@ export default function InstallContent() {
                         4
                       </div>
                       <div className="ml-4">
-                        <h3 className="font-semibold text-neutral-900 mb-2">Install & Authorize</h3>
-                        <p className="text-neutral-600">Click "Install" and authorize the required permissions</p>
+                        <h3 className="font-semibold text-neutral-900 mb-2">Add Bridge Code</h3>
+                        <p className="text-neutral-600 mb-3">Copy and paste this code into the editor:</p>
+                        <div className="bg-neutral-900 text-neutral-100 p-4 rounded-lg overflow-x-auto">
+                          <pre className="text-xs sm:text-sm font-mono">{`function onOpen() {
+  CellPilot.onOpen();
+}
+
+function onInstall(e) {
+  CellPilot.onInstall(e);
+}`}</pre>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            navigator.clipboard.writeText(`function onOpen() {
+  CellPilot.onOpen();
+}
+
+function onInstall(e) {
+  CellPilot.onInstall(e);
+}`);
+                            // You could add a toast notification here
+                          }}
+                          className="mt-2 text-sm text-primary-600 hover:text-primary-700 flex items-center"
+                        >
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                          Copy code
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-semibold text-sm">
+                        5
+                      </div>
+                      <div className="ml-4">
+                        <h3 className="font-semibold text-neutral-900 mb-2">Add CellPilot Library</h3>
+                        <p className="text-neutral-600 mb-3">
+                          Click the <strong>Libraries</strong> button (+ icon) in the left sidebar, then:
+                        </p>
+                        <ol className="list-decimal list-inside space-y-2 text-neutral-600">
+                          <li>In the "Script ID" field, paste this ID:</li>
+                        </ol>
+                        <div className="bg-neutral-900 text-neutral-100 p-3 rounded-lg mt-2 mb-3">
+                          <code className="text-xs sm:text-sm break-all">1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O</code>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            navigator.clipboard.writeText('1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O');
+                          }}
+                          className="mb-3 text-sm text-primary-600 hover:text-primary-700 flex items-center"
+                        >
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                          Copy Script ID
+                        </button>
+                        <ol className="list-decimal list-inside space-y-2 text-neutral-600" start={2}>
+                          <li>Click <strong>"Look up"</strong></li>
+                          <li>Select the latest version</li>
+                          <li>Make sure the identifier is set to <strong>"CellPilot"</strong></li>
+                          <li>Click <strong>"Add"</strong></li>
+                        </ol>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-semibold text-sm">
+                        6
+                      </div>
+                      <div className="ml-4">
+                        <h3 className="font-semibold text-neutral-900 mb-2">Save and Authorize</h3>
+                        <p className="text-neutral-600 mb-3">
+                          Click the <strong>Save</strong> button (💾) and then <strong>Run</strong> → <strong>onInstall</strong>
+                        </p>
+                        <p className="text-neutral-600">
+                          You'll be prompted to authorize. Click through the authorization screens.
+                        </p>
                         <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                           <p className="text-sm text-amber-800">
-                            <strong>Note:</strong> CellPilot only accesses the spreadsheets you explicitly work with
+                            <strong>Note:</strong> You may see "This app isn't verified" - click "Advanced" → "Go to CellPilot (unsafe)" to proceed. This is normal for beta apps.
                           </p>
                         </div>
                       </div>
@@ -220,9 +318,23 @@ export default function InstallContent() {
                       </div>
                       <div className="ml-4">
                         <h3 className="font-semibold text-neutral-900 mb-2">Ready to Use!</h3>
-                        <p className="text-neutral-600">Access CellPilot from <strong>Extensions</strong> → <strong>CellPilot</strong> in any spreadsheet</p>
+                        <p className="text-neutral-600 mb-2">
+                          Close the Apps Script tab and refresh your Google Sheet. 
+                        </p>
+                        <p className="text-neutral-600">
+                          You'll now see <strong>CellPilot</strong> in your Extensions menu!
+                        </p>
                       </div>
                     </div>
+                  </div>
+                  
+                  <div className="mt-8 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <h4 className="font-semibold text-green-900 mb-2">🎉 Beta Benefits</h4>
+                    <ul className="space-y-1 text-sm text-green-800">
+                      <li>• All features unlocked during beta period</li>
+                      <li>• Help shape the product with your feedback</li>
+                      <li>• Special pricing when we launch</li>
+                    </ul>
                   </div>
                 </div>
               )}
