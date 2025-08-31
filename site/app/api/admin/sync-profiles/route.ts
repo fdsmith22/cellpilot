@@ -92,7 +92,29 @@ export async function POST(request: Request) {
             code: insertError.code
           })
         } else {
-          results.push(data)
+          // Try to update with additional fields that might exist
+          const updateData = {
+            subscription_tier: 'free',
+            operations_limit: 25,
+            operations_used: 0,
+            email_verified: false,
+            is_admin: false,
+            beta_access: false
+          }
+          
+          const { data: updatedProfile, error: updateError } = await serviceClient
+            .from('profiles')
+            .update(updateData)
+            .eq('id', profile.id)
+            .select()
+            .single()
+          
+          if (updateError) {
+            console.log(`Could not update additional fields for ${profile.email}:`, updateError.message)
+            results.push(data) // Use original data if update fails
+          } else {
+            results.push(updatedProfile)
+          }
         }
       }
       
@@ -101,15 +123,24 @@ export async function POST(request: Request) {
           error: 'Some profiles failed to create', 
           details: errors,
           succeeded: results.length,
-          failed: errors.length
+          failed: errors.length,
+          message: `Created ${results.length} profiles, ${errors.length} failed`
         }, { status: 207 }) // 207 Multi-Status
       }
+      
+      // All succeeded
+      return NextResponse.json({ 
+        success: true, 
+        synced: results.length,
+        message: `Successfully synced ${results.length} profiles`
+      })
     }
     
+    // No profiles to sync
     return NextResponse.json({ 
       success: true, 
-      synced: missingProfiles.length,
-      message: `Synced ${missingProfiles.length} missing profiles`
+      synced: 0,
+      message: 'No missing profiles found - all users have profiles'
     })
     
   } catch (error) {
