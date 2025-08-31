@@ -37,6 +37,7 @@
     "src/DataValidationGenerator.js",
     "src/FormulaDebugger.js",
     "src/PivotTableAssistant.js",
-    "src/Code.js"
+    "src/Code.js",
+    "src/Library.js"
   ]
 }
