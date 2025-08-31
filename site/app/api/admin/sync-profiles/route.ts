@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
@@ -21,8 +22,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized - Admin only' }, { status: 403 })
     }
     
+    // Create service client for admin operations
+    const serviceClient = createServiceClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
+    
     // Get all auth users
-    const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers()
+    const { data: { users: authUsers }, error: authError } = await serviceClient.auth.admin.listUsers()
     
     if (authError) {
       return NextResponse.json({ error: authError.message }, { status: 500 })
