@@ -27,6 +27,8 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
   const [editForm, setEditForm] = useState<Partial<User>>({})
   const [loading, setLoading] = useState(false)
   const [showAddUser, setShowAddUser] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const usersPerPage = 10
   const [newUser, setNewUser] = useState({
     email: '',
     full_name: '',
@@ -37,6 +39,38 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
   })
   const router = useRouter()
   const supabase = createClient()
+  
+  // Calculate pagination
+  const totalPages = Math.ceil(users.length / usersPerPage)
+  const startIndex = (currentPage - 1) * usersPerPage
+  const endIndex = startIndex + usersPerPage
+  const currentUsers = users.slice(startIndex, endIndex)
+  
+  const handleSyncProfiles = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/admin/sync-profiles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      const data = await response.json()
+      
+      if (response.ok) {
+        alert(`Success: ${data.message}`)
+        window.location.reload()
+      } else {
+        alert(`Error: ${data.error}`)
+      }
+    } catch (error) {
+      console.error('Sync error:', error)
+      alert('Failed to sync profiles')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleEdit = (user: User) => {
     setEditingUser(user.id)
@@ -181,7 +215,15 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
         <h2 className="text-xl font-semibold text-neutral-900">User Management</h2>
         <div className="flex gap-2">
           <button
-            onClick={() => router.refresh()}
+            onClick={handleSyncProfiles}
+            disabled={loading}
+            className="px-4 py-2 border border-amber-300 text-amber-700 rounded-lg hover:bg-amber-50 transition-colors font-medium"
+            title="Sync missing profiles from auth users"
+          >
+            Sync Profiles
+          </button>
+          <button
+            onClick={() => window.location.reload()}
             className="px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition-colors font-medium"
             title="Refresh user list"
           >
@@ -295,7 +337,7 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
             </tr>
           </thead>
           <tbody>
-            {users.map(user => (
+            {currentUsers.map(user => (
               <tr key={user.id} className="border-b border-neutral-100 hover:bg-neutral-50">
                 <td className="py-3 px-4">
                   <div>
@@ -446,6 +488,64 @@ export default function AdminUserManagement({ users: initialUsers }: { users: Us
           </tbody>
         </table>
       </div>
+      
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4">
+          <div className="text-sm text-neutral-600">
+            Showing {startIndex + 1} to {Math.min(endIndex, users.length)} of {users.length} users
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 border border-neutral-300 rounded-lg text-sm hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            
+            {/* Page numbers */}
+            <div className="flex gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                // Show first page, last page, current page, and pages around current
+                if (
+                  page === 1 ||
+                  page === totalPages ||
+                  (page >= currentPage - 1 && page <= currentPage + 1)
+                ) {
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`px-3 py-1 rounded-lg text-sm ${
+                        currentPage === page
+                          ? 'bg-primary-600 text-white'
+                          : 'border border-neutral-300 hover:bg-neutral-50'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  )
+                } else if (
+                  page === currentPage - 2 ||
+                  page === currentPage + 2
+                ) {
+                  return <span key={page} className="px-1 text-neutral-400">...</span>
+                }
+                return null
+              })}
+            </div>
+            
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 border border-neutral-300 rounded-lg text-sm hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

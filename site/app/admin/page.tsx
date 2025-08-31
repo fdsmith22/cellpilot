@@ -25,10 +25,16 @@ export default async function AdminPage() {
   }
 
   // Get all users
-  const { data: users } = await supabase
+  const { data: users, error: usersError } = await supabase
     .from('profiles')
     .select('*')
     .order('created_at', { ascending: false })
+  
+  if (usersError) {
+    console.error('Error fetching users:', usersError)
+  }
+  
+  console.log('Fetched users count:', users?.length)
 
   // Get beta requests
   const { data: betaRequests } = await supabase
