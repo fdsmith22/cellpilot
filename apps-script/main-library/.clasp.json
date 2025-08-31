@@ -1,12 +1,7 @@
 {
   "scriptId": "1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O",
   "rootDir": ".",
-  "fileExtensions": [
-    "js",
-    "gs",
-    "html",
-    "json"
-  ],
+  "fileExtensions": ["js", "gs", "html", "json"],
   "filePushOrder": [
     "src/Config.js",
     "src/Logger.js",

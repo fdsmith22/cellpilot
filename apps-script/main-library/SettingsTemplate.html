@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('SharedStyles'); ?>
+  <?!= include('MLEngineLoader'); ?>
+  <style>
+    /* Settings page specific styles */
+    .settings-section {
+      margin-bottom: 24px;
+    }
+    
+    .settings-group {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    
+    .settings-header {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-800);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+    
+    .setting-label {
+      flex: 1;
+    }
+    
+    .setting-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-900);
+      margin-bottom: 2px;
+    }
+    
+    .setting-description {
+      font-size: 11px;
+      color: var(--gray-600);
+      line-height: 1.4;
+    }
+    
+    /* Toggle switch */
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--gray-300);
+      transition: all 0.3s ease;
+      border-radius: 24px;
+    }
+    
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: all 0.3s ease;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    input:checked + .toggle-slider {
+      background-color: var(--primary-500);
+    }
+    
+    input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
+    
+    /* Select styles for settings */
+    .setting-select {
+      width: 120px;
+      padding: 6px 10px;
+      border: 1px solid var(--gray-300);
+      border-radius: 6px;
+      font-size: 12px;
+      background: white;
+      color: var(--gray-900);
+    }
+    
+    /* Info banner */
+    .info-banner {
+      background: linear-gradient(135deg, var(--info-50), var(--info-100));
+      border: 1px solid var(--info-200);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .info-banner-text {
+      font-size: 11px;
+      color: var(--info-700);
+      line-height: 1.5;
+    }
+    
+    /* Status badge */
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .status-badge.active {
+      background: var(--success-100);
+      color: var(--success-700);
+    }
+    
+    .status-badge.inactive {
+      background: var(--gray-100);
+      color: var(--gray-600);
+    }
+    
+    /* Button group for actions */
+    .settings-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--gray-200);
+    }
+    
+    /* Storage info */
+    .storage-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--gray-50);
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+    
+    .storage-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--gray-200);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .storage-used {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    
+    .storage-text {
+      font-size: 11px;
+      color: var(--gray-600);
+      min-width: 60px;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-header">
+    <button class="nav-back" onclick="backToMain()">←</button>
+    <div class="nav-title">
+      <h2>Settings</h2>
+      <p>Configure CellPilot preferences</p>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div id="statusMessage" style="display: none;"></div>
+    
+    <!-- ML Features Section -->
+    <div class="settings-section">
+      <div class="settings-group">
+        <div class="settings-header">Machine Learning Features</div>
+        
+        <div class="setting-item">
+          <div class="setting-label">
+            <div class="setting-title">Enable ML Learning</div>
+            <div class="setting-description">Allow CellPilot to learn from your usage patterns to provide better suggestions</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="mlEnabled" onchange="toggleMLFeatures(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-label">
+            <div class="setting-title">Personalized Recommendations</div>
+            <div class="setting-description">Get formula and automation suggestions based on your work patterns</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="personalizedRecs" onchange="saveSettings()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-label">
+            <div class="setting-title">Predictive Actions</div>
+            <div class="setting-description">Anticipate your next actions and prepare relevant tools</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="predictiveActions" onchange="saveSettings()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        
+        <div id="mlStorageInfo" class="storage-info" style="display: none;">
+          <span class="storage-text">ML Data:</span>
+          <div class="storage-bar">
+            <div class="storage-used" id="mlStorageBar" style="width: 0%"></div>
+          </div>
+          <span class="storage-text" id="mlStorageText">0 KB</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- General Preferences -->
+    <div class="settings-section">
+      <div class="settings-group">
+        <div class="settings-header">General Preferences</div>
+        
+        <div class="setting-item">
+          <div class="setting-label">
+            <div class="setting-title">Default View</div>
+            <div class="setting-description">Choose what shows when CellPilot opens</div>
+          </div>
+          <select class="setting-select" id="defaultView" onchange="saveSettings()">
+            <option value="dashboard">Dashboard</option>
+            <option value="recent">Recent Tools</option>
+            <option value="formulas">Formula Builder</option>
+          </select>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-label">
+            <div class="setting-title">Auto-save</div>
+            <div class="setting-description">Automatically save your work</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="autoSave" checked onchange="saveSettings()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-label">
+            <div class="setting-title">Show Tips</div>
+            <div class="setting-description">Display helpful tips and shortcuts</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="showTips" checked onchange="saveSettings()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Data & Privacy -->
+    <div class="settings-section">
+      <div class="settings-group">
+        <div class="settings-header">Data & Privacy</div>
+        
+        <div class="setting-item">
+          <div class="setting-label">
+            <div class="setting-title">Usage Analytics</div>
+            <div class="setting-description">Help improve CellPilot by sharing anonymous usage data</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="analytics" onchange="saveSettings()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-label">
+            <div class="setting-title">Clear ML Data</div>
+            <div class="setting-description">Remove all learned patterns and personalization data</div>
+          </div>
+          <button class="btn btn-secondary" onclick="clearMLData()">Clear Data</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="settings-actions">
+      <button class="btn btn-secondary" onclick="resetToDefaults()">Reset to Defaults</button>
+      <button class="btn btn-primary" onclick="exportSettings()">Export Settings</button>
+    </div>
+    
+    <!-- Info Banner -->
+    <div class="info-banner">
+      <div class="info-banner-text">
+        <strong>Note:</strong> Settings are saved automatically and synced across all your sheets.
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Load current settings on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadSettings();
+    });
+    
+    function loadSettings() {
+      google.script.run
+        .withSuccessHandler(function(settings) {
+          // ML Settings
+          document.getElementById('mlEnabled').checked = settings.mlEnabled || false;
+          document.getElementById('personalizedRecs').checked = settings.personalizedRecs || false;
+          document.getElementById('predictiveActions').checked = settings.predictiveActions || false;
+          
+          // General Settings
+          document.getElementById('defaultView').value = settings.defaultView || 'dashboard';
+          document.getElementById('autoSave').checked = settings.autoSave !== false;
+          document.getElementById('showTips').checked = settings.showTips !== false;
+          
+          // Privacy Settings
+          document.getElementById('analytics').checked = settings.analytics || false;
+          
+          // Update ML storage info and UI if ML is enabled
+          if (settings.mlEnabled) {
+            const mlStorageInfo = document.getElementById('mlStorageInfo');
+            if (mlStorageInfo) {
+              mlStorageInfo.style.display = 'flex';
+            }
+            updateMLStorageInfo();
+            
+            // Add ML status badge if not present
+            const mlStatus = document.createElement('span');
+            mlStatus.className = 'ml-badge ml-learning';
+            mlStatus.textContent = 'ML Active';
+            mlStatus.id = 'mlStatusBadge';
+            const header = document.querySelector('.settings-header');
+            if (header && !document.getElementById('mlStatusBadge')) {
+              header.appendChild(mlStatus);
+            }
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Failed to load settings:', error);
+        })
+        .loadUserSettings();
+    }
+    
+    function saveSettings() {
+      const settings = {
+        mlEnabled: document.getElementById('mlEnabled').checked,
+        personalizedRecs: document.getElementById('personalizedRecs').checked,
+        predictiveActions: document.getElementById('predictiveActions').checked,
+        defaultView: document.getElementById('defaultView').value,
+        autoSave: document.getElementById('autoSave').checked,
+        showTips: document.getElementById('showTips').checked,
+        analytics: document.getElementById('analytics').checked
+      };
+      
+      google.script.run
+        .withSuccessHandler(function() {
+          showStatus('Settings saved', 'success');
+        })
+        .withFailureHandler(function(error) {
+          showStatus('Failed to save settings', 'error');
+        })
+        .saveUserSettings(settings);
+    }
+    
+    let isProcessingToggle = false;
+    
+    function toggleMLFeatures(enabled) {
+      // Prevent multiple simultaneous toggle operations
+      if (isProcessingToggle) {
+        document.getElementById('mlEnabled').checked = !enabled;
+        return;
+      }
+      
+      isProcessingToggle = true;
+      const mlStorageInfo = document.getElementById('mlStorageInfo');
+      
+      if (enabled) {
+        // Check if ML Engine is available
+        if (window.cellpilotML && window.cellpilotML.isInitialized) {
+          // ML is already initialized
+          enableMLInBackend();
+        } else if (window.cellpilotML) {
+          // ML Engine exists but needs initialization
+          showStatus('Initializing ML Engine...', 'info');
+          window.cellpilotML.initialize().then(() => {
+            enableMLInBackend();
+          }).catch(error => {
+            showStatus('Failed to initialize ML Engine: ' + error.message, 'error');
+            document.getElementById('mlEnabled').checked = false;
+            isProcessingToggle = false;
+          });
+        } else {
+          // Wait for ML Engine to load
+          showStatus('Loading ML Engine...', 'info');
+          window.addEventListener('cellpilot-ml-ready', function(e) {
+            enableMLInBackend();
+          }, { once: true });
+          
+          // Listen for load failure events
+          window.addEventListener('cellpilot-ml-load-failed', function(e) {
+            showStatus('TensorFlow.js failed to load. Check your internet connection and try again.', 'error');
+            document.getElementById('mlEnabled').checked = false;
+            isProcessingToggle = false;
+          }, { once: true });
+          
+          window.addEventListener('cellpilot-ml-init-failed', function(e) {
+            showStatus('ML Engine initialization failed: ' + e.detail.error, 'error');
+            document.getElementById('mlEnabled').checked = false;
+            isProcessingToggle = false;
+          }, { once: true });
+          
+          // Timeout if ML doesn't load (extended to 10 seconds)
+          setTimeout(() => {
+            if (!window.cellpilotML) {
+              showStatus('ML Engine failed to load. Please refresh and try again.', 'error');
+              document.getElementById('mlEnabled').checked = false;
+              isProcessingToggle = false;
+            }
+          }, 10000);
+        }
+      } else {
+        disableMLInBackend();
+      }
+      
+      function enableMLInBackend() {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            showStatus('ML Features enabled! CellPilot will now learn from your usage.', 'success');
+            mlStorageInfo.style.display = 'flex';
+            updateMLStorageInfo();
+            saveSettings();
+            
+            // Update ML status indicator
+            const mlStatus = document.createElement('span');
+            mlStatus.className = 'ml-badge ml-learning';
+            mlStatus.textContent = 'ML Active';
+            mlStatus.id = 'mlStatusBadge';
+            const header = document.querySelector('.settings-header');
+            if (header && !document.getElementById('mlStatusBadge')) {
+              header.appendChild(mlStatus);
+            }
+            
+            // Reset toggle processing flag
+            isProcessingToggle = false;
+          })
+          .withFailureHandler(function(error) {
+            showStatus('Failed to enable ML features', 'error');
+            document.getElementById('mlEnabled').checked = false;
+            isProcessingToggle = false;
+          })
+          .enableMLFeatures();
+      }
+      
+      function disableMLInBackend() {
+        google.script.run
+          .withSuccessHandler(function() {
+            showStatus('ML Features disabled', 'info');
+            mlStorageInfo.style.display = 'none';
+            // Also disable dependent features
+            document.getElementById('personalizedRecs').checked = false;
+            document.getElementById('predictiveActions').checked = false;
+            saveSettings();
+            
+            // Remove ML status indicator
+            const mlBadge = document.getElementById('mlStatusBadge');
+            if (mlBadge) {
+              mlBadge.remove();
+            }
+            
+            // Clean up ML engine if loaded
+            if (window.cellpilotML && window.cellpilotML.dispose) {
+              window.cellpilotML.dispose();
+            }
+            
+            // Reset toggle processing flag
+            isProcessingToggle = false;
+          })
+          .withFailureHandler(function(error) {
+            showStatus('Failed to disable ML features', 'error');
+            // Reset toggle to checked state since disable failed
+            document.getElementById('mlEnabled').checked = true;
+            isProcessingToggle = false;
+          })
+          .disableMLFeatures();
+      }
+    }
+    
+    function updateMLStorageInfo() {
+      google.script.run
+        .withSuccessHandler(function(info) {
+          const bar = document.getElementById('mlStorageBar');
+          const text = document.getElementById('mlStorageText');
+          
+          if (info) {
+            const percentage = Math.min((info.used / info.total) * 100, 100);
+            bar.style.width = percentage + '%';
+            text.textContent = formatBytes(info.used);
+          }
+        })
+        .getMLStorageInfo();
+    }
+    
+    function clearMLData() {
+      if (confirm('This will remove all learned patterns and personalization data. Continue?')) {
+        google.script.run
+          .withSuccessHandler(function() {
+            showStatus('ML data cleared successfully', 'success');
+            updateMLStorageInfo();
+          })
+          .withFailureHandler(function(error) {
+            showStatus('Failed to clear ML data', 'error');
+          })
+          .clearMLData();
+      }
+    }
+    
+    function resetToDefaults() {
+      if (confirm('Reset all settings to default values?')) {
+        google.script.run
+          .withSuccessHandler(function() {
+            showStatus('Settings reset to defaults', 'success');
+            loadSettings();
+          })
+          .withFailureHandler(function(error) {
+            showStatus('Failed to reset settings', 'error');
+          })
+          .resetSettings();
+      }
+    }
+    
+    function exportSettings() {
+      google.script.run
+        .withSuccessHandler(function(data) {
+          // Create a downloadable JSON file
+          const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'cellpilot-settings.json';
+          a.click();
+          showStatus('Settings exported', 'success');
+        })
+        .withFailureHandler(function(error) {
+          showStatus('Failed to export settings', 'error');
+        })
+        .exportUserSettings();
+    }
+    
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 KB';
+      const k = 1024;
+      const sizes = ['KB', 'MB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return Math.round(bytes / Math.pow(k, i)) + ' ' + sizes[i];
+    }
+    
+    function showStatus(message, type) {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.className = `alert alert-${type}`;
+      statusDiv.textContent = message;
+      statusDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        statusDiv.style.display = 'none';
+      }, 3000);
+    }
+    
+    function backToMain() {
+      google.script.run.showCellPilotSidebar();
+    }
+  </script>
+</body>
+</html>

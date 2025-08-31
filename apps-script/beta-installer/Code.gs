@@ -105,7 +105,7 @@ function checkBetaAccess(email) {
  */
 function getInstallationCode() {
   const scriptId = '1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O';
-  const version = '10';
+  const version = '11'; // Updated to v11 with proper exports
   
   // Return the full installation code
   const code = getFullBetaInstallerCode(scriptId, version);
@@ -217,7 +217,7 @@ function showInstructions() {
     '1. Click Libraries (+) in Apps Script\\n' +
     '2. Script ID: 1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O\\n' +
     '3. Identifier MUST be: CellPilot\\n' +
-    '4. Version: 10 or HEAD\\n' +
+    '4. Version: 11 or HEAD\\n' +
     '5. Click Add\\n' +
     '6. Save project (Ctrl+S)\\n' +
     '7. CLOSE and REOPEN this spreadsheet\\n\\n' +

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('SharedStyles'); ?>
+  <style>
+    /* Premium card design */
+    .card {
+      margin-bottom: 16px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--gray-200);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
+      overflow: visible;
+    }
+    
+    /* Popular badge - more elegant */
+    .popular-badge {
+      position: absolute;
+      top: -12px;
+      right: 20px;
+      background: linear-gradient(135deg, var(--success-500), var(--success-600));
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+      z-index: 10;
+    }
+    
+    /* Popular plan card - subtle glow effect */
+    .plan-card-popular {
+      position: relative;
+      padding-top: 28px !important;
+      margin-top: 12px;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.02), rgba(34, 197, 94, 0.05));
+      border: 2px solid var(--success-400);
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+    }
+    
+    /* Price styling - more prominent */
+    .price-display {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--gray-900);
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      float: right;
+    }
+    
+    .price-period {
+      font-size: 13px;
+      color: var(--gray-500);
+      font-weight: 400;
+    }
+    
+    /* Feature list - cleaner design */
+    .feature-list {
+      margin: 20px 0;
+      padding: 0;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: var(--gray-700);
+    }
+    
+    .feature-check {
+      color: var(--success-500);
+      margin-right: 10px;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    
+    /* Stats grid - more modern */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 16px;
+      border-radius: 8px;
+      background: var(--gray-50);
+      margin: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .stat-card {
+      text-align: center;
+      padding: 8px 4px;
+      min-width: 0; /* Prevent grid blowout */
+      overflow: hidden;
+    }
+    
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+    
+    .stat-label {
+      font-size: 10px;
+      color: var(--gray-600);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      word-wrap: break-word;
+    }
+    
+    /* Benefits grid - cleaner cards */
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+    
+    .benefit-card {
+      padding: 16px;
+      background: linear-gradient(135deg, var(--gray-50), white);
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+    
+    .benefit-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: var(--primary-200);
+    }
+    
+    .benefit-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 4px;
+    }
+    
+    .benefit-desc {
+      font-size: 11px;
+      color: var(--gray-600);
+      line-height: 1.4;
+    }
+    
+    /* Plan cards hover effect */
+    .plan-card {
+      transition: all 0.3s ease;
+    }
+    
+    .plan-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Section headers */
+    .section-header {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-header">
+    <button class="nav-back" onclick="backToMain()">←</button>
+    <div class="nav-title">
+      <h2>Upgrade CellPilot</h2>
+      <p>Choose the perfect plan for your needs</p>
+    </div>
+  </div>
+  
+  <div class="container">
+    <!-- Current Plan -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Your Current Plan: Free</div>
+        <div class="card-description">Basic features with limited operations</div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">87</div>
+          <div class="stat-label">Operations Left</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">100</div>
+          <div class="stat-label">Monthly Limit</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">13%</div>
+          <div class="stat-label">Used</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Plans -->
+    <div style="margin: 24px 0;">
+      <h3 class="section-header">Available Plans</h3>
+      
+      <!-- Starter Plan -->
+      <div class="card plan-card">
+        <div class="card-header">
+          <div class="card-title" style="color: var(--primary-600);">
+            Starter Plan
+            <span class="price-display">£5.99<span class="price-period">/mo</span></span>
+          </div>
+          <div class="card-description">Perfect for individuals and freelancers</div>
+        </div>
+        
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>500 operations per month (5x more)</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>AI-powered formula builder</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Basic automation features</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Email support</span>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary btn-block" onclick="subscribeToPlan('starter')">
+          Upgrade to Starter
+        </button>
+      </div>
+      
+      <!-- Professional Plan (Recommended) -->
+      <div class="card plan-card plan-card-popular">
+        <span class="popular-badge">MOST POPULAR</span>
+        
+        <div class="card-header">
+          <div class="card-title" style="color: var(--success-600);">
+            Professional Plan
+            <span class="price-display">£11.99<span class="price-period">/mo</span></span>
+          </div>
+          <div class="card-description">Best for teams and growing businesses</div>
+        </div>
+        
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span style="font-weight: 600;">Unlimited operations</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Everything in Starter, plus:</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Excel migration assistant</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Advanced automation workflows</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Industry-specific templates</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Priority support & training</span>
+          </div>
+        </div>
+        
+        <button class="btn btn-success btn-block" onclick="subscribeToPlan('professional')">
+          Upgrade to Professional
+        </button>
+      </div>
+      
+      <!-- Enterprise Plan -->
+      <div class="card plan-card">
+        <div class="card-header">
+          <div class="card-title">
+            Enterprise Plan
+            <span style="font-size: 18px; float: right; color: var(--gray-600);">Custom</span>
+          </div>
+          <div class="card-description">For large organizations with custom needs</div>
+        </div>
+        
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Everything in Professional</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Connect with your business tools</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Dedicated account manager</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>On-premise deployment option</span>
+          </div>
+        </div>
+        
+        <button class="btn btn-secondary btn-block" onclick="contactSales()">
+          Contact Sales
+        </button>
+      </div>
+    </div>
+    
+    <!-- Why Upgrade Section -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Why Upgrade?</div>
+      </div>
+      
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-value">Save 10+ hrs/mo</div>
+          <div class="benefit-desc">Automate repetitive tasks</div>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-value">88% fewer errors</div>
+          <div class="benefit-desc">Smart validation built-in</div>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-value">10x faster</div>
+          <div class="benefit-desc">AI-powered formulas</div>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-value">Excel ready</div>
+          <div class="benefit-desc">Seamless migration</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <div class="footer-content">
+        <p style="margin-bottom: 8px;">All plans include automatic updates and new features</p>
+        <p style="font-size: 11px; color: var(--gray-400);">Cancel anytime • Secure payment via Stripe</p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function backToMain() {
+      google.script.run.showCellPilotSidebar();
+    }
+    
+    function subscribeToPlan(plan) {
+      // Track the plan selection
+      google.script.run
+        .withSuccessHandler(function() {
+          window.open('https://www.cellpilot.io/subscribe?plan=' + plan, '_blank');
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error:', error);
+          window.open('https://www.cellpilot.io/pricing', '_blank');
+        })
+        .trackPlanSelection(plan);
+    }
+    
+    function contactSales() {
+      window.open('https://www.cellpilot.io/contact?type=enterprise', '_blank');
+    }
+  </script>
+</body>
+</html>

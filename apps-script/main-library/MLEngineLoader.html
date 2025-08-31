@@ -1,0 +1,303 @@
+<!-- CellPilot ML Engine Loader -->
+<!-- Include this in all template files to enable ML features -->
+
+<!-- TensorFlow.js CDN - Latest stable version -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.21.0/dist/tf.min.js"></script>
+
+<!-- ML Engine Implementation -->
+<!-- Since the include is not working, embedding the class directly -->
+<script>
+// CellPilotMLEngine class definition loading
+/**
+ * CellPilot ML Engine
+ * Provides intelligent features through client-side machine learning
+ * Uses TensorFlow.js for all ML operations
+ */
+class CellPilotMLEngine {
+  constructor() {
+    this.models = {};
+    this.isInitialized = false;
+    this.userProfile = null;
+    this.cache = new Map();
+    
+    // Model configurations
+    this.modelConfigs = {
+      columnClassifier: {
+        inputShape: [30],
+        outputClasses: 10,
+        modelPath: 'cellpilot_column_classifier'
+      },
+      duplicateDetector: {
+        inputShape: [15],
+        outputClasses: 1,
+        modelPath: 'cellpilot_duplicate_detector'
+      },
+      formulaSuggester: {
+        inputShape: [25],
+        outputClasses: 20,
+        modelPath: 'cellpilot_formula_suggester'
+      },
+      anomalyDetector: {
+        inputShape: [20],
+        outputClasses: 1,
+        modelPath: 'cellpilot_anomaly_detector'
+      }
+    };
+    
+    // Learning parameters
+    this.learningParams = {
+      batchSize: 32,
+      epochs: 3,
+      learningRate: 0.001,
+      validationSplit: 0.2
+    };
+    
+    // Performance optimization
+    this.performance = {
+      maxCacheSize: 100,
+      tensorCleanupInterval: 30000,
+      predictionTimeout: 5000
+    };
+  }
+  
+  /**
+   * Initialize the ML Engine
+   */
+  async initialize() {
+    if (this.isInitialized) return true;
+    
+    try {
+      // Initializing CellPilot ML Engine
+      
+      // Wait for TensorFlow.js to be ready
+      await tf.ready();
+      // TensorFlow.js backend initialized
+      
+      // Try to use WebGL for better performance
+      if (tf.getBackend() !== 'webgl') {
+        try {
+          await tf.setBackend('webgl');
+          // Switched to WebGL backend
+        } catch (e) {
+          // WebGL not available, using fallback backend
+        }
+      }
+      
+      // For now, skip model loading to get basic functionality working
+      // ML Engine initialized (simplified mode)
+      this.isInitialized = true;
+      return true;
+      
+    } catch (error) {
+      console.error('ML Engine initialization failed:', error);
+      throw error;
+    }
+  }
+  
+  // Simplified dispose method
+  dispose() {
+    this.cache.clear();
+    // ML Engine disposed
+  }
+}
+
+// CellPilotMLEngine class defined successfully
+</script>
+
+<!-- ML Initialization Script -->
+<script>
+// MLEngineLoader.html starting initialization
+(function() {
+  // Initialize ML Engine when TensorFlow is ready
+  let mlInitAttempts = 0;
+  const maxAttempts = 20; // Increased from 10
+  
+  function initializeMLEngine() {
+    // Initialization attempt
+    
+    if (typeof tf === 'undefined') {
+      mlInitAttempts++;
+      if (mlInitAttempts < maxAttempts) {
+        // TensorFlow not loaded yet, retrying...
+        setTimeout(initializeMLEngine, 500);
+      } else {
+        console.warn('TensorFlow.js failed to load after', maxAttempts * 0.5, 'seconds - ML features disabled');
+        // Dispatch failure event
+        window.dispatchEvent(new CustomEvent('cellpilot-ml-load-failed', {
+          detail: { error: 'TensorFlow.js failed to load' }
+        }));
+      }
+      return;
+    }
+    
+    try {
+      // Create global ML instance (class is now defined above)
+      window.cellpilotML = new CellPilotMLEngine();
+      // CellPilotMLEngine instance created
+      
+      // Initialize asynchronously
+      window.cellpilotML.initialize().then(() => {
+        // CellPilot ML Engine initialized successfully
+        
+        // Dispatch event for modules waiting for ML
+        window.dispatchEvent(new CustomEvent('cellpilot-ml-ready', {
+          detail: { engine: window.cellpilotML }
+        }));
+        
+        // Set compatibility reference for legacy code
+        window.CellPilotMLEngine = CellPilotMLEngine;
+        
+      }).catch(error => {
+        console.warn('ML Engine initialization failed:', error);
+        // Dispatch failure event with details
+        window.dispatchEvent(new CustomEvent('cellpilot-ml-init-failed', {
+          detail: { error: error.message || 'ML Engine initialization failed' }
+        }));
+      });
+      
+    } catch (error) {
+      console.warn('Failed to create ML Engine:', error);
+    }
+  }
+  
+  // Start initialization
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeMLEngine);
+  } else {
+    initializeMLEngine();
+  }
+  
+  // Cleanup function for memory management
+  window.addEventListener('beforeunload', function() {
+    if (window.cellpilotML && window.cellpilotML.dispose) {
+      window.cellpilotML.dispose();
+    }
+  });
+})();
+</script>
+
+<style>
+/* ML Confidence Indicators */
+.ml-confidence-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-left: 4px;
+  vertical-align: middle;
+  cursor: help;
+}
+
+.ml-confidence-high {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.ml-confidence-medium {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.ml-confidence-low {
+  background: linear-gradient(135deg, #ef4444, #f87171);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+.ml-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  margin-left: 8px;
+}
+
+.ml-badge.ml-learning {
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ML Loading States */
+.ml-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.ml-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* ML Tooltip */
+.ml-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ml-tooltip.show {
+  opacity: 1;
+}
+
+/* ML Feedback Buttons */
+.ml-feedback {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.ml-feedback button {
+  padding: 2px 6px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 12px;
+}
+
+.ml-feedback button:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.ml-feedback button.positive {
+  color: #10b981;
+}
+
+.ml-feedback button.negative {
+  color: #ef4444;
+}
+
+.ml-feedback button.selected {
+  background: #f0f9ff;
+  border-color: #3b82f6;
+}
+</style>

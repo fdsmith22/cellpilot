@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('SharedStyles'); ?>
+  <?!= include('MLEngineLoader'); ?>
+  <style>
+    /* Override container max-width for sidebars */
+    body {
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+    
+    .container {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+    
+    /* Grid-based tab navigation - 2x2 grid */
+    .tab-nav-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding: 8px;
+      background: var(--gray-50);
+      border-radius: 12px;
+    }
+    
+    .tab-btn-grid {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 8px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      background: white;
+      color: var(--gray-600);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 60px;
+      position: relative;
+    }
+    
+    .tab-btn-grid:hover {
+      border-color: var(--primary-300);
+      background: var(--gray-50);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .tab-btn-grid.active {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
+      border-color: var(--primary-500);
+      color: var(--primary-700);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    .tab-icon-letter {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      background: var(--gray-100);
+      color: var(--gray-600);
+    }
+    
+    .tab-btn-grid.active .tab-icon-letter {
+      background: var(--primary-500);
+      color: white;
+    }
+    
+    .tab-label {
+      font-size: 11px;
+      line-height: 1.2;
+      text-align: center;
+    }
+    
+    /* Enhanced button states */
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    /* Focus states for accessibility */
+    .tab-btn-grid:focus-visible,
+    .btn:focus-visible,
+    .form-input:focus-visible,
+    .form-select:focus-visible,
+    .form-check-input:focus-visible {
+      outline: 2px solid var(--primary-500);
+      outline-offset: 2px;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Alternative: Vertical stack layout 
+    .tab-nav-vertical {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+    
+    .tab-btn-vertical {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      background: white;
+      color: var(--gray-700);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+    
+    .tab-btn-vertical:hover {
+      border-color: var(--primary-300);
+      background: var(--gray-50);
+    }
+    
+    .tab-btn-vertical.active {
+      background: var(--primary-50);
+      border-color: var(--primary-500);
+      color: var(--primary-700);
+    }
+    */
+    
+    /* Ensure all form elements fit within sidebar */
+    .form-select, .form-input, .form-range {
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    /* Compact button groups */
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    
+    .btn-group .btn {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 12px;
+    }
+    
+    /* Ensure preview sections don't cause horizontal scroll */
+    .preview-section {
+      max-width: 100%;
+      overflow-x: auto;
+    }
+    
+    .preview-item {
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+    
+    /* Compact cards for sidebar */
+    .card {
+      padding: 12px;
+    }
+    
+    .card-header {
+      padding-bottom: 8px;
+    }
+    
+    .card-title {
+      font-size: 13px;
+    }
+    
+    .card-description {
+      font-size: 11px;
+    }
+    
+    /* Adjust form spacing for sidebar */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-check {
+      margin-bottom: 8px;
+    }
+    
+    .form-check-label {
+      font-size: 12px;
+    }
+    
+    .form-help {
+      font-size: 10px;
+      margin-top: 2px;
+    }
+    /* ML Confidence Indicators */
+    .ml-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: var(--primary-50);
+      color: var(--primary-700);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    
+    .ml-confidence-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    
+    .ml-confidence-high {
+      background: var(--success-100);
+      color: var(--success-700);
+    }
+    
+    .ml-confidence-medium {
+      background: var(--warning-100);
+      color: var(--warning-700);
+    }
+    
+    .ml-confidence-low {
+      background: var(--danger-100);
+      color: var(--danger-700);
+    }
+    
+    .ml-threshold-container {
+      background: var(--gray-50);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+      border: 1px solid var(--gray-200);
+    }
+    
+    .ml-threshold-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .ml-threshold-value {
+      color: var(--primary-600);
+      font-weight: 700;
+    }
+    
+    .ml-learning-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1));
+      border: 1px solid var(--primary-200);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--primary-700);
+      margin-top: 12px;
+    }
+    
+    .ml-learning-spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--primary-300);
+      border-top-color: var(--primary-600);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-header" role="banner">
+    <button class="nav-back" onclick="backToMain()" aria-label="Back to main menu" title="Back to main menu">←</button>
+    <div class="nav-title">
+      <h2>Data Cleaning</h2>
+      <p>Remove duplicates and clean your data</p>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div id="statusMessage" style="display: none;" role="status" aria-live="polite"></div>
+    
+    <!-- Improved Tab Navigation -->
+    <div class="tab-nav-grid">
+      <button class="tab-btn-grid active" onclick="switchTab('duplicates')">
+        <div class="tab-icon-letter">D</div>
+        <div class="tab-label">Duplicates</div>
+      </button>
+      <button class="tab-btn-grid" onclick="switchTab('standardize')">
+        <div class="tab-icon-letter">T</div>
+        <div class="tab-label">Text</div>
+      </button>
+      <button class="tab-btn-grid" onclick="switchTab('dates')">
+        <div class="tab-icon-letter">DT</div>
+        <div class="tab-label">Dates</div>
+      </button>
+      <button class="tab-btn-grid" onclick="switchTab('validation')">
+        <div class="tab-icon-letter">V</div>
+        <div class="tab-label">Validate</div>
+      </button>
+    </div>
+    
+    <!-- Duplicates Tab -->
+    <div id="duplicatesTab" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Detection Settings</div>
+          <div class="card-description">Configure how duplicates are identified in your selection</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">
+            Similarity Threshold
+            <span class="ml-indicator" id="mlIndicator" style="display: none;">ML Enhanced</span>
+          </label>
+          <input type="range" id="threshold" class="form-range" min="0.5" max="1" step="0.05" value="0.85">
+          <div class="form-range-label">
+            <span class="text-small text-muted">Fuzzy Match</span>
+            <span class="form-range-value" id="thresholdValue">85%</span>
+            <span class="text-small text-muted">Exact Match</span>
+          </div>
+          
+          <!-- ML Adaptive Threshold Info -->
+          <div class="ml-threshold-container" id="mlThresholdInfo" style="display: none;">
+            <div class="ml-threshold-label">
+              <span>ML Recommended Threshold</span>
+              <span class="ml-threshold-value" id="mlRecommendedValue">85%</span>
+            </div>
+            <div style="font-size: 11px; color: var(--gray-600); margin-top: 4px;">
+              Based on your previous selections and data patterns
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="applyMLThreshold()" style="margin-top: 8px; font-size: 11px; padding: 4px 8px;">
+              Apply ML Recommendation
+            </button>
+          </div>
+          
+          <!-- ML Learning Indicator -->
+          <div class="ml-learning-indicator" id="mlLearning" style="display: none;">
+            <div class="ml-learning-spinner"></div>
+            <span>ML is learning from your selections...</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Matching Options</label>
+          <div class="form-check">
+            <input type="checkbox" id="caseSensitive" class="form-check-input">
+            <label for="caseSensitive" class="form-check-label">
+              Case Sensitive Matching
+              <div class="form-help">Treat uppercase and lowercase as different</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="trimWhitespace" class="form-check-input" checked>
+            <label for="trimWhitespace" class="form-check-label">
+              Trim Whitespace
+              <div class="form-help">Remove extra spaces before and after text</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="ignoreSpecialChars" class="form-check-input">
+            <label for="ignoreSpecialChars" class="form-check-label">
+              Ignore Special Characters
+              <div class="form-help">Ignore punctuation and symbols when matching</div>
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Keep Which Values</label>
+          <select class="form-select" id="keepStrategy">
+            <option value="first">Keep First Occurrence</option>
+            <option value="last">Keep Last Occurrence</option>
+            <option value="mostComplete">Keep Most Complete (Recommended)</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="previewDuplicates()">
+          <span class="spinner" id="previewSpinner" style="display:none"></span>
+          Preview Changes
+        </button>
+        <button class="btn btn-primary" onclick="removeDuplicates()">
+          <span class="spinner" id="removeSpinner" style="display:none"></span>
+          Remove Duplicates
+        </button>
+      </div>
+      
+      <div id="duplicatesPreview" style="display: none;">
+        <div class="preview-section">
+          <div class="preview-header">
+            <div class="preview-title">Preview of Changes</div>
+            <div class="preview-count" id="duplicateCount">0 duplicates</div>
+          </div>
+          <div class="preview-grid" id="previewContent"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Standardization Tab -->
+    <div id="standardizeTab" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Text Standardization</div>
+          <div class="card-description">Apply consistent formatting to your text data</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Text Case</label>
+          <select class="form-select" id="textCase">
+            <option value="none">No Change</option>
+            <option value="lower">lowercase</option>
+            <option value="upper">UPPERCASE</option>
+            <option value="title">Title Case</option>
+            <option value="sentence">Sentence case</option>
+            <option value="proper">Proper Names</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Cleanup Options</label>
+          <div class="form-check">
+            <input type="checkbox" id="removeExtraSpaces" class="form-check-input" checked>
+            <label for="removeExtraSpaces" class="form-check-label">
+              Remove Extra Spaces
+              <div class="form-help">Convert multiple spaces to single space</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="trimCells" class="form-check-input" checked>
+            <label for="trimCells" class="form-check-label">
+              Trim Cell Contents
+              <div class="form-help">Remove leading and trailing spaces</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="removeLineBreaks" class="form-check-input">
+            <label for="removeLineBreaks" class="form-check-label">
+              Remove Line Breaks
+              <div class="form-help">Replace line breaks with spaces</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="fixPunctuation" class="form-check-input">
+            <label for="fixPunctuation" class="form-check-label">
+              Fix Punctuation Spacing
+              <div class="form-help">Ensure proper spacing around punctuation</div>
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Number Formatting</label>
+          <div class="form-check">
+            <input type="checkbox" id="standardizeNumbers" class="form-check-input" onchange="toggleNumberOptions()">
+            <label for="standardizeNumbers" class="form-check-label">
+              Standardize Number Format
+              <div class="form-help">Apply consistent number formatting</div>
+            </label>
+          </div>
+          
+          <div id="numberOptionsGroup" style="display: none; margin-left: 20px; margin-top: 10px;">
+            <div class="form-check">
+              <input type="checkbox" id="removeCurrencySymbols" class="form-check-input" checked>
+              <label for="removeCurrencySymbols" class="form-check-label">
+                Remove Currency Symbols
+                <div class="form-help">Strip $, £, €, etc. from numbers</div>
+              </label>
+            </div>
+            
+            <div class="form-check">
+              <input type="checkbox" id="useThousandSeparators" class="form-check-input" checked>
+              <label for="useThousandSeparators" class="form-check-label">
+                Use Thousand Separators
+                <div class="form-help">Format as 1,234 instead of 1234</div>
+              </label>
+            </div>
+            
+            <div class="form-group" style="margin-top: 10px;">
+              <label class="form-label" style="font-size: 12px;">Decimal Places</label>
+              <select class="form-select" id="numberDecimals" style="max-width: 150px;">
+                <option value="-1">Keep Original</option>
+                <option value="0">No Decimals</option>
+                <option value="1">1 Decimal</option>
+                <option value="2" selected>2 Decimals</option>
+                <option value="3">3 Decimals</option>
+                <option value="4">4 Decimals</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="previewStandardization()">
+          <span class="spinner" id="standardPreviewSpinner" style="display:none"></span>
+          Preview Changes
+        </button>
+        <button class="btn btn-primary" onclick="applyStandardization()">
+          <span class="spinner" id="standardApplySpinner" style="display:none"></span>
+          Apply Standardization
+        </button>
+      </div>
+      
+      <div id="standardizePreview" style="display: none;">
+        <div class="preview-section">
+          <div class="preview-header">
+            <div class="preview-title">Preview of Changes</div>
+            <div class="preview-count" id="standardizeCount">0 changes</div>
+          </div>
+          <div class="preview-grid" id="standardizePreviewContent"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Date Formatting Tab -->
+    <div id="datesTab" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Date Formatting</div>
+          <div class="card-description">Standardize date formats across your data</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Source Date Format</label>
+          <select class="form-select" id="sourceDateFormat">
+            <option value="auto">Auto-detect (Recommended)</option>
+            <option value="US">US Format (MM/DD/YYYY)</option>
+            <option value="EU">European Format (DD/MM/YYYY)</option>
+            <option value="ISO">ISO Format (YYYY-MM-DD)</option>
+          </select>
+          <div class="form-help">Tell us how to interpret ambiguous dates like 03/04/2024</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Target Date Format</label>
+          <select class="form-select" id="targetDateFormat">
+            <option value="ISO">YYYY-MM-DD (ISO Standard)</option>
+            <option value="US">MM/DD/YYYY (US Format)</option>
+            <option value="EU">DD/MM/YYYY (European Format)</option>
+            <option value="written">January 1, 2024 (Written)</option>
+            <option value="written-UK">1 January 2024 (UK Written)</option>
+          </select>
+          <div class="form-help">Choose how you want dates to be displayed</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Date Handling Options</label>
+          <div class="form-check">
+            <input type="checkbox" id="skipInvalidDates" class="form-check-input" checked>
+            <label for="skipInvalidDates" class="form-check-label">
+              Skip Invalid Dates
+              <div class="form-help">Leave cells unchanged if date cannot be parsed</div>
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="markInvalidDates" class="form-check-input">
+            <label for="markInvalidDates" class="form-check-label">
+              Highlight Invalid Dates
+              <div class="form-help">Add background color to cells with invalid dates</div>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="previewDateFormatting()">
+          <span class="spinner" id="datePreviewSpinner" style="display:none"></span>
+          Preview Changes
+        </button>
+        <button class="btn btn-primary" onclick="applyDateFormatting()">
+          <span class="spinner" id="dateApplySpinner" style="display:none"></span>
+          Apply Formatting
+        </button>
+      </div>
+      
+      <div id="datePreview" style="display: none;">
+        <div class="preview-section">
+          <div class="preview-header">
+            <div class="preview-title">Preview of Changes</div>
+            <div class="preview-count" id="dateCount">0 dates formatted</div>
+          </div>
+          <div class="preview-grid" id="datePreviewContent"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Validation Tab -->
+    <div id="validationTab" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Data Validation</div>
+          <div class="card-description">Check data quality and identify issues</div>
+        </div>
+        
+        <div class="stats-grid" id="validationStats">
+          <div class="stat-card">
+            <div class="stat-value">-</div>
+            <div class="stat-label">Total Cells</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">-</div>
+            <div class="stat-label">Empty Cells</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">-</div>
+            <div class="stat-label">Invalid</div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Validation Rules</label>
+          <div class="form-check">
+            <input type="checkbox" id="checkEmpty" class="form-check-input" checked>
+            <label for="checkEmpty" class="form-check-label">
+              Flag Empty Cells
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="checkEmail" class="form-check-input">
+            <label for="checkEmail" class="form-check-label">
+              Validate Email Addresses
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="checkPhone" class="form-check-input">
+            <label for="checkPhone" class="form-check-label">
+              Validate Phone Numbers
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="checkDates" class="form-check-input">
+            <label for="checkDates" class="form-check-label">
+              Validate Date Formats
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input type="checkbox" id="checkNumbers" class="form-check-input">
+            <label for="checkNumbers" class="form-check-label">
+              Check Numeric Values
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-primary btn-block" onclick="runValidation()">
+          <span class="spinner" id="validationSpinner" style="display:none"></span>
+          Run Validation Check
+        </button>
+      </div>
+      
+      <div id="validationResults" style="display: none;">
+        <div class="preview-section">
+          <div class="preview-header">
+            <div class="preview-title">Validation Results</div>
+          </div>
+          <div id="validationContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Tab switching
+    function switchTab(tab) {
+      // Update button states for new grid layout
+      document.querySelectorAll('.tab-btn-grid').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Find and activate the clicked button
+      const clickedBtn = event.target.closest('.tab-btn-grid');
+      if (clickedBtn) {
+        clickedBtn.classList.add('active');
+      }
+      
+      // Show/hide content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      document.getElementById(tab + 'Tab').style.display = 'block';
+      
+      // Clear any messages
+      hideStatus();
+    }
+    
+    // Update threshold display
+    document.getElementById('threshold').addEventListener('input', function(e) {
+      document.getElementById('thresholdValue').textContent = Math.round(e.target.value * 100) + '%';
+    });
+    
+    function backToMain() {
+      google.script.run.showCellPilotSidebar();
+    }
+    
+    function showStatus(message, type = 'info') {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.className = 'alert alert-' + type + ' fade-in';
+      statusDiv.textContent = message;
+      statusDiv.style.display = 'flex';
+      
+      // Auto-hide success messages
+      if (type === 'success') {
+        setTimeout(() => {
+          statusDiv.style.opacity = '0';
+          setTimeout(hideStatus, 300);
+        }, 5000);
+      }
+    }
+    
+    function hideStatus() {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.style.display = 'none';
+      statusDiv.style.opacity = '1';
+    }
+    
+    // Duplicate removal functions
+    function getDuplicateOptions() {
+      return {
+        threshold: parseFloat(document.getElementById('threshold').value),
+        caseSensitive: document.getElementById('caseSensitive').checked,
+        trimWhitespace: document.getElementById('trimWhitespace').checked,
+        ignoreSpecialChars: document.getElementById('ignoreSpecialChars').checked,
+        keepStrategy: document.getElementById('keepStrategy').value
+      };
+    }
+    
+    function previewDuplicates() {
+      hideStatus();
+      document.getElementById('previewSpinner').style.display = 'inline-block';
+      document.getElementById('duplicatesPreview').style.display = 'none';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('previewSpinner').style.display = 'none';
+          
+          if (result.success) {
+            if (result.duplicates && result.duplicates.length > 0) {
+              // Update stats
+              document.getElementById('duplicateCount').textContent = result.duplicates.length + ' duplicates';
+              
+              // Build preview HTML
+              let previewHtml = '<div class="stats-grid mb-3">';
+              previewHtml += '<div class="stat-card"><div class="stat-value">' + result.totalRows + '</div><div class="stat-label">Total Rows</div></div>';
+              previewHtml += '<div class="stat-card"><div class="stat-value">' + result.duplicates.length + '</div><div class="stat-label">Duplicates</div></div>';
+              previewHtml += '<div class="stat-card"><div class="stat-value">' + (result.totalRows - result.duplicates.length) + '</div><div class="stat-label">Unique</div></div>';
+              previewHtml += '</div>';
+              
+              // Show sample duplicates
+              const sampleSize = Math.min(10, result.duplicates.length);
+              for (let i = 0; i < sampleSize; i++) {
+                const dup = result.duplicates[i];
+                previewHtml += '<div class="preview-item">';
+                previewHtml += '<div class="preview-item-content">';
+                previewHtml += '<span class="text-small text-muted">Row ' + (dup.row + 1) + '</span>';
+                previewHtml += '<span class="preview-item-old">' + dup.preview + '</span>';
+                previewHtml += '</div>';
+                previewHtml += '</div>';
+              }
+              
+              if (result.duplicates.length > sampleSize) {
+                previewHtml += '<div class="text-center text-muted text-small mt-3">... and ' + (result.duplicates.length - sampleSize) + ' more duplicates</div>';
+              }
+              
+              document.getElementById('previewContent').innerHTML = previewHtml;
+              document.getElementById('duplicatesPreview').style.display = 'block';
+            } else {
+              showStatus('No duplicates found with current settings', 'success');
+            }
+          } else {
+            showStatus(result.error || 'Failed to preview duplicates', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('previewSpinner').style.display = 'none';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .previewDuplicates(getDuplicateOptions());
+    }
+    
+    function removeDuplicates() {
+      if (!confirm('This will remove duplicate rows from your selection. Continue?')) {
+        return;
+      }
+      
+      hideStatus();
+      document.getElementById('removeSpinner').style.display = 'inline-block';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('removeSpinner').style.display = 'none';
+          
+          if (result.success) {
+            showStatus(result.message, 'success');
+            document.getElementById('duplicatesPreview').style.display = 'none';
+            
+            // Track ML learning if duplicates were removed
+            const threshold = parseFloat(document.getElementById('threshold').value);
+            if (result.removed && result.removed > 0) {
+              learnFromDuplicateRemoval(threshold, result.removed);
+            }
+          } else {
+            showStatus(result.error || 'Failed to remove duplicates', 'error');
+            
+            if (result.showUpgrade) {
+              setTimeout(function() {
+                google.script.run.showUpgradeOptions();
+              }, 2000);
+            }
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('removeSpinner').style.display = 'none';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .removeDuplicatesProcess(getDuplicateOptions());
+    }
+    
+    // Text standardization functions
+    function getStandardizationOptions() {
+      const standardizeNumbers = document.getElementById('standardizeNumbers').checked;
+      const numberDecimals = parseInt(document.getElementById('numberDecimals').value);
+      
+      return {
+        textCase: document.getElementById('textCase').value,
+        removeExtraSpaces: document.getElementById('removeExtraSpaces').checked,
+        trimCells: document.getElementById('trimCells').checked,
+        removeLineBreaks: document.getElementById('removeLineBreaks').checked,
+        fixPunctuation: document.getElementById('fixPunctuation').checked,
+        standardizeNumbers: standardizeNumbers,
+        removeCurrencySymbols: standardizeNumbers ? document.getElementById('removeCurrencySymbols').checked : false,
+        useThousandSeparators: standardizeNumbers ? document.getElementById('useThousandSeparators').checked : false,
+        numberDecimals: numberDecimals === -1 ? undefined : numberDecimals,
+        keepOriginalNumberFormat: numberDecimals === -1
+      };
+    }
+    
+    function toggleNumberOptions() {
+      const checked = document.getElementById('standardizeNumbers').checked;
+      document.getElementById('numberOptionsGroup').style.display = checked ? 'block' : 'none';
+    }
+    
+    function previewStandardization() {
+      hideStatus();
+      document.getElementById('standardPreviewSpinner').style.display = 'inline-block';
+      document.getElementById('standardizePreview').style.display = 'none';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('standardPreviewSpinner').style.display = 'none';
+          
+          if (result.success) {
+            // Display preview
+            const previewContent = document.getElementById('standardizePreviewContent');
+            document.getElementById('standardizeCount').textContent = 
+              `${result.affectedCells} changes out of ${result.totalCells} cells`;
+            
+            if (result.changes.length > 0) {
+              let html = '<div style="max-height: 300px; overflow-y: auto;">';
+              result.changes.forEach(change => {
+                html += `
+                  <div style="display: flex; gap: 10px; padding: 8px; background: white; margin-bottom: 4px; border-radius: 4px;">
+                    <div style="flex: 1;">
+                      <div style="font-size: 10px; color: var(--gray-500);">Cell ${String.fromCharCode(64 + change.col)}${change.row}</div>
+                      <div style="font-size: 12px; color: var(--danger-600); text-decoration: line-through;">${escapeHtml(change.before)}</div>
+                    </div>
+                    <div style="color: var(--gray-500); align-self: center;">→</div>
+                    <div style="flex: 1;">
+                      <div style="font-size: 10px; color: var(--gray-500);">After</div>
+                      <div style="font-size: 12px; color: var(--success-600);">${escapeHtml(change.after)}</div>
+                    </div>
+                  </div>
+                `;
+              });
+              
+              if (result.affectedCells > result.changes.length) {
+                html += `<div style="text-align: center; padding: 8px; color: var(--gray-500); font-size: 12px;">
+                  ... and ${result.affectedCells - result.changes.length} more changes
+                </div>`;
+              }
+              
+              html += '</div>';
+              previewContent.innerHTML = html;
+            } else {
+              previewContent.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--gray-500);">No changes detected with current settings</div>';
+            }
+            
+            document.getElementById('standardizePreview').style.display = 'block';
+          } else {
+            showStatus(result.error || 'Failed to preview changes', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('standardPreviewSpinner').style.display = 'none';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .previewStandardization(getStandardizationOptions());
+    }
+    
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+    
+    function applyStandardization() {
+      hideStatus();
+      document.getElementById('standardApplySpinner').style.display = 'inline-block';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('standardApplySpinner').style.display = 'none';
+          
+          if (result.success) {
+            showStatus('Text standardization applied successfully', 'success');
+          } else {
+            showStatus(result.error || 'Failed to standardize text', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('standardApplySpinner').style.display = 'none';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .standardizeText(getStandardizationOptions());
+    }
+    
+    // Date formatting functions
+    function getDateFormattingOptions() {
+      return {
+        sourceFormat: document.getElementById('sourceDateFormat').value,
+        targetFormat: document.getElementById('targetDateFormat').value,
+        skipInvalidDates: document.getElementById('skipInvalidDates').checked,
+        markInvalidDates: document.getElementById('markInvalidDates').checked
+      };
+    }
+    
+    function previewDateFormatting() {
+      hideStatus();
+      document.getElementById('datePreviewSpinner').style.display = 'inline-block';
+      document.getElementById('datePreview').style.display = 'none';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('datePreviewSpinner').style.display = 'none';
+          
+          if (result.success) {
+            const previewContent = document.getElementById('datePreviewContent');
+            document.getElementById('dateCount').textContent = 
+              `${result.formattedCount} dates formatted, ${result.invalidCount} invalid`;
+            
+            if (result.changes.length > 0) {
+              let html = '<div style="max-height: 300px; overflow-y: auto;">';
+              result.changes.forEach(change => {
+                const statusColor = change.valid ? 'var(--success-600)' : 'var(--danger-600)';
+                const statusText = change.valid ? 'Valid' : 'Invalid';
+                html += `
+                  <div style="display: flex; gap: 10px; padding: 8px; background: white; margin-bottom: 4px; border-radius: 4px;">
+                    <div style="flex: 1;">
+                      <div style="font-size: 10px; color: var(--gray-500);">Cell ${String.fromCharCode(64 + change.col)}${change.row}</div>
+                      <div style="font-size: 12px; color: var(--gray-700);">${escapeHtml(change.before)}</div>
+                    </div>
+                    <div style="color: var(--gray-500); align-self: center;">→</div>
+                    <div style="flex: 1;">
+                      <div style="font-size: 10px; color: ${statusColor};">${statusText}</div>
+                      <div style="font-size: 12px; color: ${statusColor};">${escapeHtml(change.after)}</div>
+                    </div>
+                  </div>
+                `;
+              });
+              
+              if (result.totalDates > result.changes.length) {
+                html += `<div style="text-align: center; padding: 8px; color: var(--gray-500); font-size: 12px;">
+                  ... and ${result.totalDates - result.changes.length} more dates
+                </div>`;
+              }
+              
+              html += '</div>';
+              previewContent.innerHTML = html;
+            } else {
+              previewContent.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--gray-500);">No dates found in selection</div>';
+            }
+            
+            document.getElementById('datePreview').style.display = 'block';
+          } else {
+            showStatus(result.error || 'Failed to preview date formatting', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('datePreviewSpinner').style.display = 'none';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .previewDateFormatting(getDateFormattingOptions());
+    }
+    
+    function applyDateFormatting() {
+      hideStatus();
+      document.getElementById('dateApplySpinner').style.display = 'inline-block';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('dateApplySpinner').style.display = 'none';
+          
+          if (result.success) {
+            showStatus(result.message || 'Date formatting applied successfully', 'success');
+            document.getElementById('datePreview').style.display = 'none';
+          } else {
+            showStatus(result.error || 'Failed to format dates', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('dateApplySpinner').style.display = 'none';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .formatDates(getDateFormattingOptions());
+    }
+    
+    // Data validation functions
+    function runValidation() {
+      showStatus('Data validation coming soon', 'info');
+    }
+    // ML Enhancement Functions
+    function initMLFeatures() {
+      // Check if ML is enabled
+      google.script.run
+        .withSuccessHandler(function(status) {
+          if (status && status.enabled) {
+            document.getElementById('mlIndicator').style.display = 'inline-flex';
+            loadMLRecommendations();
+          }
+        })
+        .getMLStatus();
+    }
+    
+    function loadMLRecommendations() {
+      // Get ML recommended threshold
+      google.script.run
+        .withSuccessHandler(function(threshold) {
+          if (threshold && threshold > 0) {
+            document.getElementById('mlThresholdInfo').style.display = 'block';
+            document.getElementById('mlRecommendedValue').textContent = 
+              Math.round(threshold * 100) + '%';
+          }
+        })
+        .getAdaptiveDuplicateThreshold();
+    }
+    
+    function applyMLThreshold() {
+      google.script.run
+        .withSuccessHandler(function(threshold) {
+          if (threshold && threshold > 0) {
+            document.getElementById('threshold').value = threshold;
+            document.getElementById('thresholdValue').textContent = Math.round(threshold * 100) + '%';
+            showStatus('Applied ML recommended threshold', 'success');
+          }
+        })
+        .getAdaptiveDuplicateThreshold();
+    }
+    
+    function learnFromDuplicateRemoval(threshold, removedCount) {
+      // Send feedback to ML system
+      google.script.run
+        .withSuccessHandler(function(result) {
+          console.log('ML learning updated', result);
+        })
+        .trackMLFeedback('duplicateRemoval', threshold, 'accepted', {
+          removedCount: removedCount,
+          timestamp: new Date().toISOString()
+        });
+    }
+    
+    // Initialize ML features on load
+    document.addEventListener('DOMContentLoaded', function() {
+      initMLFeatures();
+    });
+  </script>
+</body>
+</html>

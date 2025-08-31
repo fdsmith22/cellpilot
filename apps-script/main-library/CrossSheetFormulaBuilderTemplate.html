@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('SharedStyles'); ?>
+  <style>
+    /* Formula preview styling */
+    .formula-preview {
+      background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+      border: 1px solid var(--primary-200);
+      border-radius: 10px;
+      padding: 16px;
+      margin: 20px 0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 13px;
+      color: var(--primary-900);
+      word-break: break-all;
+      line-height: 1.6;
+      box-shadow: 0 2px 4px rgba(99, 102, 241, 0.1);
+    }
+    
+    /* Reference builder grid */
+    .reference-builder {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .reference-row {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .reference-row label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-700);
+    }
+    
+    /* Example items styling */
+    .example-list {
+      display: grid;
+      gap: 8px;
+    }
+    
+    .example-item {
+      padding: 12px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 12px;
+    }
+    
+    .example-item:hover {
+      background: white;
+      border-color: var(--primary-300);
+      transform: translateX(4px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .example-item strong {
+      color: var(--primary-600);
+      font-weight: 600;
+      display: inline-block;
+      min-width: 80px;
+    }
+    
+    /* Formula type badges */
+    .formula-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      background: var(--primary-100);
+      color: var(--primary-700);
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-left: 8px;
+    }
+    
+    /* Status message improvements */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 12px;
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-header">
+    <button class="nav-back" onclick="backToMain()">←</button>
+    <div class="nav-title">
+      <h2>Cross-Sheet Formula Builder</h2>
+      <p>Build formulas that reference other sheets</p>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div id="statusMessage" style="display: none;"></div>
+    
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Formula Type</div>
+      </div>
+      <select class="form-select" id="formulaType" onchange="updateFormulaBuilder()">
+        <option value="">Select formula type...</option>
+        <option value="vlookup">VLOOKUP - Find value in another sheet</option>
+        <option value="sumif">SUMIF - Sum values from another sheet</option>
+        <option value="countif">COUNTIF - Count values from another sheet</option>
+        <option value="importrange">IMPORTRANGE - Import data from another spreadsheet</option>
+        <option value="query">QUERY - Advanced data filtering</option>
+        <option value="index-match">INDEX/MATCH - Flexible lookup</option>
+      </select>
+    </div>
+    
+    <div id="formulaBuilder" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Build Your Formula</div>
+        </div>
+        
+        <div class="reference-builder">
+          <div class="reference-row">
+            <label class="form-label">Source Sheet</label>
+            <select class="form-select" id="sourceSheet" onchange="updatePreview()">
+              <option value="">Loading sheets...</option>
+            </select>
+          </div>
+          
+          <div class="reference-row">
+            <label class="form-label">Range</label>
+            <input type="text" class="form-input" id="rangeInput" 
+                   placeholder="e.g., A1:B10" onkeyup="updatePreview()">
+          </div>
+          
+          <div id="additionalOptions">
+            <!-- Dynamic options based on formula type -->
+          </div>
+        </div>
+        
+        <div class="formula-preview" id="formulaPreview">
+          Formula will appear here...
+        </div>
+        
+        <button class="btn btn-primary btn-block" onclick="insertFormula()">
+          Insert Formula
+        </button>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Common Examples</div>
+      </div>
+      <div class="example-list">
+        <div class="example-item" onclick="loadExample('vlookup')">
+          <strong>VLOOKUP:</strong> Find employee name from ID
+        </div>
+        <div class="example-item" onclick="loadExample('sumif')">
+          <strong>SUMIF:</strong> Sum sales by category
+        </div>
+        <div class="example-item" onclick="loadExample('query')">
+          <strong>QUERY:</strong> Filter and sort data
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Load available sheets
+    google.script.run
+      .withSuccessHandler(function(sheets) {
+        const select = document.getElementById('sourceSheet');
+        select.innerHTML = '<option value="">Select a sheet...</option>';
+        sheets.forEach(sheet => {
+          const option = document.createElement('option');
+          option.value = sheet;
+          option.textContent = sheet;
+          select.appendChild(option);
+        });
+      })
+      .withFailureHandler(function(error) {
+        console.error('Error loading sheets:', error);
+      })
+      .getSheetNames();
+    
+    function updateFormulaBuilder() {
+      const type = document.getElementById('formulaType').value;
+      const builder = document.getElementById('formulaBuilder');
+      
+      if (type) {
+        builder.style.display = 'block';
+        updateAdditionalOptions(type);
+        updatePreview();
+      } else {
+        builder.style.display = 'none';
+      }
+    }
+    
+    function updateAdditionalOptions(type) {
+      const container = document.getElementById('additionalOptions');
+      let html = '';
+      
+      switch(type) {
+        case 'vlookup':
+          html = `
+            <div class="reference-row">
+              <label class="form-label">Lookup Value</label>
+              <input type="text" class="form-input" id="lookupValue" 
+                     placeholder="e.g., A2" onkeyup="updatePreview()">
+            </div>
+            <div class="reference-row">
+              <label class="form-label">Column Index</label>
+              <input type="number" class="form-input" id="colIndex" 
+                     placeholder="e.g., 2" onkeyup="updatePreview()">
+            </div>
+          `;
+          break;
+        case 'sumif':
+        case 'countif':
+          html = `
+            <div class="reference-row">
+              <label class="form-label">Criteria</label>
+              <input type="text" class="form-input" id="criteria" 
+                     placeholder='e.g., ">100"' onkeyup="updatePreview()">
+            </div>
+          `;
+          break;
+        case 'query':
+          html = `
+            <div class="reference-row">
+              <label class="form-label">Query String</label>
+              <input type="text" class="form-input" id="queryString" 
+                     placeholder="e.g., SELECT A, B WHERE C > 100" onkeyup="updatePreview()">
+            </div>
+          `;
+          break;
+      }
+      
+      container.innerHTML = html;
+    }
+    
+    function updatePreview() {
+      const type = document.getElementById('formulaType').value;
+      const sheet = document.getElementById('sourceSheet').value;
+      const range = document.getElementById('rangeInput').value;
+      const preview = document.getElementById('formulaPreview');
+      
+      if (!type || !sheet || !range) {
+        preview.textContent = 'Formula will appear here...';
+        return;
+      }
+      
+      let formula = '';
+      const sheetRef = `'${sheet}'!${range}`;
+      
+      switch(type) {
+        case 'vlookup':
+          const lookup = document.getElementById('lookupValue')?.value || 'A2';
+          const col = document.getElementById('colIndex')?.value || '2';
+          formula = `=VLOOKUP(${lookup}, ${sheetRef}, ${col}, FALSE)`;
+          break;
+        case 'sumif':
+          const sumCriteria = document.getElementById('criteria')?.value || '">0"';
+          formula = `=SUMIF(${sheetRef}, ${sumCriteria})`;
+          break;
+        case 'countif':
+          const countCriteria = document.getElementById('criteria')?.value || '">0"';
+          formula = `=COUNTIF(${sheetRef}, ${countCriteria})`;
+          break;
+        case 'query':
+          const query = document.getElementById('queryString')?.value || 'SELECT *';
+          formula = `=QUERY(${sheetRef}, "${query}")`;
+          break;
+        case 'index-match':
+          formula = `=INDEX(${sheetRef}, MATCH(A2, '${sheet}'!A:A, 0), 2)`;
+          break;
+        case 'importrange':
+          formula = `=IMPORTRANGE("spreadsheet_url", "${sheetRef}")`;
+          break;
+      }
+      
+      preview.textContent = formula;
+    }
+    
+    function insertFormula() {
+      const formula = document.getElementById('formulaPreview').textContent;
+      
+      if (formula && formula !== 'Formula will appear here...') {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            showStatus('Formula inserted successfully!', 'success');
+            setTimeout(() => backToMain(), 1500);
+          })
+          .withFailureHandler(function(error) {
+            showStatus('Error: ' + error.message, 'error');
+          })
+          .insertFormulaIntoCell(formula);
+      }
+    }
+    
+    function loadExample(type) {
+      document.getElementById('formulaType').value = type;
+      updateFormulaBuilder();
+      
+      // Pre-fill with example values
+      setTimeout(() => {
+        document.getElementById('rangeInput').value = 'A1:C100';
+        if (type === 'vlookup') {
+          document.getElementById('lookupValue').value = 'A2';
+          document.getElementById('colIndex').value = '2';
+        } else if (type === 'sumif' || type === 'countif') {
+          document.getElementById('criteria').value = '">100"';
+        } else if (type === 'query') {
+          document.getElementById('queryString').value = 'SELECT A, B WHERE C > 100';
+        }
+        updatePreview();
+      }, 100);
+    }
+    
+    function showStatus(message, type) {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.className = `alert alert-${type}`;
+      statusDiv.textContent = message;
+      statusDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        statusDiv.style.display = 'none';
+      }, 3000);
+    }
+    
+    function backToMain() {
+      google.script.run.showCellPilotSidebar();
+    }
+  </script>
+</body>
+</html>

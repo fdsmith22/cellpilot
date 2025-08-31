@@ -1,0 +1,21 @@
+{
+  "name": "cellpilot-apps-script",
+  "version": "1.0.0",
+  "description": "CellPilot Apps Script Projects",
+  "scripts": {
+    "push:library": "cd main-library && npx clasp push",
+    "push:installer": "cd beta-installer && npx clasp push",
+    "deploy:library": "cd main-library && npx clasp deploy --description",
+    "deploy:installer": "cd beta-installer && npx clasp deploy --description",
+    "status:library": "cd main-library && npx clasp status",
+    "status:installer": "cd beta-installer && npx clasp status",
+    "open:library": "cd main-library && npx clasp open",
+    "open:installer": "cd beta-installer && npx clasp open",
+    "push:all": "npm run push:library && npm run push:installer",
+    "logs:library": "cd main-library && npx clasp logs",
+    "logs:installer": "cd beta-installer && npx clasp logs"
+  },
+  "devDependencies": {
+    "@google/clasp": "^2.4.2"
+  }
+}
