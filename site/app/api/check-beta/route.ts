@@ -14,14 +14,21 @@ export async function POST(request: Request) {
 
     const supabase = await createClient()
     
-    // Check if user exists and has beta tier
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('subscription_tier')
-      .eq('email', email)
-      .single()
-
-    if (error || !profile) {
+    // Use the SQL function to check beta access
+    const { data, error } = await supabase
+      .rpc('check_beta_access_by_email', { 
+        user_email: email.toLowerCase() 
+      })
+    
+    if (error) {
+      console.error('Error checking beta access:', error)
+      return NextResponse.json({ 
+        hasBeta: false,
+        error: 'Failed to check beta access' 
+      })
+    }
+    
+    if (!data || !data.found) {
       return NextResponse.json({ 
         hasBeta: false,
         error: 'User not found. Please sign up at cellpilot.io' 
@@ -29,8 +36,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ 
-      hasBeta: profile.subscription_tier === 'beta',
-      subscriptionTier: profile.subscription_tier
+      hasBeta: data.hasBeta,
+      subscriptionTier: data.subscriptionTier
     })
 
   } catch (error) {
