@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 interface BetaAccessCardProps {
@@ -14,32 +13,33 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
   const [requested, setRequested] = useState(!!profile?.beta_requested_at)
   const [approved, setApproved] = useState(!!profile?.beta_access)
   const router = useRouter()
-  const supabase = createClient()
 
   const requestBetaAccess = async () => {
     setLoading(true)
     try {
-      // Auto-approve beta access for immediate installation
-      const now = new Date().toISOString()
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          beta_requested_at: now,
-          beta_approved_at: now,
-          beta_access: true,
-          beta_notes: 'Auto-approved via dashboard',
-          subscription_tier: 'beta'
-        })
-        .eq('id', userId)
+      // Use API endpoint to handle beta approval (bypasses RLS)
+      const response = await fetch('/api/beta/approve', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
 
-      if (error) throw error
-      
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to approve beta access')
+      }
+
+      console.log('Beta access granted:', data)
       setApproved(true)
       setRequested(true)
+      
+      // Refresh the page to update the UI
       router.refresh()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error requesting beta access:', error)
-      alert('Failed to request beta access. Please try again.')
+      alert(`Failed to request beta access: ${error.message || 'Unknown error'}`)
     } finally {
       setLoading(false)
     }
