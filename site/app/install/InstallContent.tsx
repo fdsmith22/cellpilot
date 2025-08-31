@@ -5,10 +5,17 @@ import Link from 'next/link'
 import ScrollObserver from '@/components/ScrollObserver'
 import GridAnimation from '@/components/GridAnimation'
 import Footer from '@/components/Footer'
+import BetaAccessCard from '@/components/BetaAccessCard'
+import { User } from '@supabase/supabase-js'
 
 type InstallMethod = 'marketplace' | 'manual' | null
 
-export default function InstallContent() {
+interface InstallContentProps {
+  user: User
+  profile: any
+}
+
+export default function InstallContent({ user, profile }: InstallContentProps) {
   const [selectedMethod, setSelectedMethod] = useState<InstallMethod>(null)
   
   return (
@@ -180,64 +187,71 @@ export default function InstallContent() {
                     Beta Test Installation
                   </h2>
                   
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                    <p className="text-sm text-green-800">
-                      <strong>✨ Instant Beta Access:</strong> Get CellPilot now - auto-approval for all beta testers!
-                    </p>
-                  </div>
-                  
-                  <div className="space-y-8">
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-semibold text-sm">
-                        1
+                  {/* Show Beta Access Card for authenticated users */}
+                  {user ? (
+                    <BetaAccessCard profile={profile} userId={user.id} />
+                  ) : (
+                    <>
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                        <p className="text-sm text-green-800">
+                          <strong>✨ Instant Beta Access:</strong> Get CellPilot now - auto-approval for all beta testers!
+                        </p>
                       </div>
-                      <div className="ml-4">
-                        <h3 className="font-semibold text-neutral-900 mb-2">Sign In to Dashboard</h3>
-                        <p className="text-neutral-600 mb-3">Sign in to your account and request instant beta access from your dashboard</p>
-                        <Link 
-                          href="/auth"
-                          className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-                        >
-                          Go to Dashboard
-                          <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                          </svg>
-                        </Link>
-                      </div>
-                    </div>
+                      
+                      <div className="space-y-8">
+                        <div className="flex items-start">
+                          <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-semibold text-sm">
+                            1
+                          </div>
+                          <div className="ml-4">
+                            <h3 className="font-semibold text-neutral-900 mb-2">Sign In to Get Started</h3>
+                            <p className="text-neutral-600 mb-3">Sign in to your account to request instant beta access</p>
+                            <Link 
+                              href="/auth"
+                              className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                            >
+                              Sign In
+                              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                              </svg>
+                            </Link>
+                          </div>
+                        </div>
 
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-semibold text-sm">
-                        2
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="font-semibold text-neutral-900 mb-2">Get Instant Beta Access</h3>
-                        <p className="text-neutral-600">Click "Request Beta Access" and get approved instantly - no waiting!</p>
-                      </div>
-                    </div>
+                        <div className="flex items-start">
+                          <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-semibold text-sm">
+                            2
+                          </div>
+                          <div className="ml-4">
+                            <h3 className="font-semibold text-neutral-900 mb-2">Get Instant Beta Access</h3>
+                            <p className="text-neutral-600">Click "Request Beta Access" and get approved instantly - no waiting!</p>
+                          </div>
+                        </div>
 
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-semibold text-sm">
-                        3
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="font-semibold text-neutral-900 mb-2">Install as Test Add-on</h3>
-                        <p className="text-neutral-600">Follow the simple installation steps to add CellPilot to your Google Sheets</p>
-                      </div>
-                    </div>
+                        <div className="flex items-start">
+                          <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-semibold text-sm">
+                            3
+                          </div>
+                          <div className="ml-4">
+                            <h3 className="font-semibold text-neutral-900 mb-2">Install as Test Add-on</h3>
+                            <p className="text-neutral-600">Follow the simple installation steps to add CellPilot to your Google Sheets</p>
+                          </div>
+                        </div>
 
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
+                        <div className="flex items-start">
+                          <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <div className="ml-4">
+                            <h3 className="font-semibold text-neutral-900 mb-2">Start Using CellPilot</h3>
+                            <p className="text-neutral-600">Open any Google Sheet and find CellPilot in the Extensions menu</p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="ml-4">
-                        <h3 className="font-semibold text-neutral-900 mb-2">Start Using CellPilot</h3>
-                        <p className="text-neutral-600">Open any Google Sheet and find CellPilot in the Extensions menu</p>
-                      </div>
-                    </div>
-                  </div>
+                    </>
+                  )}
 
                   <div className="mt-8 border-t pt-8">
                     <h3 className="text-lg font-semibold text-neutral-900 mb-4">Alternative: Developer Installation</h3>

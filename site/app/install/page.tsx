@@ -17,5 +17,12 @@ export default async function InstallPage() {
     redirect('/auth?redirect=/install')
   }
 
-  return <InstallContent />
+  // Get user profile to check beta access
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('beta_access, beta_requested_at, beta_approved_at, subscription_tier')
+    .eq('id', user.id)
+    .single()
+
+  return <InstallContent user={user} profile={profile} />
 }
