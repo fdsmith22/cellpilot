@@ -11,8 +11,8 @@ interface BetaAccessCardProps {
 
 export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps) {
   const [loading, setLoading] = useState(false)
-  const [requested, setRequested] = useState(profile?.beta_requested_at !== null)
-  const [approved, setApproved] = useState(profile?.beta_access === true)
+  const [requested, setRequested] = useState(!!profile?.beta_requested_at)
+  const [approved, setApproved] = useState(!!profile?.beta_access)
   const router = useRouter()
   const supabase = createClient()
 
@@ -20,7 +20,7 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
     setLoading(true)
     try {
       const { error } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .update({ 
           beta_requested_at: new Date().toISOString(),
           beta_notes: 'Requested via dashboard'
@@ -57,7 +57,7 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
               You have been approved for CellPilot beta access. Click below to install.
             </p>
             <p className="text-sm text-green-600 mb-6">
-              Approved on: {new Date(profile.beta_approved_at).toLocaleDateString()}
+              Approved on: {profile.beta_approved_at ? new Date(profile.beta_approved_at).toLocaleDateString() : 'Recently'}
             </p>
           </div>
           <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +103,7 @@ export default function BetaAccessCard({ profile, userId }: BetaAccessCardProps)
               Your beta access request is being reviewed. We'll notify you once approved!
             </p>
             <p className="text-sm text-amber-600">
-              Requested on: {new Date(profile.beta_requested_at).toLocaleDateString()}
+              Requested on: {profile.beta_requested_at ? new Date(profile.beta_requested_at).toLocaleDateString() : 'Just now'}
             </p>
           </div>
           <svg className="w-8 h-8 text-amber-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">

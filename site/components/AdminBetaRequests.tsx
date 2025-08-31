@@ -29,7 +29,7 @@ export default function AdminBetaRequests({ requests: initialRequests }: AdminBe
     setLoading(userId)
     try {
       const { error } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .update({ 
           beta_access: true,
           beta_approved_at: new Date().toISOString()
@@ -58,7 +58,7 @@ export default function AdminBetaRequests({ requests: initialRequests }: AdminBe
     setLoading(userId)
     try {
       const { error } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .update({ 
           beta_access: false,
           beta_approved_at: null

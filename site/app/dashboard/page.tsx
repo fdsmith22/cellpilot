@@ -93,8 +93,15 @@ export default async function DashboardPage() {
             </Link>
           </div>
 
-          {/* Beta Access Card - Show for all beta users */}
-          {(profile?.beta_requested_at || profile?.beta_access) && (
+          {/* Beta Access Card - Show for users who haven't requested or have requested/been approved */}
+          {!profile?.beta_access && (
+            <div className="mb-8">
+              <BetaAccessCard profile={profile} userId={user.id} />
+            </div>
+          )}
+          
+          {/* Show success card for approved users */}
+          {profile?.beta_access && (
             <div className="mb-8">
               <BetaAccessCard profile={profile} userId={user.id} />
             </div>
