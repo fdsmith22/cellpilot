@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg viewBox="0 0 200 60" width="200" height="60" xmlns="http://www.w3.org/2000/svg">
   <g transform="translate(8, 8)">
     <path d="M5 5 Q5 0 10 0 L35 0 Q40 0 40 5 L40 35 Q40 40 35 40 L10 40 Q5 40 5 35 Z" 
@@ -28,7 +29,7 @@
       <line x1="0" y1="-6" x2="0" y2="6" stroke="#2563eb" stroke-width="1"/>
     </g>
   </g>
-  <text x="60" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="600" fill="#1f2937">
+  <text x="60" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="600" fill="#1f2937">
     Cell<tspan fill="#2563eb">Pilot</tspan>
   </text>
 </svg>

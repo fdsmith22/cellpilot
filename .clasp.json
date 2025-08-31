@@ -1,0 +1,42 @@
+{
+  "scriptId": "1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O",
+  "rootDir": ".",
+  "fileExtensions": [
+    "js",
+    "gs",
+    "html",
+    "json"
+  ],
+  "filePushOrder": [
+    "src/Config.js",
+    "src/Logger.js",
+    "src/FeatureGate.js",
+    "src/Utils.js",
+    "src/UndoManager.js",
+    "src/TemplateBuilder.js",
+    "src/TableParser.js",
+    "src/SmartTableParser.js",
+    "src/ApiIntegration.js",
+    "src/DataCleaner.js",
+    "src/FormulaBuilder.js",
+    "src/ExcelMigration.js",
+    "src/UIComponents.js",
+    "src/MLBackend.js",
+    "src/UserPreferenceLearning.js",
+    "src/AdvancedRestructuring.js",
+    "src/IndustryTemplates.js",
+    "src/RealEstateTemplate.js",
+    "src/ConstructionTemplate.js",
+    "src/HealthcareTemplate.js",
+    "src/MarketingTemplate.js",
+    "src/EcommerceTemplate.js",
+    "src/ProfessionalServicesTemplate.js",
+    "src/ConditionalFormattingWizard.js",
+    "src/CrossSheetFormulaBuilder.js",
+    "src/DataPipelineManager.js",
+    "src/DataValidationGenerator.js",
+    "src/FormulaDebugger.js",
+    "src/PivotTableAssistant.js",
+    "src/Code.js"
+  ]
+}

@@ -59,4 +59,3 @@ test/
 # Cache directories
 .cache/
 .parcel-cache/
-.clasp.json
