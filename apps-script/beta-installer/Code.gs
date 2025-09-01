@@ -681,6 +681,15 @@ function convertXlookupToVlookup(formula) { return CellPilot.convertXlookupToVlo
 function convertStructuredRefs(formula) { return CellPilot.convertStructuredRefs(formula); }
 function optimizeVolatileFunction(formula) { return CellPilot.optimizeVolatileFunction(formula); }
 function fixRefError(cellA1) { return CellPilot.fixRefError(cellA1); }
+function importExcelData(pastedData) { return CellPilot.importExcelData(pastedData); }
+function parseExcelValue(value) { return CellPilot.parseExcelValue(value); }
+function convertExcelFormula(formula) { return CellPilot.convertExcelFormula(formula); }
+function convertDateFunctions(formula) { return CellPilot.convertDateFunctions(formula); }
+function convertDynamicArrays(formula) { return CellPilot.convertDynamicArrays(formula); }
+function detectPivotTable(range) { return CellPilot.detectPivotTable(range); }
+function convertConditionalFormatting(sheet) { return CellPilot.convertConditionalFormatting(sheet); }
+function detectVBAMacros(content) { return CellPilot.detectVBAMacros(content); }
+function createMigrationReport(migrationResults) { return CellPilot.createMigrationReport(migrationResults); }
 function showExcelMigration() { return CellPilot.showExcelMigration(); }
 
 // ============================================

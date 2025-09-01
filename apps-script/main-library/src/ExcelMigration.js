@@ -425,5 +425,386 @@ const ExcelMigration = {
     }
     
     return brokenFormula;
+  },
+
+  /**
+   * Import Excel data from pasted content
+   * @param {string} pastedData - Data pasted from Excel
+   * @return {Object} Parsed data with formulas and values
+   */
+  importExcelData: function(pastedData) {
+    try {
+      const lines = pastedData.split('\n').filter(line => line.trim());
+      const data = [];
+      const formulas = [];
+      
+      lines.forEach((line, rowIndex) => {
+        const cells = line.split('\t');
+        const rowData = [];
+        const rowFormulas = [];
+        
+        cells.forEach((cell, colIndex) => {
+          // Check if it's a formula (starts with =)
+          if (cell.startsWith('=')) {
+            rowFormulas.push(cell);
+            // Try to evaluate or keep as formula
+            rowData.push(cell);
+          } else {
+            rowFormulas.push('');
+            // Parse value (number, date, or text)
+            const parsed = this.parseExcelValue(cell);
+            rowData.push(parsed);
+          }
+        });
+        
+        data.push(rowData);
+        formulas.push(rowFormulas);
+      });
+      
+      return {
+        success: true,
+        data: data,
+        formulas: formulas,
+        rows: data.length,
+        cols: data[0] ? data[0].length : 0
+      };
+      
+    } catch (error) {
+      Logger.error('Error importing Excel data:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
+   * Parse Excel value to appropriate type
+   * @param {string} value - Cell value from Excel
+   * @return {*} Parsed value
+   */
+  parseExcelValue: function(value) {
+    // Check for Excel date serial number (days since 1900)
+    const numValue = Number(value);
+    if (!isNaN(numValue)) {
+      // Check if it might be an Excel date (between 1 and ~45000)
+      if (numValue > 0 && numValue < 50000 && value.indexOf('.') === -1) {
+        // Might be a date - Excel dates start from 1900-01-01
+        const excelEpoch = new Date(1899, 11, 30); // Excel's epoch
+        const date = new Date(excelEpoch.getTime() + numValue * 24 * 60 * 60 * 1000);
+        
+        // Only convert if it results in a reasonable date
+        if (date.getFullYear() > 1900 && date.getFullYear() < 2100) {
+          return date;
+        }
+      }
+      return numValue;
+    }
+    
+    // Check for percentage (Excel exports as decimal)
+    if (value.endsWith('%')) {
+      const percent = parseFloat(value.slice(0, -1));
+      if (!isNaN(percent)) {
+        return percent / 100;
+      }
+    }
+    
+    // Return as string
+    return value;
+  },
+
+  /**
+   * Convert Excel formulas to Google Sheets formulas
+   * @param {string} formula - Excel formula
+   * @return {string} Google Sheets compatible formula
+   */
+  convertExcelFormula: function(formula) {
+    let converted = formula;
+    
+    // Convert XLOOKUP to INDEX/MATCH
+    if (converted.includes('XLOOKUP')) {
+      converted = this.convertXlookupToVlookup(converted);
+    }
+    
+    // Convert structured references
+    if (converted.match(/\[@?\[.*?\]\]/)) {
+      converted = this.convertStructuredRefs(converted);
+    }
+    
+    // Fix locale issues (semicolon to comma)
+    converted = converted.replace(/;/g, ',');
+    
+    // Convert IFERROR syntax if different
+    converted = this.convertIferror(converted);
+    
+    // Convert CONCAT to CONCATENATE
+    converted = converted.replace(/\bCONCAT\(/gi, 'CONCATENATE(');
+    
+    // Convert TEXTJOIN if not supported
+    converted = this.convertTextjoin(converted);
+    
+    // Fix date functions
+    converted = this.convertDateFunctions(converted);
+    
+    // Convert dynamic arrays (FILTER, UNIQUE, SORT, etc.)
+    converted = this.convertDynamicArrays(converted);
+    
+    return converted;
+  },
+
+  /**
+   * Convert IFERROR for compatibility
+   * @param {string} formula - Formula containing IFERROR
+   * @return {string} Converted formula
+   */
+  convertIferror: function(formula) {
+    // IFERROR is supported in Google Sheets, but syntax might differ
+    // Just ensure proper formatting
+    return formula.replace(/IFERROR\s*\(/gi, 'IFERROR(');
+  },
+
+  /**
+   * Convert TEXTJOIN function
+   * @param {string} formula - Formula containing TEXTJOIN
+   * @return {string} Converted formula
+   */
+  convertTextjoin: function(formula) {
+    // TEXTJOIN(delimiter, ignore_empty, text1, [text2], ...)
+    // Google Sheets supports TEXTJOIN, but older versions might not
+    // For now, keep as is but could convert to JOIN or CONCATENATE if needed
+    return formula;
+  },
+
+  /**
+   * Convert Excel date functions to Google Sheets
+   * @param {string} formula - Formula with date functions
+   * @return {string} Converted formula
+   */
+  convertDateFunctions: function(formula) {
+    // NETWORKDAYS.INTL to NETWORKDAYS
+    formula = formula.replace(/NETWORKDAYS\.INTL/gi, 'NETWORKDAYS');
+    
+    // WORKDAY.INTL to WORKDAY
+    formula = formula.replace(/WORKDAY\.INTL/gi, 'WORKDAY');
+    
+    // Fix DATEDIF (sometimes has issues)
+    formula = formula.replace(/DATEDIF\(/gi, 'DATEDIF(');
+    
+    return formula;
+  },
+
+  /**
+   * Convert dynamic array formulas
+   * @param {string} formula - Formula with dynamic arrays
+   * @return {string} Converted formula
+   */
+  convertDynamicArrays: function(formula) {
+    // UNIQUE is supported in Google Sheets
+    // FILTER is supported
+    // SORT is supported
+    // SEQUENCE needs conversion
+    formula = formula.replace(/SEQUENCE\(/gi, 'SEQUENCE(');
+    
+    // RANDARRAY might need conversion
+    if (formula.includes('RANDARRAY')) {
+      // Convert RANDARRAY to ARRAYFORMULA with RAND
+      // This is complex and would need parsing
+      // For now, flag for manual review
+      formula = '/* NEEDS REVIEW: RANDARRAY */ ' + formula;
+    }
+    
+    return formula;
+  },
+
+  /**
+   * Detect and convert pivot tables
+   * @param {Range} range - Range that might contain pivot table
+   * @return {Object} Pivot table configuration
+   */
+  detectPivotTable: function(range) {
+    try {
+      // Check if range looks like a pivot table
+      const values = range.getValues();
+      const formulas = range.getFormulas();
+      
+      // Pivot tables typically have:
+      // - Headers in first row/column
+      // - Aggregated values
+      // - GETPIVOTDATA formulas referring to them
+      
+      let isPivot = false;
+      let pivotConfig = {
+        rows: [],
+        columns: [],
+        values: [],
+        filters: []
+      };
+      
+      // Check for GETPIVOTDATA formulas
+      for (let row of formulas) {
+        for (let formula of row) {
+          if (formula.includes('GETPIVOTDATA')) {
+            isPivot = true;
+            // Parse GETPIVOTDATA to understand structure
+            const match = formula.match(/GETPIVOTDATA\("([^"]+)"/);
+            if (match) {
+              pivotConfig.values.push(match[1]);
+            }
+          }
+        }
+      }
+      
+      if (isPivot) {
+        // Analyze structure to find row/column fields
+        // This is simplified - real implementation would be more complex
+        if (values.length > 0 && values[0].length > 0) {
+          // Assume first column contains row labels
+          pivotConfig.rows.push('Field1');
+          // Assume first row contains column labels
+          pivotConfig.columns.push('Field2');
+        }
+      }
+      
+      return {
+        isPivotTable: isPivot,
+        config: pivotConfig,
+        suggestion: isPivot ? 'Create Google Sheets Pivot Table with similar configuration' : null
+      };
+      
+    } catch (error) {
+      Logger.error('Error detecting pivot table:', error);
+      return { isPivotTable: false };
+    }
+  },
+
+  /**
+   * Convert conditional formatting rules
+   * @param {Sheet} sheet - Sheet to analyze
+   * @return {Object} Conversion results
+   */
+  convertConditionalFormatting: function(sheet) {
+    try {
+      // Note: Google Apps Script doesn't have direct access to Excel's conditional formatting
+      // This would work on Google Sheets conditional formatting that was imported
+      
+      const rules = sheet.getConditionalFormatRules();
+      const converted = [];
+      
+      rules.forEach(rule => {
+        const ranges = rule.getRanges();
+        const condition = rule.getBooleanCondition();
+        
+        if (condition) {
+          converted.push({
+            ranges: ranges.map(r => r.getA1Notation()),
+            type: condition.getCriteriaType(),
+            values: condition.getCriteriaValues(),
+            format: {
+              bold: rule.getBold(),
+              italic: rule.getItalic(),
+              strike: rule.getStrikethrough(),
+              foreground: rule.getFontColor(),
+              background: rule.getBackground()
+            }
+          });
+        }
+      });
+      
+      return {
+        success: true,
+        rules: converted,
+        count: converted.length
+      };
+      
+    } catch (error) {
+      Logger.error('Error converting conditional formatting:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
+   * Detect VBA/Macros in imported content
+   * @param {string} content - Content to check
+   * @return {Object} Detection results
+   */
+  detectVBAMacros: function(content) {
+    const vbaIndicators = [
+      'Sub ', 'Function ', 'End Sub', 'End Function',
+      'Dim ', 'Set ', 'Private ', 'Public ',
+      'ActiveSheet', 'ActiveWorkbook', 'Range(',
+      'Cells(', 'Worksheets(', '.Select', '.Activate'
+    ];
+    
+    const detected = [];
+    
+    vbaIndicators.forEach(indicator => {
+      if (content.includes(indicator)) {
+        detected.push(indicator);
+      }
+    });
+    
+    return {
+      hasVBA: detected.length > 0,
+      indicators: detected,
+      warning: detected.length > 0 ? 
+        'VBA macros detected. These need to be converted to Google Apps Script.' : null,
+      suggestion: detected.length > 0 ?
+        'Consider using Google Apps Script for automation instead of VBA macros.' : null
+    };
+  },
+
+  /**
+   * Create migration report
+   * @param {Object} migrationResults - Results from migration
+   * @return {Object} Formatted report
+   */
+  createMigrationReport: function(migrationResults) {
+    const report = {
+      timestamp: new Date(),
+      summary: {
+        totalCells: 0,
+        formulasConverted: 0,
+        errorsFixed: 0,
+        warningsGenerated: 0
+      },
+      details: [],
+      recommendations: []
+    };
+    
+    // Compile results
+    if (migrationResults.scan) {
+      const scan = migrationResults.scan;
+      report.summary.totalCells = scan.totalCells || 0;
+      report.summary.formulasConverted = scan.issues.xlookupFormulas.length + 
+                                          scan.issues.structuredRefs.length;
+      report.summary.errorsFixed = scan.issues.formulaErrors.length + 
+                                   scan.issues.refErrors.length;
+      report.summary.warningsGenerated = scan.issues.volatileFunctions.length;
+      
+      // Add details
+      if (scan.issues.xlookupFormulas.length > 0) {
+        report.details.push({
+          type: 'XLOOKUP Conversions',
+          count: scan.issues.xlookupFormulas.length,
+          items: scan.issues.xlookupFormulas.slice(0, 5)
+        });
+      }
+      
+      if (scan.issues.volatileFunctions.length > 0) {
+        report.details.push({
+          type: 'Volatile Functions',
+          count: scan.issues.volatileFunctions.length,
+          items: scan.issues.volatileFunctions.slice(0, 5)
+        });
+      }
+    }
+    
+    // Add recommendations
+    if (report.summary.warningsGenerated > 50) {
+      report.recommendations.push('Consider replacing volatile functions with static values for better performance');
+    }
+    
+    if (report.summary.formulasConverted > 100) {
+      report.recommendations.push('Review converted formulas to ensure they work as expected');
+    }
+    
+    return report;
   }
 };

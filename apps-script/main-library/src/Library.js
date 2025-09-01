@@ -136,6 +136,15 @@ var convertXlookupToVlookup = convertXlookupToVlookup || function(formula) { ret
 var convertStructuredRefs = convertStructuredRefs || function(formula) { return ExcelMigration.convertStructuredRefs(formula); };
 var optimizeVolatileFunction = optimizeVolatileFunction || function(formula) { return ExcelMigration.optimizeVolatileFunction(formula); };
 var fixRefError = fixRefError || function(cellA1) { return ExcelMigration.fixRefError(cellA1); };
+var importExcelData = importExcelData || function(pastedData) { return ExcelMigration.importExcelData(pastedData); };
+var parseExcelValue = parseExcelValue || function(value) { return ExcelMigration.parseExcelValue(value); };
+var convertExcelFormula = convertExcelFormula || function(formula) { return ExcelMigration.convertExcelFormula(formula); };
+var convertDateFunctions = convertDateFunctions || function(formula) { return ExcelMigration.convertDateFunctions(formula); };
+var convertDynamicArrays = convertDynamicArrays || function(formula) { return ExcelMigration.convertDynamicArrays(formula); };
+var detectPivotTable = detectPivotTable || function(range) { return ExcelMigration.detectPivotTable(range); };
+var convertConditionalFormatting = convertConditionalFormatting || function(sheet) { return ExcelMigration.convertConditionalFormatting(sheet); };
+var detectVBAMacros = detectVBAMacros || function(content) { return ExcelMigration.detectVBAMacros(content); };
+var createMigrationReport = createMigrationReport || function(migrationResults) { return ExcelMigration.createMigrationReport(migrationResults); };
 var showExcelMigration = showExcelMigration || function() { return showExcelMigration(); };
 
 // Smart Assistant Functions
