@@ -2258,8 +2258,20 @@ function extractSheetData(source) {
   return CellPilot.extractSheetData(source); 
 }
 
+function getVisibleRange(sheet) { 
+  return CellPilot.getVisibleRange(sheet); 
+}
+
 function analyzeDataWithAI(data) { 
   return CellPilot.analyzeDataWithAI(data); 
+}
+
+function calculateStatistics(data) { 
+  return CellPilot.calculateStatistics(data); 
+}
+
+function detectTrend(data) { 
+  return CellPilot.detectTrend(data); 
 }
 
 function generateSlideStructure(analysis, config) { 
@@ -2268,6 +2280,42 @@ function generateSlideStructure(analysis, config) {
 
 function createGoogleSlides(structure, config) { 
   return CellPilot.createGoogleSlides(structure, config); 
+}
+
+function createSlide(presentation, slideData, index, template) { 
+  return CellPilot.createSlide(presentation, slideData, index, template); 
+}
+
+function createTitleSlide(slide, slideData, template) { 
+  return CellPilot.createTitleSlide(slide, slideData, template); 
+}
+
+function createContentSlide(slide, slideData, template) { 
+  return CellPilot.createContentSlide(slide, slideData, template); 
+}
+
+function createChartSlide(slide, slideData, template) { 
+  return CellPilot.createChartSlide(slide, slideData, template); 
+}
+
+function createMetricsSlide(slide, slideData, template) { 
+  return CellPilot.createMetricsSlide(slide, slideData, template); 
+}
+
+function createThankYouSlide(slide, slideData, template) { 
+  return CellPilot.createThankYouSlide(slide, slideData, template); 
+}
+
+function createDataSlide(slide, slideData, template) { 
+  return CellPilot.createDataSlide(slide, slideData, template); 
+}
+
+function applyTemplateToPresentation(presentation, template) { 
+  return CellPilot.applyTemplateToPresentation(presentation, template); 
+}
+
+function mapChartType(type) { 
+  return CellPilot.mapChartType(type); 
 }
 
 function recommendCharts(analysis) { 
@@ -2290,12 +2338,44 @@ function extractKeyMetrics(data, analysis) {
   return CellPilot.extractKeyMetrics(data, analysis); 
 }
 
+function formatDataOverview(analysis) { 
+  return CellPilot.formatDataOverview(analysis); 
+}
+
+function cleanDataForPresentation(data, headers) { 
+  return CellPilot.cleanDataForPresentation(data, headers); 
+}
+
+function detectDataTypes(data) { 
+  return CellPilot.detectDataTypes(data); 
+}
+
+function detectColumnDataType(columnData) { 
+  return CellPilot.detectColumnDataType(columnData); 
+}
+
+function generateDefaultHeaders(count) { 
+  return CellPilot.generateDefaultHeaders(count); 
+}
+
 function analyzeTimeSeries(dateData) { 
   return CellPilot.analyzeTimeSeries(dateData); 
 }
 
+function detectFrequency(avgInterval) { 
+  return CellPilot.detectFrequency(avgInterval); 
+}
+
 function analyzeCategories(categoryData) { 
   return CellPilot.analyzeCategories(categoryData); 
+}
+
+function formatNumber(num) { 
+  return CellPilot.formatNumber(num); 
+}
+
+function chunkArray(array, size) { 
+  return CellPilot.chunkArray(array, size); 
 }
 
 function trackPresentationCreation(config, result) { 
