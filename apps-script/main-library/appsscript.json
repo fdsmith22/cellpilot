@@ -23,7 +23,9 @@
   "oauthScopes": [
     "https://www.googleapis.com/auth/spreadsheets.currentonly",
     "https://www.googleapis.com/auth/script.locale",
-    "https://www.googleapis.com/auth/script.container.ui"
+    "https://www.googleapis.com/auth/script.container.ui",
+    "https://www.googleapis.com/auth/presentations",
+    "https://www.googleapis.com/auth/drive.file"
   ],
   "urlFetchWhitelist": [
     "https://www.cellpilot.io/*",

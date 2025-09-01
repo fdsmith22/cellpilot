@@ -709,6 +709,22 @@ function saveToGoogleDrive(content, filename, mimeType) { return CellPilot.saveT
 function prepareDataForExport(options) { return CellPilot.prepareDataForExport(options); }
 function showDataPipelineManager() { return CellPilot.showDataPipelineManager(); }
 
+// CellM8 Presentation Helper Functions
+function showCellM8() { return CellPilot.showCellM8(); }
+function createPresentation(config) { return CellPilot.createPresentation(config); }
+function extractSheetData(source) { return CellPilot.extractSheetData(source); }
+function analyzeDataWithAI(data) { return CellPilot.analyzeDataWithAI(data); }
+function generateSlideStructure(analysis, config) { return CellPilot.generateSlideStructure(analysis, config); }
+function createGoogleSlides(structure, config) { return CellPilot.createGoogleSlides(structure, config); }
+function recommendCharts(analysis) { return CellPilot.recommendCharts(analysis); }
+function generateInsights(data, analysis) { return CellPilot.generateInsights(data, analysis); }
+function generateRecommendations(analysis) { return CellPilot.generateRecommendations(analysis); }
+function generateNextSteps(analysis) { return CellPilot.generateNextSteps(analysis); }
+function extractKeyMetrics(data, analysis) { return CellPilot.extractKeyMetrics(data, analysis); }
+function analyzeTimeSeries(dateData) { return CellPilot.analyzeTimeSeries(dateData); }
+function analyzeCategories(categoryData) { return CellPilot.analyzeCategories(categoryData); }
+function trackPresentationCreation(config, result) { return CellPilot.trackPresentationCreation(config, result); }
+
 // ============================================
 // END OF PROXY FUNCTIONS
 // ============================================`;

@@ -157,6 +157,22 @@ var detectVBAMacros = detectVBAMacros || function(content) { return ExcelMigrati
 var createMigrationReport = createMigrationReport || function(migrationResults) { return ExcelMigration.createMigrationReport(migrationResults); };
 var showExcelMigration = showExcelMigration || function() { return showExcelMigration(); };
 
+// CellM8 Presentation Functions
+var showCellM8 = showCellM8 || function() { return showCellM8(); };
+var createPresentation = createPresentation || function(config) { return CellM8.createPresentation(config); };
+var extractSheetData = extractSheetData || function(source) { return CellM8.extractSheetData(source); };
+var analyzeDataWithAI = analyzeDataWithAI || function(data) { return CellM8.analyzeDataWithAI(data); };
+var generateSlideStructure = generateSlideStructure || function(analysis, config) { return CellM8.generateSlideStructure(analysis, config); };
+var createGoogleSlides = createGoogleSlides || function(structure, config) { return CellM8.createGoogleSlides(structure, config); };
+var recommendCharts = recommendCharts || function(analysis) { return CellM8.recommendCharts(analysis); };
+var generateInsights = generateInsights || function(data, analysis) { return CellM8.generateInsights(data, analysis); };
+var generateRecommendations = generateRecommendations || function(analysis) { return CellM8.generateRecommendations(analysis); };
+var generateNextSteps = generateNextSteps || function(analysis) { return CellM8.generateNextSteps(analysis); };
+var extractKeyMetrics = extractKeyMetrics || function(data, analysis) { return CellM8.extractKeyMetrics(data, analysis); };
+var analyzeTimeSeries = analyzeTimeSeries || function(dateData) { return CellM8.analyzeTimeSeries(dateData); };
+var analyzeCategories = analyzeCategories || function(categoryData) { return CellM8.analyzeCategories(categoryData); };
+var trackPresentationCreation = trackPresentationCreation || function(config, result) { return CellM8.trackPresentationCreation(config, result); };
+
 // Smart Assistant Functions
 var getSmartSuggestions = getSmartSuggestions || function() { return getSmartSuggestions(); };
 var applySmartSuggestion = applySmartSuggestion || function(suggestionId) { return applySmartSuggestion(suggestionId); };

@@ -903,6 +903,26 @@ function createMainSidebarHtml(context) {
         <? } ?>
       </div>
       
+      <!-- CellM8 Presentation Helper -->
+      <div style="margin-bottom: 20px;">
+        <div class="card" style="padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 8px; right: 8px;">
+            <span style="display: inline-block; padding: 3px 8px; background: rgba(255, 255, 255, 0.9); color: #764ba2; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 10px;">
+              NEW
+            </span>
+          </div>
+          <h3 style="font-size: 16px; font-weight: 700; color: white; margin-bottom: 6px;">
+            CellM8 Presentation Helper
+          </h3>
+          <p style="font-size: 12px; color: rgba(255, 255, 255, 0.9); margin-bottom: 12px; line-height: 1.4;">
+            Transform your spreadsheet data into stunning Google Slides presentations with AI-powered intelligence
+          </p>
+          <button onclick="google.script.run.showCellM8()" style="width: 100%; padding: 10px 16px; background: white; color: #667eea; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+            Create Presentation →
+          </button>
+        </div>
+      </div>
+      
       <!-- Quick Actions Grid -->
       <div style="margin-bottom: 16px; position: relative;">
         <h3 style="font-size: 12px; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Quick Actions</h3>
@@ -1713,6 +1733,20 @@ function showAdvancedRestructuring() {
     
   } catch (error) {
     showErrorDialog('Error', 'Failed to load Advanced Restructuring: ' + error.message);
+  }
+}
+
+/**
+ * Show CellM8 Presentation Helper
+ */
+function showCellM8() {
+  try {
+    const html = HtmlService.createHtmlOutputFromFile('CellM8Template')
+      .setTitle('CellM8 - Presentation Helper')
+      .setWidth(320);
+    SpreadsheetApp.getUi().showSidebar(html);
+  } catch (error) {
+    showErrorDialog('Failed to load CellM8', error.message);
   }
 }
 
