@@ -2237,6 +2237,69 @@ function showExcelMigration() {
 }
 
 /**
+ * Data Pipeline Functions
+ */
+function createDataPipeline(config) { 
+  return CellPilot.createDataPipeline(config); 
+}
+
+function runDataPipeline(pipelineId) { 
+  return CellPilot.runDataPipeline(pipelineId); 
+}
+
+function getDataPipelines() { 
+  return CellPilot.getDataPipelines(); 
+}
+
+function deleteDataPipeline(pipelineId) { 
+  return CellPilot.deleteDataPipeline(pipelineId); 
+}
+
+function importData(source) { 
+  return CellPilot.importData(source); 
+}
+
+function exportData(options) { 
+  return CellPilot.exportData(options); 
+}
+
+function exportToCSV(dataToExport, options) { 
+  return CellPilot.exportToCSV(dataToExport, options); 
+}
+
+function exportToJSON(dataToExport, options) { 
+  return CellPilot.exportToJSON(dataToExport, options); 
+}
+
+function exportToXML(dataToExport, options) { 
+  return CellPilot.exportToXML(dataToExport, options); 
+}
+
+function exportToHTML(dataToExport, options) { 
+  return CellPilot.exportToHTML(dataToExport, options); 
+}
+
+function exportToAPI(dataToExport, options) { 
+  return CellPilot.exportToAPI(dataToExport, options); 
+}
+
+function exportToEmail(dataToExport, options) { 
+  return CellPilot.exportToEmail(dataToExport, options); 
+}
+
+function saveToGoogleDrive(content, filename, mimeType) { 
+  return CellPilot.saveToGoogleDrive(content, filename, mimeType); 
+}
+
+function prepareDataForExport(options) { 
+  return CellPilot.prepareDataForExport(options); 
+}
+
+function showDataPipelineManager() { 
+  return CellPilot.showDataPipelineManager(); 
+}
+
+/**
 * ================================
 * END OF PROXY FUNCTIONS
 * ================================

@@ -1087,5 +1087,912 @@ const DataPipelineManager = {
     if (qualityScores.length === 0) return 0;
     
     return qualityScores.reduce((sum, score) => sum + score, 0) / qualityScores.length;
+  },
+
+  /**
+   * Export data to various formats
+   * @param {Object} options - Export configuration
+   * @return {Object} Export result
+   */
+  exportData: function(options) {
+    try {
+      const startTime = Date.now();
+      let result = null;
+      
+      // Validate options
+      if (!options.format) {
+        throw new Error('Export format is required');
+      }
+      
+      // Get data to export
+      const dataToExport = this.prepareDataForExport(options);
+      
+      // Export based on format
+      switch (options.format.toLowerCase()) {
+        case 'csv':
+          result = this.exportToCSV(dataToExport, options);
+          break;
+        case 'json':
+          result = this.exportToJSON(dataToExport, options);
+          break;
+        case 'xml':
+          result = this.exportToXML(dataToExport, options);
+          break;
+        case 'html':
+          result = this.exportToHTML(dataToExport, options);
+          break;
+        case 'drive':
+          result = this.exportToDrive(dataToExport, options);
+          break;
+        case 'api':
+          result = this.exportToAPI(dataToExport, options);
+          break;
+        case 'email':
+          result = this.exportToEmail(dataToExport, options);
+          break;
+        default:
+          throw new Error('Unsupported export format: ' + options.format);
+      }
+      
+      if (result.success) {
+        const duration = Date.now() - startTime;
+        
+        // Track export for analytics
+        this.trackExport(options, result, duration);
+        
+        // Apply ML enhancements if enabled
+        if (this.mlEnabled) {
+          this.learnFromExport(options, result);
+        }
+      }
+      
+      return result;
+      
+    } catch (error) {
+      Logger.error('Error exporting data:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  },
+
+  /**
+   * Prepare data for export from sheet
+   * @param {Object} options - Export options
+   * @return {Object} Data ready for export
+   */
+  prepareDataForExport: function(options) {
+    try {
+      const sheet = options.sheet ? 
+        SpreadsheetApp.getActiveSpreadsheet().getSheetByName(options.sheet) :
+        SpreadsheetApp.getActiveSheet();
+      
+      if (!sheet) {
+        throw new Error('Sheet not found: ' + (options.sheet || 'active sheet'));
+      }
+      
+      let range;
+      if (options.range) {
+        range = sheet.getRange(options.range);
+      } else if (options.selection) {
+        range = sheet.getActiveRange();
+      } else {
+        // Get all data
+        range = sheet.getDataRange();
+      }
+      
+      const values = range.getValues();
+      
+      // Apply filters if specified
+      let filteredData = values;
+      if (options.filters && options.filters.length > 0) {
+        filteredData = this.applyExportFilters(values, options.filters);
+      }
+      
+      // Apply transformations if specified
+      if (options.transformations && options.transformations.length > 0) {
+        filteredData = this.applyExportTransformations(filteredData, options.transformations);
+      }
+      
+      // Determine headers
+      const headers = options.includeHeaders !== false ? filteredData[0] : null;
+      const data = headers ? filteredData.slice(1) : filteredData;
+      
+      return {
+        headers: headers,
+        data: data,
+        metadata: {
+          sheetName: sheet.getName(),
+          rowCount: data.length,
+          columnCount: data[0] ? data[0].length : 0,
+          exportDate: new Date()
+        }
+      };
+      
+    } catch (error) {
+      Logger.error('Error preparing data for export:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Export data to CSV format
+   * @param {Object} dataToExport - Prepared data
+   * @param {Object} options - Export options
+   * @return {Object} Export result
+   */
+  exportToCSV: function(dataToExport, options) {
+    try {
+      const delimiter = options.delimiter || ',';
+      const lineEnding = options.lineEnding || '\n';
+      const quoteChar = options.quoteChar || '"';
+      
+      let csvContent = '';
+      
+      // Add headers if present
+      if (dataToExport.headers) {
+        csvContent += this.formatCSVRow(dataToExport.headers, delimiter, quoteChar) + lineEnding;
+      }
+      
+      // Add data rows
+      dataToExport.data.forEach(row => {
+        csvContent += this.formatCSVRow(row, delimiter, quoteChar) + lineEnding;
+      });
+      
+      // Handle output destination
+      if (options.destination === 'drive') {
+        return this.saveToGoogleDrive(csvContent, options.filename || 'export.csv', 'text/csv');
+      } else if (options.destination === 'download') {
+        return {
+          success: true,
+          content: csvContent,
+          mimeType: 'text/csv',
+          filename: options.filename || 'export.csv'
+        };
+      } else {
+        return {
+          success: true,
+          content: csvContent,
+          rowsExported: dataToExport.data.length
+        };
+      }
+      
+    } catch (error) {
+      Logger.error('Error exporting to CSV:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  },
+
+  /**
+   * Format a row for CSV output
+   * @param {Array} row - Row data
+   * @param {string} delimiter - Field delimiter
+   * @param {string} quoteChar - Quote character
+   * @return {string} Formatted CSV row
+   */
+  formatCSVRow: function(row, delimiter, quoteChar) {
+    return row.map(cell => {
+      // Convert to string
+      let value = cell === null || cell === undefined ? '' : String(cell);
+      
+      // Check if quoting is needed
+      if (value.includes(delimiter) || value.includes(quoteChar) || value.includes('\n') || value.includes('\r')) {
+        // Escape quotes by doubling them
+        value = value.replace(new RegExp(quoteChar, 'g'), quoteChar + quoteChar);
+        // Wrap in quotes
+        value = quoteChar + value + quoteChar;
+      }
+      
+      return value;
+    }).join(delimiter);
+  },
+
+  /**
+   * Export data to JSON format
+   * @param {Object} dataToExport - Prepared data
+   * @param {Object} options - Export options
+   * @return {Object} Export result
+   */
+  exportToJSON: function(dataToExport, options) {
+    try {
+      let jsonData;
+      
+      if (options.jsonFormat === 'array') {
+        // Export as array of arrays
+        jsonData = dataToExport.headers ? 
+          [dataToExport.headers, ...dataToExport.data] : 
+          dataToExport.data;
+      } else if (options.jsonFormat === 'nested' && options.nestingKey) {
+        // Create nested structure based on a key column
+        jsonData = this.createNestedJSON(dataToExport, options.nestingKey);
+      } else {
+        // Default: array of objects
+        if (!dataToExport.headers) {
+          throw new Error('Headers required for object format JSON export');
+        }
+        
+        jsonData = dataToExport.data.map(row => {
+          const obj = {};
+          dataToExport.headers.forEach((header, index) => {
+            obj[header] = row[index];
+          });
+          return obj;
+        });
+      }
+      
+      // Add metadata if requested
+      if (options.includeMetadata) {
+        jsonData = {
+          metadata: dataToExport.metadata,
+          data: jsonData
+        };
+      }
+      
+      const jsonString = JSON.stringify(jsonData, null, options.prettify ? 2 : 0);
+      
+      // Handle output destination
+      if (options.destination === 'drive') {
+        return this.saveToGoogleDrive(jsonString, options.filename || 'export.json', 'application/json');
+      } else if (options.destination === 'download') {
+        return {
+          success: true,
+          content: jsonString,
+          mimeType: 'application/json',
+          filename: options.filename || 'export.json'
+        };
+      } else {
+        return {
+          success: true,
+          content: jsonString,
+          rowsExported: dataToExport.data.length
+        };
+      }
+      
+    } catch (error) {
+      Logger.error('Error exporting to JSON:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  },
+
+  /**
+   * Export data to XML format
+   * @param {Object} dataToExport - Prepared data
+   * @param {Object} options - Export options
+   * @return {Object} Export result
+   */
+  exportToXML: function(dataToExport, options) {
+    try {
+      const rootElement = options.rootElement || 'data';
+      const rowElement = options.rowElement || 'row';
+      
+      let xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      xmlContent += `<${rootElement}>\n`;
+      
+      // Add metadata if requested
+      if (options.includeMetadata) {
+        xmlContent += '  <metadata>\n';
+        xmlContent += `    <sheetName>${this.escapeXML(dataToExport.metadata.sheetName)}</sheetName>\n`;
+        xmlContent += `    <rowCount>${dataToExport.metadata.rowCount}</rowCount>\n`;
+        xmlContent += `    <columnCount>${dataToExport.metadata.columnCount}</columnCount>\n`;
+        xmlContent += `    <exportDate>${dataToExport.metadata.exportDate.toISOString()}</exportDate>\n`;
+        xmlContent += '  </metadata>\n';
+      }
+      
+      // Add data rows
+      dataToExport.data.forEach((row, rowIndex) => {
+        xmlContent += `  <${rowElement}`;
+        
+        // Add row index as attribute if requested
+        if (options.includeRowIndex) {
+          xmlContent += ` index="${rowIndex + 1}"`;
+        }
+        
+        xmlContent += '>\n';
+        
+        if (dataToExport.headers) {
+          // Use headers as element names
+          dataToExport.headers.forEach((header, colIndex) => {
+            const elementName = this.sanitizeXMLElementName(header);
+            const value = this.escapeXML(row[colIndex]);
+            xmlContent += `    <${elementName}>${value}</${elementName}>\n`;
+          });
+        } else {
+          // Use generic column names
+          row.forEach((cell, colIndex) => {
+            const value = this.escapeXML(cell);
+            xmlContent += `    <column${colIndex + 1}>${value}</column${colIndex + 1}>\n`;
+          });
+        }
+        
+        xmlContent += `  </${rowElement}>\n`;
+      });
+      
+      xmlContent += `</${rootElement}>`;
+      
+      // Handle output destination
+      if (options.destination === 'drive') {
+        return this.saveToGoogleDrive(xmlContent, options.filename || 'export.xml', 'text/xml');
+      } else if (options.destination === 'download') {
+        return {
+          success: true,
+          content: xmlContent,
+          mimeType: 'text/xml',
+          filename: options.filename || 'export.xml'
+        };
+      } else {
+        return {
+          success: true,
+          content: xmlContent,
+          rowsExported: dataToExport.data.length
+        };
+      }
+      
+    } catch (error) {
+      Logger.error('Error exporting to XML:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  },
+
+  /**
+   * Export data to HTML table format
+   * @param {Object} dataToExport - Prepared data
+   * @param {Object} options - Export options
+   * @return {Object} Export result
+   */
+  exportToHTML: function(dataToExport, options) {
+    try {
+      let htmlContent = '<!DOCTYPE html>\n<html>\n<head>\n';
+      htmlContent += '<meta charset="UTF-8">\n';
+      htmlContent += `<title>${options.title || 'Data Export'}</title>\n`;
+      
+      // Add CSS styling
+      htmlContent += '<style>\n';
+      htmlContent += options.customCSS || this.getDefaultTableCSS();
+      htmlContent += '\n</style>\n';
+      
+      htmlContent += '</head>\n<body>\n';
+      
+      // Add title if specified
+      if (options.title) {
+        htmlContent += `<h1>${this.escapeHTML(options.title)}</h1>\n`;
+      }
+      
+      // Add metadata if requested
+      if (options.includeMetadata) {
+        htmlContent += '<div class="metadata">\n';
+        htmlContent += `<p>Sheet: ${this.escapeHTML(dataToExport.metadata.sheetName)}</p>\n`;
+        htmlContent += `<p>Rows: ${dataToExport.metadata.rowCount}</p>\n`;
+        htmlContent += `<p>Exported: ${dataToExport.metadata.exportDate.toLocaleString()}</p>\n`;
+        htmlContent += '</div>\n';
+      }
+      
+      // Create table
+      htmlContent += '<table>\n';
+      
+      // Add headers
+      if (dataToExport.headers) {
+        htmlContent += '<thead>\n<tr>\n';
+        dataToExport.headers.forEach(header => {
+          htmlContent += `<th>${this.escapeHTML(header)}</th>\n`;
+        });
+        htmlContent += '</tr>\n</thead>\n';
+      }
+      
+      // Add data rows
+      htmlContent += '<tbody>\n';
+      dataToExport.data.forEach(row => {
+        htmlContent += '<tr>\n';
+        row.forEach(cell => {
+          htmlContent += `<td>${this.escapeHTML(cell)}</td>\n`;
+        });
+        htmlContent += '</tr>\n';
+      });
+      htmlContent += '</tbody>\n';
+      
+      htmlContent += '</table>\n';
+      htmlContent += '</body>\n</html>';
+      
+      // Handle output destination
+      if (options.destination === 'drive') {
+        return this.saveToGoogleDrive(htmlContent, options.filename || 'export.html', 'text/html');
+      } else if (options.destination === 'download') {
+        return {
+          success: true,
+          content: htmlContent,
+          mimeType: 'text/html',
+          filename: options.filename || 'export.html'
+        };
+      } else {
+        return {
+          success: true,
+          content: htmlContent,
+          rowsExported: dataToExport.data.length
+        };
+      }
+      
+    } catch (error) {
+      Logger.error('Error exporting to HTML:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  },
+
+  /**
+   * Save exported data to Google Drive
+   * @param {string} content - File content
+   * @param {string} filename - File name
+   * @param {string} mimeType - MIME type
+   * @return {Object} Save result
+   */
+  saveToGoogleDrive: function(content, filename, mimeType) {
+    try {
+      const blob = Utilities.newBlob(content, mimeType, filename);
+      const file = DriveApp.createFile(blob);
+      
+      // Move to specific folder if specified
+      if (this.exportFolder) {
+        const folder = DriveApp.getFolderById(this.exportFolder);
+        folder.addFile(file);
+        DriveApp.getRootFolder().removeFile(file);
+      }
+      
+      return {
+        success: true,
+        fileId: file.getId(),
+        fileUrl: file.getUrl(),
+        fileName: file.getName()
+      };
+      
+    } catch (error) {
+      Logger.error('Error saving to Google Drive:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  },
+
+  /**
+   * Export data to API endpoint
+   * @param {Object} dataToExport - Prepared data
+   * @param {Object} options - Export options including API configuration
+   * @return {Object} Export result
+   */
+  exportToAPI: function(dataToExport, options) {
+    try {
+      if (!options.apiUrl) {
+        throw new Error('API URL is required for API export');
+      }
+      
+      // Prepare payload
+      let payload;
+      if (options.apiFormat === 'json') {
+        payload = this.exportToJSON(dataToExport, { jsonFormat: options.jsonFormat || 'objects' });
+      } else if (options.apiFormat === 'csv') {
+        payload = this.exportToCSV(dataToExport, {});
+      } else {
+        // Default to JSON
+        payload = this.exportToJSON(dataToExport, { jsonFormat: 'objects' });
+      }
+      
+      // Prepare request options
+      const requestOptions = {
+        method: options.apiMethod || 'POST',
+        headers: options.apiHeaders || { 'Content-Type': 'application/json' },
+        payload: typeof payload.content === 'string' ? payload.content : JSON.stringify(payload.content),
+        muteHttpExceptions: true
+      };
+      
+      // Add authentication if provided
+      if (options.apiAuth) {
+        if (options.apiAuth.type === 'bearer') {
+          requestOptions.headers['Authorization'] = `Bearer ${options.apiAuth.token}`;
+        } else if (options.apiAuth.type === 'apikey') {
+          requestOptions.headers[options.apiAuth.headerName || 'X-API-Key'] = options.apiAuth.key;
+        }
+      }
+      
+      // Make API request
+      const response = UrlFetchApp.fetch(options.apiUrl, requestOptions);
+      const statusCode = response.getResponseCode();
+      
+      if (statusCode >= 200 && statusCode < 300) {
+        return {
+          success: true,
+          statusCode: statusCode,
+          response: response.getContentText(),
+          rowsExported: dataToExport.data.length
+        };
+      } else {
+        return {
+          success: false,
+          statusCode: statusCode,
+          error: `API request failed with status ${statusCode}: ${response.getContentText()}`
+        };
+      }
+      
+    } catch (error) {
+      Logger.error('Error exporting to API:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  },
+
+  /**
+   * Export data via email
+   * @param {Object} dataToExport - Prepared data
+   * @param {Object} options - Export options including email configuration
+   * @return {Object} Export result
+   */
+  exportToEmail: function(dataToExport, options) {
+    try {
+      if (!options.emailTo) {
+        throw new Error('Email recipient is required');
+      }
+      
+      // Prepare attachment based on format
+      let attachment;
+      let attachmentName;
+      
+      if (options.attachmentFormat === 'csv') {
+        const csvResult = this.exportToCSV(dataToExport, {});
+        attachment = Utilities.newBlob(csvResult.content, 'text/csv', options.filename || 'export.csv');
+        attachmentName = options.filename || 'export.csv';
+      } else if (options.attachmentFormat === 'json') {
+        const jsonResult = this.exportToJSON(dataToExport, { prettify: true });
+        attachment = Utilities.newBlob(jsonResult.content, 'application/json', options.filename || 'export.json');
+        attachmentName = options.filename || 'export.json';
+      } else if (options.attachmentFormat === 'html') {
+        const htmlResult = this.exportToHTML(dataToExport, { title: options.emailSubject });
+        attachment = Utilities.newBlob(htmlResult.content, 'text/html', options.filename || 'export.html');
+        attachmentName = options.filename || 'export.html';
+      } else {
+        // Default to CSV
+        const csvResult = this.exportToCSV(dataToExport, {});
+        attachment = Utilities.newBlob(csvResult.content, 'text/csv', 'export.csv');
+        attachmentName = 'export.csv';
+      }
+      
+      // Prepare email body
+      let emailBody = options.emailBody || `Please find the exported data attached.\n\n`;
+      emailBody += `Export Summary:\n`;
+      emailBody += `- Sheet: ${dataToExport.metadata.sheetName}\n`;
+      emailBody += `- Rows: ${dataToExport.metadata.rowCount}\n`;
+      emailBody += `- Columns: ${dataToExport.metadata.columnCount}\n`;
+      emailBody += `- Export Date: ${dataToExport.metadata.exportDate.toLocaleString()}\n`;
+      
+      // Send email
+      MailApp.sendEmail({
+        to: options.emailTo,
+        subject: options.emailSubject || 'Data Export from CellPilot',
+        body: emailBody,
+        attachments: [attachment],
+        cc: options.emailCc || '',
+        bcc: options.emailBcc || ''
+      });
+      
+      return {
+        success: true,
+        recipient: options.emailTo,
+        attachmentName: attachmentName,
+        rowsExported: dataToExport.data.length
+      };
+      
+    } catch (error) {
+      Logger.error('Error exporting to email:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  },
+
+  /**
+   * Apply filters to export data
+   * @param {Array} data - Data to filter
+   * @param {Array} filters - Filter conditions
+   * @return {Array} Filtered data
+   */
+  applyExportFilters: function(data, filters) {
+    return data.filter(row => {
+      return filters.every(filter => {
+        const value = row[filter.column];
+        
+        switch (filter.operator) {
+          case 'equals':
+            return value == filter.value;
+          case 'not_equals':
+            return value != filter.value;
+          case 'contains':
+            return String(value).includes(filter.value);
+          case 'not_contains':
+            return !String(value).includes(filter.value);
+          case 'greater_than':
+            return Number(value) > Number(filter.value);
+          case 'less_than':
+            return Number(value) < Number(filter.value);
+          case 'is_empty':
+            return value === '' || value === null || value === undefined;
+          case 'is_not_empty':
+            return value !== '' && value !== null && value !== undefined;
+          default:
+            return true;
+        }
+      });
+    });
+  },
+
+  /**
+   * Apply transformations to export data
+   * @param {Array} data - Data to transform
+   * @param {Array} transformations - Transformation rules
+   * @return {Array} Transformed data
+   */
+  applyExportTransformations: function(data, transformations) {
+    return data.map(row => {
+      const transformedRow = [...row];
+      
+      transformations.forEach(transform => {
+        if (transform.type === 'rename_column' && transform.fromIndex !== undefined && transform.toName) {
+          // This would be handled at header level
+        } else if (transform.type === 'format_date' && transform.column !== undefined) {
+          const value = transformedRow[transform.column];
+          if (value instanceof Date) {
+            transformedRow[transform.column] = Utilities.formatDate(value, Session.getScriptTimeZone(), transform.format || 'yyyy-MM-dd');
+          }
+        } else if (transform.type === 'format_number' && transform.column !== undefined) {
+          const value = transformedRow[transform.column];
+          if (typeof value === 'number') {
+            transformedRow[transform.column] = value.toFixed(transform.decimals || 2);
+          }
+        } else if (transform.type === 'uppercase' && transform.column !== undefined) {
+          transformedRow[transform.column] = String(transformedRow[transform.column]).toUpperCase();
+        } else if (transform.type === 'lowercase' && transform.column !== undefined) {
+          transformedRow[transform.column] = String(transformedRow[transform.column]).toLowerCase();
+        } else if (transform.type === 'custom' && transform.function) {
+          // Allow custom transformation function
+          try {
+            transformedRow[transform.column] = transform.function(transformedRow[transform.column], row);
+          } catch (e) {
+            Logger.error('Custom transformation error:', e);
+          }
+        }
+      });
+      
+      return transformedRow;
+    });
+  },
+
+  /**
+   * Get default CSS for HTML table export
+   * @return {string} CSS styles
+   */
+  getDefaultTableCSS: function() {
+    return `
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      h1 {
+        color: #333;
+        border-bottom: 2px solid #4285f4;
+        padding-bottom: 10px;
+      }
+      .metadata {
+        background: #fff;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .metadata p {
+        margin: 5px 0;
+        color: #666;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      th {
+        background: #4285f4;
+        color: white;
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+      }
+      td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      tbody tr:hover {
+        background: #f8f9fa;
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+    `;
+  },
+
+  /**
+   * Escape HTML special characters
+   * @param {*} text - Text to escape
+   * @return {string} Escaped text
+   */
+  escapeHTML: function(text) {
+    if (text === null || text === undefined) return '';
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  },
+
+  /**
+   * Escape XML special characters
+   * @param {*} text - Text to escape
+   * @return {string} Escaped text
+   */
+  escapeXML: function(text) {
+    if (text === null || text === undefined) return '';
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  },
+
+  /**
+   * Sanitize string for use as XML element name
+   * @param {string} name - Element name
+   * @return {string} Sanitized name
+   */
+  sanitizeXMLElementName: function(name) {
+    if (!name) return 'element';
+    // Remove invalid characters and replace spaces with underscores
+    return String(name)
+      .replace(/[^a-zA-Z0-9_-]/g, '_')
+      .replace(/^[0-9-]/, '_'); // Ensure it doesn't start with number or hyphen
+  },
+
+  /**
+   * Create nested JSON structure
+   * @param {Object} dataToExport - Data to nest
+   * @param {number} keyColumn - Column index to use as nesting key
+   * @return {Object} Nested JSON structure
+   */
+  createNestedJSON: function(dataToExport, keyColumn) {
+    const nested = {};
+    
+    dataToExport.data.forEach(row => {
+      const key = row[keyColumn];
+      if (!nested[key]) {
+        nested[key] = [];
+      }
+      
+      if (dataToExport.headers) {
+        const obj = {};
+        dataToExport.headers.forEach((header, index) => {
+          if (index !== keyColumn) {
+            obj[header] = row[index];
+          }
+        });
+        nested[key].push(obj);
+      } else {
+        nested[key].push(row);
+      }
+    });
+    
+    return nested;
+  },
+
+  /**
+   * Track export for analytics
+   * @param {Object} options - Export options
+   * @param {Object} result - Export result
+   * @param {number} duration - Export duration
+   */
+  trackExport: function(options, result, duration) {
+    try {
+      const exportRecord = {
+        timestamp: new Date(),
+        format: options.format,
+        destination: options.destination,
+        rowsExported: result.rowsExported || 0,
+        duration: duration,
+        success: result.success
+      };
+      
+      // Add to export history
+      if (!this.exportHistory) {
+        this.exportHistory = [];
+      }
+      this.exportHistory.push(exportRecord);
+      
+      // Keep only last 100 exports
+      if (this.exportHistory.length > 100) {
+        this.exportHistory = this.exportHistory.slice(-100);
+      }
+      
+      // Save to properties if ML enabled
+      if (this.mlEnabled) {
+        PropertiesService.getUserProperties().setProperty(
+          'export_history',
+          JSON.stringify(this.exportHistory)
+        );
+      }
+      
+    } catch (error) {
+      Logger.error('Error tracking export:', error);
+    }
+  },
+
+  /**
+   * Learn from export patterns for ML
+   * @param {Object} options - Export options
+   * @param {Object} result - Export result
+   */
+  learnFromExport: function(options, result) {
+    try {
+      // Track successful export patterns
+      if (result.success) {
+        if (!this.exportPatterns) {
+          this.exportPatterns = {};
+        }
+        
+        const patternKey = `${options.format}_${options.destination || 'default'}`;
+        
+        if (!this.exportPatterns[patternKey]) {
+          this.exportPatterns[patternKey] = {
+            count: 0,
+            lastUsed: null,
+            averageDuration: 0,
+            commonOptions: {}
+          };
+        }
+        
+        const pattern = this.exportPatterns[patternKey];
+        pattern.count++;
+        pattern.lastUsed = new Date();
+        
+        // Track common options
+        Object.keys(options).forEach(key => {
+          if (key !== 'format' && key !== 'destination') {
+            if (!pattern.commonOptions[key]) {
+              pattern.commonOptions[key] = {};
+            }
+            const value = options[key];
+            pattern.commonOptions[key][value] = (pattern.commonOptions[key][value] || 0) + 1;
+          }
+        });
+        
+        // Save patterns
+        PropertiesService.getUserProperties().setProperty(
+          'export_patterns',
+          JSON.stringify(this.exportPatterns)
+        );
+      }
+      
+    } catch (error) {
+      Logger.error('Error learning from export:', error);
+    }
   }
 };

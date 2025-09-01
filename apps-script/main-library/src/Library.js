@@ -112,6 +112,16 @@ var createDataPipeline = createDataPipeline || function(config) { return createD
 var runDataPipeline = runDataPipeline || function(pipelineId) { return runDataPipeline(pipelineId); };
 var getDataPipelines = getDataPipelines || function() { return getDataPipelines(); };
 var deleteDataPipeline = deleteDataPipeline || function(pipelineId) { return deleteDataPipeline(pipelineId); };
+var importData = importData || function(source) { return DataPipelineManager.importData(source); };
+var exportData = exportData || function(options) { return DataPipelineManager.exportData(options); };
+var exportToCSV = exportToCSV || function(dataToExport, options) { return DataPipelineManager.exportToCSV(dataToExport, options); };
+var exportToJSON = exportToJSON || function(dataToExport, options) { return DataPipelineManager.exportToJSON(dataToExport, options); };
+var exportToXML = exportToXML || function(dataToExport, options) { return DataPipelineManager.exportToXML(dataToExport, options); };
+var exportToHTML = exportToHTML || function(dataToExport, options) { return DataPipelineManager.exportToHTML(dataToExport, options); };
+var exportToAPI = exportToAPI || function(dataToExport, options) { return DataPipelineManager.exportToAPI(dataToExport, options); };
+var exportToEmail = exportToEmail || function(dataToExport, options) { return DataPipelineManager.exportToEmail(dataToExport, options); };
+var saveToGoogleDrive = saveToGoogleDrive || function(content, filename, mimeType) { return DataPipelineManager.saveToGoogleDrive(content, filename, mimeType); };
+var prepareDataForExport = prepareDataForExport || function(options) { return DataPipelineManager.prepareDataForExport(options); };
 
 // Data Validation Functions
 var generateDataValidation = generateDataValidation || function(config) { return generateDataValidation(config); };
