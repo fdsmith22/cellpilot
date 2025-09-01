@@ -888,9 +888,9 @@ function createMainSidebarHtml(context) {
       </div>
       
       <!-- Quick Actions Grid -->
-      <div style="margin-bottom: 16px;">
+      <div style="margin-bottom: 16px; position: relative;">
         <h3 style="font-size: 12px; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Quick Actions</h3>
-        <div class="quick-actions-grid">
+        <div class="quick-actions-grid" style="position: relative;">
           <div class="quick-action-btn" data-theme="data" onclick="google.script.run.showTableize()">
             <div class="quick-action-label">Tableize Data</div>
             <span class="quick-badge ml">ML</span>
@@ -928,6 +928,30 @@ function createMainSidebarHtml(context) {
           <div class="quick-action-btn" data-theme="advanced" onclick="toggleDropdown('advanced')">
             <div class="quick-action-label">Advanced Tools</div>
             <span class="quick-badge">6</span>
+          </div>
+        </div>
+        
+        <!-- Advanced Tools Dropdown (positioned within grid container) -->
+        <div id="advanced-dropdown" class="dropdown-content" style="display: none; position: absolute; background: white; border: 1px solid var(--gray-200); border-radius: 8px; padding: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; width: 280px; max-height: 300px; overflow-y: auto;">
+          <div class="dropdown-item" onclick="google.script.run.showExcelMigration()">
+            Excel Migration Assistant
+          </div>
+          <div class="dropdown-item" onclick="google.script.run.showApiIntegration()">
+            API Integration
+          </div>
+          <div class="dropdown-item" onclick="google.script.run.showDataValidation()">
+            Data Validation Rules
+          </div>
+          <div class="dropdown-item" onclick="google.script.run.showBatchOperations()">
+            Batch Operations
+          </div>
+          <div class="dropdown-item" onclick="google.script.run.showUpgradeDialog()">
+            Premium Features
+            <span class="dropdown-item-badge">PRO</span>
+          </div>
+          <div class="dropdown-item" onclick="google.script.run.showErrorDialog('Feature Coming Soon', 'This feature is under development')">
+            Advanced Analytics
+            <span class="dropdown-item-badge">SOON</span>
           </div>
         </div>
       </div>
@@ -971,35 +995,6 @@ function createMainSidebarHtml(context) {
         </div>
       </div>
       
-      <!-- Advanced Tools Dropdown (Hidden - accessed from grid button) -->
-      <div id="advanced-dropdown" class="dropdown-content" style="display: none; position: fixed; background: white; border: 1px solid var(--gray-200); border-radius: 8px; padding: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; width: 280px;">
-          <div class="dropdown-item" onclick="google.script.run.showExcelMigration()">
-            Excel Migration Assistant
-          </div>
-          <div class="dropdown-item" onclick="google.script.run.showApiIntegration()">
-            API Integration
-          </div>
-          <div class="dropdown-item" onclick="google.script.run.showDataValidationGenerator()">
-            Data Validation Generator
-            <span class="dropdown-item-badge">ML</span>
-          </div>
-          <div class="dropdown-item" onclick="google.script.run.showConditionalFormattingWizard()">
-            Conditional Formatting Wizard
-            <span class="dropdown-item-badge">ML</span>
-          </div>
-          <div class="dropdown-item" onclick="google.script.run.showBatchOperations()">
-            Batch Operations
-          </div>
-          <div class="dropdown-item" onclick="google.script.run.showMultiTabRelationshipMapper()">
-            Multi-Tab Relationship Mapper
-            <span class="dropdown-item-badge">ML</span>
-          </div>
-          <div class="dropdown-item" onclick="google.script.run.showSmartFormulaDebugger()">
-            Smart Formula Debugger
-            <span class="dropdown-item-badge">ML</span>
-          </div>
-        </div>
-      </div>
       
       <!-- Upgrade Card -->
       <div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1)); border: 1px solid var(--primary-200); margin-top: 16px; padding: 16px; overflow: hidden;">
@@ -1124,16 +1119,25 @@ function createMainSidebarHtml(context) {
         const dropdown = document.getElementById(dropdownId);
         
         if (type === 'advanced') {
-          // Special handling for advanced tools - position near button
+          // Special handling for advanced tools - position relative to button
           const button = event.currentTarget;
-          const rect = button.getBoundingClientRect();
+          const buttonRect = button.getBoundingClientRect();
+          const container = button.closest('.quick-actions-grid');
+          const containerRect = container.getBoundingClientRect();
           
           if (dropdown.style.display === 'block') {
             dropdown.style.display = 'none';
           } else {
+            // Position dropdown relative to the container
             dropdown.style.display = 'block';
-            dropdown.style.top = rect.bottom + 5 + 'px';
-            dropdown.style.left = Math.min(rect.left, window.innerWidth - 290) + 'px';
+            dropdown.style.top = (buttonRect.bottom - containerRect.top + 5) + 'px';
+            dropdown.style.left = (buttonRect.left - containerRect.left) + 'px';
+            
+            // Make sure dropdown doesn't go off screen
+            const dropdownRect = dropdown.getBoundingClientRect();
+            if (dropdownRect.right > window.innerWidth) {
+              dropdown.style.left = (buttonRect.right - containerRect.left - 280) + 'px';
+            }
           }
         } else {
           const header = dropdown.previousElementSibling;
