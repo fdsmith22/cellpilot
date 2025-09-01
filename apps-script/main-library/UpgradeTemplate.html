@@ -101,7 +101,7 @@
     }
     
     .stat-value {
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 700;
       background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
       -webkit-background-clip: text;
@@ -112,12 +112,13 @@
     }
     
     .stat-label {
-      font-size: 10px;
+      font-size: 9px;
       color: var(--gray-600);
       font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.2px;
       word-wrap: break-word;
+      line-height: 1.2;
     }
     
     /* Benefits grid - cleaner cards */
@@ -213,6 +214,40 @@
     <div style="margin: 24px 0;">
       <h3 class="section-header">Available Plans</h3>
       
+      <!-- Free Plan -->
+      <div class="card plan-card">
+        <div class="card-header">
+          <div class="card-title" style="color: var(--gray-600);">
+            Free Plan
+            <span class="price-display">£0<span class="price-period">/mo</span></span>
+          </div>
+          <div class="card-description">Get started with basic features</div>
+        </div>
+        
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>100 operations per month</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Basic data cleaning tools</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Standard formatting options</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Community support</span>
+          </div>
+        </div>
+        
+        <button class="btn btn-secondary btn-block" disabled>
+          Current Plan
+        </button>
+      </div>
+      
       <!-- Starter Plan -->
       <div class="card plan-card">
         <div class="card-header">
@@ -247,13 +282,13 @@
         </button>
       </div>
       
-      <!-- Professional Plan (Recommended) -->
+      <!-- Pro Plan (Recommended) -->
       <div class="card plan-card plan-card-popular">
         <span class="popular-badge">MOST POPULAR</span>
         
         <div class="card-header">
           <div class="card-title" style="color: var(--success-600);">
-            Professional Plan
+            Pro Plan
             <span class="price-display">£11.99<span class="price-period">/mo</span></span>
           </div>
           <div class="card-description">Best for teams and growing businesses</div>
@@ -286,44 +321,11 @@
           </div>
         </div>
         
-        <button class="btn btn-success btn-block" onclick="subscribeToPlan('professional')">
-          Upgrade to Professional
+        <button class="btn btn-success btn-block" onclick="subscribeToPlan('pro')">
+          Upgrade to Pro
         </button>
       </div>
       
-      <!-- Enterprise Plan -->
-      <div class="card plan-card">
-        <div class="card-header">
-          <div class="card-title">
-            Enterprise Plan
-            <span style="font-size: 18px; float: right; color: var(--gray-600);">Custom</span>
-          </div>
-          <div class="card-description">For large organizations with custom needs</div>
-        </div>
-        
-        <div class="feature-list">
-          <div class="feature-item">
-            <span class="feature-check">✓</span>
-            <span>Everything in Professional</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-check">✓</span>
-            <span>Connect with your business tools</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-check">✓</span>
-            <span>Dedicated account manager</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-check">✓</span>
-            <span>On-premise deployment option</span>
-          </div>
-        </div>
-        
-        <button class="btn btn-secondary btn-block" onclick="contactSales()">
-          Contact Sales
-        </button>
-      </div>
     </div>
     
     <!-- Why Upgrade Section -->
@@ -381,9 +383,6 @@
         .trackPlanSelection(plan);
     }
     
-    function contactSales() {
-      window.open('https://www.cellpilot.io/contact?type=enterprise', '_blank');
-    }
   </script>
 </body>
 </html>

@@ -857,6 +857,12 @@ function createMainSidebarHtml(context) {
             </text>
           </svg>
         </a>
+        <!-- Tier Badge -->
+        <div style="margin-left: auto; margin-right: 16px;">
+          <span style="display: inline-block; padding: 4px 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 12px;">
+            <?= context.tier || 'BETA' ?>
+          </span>
+        </div>
       </div>
     </div>
     
@@ -997,14 +1003,13 @@ function createMainSidebarHtml(context) {
       
       
       <!-- Upgrade Card -->
-      <div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1)); border: 1px solid var(--primary-200); margin-top: 16px; padding: 16px; overflow: hidden;">
+      <div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1)); border: 1px solid var(--primary-200); margin-top: 16px; padding: 12px; overflow: hidden;">
         <div style="text-align: center;">
-          <div style="font-size: 15px; font-weight: 600; color: var(--primary-700); margin-bottom: 8px;">Upgrade to Professional</div>
-          <div style="font-size: 11px; color: var(--gray-600); margin-bottom: 12px; line-height: 1.5;">
-            Unlimited operations • Advanced features<br>
-            Priority support • Industry templates
+          <div style="font-size: 14px; font-weight: 600; color: var(--primary-700); margin-bottom: 6px;">Upgrade to Pro</div>
+          <div style="font-size: 11px; color: var(--gray-600); margin-bottom: 10px;">
+            Unlimited operations • Advanced features
           </div>
-          <button class="btn btn-primary btn-no-ripple" style="width: 100%; padding: 8px; font-size: 12px; font-weight: 600;" onclick="event.stopPropagation(); google.script.run.showUpgradeOptions()">
+          <button class="btn btn-primary btn-no-ripple" style="width: 100%; padding: 6px; font-size: 12px; font-weight: 600;" onclick="event.stopPropagation(); google.script.run.showUpgradeOptions()">
             View Plans
           </button>
         </div>
