@@ -309,9 +309,9 @@ const Pricing = () => {
                           <h4 className="text-lg font-semibold text-neutral-900 mb-6 text-center">All Features Included</h4>
                           <ul className="space-y-3">
                             {plan.features.map((feature, index) => (
-                              <li key={index} className="feature-item flex items-start">
+                              <li key={index} className="feature-item flex items-center justify-center">
                                 <svg
-                                  className="h-5 w-5 text-accent-teal mt-0.5 mr-3 flex-shrink-0"
+                                  className="h-5 w-5 text-accent-teal mr-2 flex-shrink-0"
                                   fill="currentColor"
                                   viewBox="0 0 20 20"
                                 >
