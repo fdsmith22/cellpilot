@@ -11,7 +11,6 @@ const allFeatures = {
     'Remove Duplicates',
     'Clean Data (trim, case)',
     'Basic Formula Assistant',
-    'Community support',
   ],
   starter: [
     '500 operations per month',
@@ -21,7 +20,6 @@ const allFeatures = {
     'Cross-Sheet Formulas',
     'Data Validation Generator',
     'Pivot Table Assistant',
-    'Email support',
     'Usage analytics',
   ],
   professional: [
@@ -34,7 +32,6 @@ const allFeatures = {
     'API Integration',
     'Automation Workflows',
     'Batch Operations',
-    'Priority support',
   ],
 }
 
@@ -48,7 +45,7 @@ const plans = [
     highlights: [
       '100 operations/month',
       'Basic cleaning tools',
-      'Community support',
+      'Formula assistant',
     ],
     features: allFeatures.free,
     cta: 'Get Started',
@@ -64,7 +61,7 @@ const plans = [
     highlights: [
       '500 operations/month',
       'ML-powered tools',
-      'Email support',
+      'Advanced formulas',
     ],
     features: allFeatures.starter,
     cta: 'Try Free for 7 Days',
@@ -80,7 +77,7 @@ const plans = [
     highlights: [
       'Unlimited operations',
       'All features included',
-      'Priority support',
+      'Industry templates',
     ],
     features: allFeatures.professional,
     cta: 'Try Free for 7 Days',
@@ -91,24 +88,86 @@ const plans = [
 
 const Pricing = () => {
   const [expandedPlan, setExpandedPlan] = useState<string | null>(null)
-  const [isAnimating, setIsAnimating] = useState(false)
+  const [isTransitioning, setIsTransitioning] = useState(false)
   
   const handlePlanClick = (planId: string) => {
+    if (isTransitioning) return
+    
     if (expandedPlan === planId) {
-      setIsAnimating(true)
-      setTimeout(() => {
-        setExpandedPlan(null)
-        setIsAnimating(false)
-      }, 300)
+      setIsTransitioning(true)
+      setExpandedPlan(null)
+      setTimeout(() => setIsTransitioning(false), 500)
     } else {
-      setIsAnimating(true)
+      setIsTransitioning(true)
       setExpandedPlan(planId)
-      setTimeout(() => setIsAnimating(false), 300)
+      setTimeout(() => setIsTransitioning(false), 500)
     }
   }
   
   return (
     <section id="pricing" className="snap-section relative overflow-hidden bg-transparent">
+      <style jsx>{`
+        @keyframes slideLeft {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(-20px);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes slideFromRight {
+          from {
+            transform: translateX(40px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes fadeOut {
+          from {
+            opacity: 1;
+            transform: scale(1);
+          }
+          to {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+        }
+        
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: scale(1.05);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        
+        .slide-left {
+          animation: slideLeft 0.4s ease-out forwards;
+        }
+        
+        .slide-from-right {
+          animation: slideFromRight 0.4s ease-out forwards;
+        }
+        
+        .fade-out {
+          animation: fadeOut 0.3s ease-out forwards;
+        }
+        
+        .fade-in {
+          animation: fadeIn 0.3s ease-out forwards;
+        }
+      `}</style>
+      
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] bg-gradient-to-r from-pastel-peach/20 to-pastel-lavender/20 rounded-full blur-3xl"></div>
@@ -133,13 +192,13 @@ const Pricing = () => {
 
           {/* Expanded view */}
           {expandedPlan && (
-            <div className={`mb-8 transition-all duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
+            <div className="mb-8 overflow-hidden">
               {plans.filter(p => p.id === expandedPlan).map(plan => (
-                <div key={plan.id} className="max-w-4xl mx-auto">
+                <div key={plan.id} className="max-w-5xl mx-auto">
                   <div className="glass-card rounded-2xl overflow-hidden">
-                    <div className="grid lg:grid-cols-2 gap-6">
-                      {/* Plan summary */}
-                      <div className="p-6">
+                    <div className="grid lg:grid-cols-2 gap-0">
+                      {/* Plan summary - slides left */}
+                      <div className={`p-6 lg:p-8 ${expandedPlan ? 'slide-left' : ''}`}>
                         {plan.popular && (
                           <div className="inline-block bg-gradient-to-r from-primary-500 to-accent-teal px-3 py-1 rounded-full text-white text-xs font-medium mb-3">
                             Most Popular
@@ -172,10 +231,10 @@ const Pricing = () => {
                         </button>
                       </div>
 
-                      {/* Full feature list */}
-                      <div className="p-6 bg-neutral-50/50">
+                      {/* Full feature list - slides in from right */}
+                      <div className={`p-6 lg:p-8 bg-gradient-to-br from-neutral-50/50 to-white ${expandedPlan ? 'slide-from-right' : ''}`}>
                         <h4 className="text-lg font-semibold text-neutral-900 mb-4">All Features Included:</h4>
-                        <ul className="space-y-2">
+                        <ul className="space-y-3">
                           {plan.features.map((feature, index) => (
                             <li key={index} className="flex items-start">
                               <svg
@@ -190,7 +249,7 @@ const Pricing = () => {
                                 />
                               </svg>
                               <span className={`text-sm text-neutral-700 ${
-                                feature.startsWith('Everything') ? 'font-semibold' : ''
+                                feature.startsWith('Everything') ? 'font-semibold text-primary-600' : ''
                               }`}>{feature}</span>
                             </li>
                           ))}
@@ -204,17 +263,17 @@ const Pricing = () => {
           )}
 
           {/* Collapsed view */}
-          <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch mb-6 sm:mb-8 transition-all duration-300 ${
-            expandedPlan ? 'opacity-0 max-h-0 overflow-hidden' : 'opacity-100'
+          <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch mb-6 sm:mb-8 transition-all duration-500 ${
+            expandedPlan ? 'opacity-0 pointer-events-none max-h-0 overflow-hidden' : 'opacity-100 max-h-[1000px]'
           }`}>
             {plans.map((plan, index) => (
               <ScrollObserver
                 key={plan.name}
-                className={`scroll-observer-delay-${index * 100}`}
+                className={`scroll-observer-delay-${index * 100} ${expandedPlan ? 'fade-out' : 'fade-in'}`}
               >
                 <div
                   onClick={() => handlePlanClick(plan.id)}
-                  className={`glass-card rounded-xl sm:rounded-2xl overflow-hidden h-full cursor-pointer transition-all duration-300 hover:scale-102 hover:shadow-xl ${
+                  className={`glass-card rounded-xl sm:rounded-2xl overflow-hidden h-full cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl ${
                     plan.popular ? 'ring-2 ring-primary-300' : ''
                   }`}
                 >
@@ -253,7 +312,7 @@ const Pricing = () => {
                     </ul>
 
                     <div className="text-center">
-                      <span className="text-xs text-primary-600 font-medium">
+                      <span className="text-xs text-primary-600 font-medium hover:text-primary-700 transition-colors">
                         Click to see all {plan.features.length} features →
                       </span>
                     </div>
