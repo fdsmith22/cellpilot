@@ -268,7 +268,7 @@ const Pricing = () => {
                   <div className="glass-card rounded-2xl overflow-hidden shadow-2xl">
                     <div className="grid lg:grid-cols-2 gap-0">
                       {/* Plan summary */}
-                      <div className="left-panel p-6 lg:p-8">
+                      <div className="left-panel p-8 lg:p-10">
                         {plan.popular && (
                           <div className="inline-block bg-gradient-to-r from-primary-500 to-accent-teal px-3 py-1 rounded-full text-white text-xs font-medium mb-3">
                             Most Popular
@@ -302,7 +302,7 @@ const Pricing = () => {
                       </div>
 
                       {/* Full feature list */}
-                      <div className="right-panel p-6 lg:p-8 bg-gradient-to-br from-neutral-50/50 to-white">
+                      <div className="right-panel p-8 lg:p-10 bg-gradient-to-br from-neutral-50/50 to-white">
                         <h4 className="text-lg font-semibold text-neutral-900 mb-4">All Features Included:</h4>
                         <ul className="space-y-3">
                           {plan.features.map((feature, index) => (
