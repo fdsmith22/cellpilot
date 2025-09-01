@@ -576,11 +576,50 @@ function createMainSidebarHtml(context) {
         min-height: 54px;
       }
       
+      /* Very light, subtle theme colors for different tab types */
+      .quick-action-btn[data-theme="data"] {
+        background: linear-gradient(135deg, #fafbfc 0%, #f0f7ff 100%);
+        border-color: #e1e7f0;
+      }
+      
+      .quick-action-btn[data-theme="formula"] {
+        background: linear-gradient(135deg, #fafdf9 0%, #f0fdf4 100%);
+        border-color: #e1f0e5;
+      }
+      
+      .quick-action-btn[data-theme="advanced"] {
+        background: linear-gradient(135deg, #fffdf8 0%, #fef9f0 100%);
+        border-color: #f0e8d8;
+      }
+      
+      .quick-action-btn[data-theme="pipeline"] {
+        background: linear-gradient(135deg, #fdfafd 0%, #fdf0f8 100%);
+        border-color: #f0e1ea;
+      }
+      
       .quick-action-btn:hover {
-        border-color: var(--primary-400);
-        background: var(--primary-50);
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      
+      .quick-action-btn[data-theme="data"]:hover {
+        border-color: #c7d2e7;
+        background: linear-gradient(135deg, #e8f2ff 0%, #dae8ff 100%);
+      }
+      
+      .quick-action-btn[data-theme="formula"]:hover {
+        border-color: #c7e7d0;
+        background: linear-gradient(135deg, #e8f9ec 0%, #daf5e3 100%);
+      }
+      
+      .quick-action-btn[data-theme="advanced"]:hover {
+        border-color: #e5d5b8;
+        background: linear-gradient(135deg, #fef8ec 0%, #fdf3e3 100%);
+      }
+      
+      .quick-action-btn[data-theme="pipeline"]:hover {
+        border-color: #e7c7dd;
+        background: linear-gradient(135deg, #fae8f5 0%, #f5daea 100%);
       }
       
       .quick-action-icon {
@@ -852,38 +891,43 @@ function createMainSidebarHtml(context) {
       <div style="margin-bottom: 16px;">
         <h3 style="font-size: 12px; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Quick Actions</h3>
         <div class="quick-actions-grid">
-          <div class="quick-action-btn" onclick="google.script.run.showTableize()">
+          <div class="quick-action-btn" data-theme="data" onclick="google.script.run.showTableize()">
             <div class="quick-action-label">Tableize Data</div>
             <span class="quick-badge ml">ML</span>
           </div>
           
-          <div class="quick-action-btn" onclick="google.script.run.showDataCleaning()">
+          <div class="quick-action-btn" data-theme="data" onclick="google.script.run.showDataCleaning()">
             <div class="quick-action-label">Data Cleaning</div>
             <span class="quick-badge ml">ML</span>
           </div>
           
-          <div class="quick-action-btn" onclick="google.script.run.showAdvancedRestructuring()">
+          <div class="quick-action-btn" data-theme="data" onclick="google.script.run.showAdvancedRestructuring()">
             <div class="quick-action-label">Restructure Data</div>
             <span class="quick-badge new">New</span>
           </div>
           
-          <div class="quick-action-btn" onclick="google.script.run.showSmartFormulaAssistant()">
+          <div class="quick-action-btn" data-theme="formula" onclick="google.script.run.showSmartFormulaAssistant()">
             <div class="quick-action-label">Smart Formulas</div>
             <span class="quick-badge ml">ML</span>
           </div>
           
-          <div class="quick-action-btn" onclick="google.script.run.showAutomation()">
+          <div class="quick-action-btn" data-theme="advanced" onclick="google.script.run.showAutomation()">
             <div class="quick-action-label">Automation</div>
           </div>
           
-          <div class="quick-action-btn" onclick="google.script.run.showPivotTableAssistant()">
+          <div class="quick-action-btn" data-theme="formula" onclick="google.script.run.showPivotTableAssistant()">
             <div class="quick-action-label">Pivot Tables</div>
             <span class="quick-badge ml">ML</span>
           </div>
           
-          <div class="quick-action-btn" onclick="google.script.run.showDataPipelineManager()">
+          <div class="quick-action-btn" data-theme="pipeline" onclick="google.script.run.showDataPipelineManager()">
             <div class="quick-action-label">Data Pipeline</div>
             <span class="quick-badge new">NEW</span>
+          </div>
+          
+          <div class="quick-action-btn" data-theme="advanced" onclick="toggleDropdown('advanced')">
+            <div class="quick-action-label">Advanced Tools</div>
+            <span class="quick-badge">6</span>
           </div>
         </div>
       </div>
@@ -927,18 +971,8 @@ function createMainSidebarHtml(context) {
         </div>
       </div>
       
-      <!-- Advanced Tools Dropdown -->
-      <div class="dropdown-section">
-        <div class="dropdown-header" onclick="toggleDropdown('advanced')">
-          <div class="dropdown-title">
-            <div class="dropdown-text">
-              <div class="dropdown-label">Advanced Tools</div>
-              <div class="dropdown-sublabel">Power features for complex tasks</div>
-            </div>
-          </div>
-          <div class="dropdown-arrow">→</div>
-        </div>
-        <div id="advanced-dropdown" class="dropdown-content">
+      <!-- Advanced Tools Dropdown (Hidden - accessed from grid button) -->
+      <div id="advanced-dropdown" class="dropdown-content" style="display: none; position: fixed; background: white; border: 1px solid var(--gray-200); border-radius: 8px; padding: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; width: 280px;">
           <div class="dropdown-item" onclick="google.script.run.showExcelMigration()">
             Excel Migration Assistant
           </div>
@@ -1088,25 +1122,51 @@ function createMainSidebarHtml(context) {
       function toggleDropdown(type) {
         const dropdownId = type + '-dropdown';
         const dropdown = document.getElementById(dropdownId);
-        const header = dropdown.previousElementSibling;
         
-        // Toggle current dropdown
-        const isOpen = dropdown.classList.contains('show');
-        
-        // Close all dropdowns first
-        document.querySelectorAll('.dropdown-content').forEach(function(dd) {
-          dd.classList.remove('show');
-        });
-        document.querySelectorAll('.dropdown-header').forEach(function(hdr) {
-          hdr.classList.remove('active');
-        });
-        
-        // Open clicked dropdown if it was closed
-        if (!isOpen) {
-          dropdown.classList.add('show');
-          header.classList.add('active');
+        if (type === 'advanced') {
+          // Special handling for advanced tools - position near button
+          const button = event.currentTarget;
+          const rect = button.getBoundingClientRect();
+          
+          if (dropdown.style.display === 'block') {
+            dropdown.style.display = 'none';
+          } else {
+            dropdown.style.display = 'block';
+            dropdown.style.top = rect.bottom + 5 + 'px';
+            dropdown.style.left = Math.min(rect.left, window.innerWidth - 290) + 'px';
+          }
+        } else {
+          const header = dropdown.previousElementSibling;
+          
+          // Toggle current dropdown
+          const isOpen = dropdown.classList.contains('show');
+          
+          // Close all dropdowns first
+          document.querySelectorAll('.dropdown-content').forEach(function(dd) {
+            dd.classList.remove('show');
+          });
+          document.querySelectorAll('.dropdown-header').forEach(function(hdr) {
+            hdr.classList.remove('active');
+          });
+          
+          // Open clicked dropdown if it was closed
+          if (!isOpen) {
+            dropdown.classList.add('show');
+            header.classList.add('active');
+          }
         }
       }
+      
+      // Close advanced dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        const advDropdown = document.getElementById('advanced-dropdown');
+        if (advDropdown && advDropdown.style.display === 'block') {
+          const isAdvButton = e.target.closest('[data-theme="advanced"]');
+          if (!isAdvButton && !advDropdown.contains(e.target)) {
+            advDropdown.style.display = 'none';
+          }
+        }
+      });
     </script>
   `);
   
