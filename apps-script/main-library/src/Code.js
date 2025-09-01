@@ -159,6 +159,8 @@ function createCellPilotMenu() {
     ui.createMenu('CellPilot')
       .addItem('Open CellPilot', prefix + 'showCellPilotSidebar')
       .addSeparator()
+      .addItem('CellM8 Presentation Helper', prefix + 'showCellM8')
+      .addSeparator()
       .addItem('Data Cleaning', prefix + 'showDataCleaning')
       .addItem('Tableize Data', prefix + 'showTableize')
       .addItem('Advanced Data Restructuring', prefix + 'showAdvancedRestructuring')
@@ -920,7 +922,7 @@ function createMainSidebarHtml(context) {
                 Generate slides from your data
               </p>
             </div>
-            <button onclick="google.script.run.withSuccessHandler(function(){}).withFailureHandler(function(e){console.error('CellM8 error:', e);}).showCellM8()" style="padding: 8px 14px; background: white; color: #667eea; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; white-space: nowrap;">
+            <button onclick="google.script.run.showCellM8()" style="padding: 8px 14px; background: white; color: #667eea; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; white-space: nowrap;">
               Create →
             </button>
           </div>
@@ -1745,7 +1747,8 @@ function showAdvancedRestructuring() {
  */
 function showCellM8() {
   try {
-    const html = HtmlService.createHtmlOutputFromFile('CellM8Template')
+    const html = HtmlService.createTemplateFromFile('CellM8Template')
+      .evaluate()
       .setTitle('CellM8 - Presentation Helper')
       .setWidth(320);
     SpreadsheetApp.getUi().showSidebar(html);

@@ -4,332 +4,339 @@
   <base target="_top">
   <?!= include('SharedStyles'); ?>
   <style>
-    .cellm8-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
+    /* Prevent horizontal scrolling */
+    body {
+      overflow-x: hidden;
+      max-width: 100%;
     }
     
-    .cellm8-header::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-      animation: shimmer 3s infinite;
+    .container {
+      max-width: 100%;
+      overflow-x: hidden;
     }
     
-    @keyframes shimmer {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    .cellm8-title {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      position: relative;
-      z-index: 1;
-    }
-    
-    .cellm8-subtitle {
-      font-size: 14px;
-      opacity: 0.95;
-      position: relative;
-      z-index: 1;
-    }
-    
-    .cellm8-badge {
-      display: inline-block;
-      background: rgba(255,255,255,0.2);
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 11px;
-      font-weight: 600;
-      margin-left: 8px;
-      backdrop-filter: blur(10px);
-    }
-    
-    .config-section {
-      background: white;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-      border: 1px solid var(--gray-200);
-      transition: all 0.3s ease;
-    }
-    
-    .config-section:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      transform: translateY(-2px);
-    }
-    
-    .section-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--gray-700);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .section-icon {
-      width: 18px;
-      height: 18px;
-      opacity: 0.7;
-    }
-    
-    .data-source-options {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-    
+    /* Data source options */
     .source-option {
-      padding: 12px;
-      border: 2px solid var(--gray-200);
-      border-radius: 8px;
+      background: white;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      text-align: center;
-      font-size: 12px;
+      transition: all var(--transition-fast);
+      max-width: 100%;
+      box-sizing: border-box;
       position: relative;
-      overflow: hidden;
     }
     
     .source-option:hover {
-      border-color: #667eea;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(102,126,234,0.15);
+      border-color: var(--primary-300);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.02), rgba(99, 102, 241, 0.05));
+      transform: translateY(-1px);
+      box-shadow: var(--elevation-1);
     }
     
     .source-option.selected {
-      border-color: #667eea;
-      background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+      border-color: var(--primary-500);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(99, 102, 241, 0.10));
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
     
     .source-option.selected::after {
       content: '✓';
       position: absolute;
-      top: 4px;
-      right: 4px;
-      background: #667eea;
-      color: white;
+      top: 10px;
+      right: 12px;
       width: 20px;
       height: 20px;
+      background: var(--primary-500);
+      color: white;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 12px;
+      font-weight: bold;
     }
     
+    .source-option-title {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--gray-700);
+      margin-bottom: 4px;
+    }
+    
+    .source-option-desc {
+      font-size: 11px;
+      color: var(--gray-500);
+      line-height: 1.4;
+    }
+    
+    /* Template grid */
     .template-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
     }
     
     .template-card {
-      padding: 10px;
-      border: 2px solid var(--gray-200);
-      border-radius: 8px;
+      background: white;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 12px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all var(--transition-fast);
       text-align: center;
+      position: relative;
     }
     
     .template-card:hover {
-      border-color: #667eea;
-      transform: scale(1.05);
+      border-color: var(--primary-300);
+      transform: translateY(-1px);
+      box-shadow: var(--elevation-1);
     }
     
     .template-card.selected {
-      border-color: #667eea;
-      background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+      border-color: var(--primary-500);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(99, 102, 241, 0.10));
     }
     
-    .template-preview {
-      width: 100%;
-      height: 40px;
-      border-radius: 4px;
-      margin-bottom: 6px;
+    .template-card.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 16px;
+      height: 16px;
+      background: var(--primary-500);
+      color: white;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 10px;
+      font-weight: bold;
     }
     
     .template-name {
-      font-size: 11px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-top: 8px;
+    }
+    
+    .template-preview {
+      height: 50px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      opacity: 0.8;
+    }
+    
+    /* Slide count slider */
+    .slide-config {
+      background: var(--gray-50);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .slide-label {
+      font-size: 13px;
       font-weight: 600;
       color: var(--gray-700);
     }
     
-    .slide-counter {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px;
-      background: var(--gray-50);
-      border-radius: 8px;
-    }
-    
     .slide-count {
-      font-size: 20px;
-      font-weight: 600;
-      color: #667eea;
-      min-width: 40px;
-      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-600);
+      background: white;
+      padding: 4px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--primary-200);
     }
     
     .slide-slider {
-      flex: 1;
-      margin: 0 16px;
-      -webkit-appearance: none;
+      width: 100%;
       height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--gray-200);
       border-radius: 3px;
-      background: linear-gradient(to right, #667eea 0%, #667eea var(--progress), #e5e7eb var(--progress), #e5e7eb 100%);
       outline: none;
+      cursor: pointer;
     }
     
     .slide-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
+      background: var(--primary-500);
       border-radius: 50%;
-      background: #667eea;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(102,126,234,0.3);
-      transition: all 0.2s ease;
+      border: 3px solid white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     
-    .slide-slider::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-      box-shadow: 0 4px 12px rgba(102,126,234,0.5);
+    .slide-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: var(--primary-500);
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     
+    .slide-range {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-size: 10px;
+      color: var(--gray-500);
+    }
+    
+    /* Presentation style dropdown */
     .style-select {
       width: 100%;
-      padding: 10px;
-      border: 2px solid var(--gray-200);
+      padding: 10px 12px;
+      border: 1.5px solid var(--gray-200);
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 13px;
+      color: var(--gray-700);
       background: white;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all var(--transition-fast);
+      margin-bottom: 16px;
     }
     
     .style-select:hover {
-      border-color: #667eea;
+      border-color: var(--primary-300);
     }
     
     .style-select:focus {
+      border-color: var(--primary-500);
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
     
-    .advanced-options {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--gray-200);
-    }
-    
-    .checkbox-option {
+    /* Advanced options */
+    .advanced-toggle {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 8px;
+      padding: 10px;
+      background: var(--gray-50);
+      border-radius: 8px;
       cursor: pointer;
-    }
-    
-    .checkbox-option input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-    }
-    
-    .checkbox-label {
-      font-size: 13px;
+      transition: all var(--transition-fast);
+      margin-bottom: 12px;
+      font-size: 12px;
       color: var(--gray-600);
-      user-select: none;
     }
     
+    .advanced-toggle:hover {
+      background: var(--gray-100);
+    }
+    
+    .advanced-toggle.expanded {
+      background: white;
+      border: 1px solid var(--gray-200);
+    }
+    
+    .advanced-arrow {
+      transition: transform 0.2s ease;
+      font-size: 10px;
+    }
+    
+    .advanced-toggle.expanded .advanced-arrow {
+      transform: rotate(90deg);
+    }
+    
+    .advanced-options {
+      display: none;
+      padding: 12px;
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      margin-top: -4px;
+      margin-bottom: 16px;
+    }
+    
+    .advanced-options.show {
+      display: block;
+    }
+    
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      font-size: 12px;
+      color: var(--gray-700);
+    }
+    
+    .option-checkbox {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+    
+    /* Action buttons */
     .action-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      display: flex;
+      gap: 10px;
       margin-top: 20px;
     }
     
     .btn-preview {
-      background: white;
-      color: #667eea;
-      border: 2px solid #667eea;
+      flex: 1;
       padding: 12px;
+      background: white;
+      color: var(--primary-600);
+      border: 1.5px solid var(--primary-500);
       border-radius: 8px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      transition: all var(--transition-fast);
     }
     
     .btn-preview:hover {
-      background: rgba(102,126,234,0.1);
-      transform: translateY(-2px);
+      background: var(--primary-50);
+      transform: translateY(-1px);
+      box-shadow: var(--elevation-1);
     }
     
     .btn-generate {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      flex: 2;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
       color: white;
       border: none;
-      padding: 12px;
       border-radius: 8px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      position: relative;
-      overflow: hidden;
+      transition: all var(--transition-fast);
     }
     
-    .btn-generate::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.3);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-    
-    .btn-generate:hover::before {
-      width: 300px;
-      height: 300px;
-    }
-    
-    .btn-generate:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(102,126,234,0.3);
+    .btn-generate:hover:not(:disabled) {
+      background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+      transform: translateY(-1px);
+      box-shadow: var(--elevation-2);
     }
     
     .btn-generate:disabled {
@@ -337,548 +344,381 @@
       cursor: not-allowed;
     }
     
-    .btn-icon {
-      width: 16px;
-      height: 16px;
-    }
-    
-    .progress-overlay {
+    /* Loading state */
+    .loading-overlay {
+      display: none;
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
+      background: rgba(255, 255, 255, 0.95);
+      z-index: 1000;
       align-items: center;
       justify-content: center;
-      z-index: 10000;
-      backdrop-filter: blur(4px);
+      flex-direction: column;
     }
     
-    .progress-overlay.show {
+    .loading-overlay.show {
       display: flex;
     }
     
-    .progress-card {
-      background: white;
-      border-radius: 16px;
-      padding: 32px;
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
-    
-    .progress-spinner {
-      width: 60px;
-      height: 60px;
-      border: 4px solid rgba(102,126,234,0.2);
-      border-top-color: #667eea;
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--primary-500);
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin: 0 auto 20px;
     }
     
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
     
-    .progress-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--gray-800);
-      margin-bottom: 8px;
-    }
-    
-    .progress-subtitle {
+    .loading-text {
+      margin-top: 16px;
       font-size: 14px;
       color: var(--gray-600);
-      margin-bottom: 20px;
-    }
-    
-    .progress-steps {
-      text-align: left;
-      margin-top: 20px;
-    }
-    
-    .progress-step {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-      opacity: 0.5;
-      transition: all 0.3s ease;
-    }
-    
-    .progress-step.active {
-      opacity: 1;
-    }
-    
-    .progress-step.completed {
-      opacity: 1;
-    }
-    
-    .step-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: var(--gray-200);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      transition: all 0.3s ease;
-    }
-    
-    .progress-step.active .step-icon {
-      background: #667eea;
-      color: white;
-      animation: pulse 1.5s infinite;
-    }
-    
-    .progress-step.completed .step-icon {
-      background: #34a853;
-      color: white;
-    }
-    
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-    
-    .success-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-      backdrop-filter: blur(4px);
-    }
-    
-    .success-overlay.show {
-      display: flex;
-    }
-    
-    .success-card {
-      background: white;
-      border-radius: 16px;
-      padding: 32px;
-      max-width: 400px;
-      width: 90%;
       text-align: center;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
     
-    .success-icon {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 20px;
-      background: linear-gradient(135deg, #34a853 0%, #0f9d58 100%);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: scaleIn 0.5s ease;
+    .loading-step {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-top: 8px;
     }
     
-    @keyframes scaleIn {
-      from { transform: scale(0); }
-      to { transform: scale(1); }
+    /* Success state */
+    .success-message {
+      display: none;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.15));
+      border: 1.5px solid var(--success-500);
+      border-radius: 10px;
+      margin-top: 16px;
     }
     
-    .success-checkmark {
-      color: white;
-      font-size: 40px;
+    .success-message.show {
+      display: block;
     }
     
     .success-title {
-      font-size: 20px;
+      font-size: 14px;
       font-weight: 600;
-      color: var(--gray-800);
+      color: var(--success-700);
       margin-bottom: 8px;
     }
     
-    .success-subtitle {
-      font-size: 14px;
-      color: var(--gray-600);
-      margin-bottom: 24px;
+    .success-text {
+      font-size: 12px;
+      color: var(--success-600);
+      margin-bottom: 12px;
     }
     
     .success-actions {
-      display: grid;
-      gap: 12px;
+      display: flex;
+      gap: 8px;
     }
     
-    .ai-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 11px;
+    .success-btn {
+      padding: 8px 12px;
+      background: var(--success-500);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
       font-weight: 600;
-      color: #667eea;
-      margin-top: 12px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
     }
     
-    .ai-icon {
-      width: 14px;
-      height: 14px;
+    .success-btn:hover {
+      background: var(--success-600);
+      transform: translateY(-1px);
     }
   </style>
 </head>
 <body>
-  <div class="cellm8-header">
-    <div class="cellm8-title">
-      📊 CellM8 Presentations
-      <span class="cellm8-badge">NEW</span>
-    </div>
-    <div class="cellm8-subtitle">Transform your data into stunning presentations with AI</div>
-  </div>
-
-  <!-- Data Source Selection -->
-  <div class="config-section">
-    <div class="section-title">
-      <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-      </svg>
-      Data Source
-    </div>
-    <div class="data-source-options">
-      <div class="source-option selected" data-source="entireSheet" onclick="selectDataSource(this)">
-        <div>📄</div>
-        <div>Entire Sheet</div>
-      </div>
-      <div class="source-option" data-source="selectedRange" onclick="selectDataSource(this)">
-        <div>🎯</div>
-        <div>Selected Range</div>
-      </div>
-      <div class="source-option" data-source="visibleOnly" onclick="selectDataSource(this)">
-        <div>👁️</div>
-        <div>Visible Cells</div>
-      </div>
-      <div class="source-option" data-source="customRange" onclick="selectDataSource(this)">
-        <div>✏️</div>
-        <div>Custom Range</div>
-      </div>
-    </div>
-    <div id="customRangeInput" style="display: none; margin-top: 12px;">
-      <input type="text" id="customRange" placeholder="e.g., A1:E20" class="form-control">
-    </div>
-  </div>
-
-  <!-- Template Selection -->
-  <div class="config-section">
-    <div class="section-title">
-      <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
-      </svg>
-      Template
-    </div>
-    <div class="template-grid">
-      <div class="template-card selected" data-template="corporate" onclick="selectTemplate(this)">
-        <div class="template-preview" style="background: linear-gradient(135deg, #1f4e79, #4472c4);">💼</div>
-        <div class="template-name">Corporate</div>
-      </div>
-      <div class="template-card" data-template="sales" onclick="selectTemplate(this)">
-        <div class="template-preview" style="background: linear-gradient(135deg, #c55a11, #f79646);">📈</div>
-        <div class="template-name">Sales</div>
-      </div>
-      <div class="template-card" data-template="financial" onclick="selectTemplate(this)">
-        <div class="template-preview" style="background: linear-gradient(135deg, #1f4e79, #843c0c);">💰</div>
-        <div class="template-name">Financial</div>
-      </div>
-      <div class="template-card" data-template="modern" onclick="selectTemplate(this)">
-        <div class="template-preview" style="background: linear-gradient(135deg, #4285f4, #34a853);">🎨</div>
-        <div class="template-name">Modern</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide Configuration -->
-  <div class="config-section">
-    <div class="section-title">
-      <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-      </svg>
-      Configuration
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h2 class="title">CellM8 Presentation Helper</h2>
+      <p class="subtitle">Transform your spreadsheet data into professional presentations</p>
     </div>
     
-    <!-- Slide Count -->
-    <div class="slide-counter">
-      <span>Slides:</span>
-      <input type="range" id="slideCount" class="slide-slider" min="5" max="50" value="12" oninput="updateSlideCount(this.value)">
-      <span class="slide-count" id="slideCountDisplay">12</span>
+    <!-- Data Source Section -->
+    <div class="section">
+      <div class="section-header">
+        <h3 class="section-title">Data Source</h3>
+        <span class="section-helper">Choose what data to include</span>
+      </div>
+      
+      <div class="source-option selected" onclick="selectSource(this, 'entire')">
+        <div class="source-option-title">Entire Sheet</div>
+        <div class="source-option-desc">Use all data from the current sheet</div>
+      </div>
+      
+      <div class="source-option" onclick="selectSource(this, 'selection')">
+        <div class="source-option-title">Selected Range</div>
+        <div class="source-option-desc">Use only the currently selected cells</div>
+      </div>
+      
+      <div class="source-option" onclick="selectSource(this, 'visible')">
+        <div class="source-option-title">Visible Cells Only</div>
+        <div class="source-option-desc">Exclude hidden rows and columns</div>
+      </div>
+      
+      <div class="source-option" onclick="selectSource(this, 'custom')">
+        <div class="source-option-title">Custom Range</div>
+        <div class="source-option-desc">Specify a custom range (e.g., A1:D10)</div>
+      </div>
     </div>
     
-    <!-- Presentation Style -->
-    <div style="margin-top: 12px;">
-      <select id="presentationStyle" class="style-select">
+    <!-- Template Selection -->
+    <div class="section">
+      <div class="section-header">
+        <h3 class="section-title">Presentation Template</h3>
+        <span class="section-helper">Choose a design theme</span>
+      </div>
+      
+      <div class="template-grid">
+        <div class="template-card selected" onclick="selectTemplate(this, 'corporate')">
+          <div class="template-preview" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6);">
+            <span style="color: white; font-size: 24px;">A</span>
+          </div>
+          <div class="template-name">Corporate</div>
+        </div>
+        
+        <div class="template-card" onclick="selectTemplate(this, 'sales')">
+          <div class="template-preview" style="background: linear-gradient(135deg, #f97316, #fbbf24);">
+            <span style="color: white; font-size: 24px;">$</span>
+          </div>
+          <div class="template-name">Sales</div>
+        </div>
+        
+        <div class="template-card" onclick="selectTemplate(this, 'financial')">
+          <div class="template-preview" style="background: linear-gradient(135deg, #059669, #10b981);">
+            <span style="color: white; font-size: 24px;">%</span>
+          </div>
+          <div class="template-name">Financial</div>
+        </div>
+        
+        <div class="template-card" onclick="selectTemplate(this, 'modern')">
+          <div class="template-preview" style="background: linear-gradient(135deg, #7c3aed, #a78bfa);">
+            <span style="color: white; font-size: 24px;">M</span>
+          </div>
+          <div class="template-name">Modern</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Slide Configuration -->
+    <div class="section">
+      <div class="section-header">
+        <h3 class="section-title">Slide Configuration</h3>
+        <span class="section-helper">Customize your presentation</span>
+      </div>
+      
+      <div class="slide-config">
+        <div class="slide-header">
+          <span class="slide-label">Number of Slides</span>
+          <span class="slide-count" id="slideCount">12</span>
+        </div>
+        <input type="range" class="slide-slider" id="slideSlider" min="5" max="50" value="12" oninput="updateSlideCount(this.value)">
+        <div class="slide-range">
+          <span>5</span>
+          <span>50</span>
+        </div>
+      </div>
+      
+      <label class="label">Presentation Style</label>
+      <select class="style-select" id="presentationStyle">
         <option value="executive">Executive Summary</option>
-        <option value="detailed">Detailed Analysis</option>
-        <option value="sales">Sales Report</option>
-        <option value="financial">Financial Dashboard</option>
+        <option value="detailed" selected>Detailed Analysis</option>
+        <option value="sales">Sales Pitch</option>
+        <option value="financial">Financial Report</option>
         <option value="project">Project Update</option>
         <option value="custom">Custom</option>
       </select>
     </div>
     
     <!-- Advanced Options -->
-    <div class="advanced-options">
-      <label class="checkbox-option">
-        <input type="checkbox" id="includeCharts" checked>
-        <span class="checkbox-label">Include Charts & Visualizations</span>
-      </label>
-      <label class="checkbox-option">
-        <input type="checkbox" id="includeInsights" checked>
-        <span class="checkbox-label">Generate AI Insights</span>
-      </label>
-      <label class="checkbox-option">
-        <input type="checkbox" id="includeRecommendations" checked>
-        <span class="checkbox-label">Add Recommendations</span>
-      </label>
-      <label class="checkbox-option">
-        <input type="checkbox" id="includeHeaders" checked>
-        <span class="checkbox-label">First Row Contains Headers</span>
-      </label>
+    <div class="advanced-toggle" onclick="toggleAdvanced()">
+      <span class="advanced-arrow">▶</span>
+      <span>Advanced Options</span>
     </div>
-  </div>
-
-  <!-- Action Buttons -->
-  <div class="action-buttons">
-    <button class="btn-preview" onclick="previewPresentation()">
-      <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-      </svg>
-      Preview
-    </button>
-    <button class="btn-generate" onclick="generatePresentation()">
-      <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-      </svg>
-      Generate
-    </button>
-  </div>
-
-  <div class="ai-badge">
-    <svg class="ai-icon" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
-    </svg>
-    Powered by AI Intelligence
-  </div>
-
-  <!-- Progress Overlay -->
-  <div id="progressOverlay" class="progress-overlay">
-    <div class="progress-card">
-      <div class="progress-spinner"></div>
-      <div class="progress-title">Creating Your Presentation</div>
-      <div class="progress-subtitle">CellM8 is working its magic...</div>
-      <div class="progress-steps">
-        <div class="progress-step" id="step1">
-          <div class="step-icon">1</div>
-          <span>Analyzing data patterns...</span>
-        </div>
-        <div class="progress-step" id="step2">
-          <div class="step-icon">2</div>
-          <span>Generating insights...</span>
-        </div>
-        <div class="progress-step" id="step3">
-          <div class="step-icon">3</div>
-          <span>Creating slide structure...</span>
-        </div>
-        <div class="progress-step" id="step4">
-          <div class="step-icon">4</div>
-          <span>Building presentation...</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Success Overlay -->
-  <div id="successOverlay" class="success-overlay">
-    <div class="success-card">
-      <div class="success-icon">
-        <span class="success-checkmark">✓</span>
-      </div>
-      <div class="success-title">Presentation Created!</div>
-      <div class="success-subtitle" id="successMessage">Your presentation is ready with 12 slides</div>
-      <div class="success-actions">
-        <button class="btn btn-primary" onclick="openPresentation()">
-          Open Presentation
-        </button>
-        <button class="btn btn-secondary" onclick="createAnother()">
-          Create Another
-        </button>
-        <button class="btn btn-outline" onclick="copyPresentationLink()">
-          Copy Link
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    let selectedDataSource = 'entireSheet';
-    let selectedTemplate = 'corporate';
-    let presentationUrl = '';
     
-    function selectDataSource(element) {
-      document.querySelectorAll('.source-option').forEach(opt => {
-        opt.classList.remove('selected');
-      });
+    <div class="advanced-options" id="advancedOptions">
+      <div class="option-item">
+        <input type="checkbox" class="option-checkbox" id="includeCharts" checked>
+        <label for="includeCharts">Include charts and visualizations</label>
+      </div>
+      <div class="option-item">
+        <input type="checkbox" class="option-checkbox" id="includeInsights" checked>
+        <label for="includeInsights">Generate AI insights</label>
+      </div>
+      <div class="option-item">
+        <input type="checkbox" class="option-checkbox" id="includeRecommendations" checked>
+        <label for="includeRecommendations">Add recommendations</label>
+      </div>
+      <div class="option-item">
+        <input type="checkbox" class="option-checkbox" id="includeNextSteps">
+        <label for="includeNextSteps">Include next steps</label>
+      </div>
+      <div class="option-item">
+        <input type="checkbox" class="option-checkbox" id="includeAppendix">
+        <label for="includeAppendix">Add data appendix</label>
+      </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="btn-preview" onclick="previewPresentation()">Preview</button>
+      <button class="btn-generate" onclick="generatePresentation()">Generate Presentation</button>
+    </div>
+    
+    <!-- Success Message -->
+    <div class="success-message" id="successMessage">
+      <div class="success-title">Presentation Created Successfully!</div>
+      <div class="success-text">Your presentation has been generated and saved to your Google Drive.</div>
+      <div class="success-actions">
+        <button class="success-btn" onclick="openPresentation()">Open Presentation</button>
+        <button class="success-btn" onclick="createAnother()">Create Another</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Creating your presentation...</div>
+    <div class="loading-step" id="loadingStep">Analyzing data...</div>
+  </div>
+  
+  <script>
+    let selectedSource = 'entire';
+    let selectedTemplate = 'corporate';
+    
+    function selectSource(element, source) {
+      document.querySelectorAll('.source-option').forEach(el => el.classList.remove('selected'));
       element.classList.add('selected');
-      selectedDataSource = element.dataset.source;
-      
-      // Show/hide custom range input
-      const customInput = document.getElementById('customRangeInput');
-      if (selectedDataSource === 'customRange') {
-        customInput.style.display = 'block';
-      } else {
-        customInput.style.display = 'none';
-      }
+      selectedSource = source;
     }
     
-    function selectTemplate(element) {
-      document.querySelectorAll('.template-card').forEach(card => {
-        card.classList.remove('selected');
-      });
+    function selectTemplate(element, template) {
+      document.querySelectorAll('.template-card').forEach(el => el.classList.remove('selected'));
       element.classList.add('selected');
-      selectedTemplate = element.dataset.template;
+      selectedTemplate = template;
     }
     
     function updateSlideCount(value) {
-      document.getElementById('slideCountDisplay').textContent = value;
-      const slider = document.getElementById('slideCount');
-      const progress = ((value - 5) / (50 - 5)) * 100;
-      slider.style.setProperty('--progress', progress + '%');
+      document.getElementById('slideCount').textContent = value;
+    }
+    
+    function toggleAdvanced() {
+      const toggle = document.querySelector('.advanced-toggle');
+      const options = document.getElementById('advancedOptions');
+      toggle.classList.toggle('expanded');
+      options.classList.toggle('show');
     }
     
     function previewPresentation() {
-      // TODO: Implement preview functionality
-      alert('Preview functionality coming soon!');
+      const config = gatherConfig();
+      // Show preview in modal or generate sample
+      google.script.run
+        .withSuccessHandler(showPreview)
+        .withFailureHandler(showError)
+        .generateSlideStructure(null, config);
     }
     
     function generatePresentation() {
-      const config = gatherConfiguration();
+      const config = gatherConfig();
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      const loadingStep = document.getElementById('loadingStep');
       
-      if (config.dataSource.type === 'customRange' && !config.dataSource.range) {
-        alert('Please specify a custom range');
-        return;
-      }
+      loadingOverlay.classList.add('show');
       
-      showProgress();
+      // Update loading steps
+      const steps = [
+        'Analyzing data...',
+        'Identifying patterns...',
+        'Generating insights...',
+        'Creating slides...',
+        'Applying design...',
+        'Finalizing presentation...'
+      ];
+      
+      let stepIndex = 0;
+      const stepInterval = setInterval(() => {
+        if (stepIndex < steps.length) {
+          loadingStep.textContent = steps[stepIndex];
+          stepIndex++;
+        }
+      }, 2000);
       
       google.script.run
-        .withSuccessHandler(handlePresentationSuccess)
-        .withFailureHandler(handlePresentationError)
-        .createCellM8Presentation(config);
+        .withSuccessHandler((result) => {
+          clearInterval(stepInterval);
+          loadingOverlay.classList.remove('show');
+          showSuccess(result);
+        })
+        .withFailureHandler((error) => {
+          clearInterval(stepInterval);
+          loadingOverlay.classList.remove('show');
+          showError(error);
+        })
+        .createPresentation(config);
     }
     
-    function gatherConfiguration() {
-      const customRange = document.getElementById('customRange').value;
-      
+    function gatherConfig() {
       return {
         dataSource: {
-          type: selectedDataSource,
-          range: selectedDataSource === 'customRange' ? customRange : null,
-          hasHeaders: document.getElementById('includeHeaders').checked
+          type: selectedSource,
+          includeHidden: selectedSource !== 'visible'
         },
         template: selectedTemplate,
-        slideCount: parseInt(document.getElementById('slideCount').value),
-        presentationStyle: document.getElementById('presentationStyle').value,
-        presentationTitle: 'Data Analysis - ' + new Date().toLocaleDateString(),
-        includeCharts: document.getElementById('includeCharts').checked,
-        includeInsights: document.getElementById('includeInsights').checked,
-        includeRecommendations: document.getElementById('includeRecommendations').checked,
-        includeExecutiveSummary: document.getElementById('presentationStyle').value === 'executive'
+        slideCount: parseInt(document.getElementById('slideSlider').value),
+        style: document.getElementById('presentationStyle').value,
+        options: {
+          includeCharts: document.getElementById('includeCharts').checked,
+          includeInsights: document.getElementById('includeInsights').checked,
+          includeRecommendations: document.getElementById('includeRecommendations').checked,
+          includeNextSteps: document.getElementById('includeNextSteps').checked,
+          includeAppendix: document.getElementById('includeAppendix').checked
+        }
       };
     }
     
-    function showProgress() {
-      document.getElementById('progressOverlay').classList.add('show');
-      
-      // Animate progress steps
-      const steps = ['step1', 'step2', 'step3', 'step4'];
-      steps.forEach((step, index) => {
-        setTimeout(() => {
-          document.getElementById(step).classList.add('active');
-          if (index > 0) {
-            document.getElementById(steps[index - 1]).classList.remove('active');
-            document.getElementById(steps[index - 1]).classList.add('completed');
-            document.querySelector(`#${steps[index - 1]} .step-icon`).innerHTML = '✓';
-          }
-        }, (index + 1) * 2000);
-      });
+    function showPreview(structure) {
+      // Show preview of slide structure
+      console.log('Preview:', structure);
+      alert('Preview feature coming soon!');
     }
     
-    function hideProgress() {
-      document.getElementById('progressOverlay').classList.remove('show');
-      // Reset steps
-      ['step1', 'step2', 'step3', 'step4'].forEach(step => {
-        document.getElementById(step).classList.remove('active', 'completed');
-        const stepNum = step.replace('step', '');
-        document.querySelector(`#${step} .step-icon`).innerHTML = stepNum;
-      });
+    function showSuccess(result) {
+      document.getElementById('successMessage').classList.add('show');
+      // Store presentation URL for opening
+      window.presentationUrl = result.url;
     }
     
-    function handlePresentationSuccess(result) {
-      hideProgress();
-      
-      if (result.success) {
-        presentationUrl = result.presentationUrl;
-        document.getElementById('successMessage').textContent = 
-          `Your presentation is ready with ${result.slideCount} slides`;
-        document.getElementById('successOverlay').classList.add('show');
-      } else {
-        alert('Error: ' + result.error);
-      }
-    }
-    
-    function handlePresentationError(error) {
-      hideProgress();
-      alert('Failed to create presentation: ' + error);
+    function showError(error) {
+      alert('Error creating presentation: ' + error.message);
     }
     
     function openPresentation() {
-      if (presentationUrl) {
-        window.open(presentationUrl, '_blank');
+      if (window.presentationUrl) {
+        window.open(window.presentationUrl, '_blank');
       }
-      document.getElementById('successOverlay').classList.remove('show');
     }
     
     function createAnother() {
-      document.getElementById('successOverlay').classList.remove('show');
-      // Reset form if needed
+      document.getElementById('successMessage').classList.remove('show');
+      // Reset form to defaults
+      document.getElementById('slideSlider').value = 12;
+      updateSlideCount(12);
+      document.getElementById('presentationStyle').value = 'detailed';
     }
-    
-    function copyPresentationLink() {
-      if (presentationUrl) {
-        const tempInput = document.createElement('input');
-        tempInput.value = presentationUrl;
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        document.execCommand('copy');
-        document.body.removeChild(tempInput);
-        
-        // Show feedback
-        const button = event.target;
-        const originalText = button.textContent;
-        button.textContent = 'Copied!';
-        setTimeout(() => {
-          button.textContent = originalText;
-        }, 2000);
-      }
-    }
-    
-    // Initialize slider progress bar
-    updateSlideCount(12);
   </script>
 </body>
 </html>
