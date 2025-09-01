@@ -762,12 +762,35 @@
     
     // Step 2: Analyze data
     function analyzeData() {
-      showLoading('Analyzing Excel data...');
+      const textArea = document.getElementById('excelDataInput');
+      const pastedData = textArea ? textArea.value : '';
       
+      if (!pastedData.trim()) {
+        showError('Please paste Excel data first');
+        currentStep = 1;
+        updateStepUI();
+        return;
+      }
+      
+      showLoading('Importing and analyzing Excel data...');
+      
+      // First import the data
       google.script.run
-        .withSuccessHandler(handleAnalysisResults)
+        .withSuccessHandler(function(importResult) {
+          if (importResult.success) {
+            migrationData.importedData = importResult;
+            showMessage(`Imported ${importResult.rows} rows, ${importResult.cols} columns`);
+            // Now scan for issues
+            google.script.run
+              .withSuccessHandler(handleAnalysisResults)
+              .withFailureHandler(handleError)
+              .scanForExcelIssues();
+          } else {
+            handleError('Import failed: ' + importResult.error);
+          }
+        })
         .withFailureHandler(handleError)
-        .scanForExcelIssues();
+        .importExcelData(pastedData);
     }
     
     function handleAnalysisResults(results) {
@@ -925,20 +948,45 @@
       status.textContent = 'Migrating data...';
       details.textContent = 'Converting Excel formulas to Google Sheets format';
       
-      // Simulate progress
+      // Prepare options from configuration
+      const options = migrationData.options || {
+        fixLocale: true,
+        convertXlookup: true,
+        fixStructuredRefs: true,
+        optimizeVolatile: false,
+        createBackup: true
+      };
+      
+      // Start progress animation
       let progress = 0;
       const interval = setInterval(() => {
-        progress += 10;
-        progressBar.style.width = progress + '%';
-        
-        if (progress >= 100) {
-          clearInterval(interval);
-          completeMigration();
+        progress += 5;
+        if (progress <= 90) {
+          progressBar.style.width = progress + '%';
         }
-      }, 200);
+      }, 100);
+      
+      // Perform actual migration
+      google.script.run
+        .withSuccessHandler(function(result) {
+          clearInterval(interval);
+          progressBar.style.width = '100%';
+          
+          if (result.success) {
+            migrationData.migrationResult = result;
+            completeMigration(result);
+          } else {
+            handleError('Migration failed: ' + result.error);
+          }
+        })
+        .withFailureHandler(function(error) {
+          clearInterval(interval);
+          handleError('Migration error: ' + error);
+        })
+        .fixExcelIssues(options);
     }
     
-    function completeMigration() {
+    function completeMigration(result) {
       const status = document.getElementById('migrationStatus');
       const details = document.getElementById('migrationDetails');
       const checkmark = document.querySelector('.success-checkmark');
@@ -948,9 +996,12 @@
       status.textContent = 'Migration Complete!';
       details.textContent = 'Your Excel data has been successfully converted';
       
+      const fixCount = result ? (result.fixCount || 0) : 0;
+      const remaining = result ? (result.remaining || 0) : 0;
+      
       results.innerHTML = `
         <div class="alert alert-success">
-          <strong>Success!</strong> 25 formulas converted, 3 issues fixed
+          <strong>Success!</strong> ${fixCount} issues fixed${remaining > 0 ? `, ${remaining} require manual review` : ''}
         </div>
         <div class="btn-group" style="justify-content: center;">
           <button class="btn btn-primary" onclick="viewSheet()">View Sheet</button>
@@ -958,6 +1009,16 @@
         </div>
       `;
       results.style.display = 'block';
+      
+      // Generate migration report in background
+      if (migrationData.analysisResults && result) {
+        google.script.run
+          .withSuccessHandler(function(report) {
+            migrationData.report = report;
+            console.log('Migration report generated:', report);
+          })
+          .createMigrationReport({ scan: migrationData.analysisResults, fixes: result });
+      }
     }
     
     function finish() {
@@ -971,7 +1032,53 @@
     
     function downloadReport() {
       // Generate and download migration report
-      showMessage('Generating migration report...');
+      if (migrationData.report) {
+        // Create a text report
+        let reportText = 'Excel Migration Report\n';
+        reportText += '======================\n\n';
+        reportText += `Date: ${new Date().toLocaleString()}\n\n`;
+        reportText += `Summary:\n`;
+        reportText += `- Total Issues: ${migrationData.report.summary.totalIssues || 0}\n`;
+        reportText += `- Formulas Converted: ${migrationData.report.summary.formulasConverted || 0}\n`;
+        reportText += `- Errors Fixed: ${migrationData.report.summary.errorsFixed || 0}\n`;
+        reportText += `- Warnings: ${migrationData.report.summary.warningsGenerated || 0}\n\n`;
+        
+        if (migrationData.report.recommendations && migrationData.report.recommendations.length > 0) {
+          reportText += 'Recommendations:\n';
+          migrationData.report.recommendations.forEach(rec => {
+            reportText += `- ${rec}\n`;
+          });
+        }
+        
+        // Create downloadable file
+        const blob = new Blob([reportText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'excel-migration-report.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+        showMessage('Report downloaded');
+      } else {
+        showMessage('Generating migration report...');
+        // Generate report if not already available
+        if (migrationData.analysisResults && migrationData.migrationResult) {
+          google.script.run
+            .withSuccessHandler(function(report) {
+              migrationData.report = report;
+              downloadReport(); // Retry download
+            })
+            .withFailureHandler(function(error) {
+              showError('Failed to generate report: ' + error);
+            })
+            .createMigrationReport({ 
+              scan: migrationData.analysisResults, 
+              fixes: migrationData.migrationResult 
+            });
+        } else {
+          showError('No migration data available for report');
+        }
+      }
     }
     
     // Utility functions
