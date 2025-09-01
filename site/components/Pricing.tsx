@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import ScrollObserver from './ScrollObserver'
 
@@ -89,82 +89,201 @@ const plans = [
 const Pricing = () => {
   const [expandedPlan, setExpandedPlan] = useState<string | null>(null)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [animationPhase, setAnimationPhase] = useState<'idle' | 'collapsing' | 'expanding' | 'expanded' | 'reverting'>('idle')
+  
+  useEffect(() => {
+    if (animationPhase === 'collapsing') {
+      const timer = setTimeout(() => setAnimationPhase('expanding'), 600)
+      return () => clearTimeout(timer)
+    }
+    if (animationPhase === 'expanding') {
+      const timer = setTimeout(() => setAnimationPhase('expanded'), 800)
+      return () => clearTimeout(timer)
+    }
+    if (animationPhase === 'reverting') {
+      const timer = setTimeout(() => {
+        setAnimationPhase('idle')
+        setExpandedPlan(null)
+        setIsTransitioning(false)
+      }, 800)
+      return () => clearTimeout(timer)
+    }
+    if (animationPhase === 'expanded') {
+      setIsTransitioning(false)
+    }
+  }, [animationPhase])
   
   const handlePlanClick = (planId: string) => {
     if (isTransitioning) return
     
     if (expandedPlan === planId) {
+      // Closing
       setIsTransitioning(true)
-      setExpandedPlan(null)
-      setTimeout(() => setIsTransitioning(false), 500)
+      setAnimationPhase('reverting')
+    } else if (expandedPlan) {
+      // Switching between plans
+      setIsTransitioning(true)
+      setAnimationPhase('reverting')
+      setTimeout(() => {
+        setExpandedPlan(planId)
+        setAnimationPhase('expanding')
+      }, 800)
     } else {
+      // Opening
       setIsTransitioning(true)
       setExpandedPlan(planId)
-      setTimeout(() => setIsTransitioning(false), 500)
+      setAnimationPhase('collapsing')
     }
   }
   
   return (
     <section id="pricing" className="snap-section relative overflow-hidden bg-transparent">
       <style jsx>{`
-        @keyframes slideLeft {
-          from {
-            transform: translateX(0);
+        @keyframes slideAndScale {
+          0% {
+            transform: translateX(0) scale(1);
             opacity: 1;
           }
-          to {
-            transform: translateX(-20px);
+          50% {
+            transform: translateX(-30px) scale(0.98);
+            opacity: 1;
+          }
+          100% {
+            transform: translateX(-40px) scale(1);
             opacity: 1;
           }
         }
         
-        @keyframes slideFromRight {
-          from {
-            transform: translateX(40px);
+        @keyframes slideFromFar {
+          0% {
+            transform: translateX(100px) scale(0.9);
             opacity: 0;
+            filter: blur(4px);
           }
-          to {
-            transform: translateX(0);
+          50% {
+            transform: translateX(50px) scale(0.95);
+            opacity: 0.5;
+            filter: blur(2px);
+          }
+          100% {
+            transform: translateX(0) scale(1);
             opacity: 1;
+            filter: blur(0);
           }
         }
         
-        @keyframes fadeOut {
-          from {
+        @keyframes gentleFadeOut {
+          0% {
             opacity: 1;
-            transform: scale(1);
+            transform: scale(1) translateY(0);
           }
-          to {
+          100% {
             opacity: 0;
-            transform: scale(0.95);
+            transform: scale(0.92) translateY(10px);
+            filter: blur(8px);
           }
         }
         
-        @keyframes fadeIn {
-          from {
+        @keyframes gentleFadeIn {
+          0% {
             opacity: 0;
-            transform: scale(1.05);
+            transform: scale(1.08) translateY(-10px);
+            filter: blur(8px);
           }
-          to {
+          100% {
             opacity: 1;
-            transform: scale(1);
+            transform: scale(1) translateY(0);
+            filter: blur(0);
           }
         }
         
-        .slide-left {
-          animation: slideLeft 0.4s ease-out forwards;
+        @keyframes expandWidth {
+          0% {
+            max-width: 64rem;
+          }
+          100% {
+            max-width: 80rem;
+          }
         }
         
-        .slide-from-right {
-          animation: slideFromRight 0.4s ease-out forwards;
+        @keyframes contractWidth {
+          0% {
+            max-width: 80rem;
+          }
+          100% {
+            max-width: 64rem;
+          }
         }
         
-        .fade-out {
-          animation: fadeOut 0.3s ease-out forwards;
+        @keyframes slideBack {
+          0% {
+            transform: translateX(-40px) scale(1);
+          }
+          50% {
+            transform: translateX(-20px) scale(1.02);
+          }
+          100% {
+            transform: translateX(0) scale(1);
+          }
         }
         
-        .fade-in {
-          animation: fadeIn 0.3s ease-out forwards;
+        @keyframes slideAway {
+          0% {
+            transform: translateX(0) scale(1);
+            opacity: 1;
+            filter: blur(0);
+          }
+          100% {
+            transform: translateX(100px) scale(0.9);
+            opacity: 0;
+            filter: blur(4px);
+          }
+        }
+        
+        .slide-and-scale {
+          animation: slideAndScale 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .slide-from-far {
+          animation: slideFromFar 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          animation-delay: 0.2s;
+          opacity: 0;
+        }
+        
+        .gentle-fade-out {
+          animation: gentleFadeOut 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .gentle-fade-in {
+          animation: gentleFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .expand-container {
+          animation: expandWidth 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .contract-container {
+          animation: contractWidth 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .slide-back {
+          animation: slideBack 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .slide-away {
+          animation: slideAway 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .stagger-1 {
+          animation-delay: 0.1s;
+        }
+        
+        .stagger-2 {
+          animation-delay: 0.2s;
+        }
+        
+        .stagger-3 {
+          animation-delay: 0.3s;
         }
       `}</style>
       
@@ -192,13 +311,22 @@ const Pricing = () => {
 
           {/* Expanded view */}
           {expandedPlan && (
-            <div className="mb-8 overflow-hidden">
+            <div className={`mb-8 overflow-hidden transition-all duration-1000 ${
+              animationPhase === 'expanding' || animationPhase === 'expanded' ? 'opacity-100' : 'opacity-0'
+            }`}>
               {plans.filter(p => p.id === expandedPlan).map(plan => (
-                <div key={plan.id} className="max-w-5xl mx-auto">
-                  <div className="glass-card rounded-2xl overflow-hidden">
+                <div key={plan.id} className={`mx-auto transition-all duration-800 ${
+                  animationPhase === 'expanding' ? 'expand-container' : 
+                  animationPhase === 'reverting' ? 'contract-container' : 
+                  'max-w-5xl'
+                }`}>
+                  <div className="glass-card rounded-2xl overflow-hidden shadow-2xl">
                     <div className="grid lg:grid-cols-2 gap-0">
                       {/* Plan summary - slides left */}
-                      <div className={`p-6 lg:p-8 ${expandedPlan ? 'slide-left' : ''}`}>
+                      <div className={`p-6 lg:p-8 ${
+                        animationPhase === 'expanding' ? 'slide-and-scale' : 
+                        animationPhase === 'reverting' ? 'slide-back' : ''
+                      }`}>
                         {plan.popular && (
                           <div className="inline-block bg-gradient-to-r from-primary-500 to-accent-teal px-3 py-1 rounded-full text-white text-xs font-medium mb-3">
                             Most Popular
@@ -214,7 +342,7 @@ const Pricing = () => {
 
                         <Link
                           href={plan.ctaLink}
-                          className={`block w-full py-3 px-6 rounded-full text-center font-medium transition-all mb-4 ${
+                          className={`block w-full py-3 px-6 rounded-full text-center font-medium transition-all mb-4 transform hover:scale-105 ${
                             plan.popular
                               ? 'btn-primary'
                               : 'bg-white border border-neutral-300 text-neutral-700 hover:bg-neutral-100'
@@ -225,18 +353,26 @@ const Pricing = () => {
 
                         <button
                           onClick={() => handlePlanClick(plan.id)}
-                          className="text-sm text-neutral-500 hover:text-neutral-700 transition-colors"
+                          className="text-sm text-neutral-500 hover:text-neutral-700 transition-all hover:translate-x-1"
                         >
                           ← Back to all plans
                         </button>
                       </div>
 
                       {/* Full feature list - slides in from right */}
-                      <div className={`p-6 lg:p-8 bg-gradient-to-br from-neutral-50/50 to-white ${expandedPlan ? 'slide-from-right' : ''}`}>
+                      <div className={`p-6 lg:p-8 bg-gradient-to-br from-neutral-50/50 to-white ${
+                        animationPhase === 'expanding' ? 'slide-from-far' : 
+                        animationPhase === 'reverting' ? 'slide-away' : ''
+                      }`}>
                         <h4 className="text-lg font-semibold text-neutral-900 mb-4">All Features Included:</h4>
                         <ul className="space-y-3">
                           {plan.features.map((feature, index) => (
-                            <li key={index} className="flex items-start">
+                            <li 
+                              key={index} 
+                              className={`flex items-start transform transition-all duration-500 ${
+                                animationPhase === 'expanding' ? `stagger-${Math.min(index + 1, 3)}` : ''
+                              }`}
+                            >
                               <svg
                                 className="h-5 w-5 text-accent-teal mt-0.5 mr-3 flex-shrink-0"
                                 fill="currentColor"
@@ -263,17 +399,19 @@ const Pricing = () => {
           )}
 
           {/* Collapsed view */}
-          <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch mb-6 sm:mb-8 transition-all duration-500 ${
-            expandedPlan ? 'opacity-0 pointer-events-none max-h-0 overflow-hidden' : 'opacity-100 max-h-[1000px]'
+          <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch mb-6 sm:mb-8 transition-all duration-600 ${
+            expandedPlan ? 
+              (animationPhase === 'collapsing' ? 'gentle-fade-out' : 'opacity-0 pointer-events-none max-h-0 overflow-hidden') : 
+              (animationPhase === 'reverting' ? 'gentle-fade-in' : 'opacity-100 max-h-[1000px]')
           }`}>
             {plans.map((plan, index) => (
               <ScrollObserver
                 key={plan.name}
-                className={`scroll-observer-delay-${index * 100} ${expandedPlan ? 'fade-out' : 'fade-in'}`}
+                className={`scroll-observer-delay-${index * 100}`}
               >
                 <div
                   onClick={() => handlePlanClick(plan.id)}
-                  className={`glass-card rounded-xl sm:rounded-2xl overflow-hidden h-full cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl ${
+                  className={`glass-card rounded-xl sm:rounded-2xl overflow-hidden h-full cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:-translate-y-2 ${
                     plan.popular ? 'ring-2 ring-primary-300' : ''
                   }`}
                 >
