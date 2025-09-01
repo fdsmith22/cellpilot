@@ -129,6 +129,15 @@ var createAutomationRule = createAutomationRule || function(rule) { return creat
 var deleteAutomationRule = deleteAutomationRule || function(ruleId) { return deleteAutomationRule(ruleId); };
 var runAutomationRule = runAutomationRule || function(ruleId) { return runAutomationRule(ruleId); };
 
+// Excel Migration Functions
+var scanForExcelIssues = scanForExcelIssues || function() { return ExcelMigration.scanForExcelIssues(); };
+var fixExcelIssues = fixExcelIssues || function(options) { return ExcelMigration.fixExcelIssues(options); };
+var convertXlookupToVlookup = convertXlookupToVlookup || function(formula) { return ExcelMigration.convertXlookupToVlookup(formula); };
+var convertStructuredRefs = convertStructuredRefs || function(formula) { return ExcelMigration.convertStructuredRefs(formula); };
+var optimizeVolatileFunction = optimizeVolatileFunction || function(formula) { return ExcelMigration.optimizeVolatileFunction(formula); };
+var fixRefError = fixRefError || function(cellA1) { return ExcelMigration.fixRefError(cellA1); };
+var showExcelMigration = showExcelMigration || function() { return showExcelMigration(); };
+
 // Smart Assistant Functions
 var getSmartSuggestions = getSmartSuggestions || function() { return getSmartSuggestions(); };
 var applySmartSuggestion = applySmartSuggestion || function(suggestionId) { return applySmartSuggestion(suggestionId); };

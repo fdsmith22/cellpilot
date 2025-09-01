@@ -2170,6 +2170,37 @@ function buildConsultingTemplate(spreadsheet, templateType, isPreview) {
 }
 
 /**
+ * Excel Migration Functions
+ */
+function scanForExcelIssues() { 
+  return CellPilot.scanForExcelIssues(); 
+}
+
+function fixExcelIssues(options) { 
+  return CellPilot.fixExcelIssues(options); 
+}
+
+function convertXlookupToVlookup(formula) { 
+  return CellPilot.convertXlookupToVlookup(formula); 
+}
+
+function convertStructuredRefs(formula) { 
+  return CellPilot.convertStructuredRefs(formula); 
+}
+
+function optimizeVolatileFunction(formula) { 
+  return CellPilot.optimizeVolatileFunction(formula); 
+}
+
+function fixRefError(cellA1) { 
+  return CellPilot.fixRefError(cellA1); 
+}
+
+function showExcelMigration() { 
+  return CellPilot.showExcelMigration(); 
+}
+
+/**
 * ================================
 * END OF PROXY FUNCTIONS
 * ================================

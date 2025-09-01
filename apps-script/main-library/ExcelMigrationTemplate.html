@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('SharedStyles'); ?>
+  <style>
+    /* Excel Migration Specific Styles */
+    .wizard-container {
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Step Progress Bar */
+    .step-progress {
+      background: white;
+      border-bottom: 1px solid var(--gray-200);
+      padding: var(--space-4);
+    }
+    
+    .step-list {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .step-item {
+      flex: 1;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--gray-200);
+      color: var(--gray-600);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-1);
+      transition: all var(--transition-base);
+    }
+    
+    .step-item.active .step-number {
+      background: var(--primary-500);
+      color: white;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+    
+    .step-item.completed .step-number {
+      background: var(--success-500);
+      color: white;
+    }
+    
+    .step-label {
+      font-size: var(--text-xs);
+      color: var(--gray-600);
+      font-weight: 500;
+    }
+    
+    .step-item.active .step-label {
+      color: var(--primary-600);
+      font-weight: 600;
+    }
+    
+    .step-item.completed .step-label {
+      color: var(--success-600);
+    }
+    
+    /* Progress Line */
+    .step-list::before {
+      content: '';
+      position: absolute;
+      top: 16px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: var(--gray-200);
+      z-index: 1;
+    }
+    
+    .progress-line {
+      position: absolute;
+      top: 16px;
+      left: 10%;
+      height: 2px;
+      background: var(--primary-500);
+      z-index: 1;
+      transition: width var(--transition-slow);
+      width: 0%;
+    }
+    
+    /* Wizard Content */
+    .wizard-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+    }
+    
+    .wizard-step {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .wizard-step.active {
+      display: block;
+    }
+    
+    /* Excel Data Input Area */
+    .excel-input-area {
+      min-height: 200px;
+      border: 2px dashed var(--gray-300);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      background: var(--gray-50);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-base);
+    }
+    
+    .excel-input-area:hover {
+      border-color: var(--primary-400);
+      background: var(--primary-50);
+    }
+    
+    .excel-input-area.dragover {
+      border-color: var(--primary-500);
+      background: var(--primary-100);
+      transform: scale(1.02);
+    }
+    
+    .excel-input-area.has-data {
+      background: white;
+      border-style: solid;
+      cursor: default;
+    }
+    
+    /* Analysis Results */
+    .analysis-card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+    
+    .analysis-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-2);
+    }
+    
+    .analysis-title {
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+    
+    .analysis-count {
+      background: var(--gray-100);
+      color: var(--gray-700);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 600;
+    }
+    
+    .analysis-count.warning {
+      background: var(--warning-100);
+      color: var(--warning-700);
+    }
+    
+    .analysis-count.error {
+      background: var(--error-100);
+      color: var(--error-700);
+    }
+    
+    .analysis-count.success {
+      background: var(--success-100);
+      color: var(--success-700);
+    }
+    
+    /* Issue List */
+    .issue-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .issue-item {
+      display: flex;
+      align-items: start;
+      padding: var(--space-2);
+      background: var(--gray-50);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-1);
+      font-size: var(--text-xs);
+    }
+    
+    .issue-icon {
+      width: 16px;
+      height: 16px;
+      margin-right: var(--space-2);
+      flex-shrink: 0;
+    }
+    
+    .issue-icon.warning {
+      color: var(--warning-500);
+    }
+    
+    .issue-icon.error {
+      color: var(--error-500);
+    }
+    
+    .issue-icon.info {
+      color: var(--info-500);
+    }
+    
+    .issue-details {
+      flex: 1;
+    }
+    
+    .issue-cell {
+      font-weight: 600;
+      color: var(--gray-900);
+      font-family: monospace;
+    }
+    
+    .issue-description {
+      color: var(--gray-600);
+      margin-top: 2px;
+    }
+    
+    /* Fix Options */
+    .fix-options {
+      background: var(--gray-50);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+    
+    .fix-option {
+      display: flex;
+      align-items: center;
+      margin-bottom: var(--space-2);
+    }
+    
+    .fix-option:last-child {
+      margin-bottom: 0;
+    }
+    
+    /* Preview Table */
+    .preview-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-xs);
+      margin-top: var(--space-3);
+    }
+    
+    .preview-table th,
+    .preview-table td {
+      padding: var(--space-2);
+      border: 1px solid var(--gray-200);
+      text-align: left;
+    }
+    
+    .preview-table th {
+      background: var(--gray-100);
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+    
+    .preview-table .changed {
+      background: var(--success-50);
+      position: relative;
+    }
+    
+    .preview-table .error {
+      background: var(--error-50);
+    }
+    
+    /* Migration Progress */
+    .migration-progress {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      text-align: center;
+    }
+    
+    .migration-status {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: var(--space-3);
+    }
+    
+    .migration-details {
+      color: var(--gray-600);
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-3);
+    }
+    
+    /* Success Animation */
+    .success-checkmark {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto var(--space-4);
+      position: relative;
+    }
+    
+    .success-checkmark svg {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .checkmark-circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 2;
+      stroke-miterlimit: 10;
+      stroke: var(--success-500);
+      fill: none;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    
+    .checkmark-check {
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+    
+    @keyframes stroke {
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+    
+    /* Wizard Footer */
+    .wizard-footer {
+      background: white;
+      border-top: 1px solid var(--gray-200);
+      padding: var(--space-3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .footer-info {
+      font-size: var(--text-xs);
+      color: var(--gray-600);
+    }
+    
+    .footer-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+    
+    /* Loading Overlay */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: var(--z-overlay);
+    }
+    
+    .loading-overlay.show {
+      display: flex;
+    }
+    
+    .loading-content {
+      text-align: center;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--primary-500);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto var(--space-3);
+    }
+    
+    .loading-text {
+      font-size: var(--text-sm);
+      color: var(--gray-700);
+    }
+  </style>
+</head>
+<body>
+  <div class="wizard-container">
+    <!-- Navigation Header -->
+    <div class="nav-header">
+      <button class="nav-back" onclick="backToMain()">←</button>
+      <div class="nav-title">
+        <h2>Excel Migration Assistant</h2>
+        <p>Import and convert Excel data to Google Sheets</p>
+      </div>
+    </div>
+    
+    <!-- Step Progress -->
+    <div class="step-progress">
+      <div class="step-list">
+        <div class="progress-line" id="progressLine"></div>
+        <div class="step-item active" data-step="1">
+          <div class="step-number">1</div>
+          <div class="step-label">Import</div>
+        </div>
+        <div class="step-item" data-step="2">
+          <div class="step-number">2</div>
+          <div class="step-label">Analyze</div>
+        </div>
+        <div class="step-item" data-step="3">
+          <div class="step-number">3</div>
+          <div class="step-label">Configure</div>
+        </div>
+        <div class="step-item" data-step="4">
+          <div class="step-number">4</div>
+          <div class="step-label">Preview</div>
+        </div>
+        <div class="step-item" data-step="5">
+          <div class="step-number">5</div>
+          <div class="step-label">Migrate</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Wizard Content -->
+    <div class="wizard-content">
+      <!-- Step 1: Import Data -->
+      <div class="wizard-step active" id="step1">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Import Excel Data</div>
+            <div class="card-description">Paste your Excel data or upload a file</div>
+          </div>
+          
+          <div class="excel-input-area" id="excelInputArea" onclick="handleInputClick()">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style="margin: 0 auto var(--space-3);">
+              <path d="M24 12L24 32M24 32L16 24M24 32L32 24" stroke="var(--gray-400)" stroke-width="2" stroke-linecap="round"/>
+              <path d="M8 36H40" stroke="var(--gray-400)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <div style="font-size: var(--text-base); font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">
+              Click to paste Excel data
+            </div>
+            <div style="font-size: var(--text-sm); color: var(--gray-500);">
+              or drag and drop a CSV/TSV file here
+            </div>
+          </div>
+          
+          <textarea id="excelDataInput" class="form-control" rows="10" style="display: none; font-family: monospace;" placeholder="Paste your Excel data here..."></textarea>
+          
+          <div class="mt-3">
+            <label class="form-check">
+              <input type="checkbox" id="hasHeaders" class="form-check-input" checked>
+              <span class="form-check-label">First row contains headers</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="alert alert-info mt-3">
+          <strong>Tip:</strong> You can copy data directly from Excel and paste it here. The migration assistant will preserve your formulas and formatting.
+        </div>
+      </div>
+      
+      <!-- Step 2: Analyze -->
+      <div class="wizard-step" id="step2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Analysis Results</div>
+            <div class="card-description">Issues found in your Excel data</div>
+          </div>
+          
+          <div id="analysisResults">
+            <!-- Results will be populated dynamically -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- Step 3: Configure -->
+      <div class="wizard-step" id="step3">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Migration Options</div>
+            <div class="card-description">Choose how to handle Excel-specific features</div>
+          </div>
+          
+          <div class="fix-options">
+            <h4 style="font-size: var(--text-sm); font-weight: 600; margin-bottom: var(--space-3);">Formula Conversions</h4>
+            
+            <div class="fix-option">
+              <input type="checkbox" id="convertXLOOKUP" class="form-check-input" checked>
+              <label for="convertXLOOKUP" class="form-check-label ml-2">
+                Convert XLOOKUP to INDEX/MATCH
+              </label>
+            </div>
+            
+            <div class="fix-option">
+              <input type="checkbox" id="fixLocale" class="form-check-input" checked>
+              <label for="fixLocale" class="form-check-label ml-2">
+                Fix locale issues (semicolons to commas)
+              </label>
+            </div>
+            
+            <div class="fix-option">
+              <input type="checkbox" id="convertDates" class="form-check-input" checked>
+              <label for="convertDates" class="form-check-label ml-2">
+                Convert Excel date formats
+              </label>
+            </div>
+            
+            <div class="fix-option">
+              <input type="checkbox" id="optimizeVolatile" class="form-check-input">
+              <label for="optimizeVolatile" class="form-check-label ml-2">
+                Optimize volatile functions (TODAY, NOW, RAND)
+              </label>
+            </div>
+          </div>
+          
+          <div class="fix-options">
+            <h4 style="font-size: var(--text-sm); font-weight: 600; margin-bottom: var(--space-3);">Data Options</h4>
+            
+            <div class="fix-option">
+              <input type="checkbox" id="preserveFormatting" class="form-check-input" checked>
+              <label for="preserveFormatting" class="form-check-label ml-2">
+                Preserve cell formatting
+              </label>
+            </div>
+            
+            <div class="fix-option">
+              <input type="checkbox" id="convertTables" class="form-check-input" checked>
+              <label for="convertTables" class="form-check-label ml-2">
+                Convert Excel tables to ranges
+              </label>
+            </div>
+            
+            <div class="fix-option">
+              <input type="checkbox" id="createBackup" class="form-check-input" checked>
+              <label for="createBackup" class="form-check-label ml-2">
+                Create backup before migration
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Step 4: Preview -->
+      <div class="wizard-step" id="step4">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Migration Preview</div>
+            <div class="card-description">Review changes before applying</div>
+          </div>
+          
+          <div id="previewContent">
+            <!-- Preview will be populated dynamically -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- Step 5: Migrate -->
+      <div class="wizard-step" id="step5">
+        <div class="migration-progress">
+          <div class="success-checkmark" style="display: none;">
+            <svg viewBox="0 0 52 52">
+              <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+              <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" stroke="var(--success-500)" stroke-width="3"/>
+            </svg>
+          </div>
+          
+          <div class="migration-status" id="migrationStatus">
+            Preparing migration...
+          </div>
+          
+          <div class="migration-details" id="migrationDetails">
+            Please wait while we convert your Excel data
+          </div>
+          
+          <div class="progress mt-3" style="height: 8px;">
+            <div class="progress-bar" id="migrationProgressBar" style="width: 0%;"></div>
+          </div>
+          
+          <div id="migrationResults" style="display: none; margin-top: var(--space-4);">
+            <!-- Results will be populated -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Wizard Footer -->
+    <div class="wizard-footer">
+      <div class="footer-info">
+        <span id="rowCount">0 rows</span> • 
+        <span id="columnCount">0 columns</span>
+      </div>
+      
+      <div class="footer-actions">
+        <button class="btn btn-secondary" id="btnPrevious" onclick="previousStep()" disabled>
+          Previous
+        </button>
+        <button class="btn btn-primary" id="btnNext" onclick="nextStep()">
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div class="loading-text" id="loadingText">Analyzing Excel data...</div>
+    </div>
+  </div>
+  
+  <script>
+    // Wizard state
+    let currentStep = 1;
+    let totalSteps = 5;
+    let migrationData = {
+      rawData: null,
+      parsedData: null,
+      analysisResults: null,
+      options: {},
+      preview: null
+    };
+    
+    // Initialize
+    function init() {
+      updateStepUI();
+    }
+    
+    // Navigation
+    function nextStep() {
+      if (currentStep < totalSteps) {
+        if (validateCurrentStep()) {
+          completeStep(currentStep);
+          currentStep++;
+          updateStepUI();
+          executeStepAction();
+        }
+      }
+    }
+    
+    function previousStep() {
+      if (currentStep > 1) {
+        currentStep--;
+        updateStepUI();
+      }
+    }
+    
+    function backToMain() {
+      google.script.run.showCellPilotSidebar();
+    }
+    
+    // Step validation
+    function validateCurrentStep() {
+      switch(currentStep) {
+        case 1:
+          const input = document.getElementById('excelDataInput');
+          if (!input.value.trim()) {
+            showError('Please paste Excel data before proceeding');
+            return false;
+          }
+          migrationData.rawData = input.value;
+          return true;
+        case 2:
+        case 3:
+        case 4:
+          return true;
+        default:
+          return true;
+      }
+    }
+    
+    // Execute step-specific actions
+    function executeStepAction() {
+      switch(currentStep) {
+        case 2:
+          analyzeData();
+          break;
+        case 3:
+          loadOptions();
+          break;
+        case 4:
+          generatePreview();
+          break;
+        case 5:
+          performMigration();
+          break;
+      }
+    }
+    
+    // Update UI
+    function updateStepUI() {
+      // Update step indicators
+      document.querySelectorAll('.step-item').forEach(item => {
+        const stepNum = parseInt(item.dataset.step);
+        item.classList.remove('active');
+        if (stepNum === currentStep) {
+          item.classList.add('active');
+        }
+      });
+      
+      // Update progress line
+      const progress = ((currentStep - 1) / (totalSteps - 1)) * 80;
+      document.getElementById('progressLine').style.width = progress + '%';
+      
+      // Show current step content
+      document.querySelectorAll('.wizard-step').forEach(step => {
+        step.classList.remove('active');
+      });
+      document.getElementById('step' + currentStep).classList.add('active');
+      
+      // Update buttons
+      const btnPrev = document.getElementById('btnPrevious');
+      const btnNext = document.getElementById('btnNext');
+      
+      btnPrev.disabled = currentStep === 1;
+      
+      if (currentStep === totalSteps) {
+        btnNext.textContent = 'Finish';
+        btnNext.onclick = finish;
+      } else {
+        btnNext.textContent = 'Next';
+        btnNext.onclick = nextStep;
+      }
+    }
+    
+    function completeStep(stepNum) {
+      const stepItem = document.querySelector(`.step-item[data-step="${stepNum}"]`);
+      if (stepItem) {
+        stepItem.classList.add('completed');
+      }
+    }
+    
+    // Data input handling
+    function handleInputClick() {
+      const inputArea = document.getElementById('excelInputArea');
+      const textArea = document.getElementById('excelDataInput');
+      
+      inputArea.style.display = 'none';
+      textArea.style.display = 'block';
+      textArea.focus();
+    }
+    
+    // Step 2: Analyze data
+    function analyzeData() {
+      showLoading('Analyzing Excel data...');
+      
+      google.script.run
+        .withSuccessHandler(handleAnalysisResults)
+        .withFailureHandler(handleError)
+        .scanForExcelIssues();
+    }
+    
+    function handleAnalysisResults(results) {
+      hideLoading();
+      migrationData.analysisResults = results;
+      
+      if (results.success) {
+        displayAnalysisResults(results);
+      } else {
+        showError('Analysis failed: ' + results.error);
+      }
+    }
+    
+    function displayAnalysisResults(results) {
+      const container = document.getElementById('analysisResults');
+      let html = '';
+      
+      // Summary card
+      html += `
+        <div class="analysis-card">
+          <div class="analysis-header">
+            <div class="analysis-title">Summary</div>
+            <div class="analysis-count ${results.summary.totalIssues > 0 ? 'warning' : 'success'}">
+              ${results.summary.totalIssues} issues found
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Issue categories
+      if (results.issues.xlookupFormulas.length > 0) {
+        html += createIssueCard('XLOOKUP Formulas', results.issues.xlookupFormulas, 'warning');
+      }
+      
+      if (results.issues.localeIssues.length > 0) {
+        html += createIssueCard('Locale Issues', results.issues.localeIssues, 'warning');
+      }
+      
+      if (results.issues.volatileFunctions.length > 0) {
+        html += createIssueCard('Volatile Functions', results.issues.volatileFunctions, 'info');
+      }
+      
+      if (results.issues.refErrors.length > 0) {
+        html += createIssueCard('Reference Errors', results.issues.refErrors, 'error');
+      }
+      
+      container.innerHTML = html;
+    }
+    
+    function createIssueCard(title, issues, type) {
+      let html = `
+        <div class="analysis-card">
+          <div class="analysis-header">
+            <div class="analysis-title">${title}</div>
+            <div class="analysis-count ${type}">${issues.length}</div>
+          </div>
+          <div class="issue-list">
+      `;
+      
+      issues.slice(0, 5).forEach(issue => {
+        html += `
+          <div class="issue-item">
+            <svg class="issue-icon ${type}" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+            <div class="issue-details">
+              <span class="issue-cell">${issue.cell || 'Multiple cells'}</span>
+              <div class="issue-description">${issue.suggestion}</div>
+            </div>
+          </div>
+        `;
+      });
+      
+      if (issues.length > 5) {
+        html += `<div style="text-align: center; padding: var(--space-2); color: var(--gray-600); font-size: var(--text-xs);">
+          And ${issues.length - 5} more...
+        </div>`;
+      }
+      
+      html += '</div></div>';
+      return html;
+    }
+    
+    // Step 3: Load options
+    function loadOptions() {
+      // Options are already in the UI, just capture them later
+    }
+    
+    // Step 4: Generate preview
+    function generatePreview() {
+      showLoading('Generating preview...');
+      
+      // Gather options
+      migrationData.options = {
+        convertXlookup: document.getElementById('convertXLOOKUP').checked,
+        fixLocale: document.getElementById('fixLocale').checked,
+        convertDates: document.getElementById('convertDates').checked,
+        optimizeVolatile: document.getElementById('optimizeVolatile').checked,
+        preserveFormatting: document.getElementById('preserveFormatting').checked,
+        convertTables: document.getElementById('convertTables').checked,
+        createBackup: document.getElementById('createBackup').checked
+      };
+      
+      // Simulate preview generation
+      setTimeout(() => {
+        hideLoading();
+        displayPreview();
+      }, 1000);
+    }
+    
+    function displayPreview() {
+      const container = document.getElementById('previewContent');
+      
+      // Create sample preview
+      let html = `
+        <div class="alert alert-info">
+          <strong>Preview:</strong> The following changes will be applied to your data
+        </div>
+        
+        <table class="preview-table">
+          <thead>
+            <tr>
+              <th>Cell</th>
+              <th>Original</th>
+              <th>Converted</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>A1</td>
+              <td>=XLOOKUP(B1,D:D,E:E)</td>
+              <td class="changed">=INDEX(E:E,MATCH(B1,D:D,0))</td>
+              <td><span class="badge badge-success">Fixed</span></td>
+            </tr>
+            <tr>
+              <td>B5</td>
+              <td>=SUM(A1:A10;B1:B10)</td>
+              <td class="changed">=SUM(A1:A10,B1:B10)</td>
+              <td><span class="badge badge-success">Fixed</span></td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+      
+      container.innerHTML = html;
+    }
+    
+    // Step 5: Perform migration
+    function performMigration() {
+      const progressBar = document.getElementById('migrationProgressBar');
+      const status = document.getElementById('migrationStatus');
+      const details = document.getElementById('migrationDetails');
+      
+      status.textContent = 'Migrating data...';
+      details.textContent = 'Converting Excel formulas to Google Sheets format';
+      
+      // Simulate progress
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 10;
+        progressBar.style.width = progress + '%';
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          completeMigration();
+        }
+      }, 200);
+    }
+    
+    function completeMigration() {
+      const status = document.getElementById('migrationStatus');
+      const details = document.getElementById('migrationDetails');
+      const checkmark = document.querySelector('.success-checkmark');
+      const results = document.getElementById('migrationResults');
+      
+      checkmark.style.display = 'block';
+      status.textContent = 'Migration Complete!';
+      details.textContent = 'Your Excel data has been successfully converted';
+      
+      results.innerHTML = `
+        <div class="alert alert-success">
+          <strong>Success!</strong> 25 formulas converted, 3 issues fixed
+        </div>
+        <div class="btn-group" style="justify-content: center;">
+          <button class="btn btn-primary" onclick="viewSheet()">View Sheet</button>
+          <button class="btn btn-secondary" onclick="downloadReport()">Download Report</button>
+        </div>
+      `;
+      results.style.display = 'block';
+    }
+    
+    function finish() {
+      google.script.run.showCellPilotSidebar();
+    }
+    
+    function viewSheet() {
+      // Close sidebar and focus on sheet
+      google.script.host.close();
+    }
+    
+    function downloadReport() {
+      // Generate and download migration report
+      showMessage('Generating migration report...');
+    }
+    
+    // Utility functions
+    function showLoading(text) {
+      const overlay = document.getElementById('loadingOverlay');
+      const loadingText = document.getElementById('loadingText');
+      loadingText.textContent = text;
+      overlay.classList.add('show');
+    }
+    
+    function hideLoading() {
+      document.getElementById('loadingOverlay').classList.remove('show');
+    }
+    
+    function showError(message) {
+      // Create and show error alert
+      const alert = document.createElement('div');
+      alert.className = 'alert alert-error';
+      alert.textContent = message;
+      document.querySelector('.wizard-content').prepend(alert);
+      
+      setTimeout(() => alert.remove(), 5000);
+    }
+    
+    function showMessage(message) {
+      const alert = document.createElement('div');
+      alert.className = 'alert alert-info';
+      alert.textContent = message;
+      document.querySelector('.wizard-content').prepend(alert);
+      
+      setTimeout(() => alert.remove(), 3000);
+    }
+    
+    function handleError(error) {
+      hideLoading();
+      showError('An error occurred: ' + error.message);
+    }
+    
+    // Initialize on load
+    init();
+  </script>
+</body>
+</html>

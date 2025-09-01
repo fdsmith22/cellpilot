@@ -2560,7 +2560,16 @@ function showDateFormattingCard() {
 }
 
 function showExcelMigration() {
-  showAutomation(); // Redirect to automation tab which includes Excel Migration
+  try {
+    const template = HtmlService.createTemplateFromFile('ExcelMigrationTemplate');
+    const html = template.evaluate()
+      .setTitle('Excel Migration Assistant')
+      .setWidth(450);
+    SpreadsheetApp.getUi().showSidebar(html);
+  } catch (error) {
+    Logger.error('Error showing Excel Migration:', error);
+    SpreadsheetApp.getUi().alert('Error', 'Failed to open Excel Migration Assistant. Please try again.', SpreadsheetApp.getUi().ButtonSet.OK);
+  }
 }
 
 function showApiIntegration() {
