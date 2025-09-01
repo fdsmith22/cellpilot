@@ -138,6 +138,10 @@ function getFullBetaInstallerCode(scriptId, version) {
  * 7. CLOSE AND REOPEN THE SPREADSHEET
  */
 
+// ============================================
+// INITIALIZATION & MENU FUNCTIONS
+// ============================================
+
 function onOpen(e) {
   try {
     // Create a simple menu first
@@ -171,6 +175,10 @@ function onOpen(e) {
       // Even menu creation failed, do nothing
     }
   }
+}
+
+function onInstall(e) {
+  onOpen(e);
 }
 
 // Initialize CellPilot - this helps trigger authorization
@@ -258,35 +266,417 @@ function showError() {
   }
 }
 
-function onInstall(e) {
-  onOpen(e);
+// Test CellPilot connection
+function testCellPilotConnection() { return CellPilot.testCellPilotConnection(); }
+
+// Reset beta notification
+function resetBetaNotification() { return CellPilot.resetBetaNotification(); }
+
+// ============================================
+// MAIN SIDEBAR & NAVIGATION
+// ============================================
+
+function showCellPilotSidebar() { return CellPilot.showCellPilotSidebar(); }
+function include(filename) { return CellPilot.include(filename); }
+function createMainSidebarHtml(context) { return CellPilot.createMainSidebarHtml(context); }
+function getCurrentUserContext() { return CellPilot.getCurrentUserContext(); }
+
+// ============================================
+// DATA CLEANING FEATURES
+// ============================================
+
+function showDataCleaning() { return CellPilot.showDataCleaning(); }
+function showDuplicateRemoval() { return CellPilot.showDuplicateRemoval(); }
+function removeDuplicatesProcess(options) { return CellPilot.removeDuplicatesProcess(options); }
+function processLargeDuplicateRemoval(range, options) { return CellPilot.processLargeDuplicateRemoval(range, options); }
+function previewDuplicates(options) { return CellPilot.previewDuplicates(options); }
+function showTextStandardization() { return CellPilot.showTextStandardization(); }
+function standardizeText(options) { return CellPilot.standardizeText(options); }
+function previewStandardization(options) { return CellPilot.previewStandardization(options); }
+
+// ============================================
+// TABLEIZE FEATURE (DATA STRUCTURING)
+// ============================================
+
+function showTableize() { return CellPilot.showTableize(); }
+function hasDataSelection() { return CellPilot.hasDataSelection(); }
+function analyzeDataForTableize() { return CellPilot.analyzeDataForTableize(); }
+function previewTableize(options) { return CellPilot.previewTableize(options); }
+function applyTableize(parsedData) { return CellPilot.applyTableize(parsedData); }
+
+// ============================================
+// SMART AUTOMATION FEATURES
+// ============================================
+
+function showAutomation() { return CellPilot.showAutomation(); }
+function analyzeFormats(options) { return CellPilot.analyzeFormats(options); }
+function scanForExcelIssues() { return CellPilot.scanForExcelIssues(); }
+function fixExcelIssues(options) { return CellPilot.fixExcelIssues(options); }
+
+// ============================================
+// FORMULA BUILDER FEATURES
+// ============================================
+
+function showFormulaBuilder() { return CellPilot.showFormulaBuilder(); }
+function generateFormulaFromDescription(description) { return CellPilot.generateFormulaFromDescription(description); }
+function checkFormulaBuilderAccess() { return CellPilot.checkFormulaBuilderAccess(); }
+function insertFormulaIntoCell(formulaText) { return CellPilot.insertFormulaIntoCell(formulaText); }
+function showFormulaTemplates() { return CellPilot.showFormulaTemplates(); }
+
+// ============================================
+// UNDO/REDO SYSTEM
+// ============================================
+
+function getUndoInfo() { return CellPilot.getUndoInfo(); }
+function performUndo() { return CellPilot.performUndo(); }
+
+// ============================================
+// PREMIUM FEATURES (SHOW UPGRADE)
+// ============================================
+
+function showDateFormatting() { return CellPilot.showDateFormatting(); }
+function previewDateFormatting(options) { return CellPilot.previewDateFormatting(options); }
+function formatDates(options) { return CellPilot.formatDates(options); }
+function showEmailAutomation() { return CellPilot.showEmailAutomation(); }
+function showCalendarIntegration() { return CellPilot.showCalendarIntegration(); }
+
+// ============================================
+// ADVANCED DATA RESTRUCTURING
+// ============================================
+
+function showAdvancedRestructuring() { return CellPilot.showAdvancedRestructuring(); }
+function analyzeDataStructure() { return CellPilot.analyzeDataStructure(); }
+function processSectionConfiguration(config) { return CellPilot.processSectionConfiguration(config); }
+function processColumnConfiguration(config) { return CellPilot.processColumnConfiguration(config); }
+function applyRestructuredData(config) { return CellPilot.applyRestructuredData(config); }
+function clearRestructuringSession() { return CellPilot.clearRestructuringSession(); }
+function showToast(message, title, timeout) { return CellPilot.showToast(message, title, timeout); }
+
+// ============================================
+// SETTINGS & HELP
+// ============================================
+
+function showSettings() { return CellPilot.showSettings(); }
+function loadUserSettings() { return CellPilot.loadUserSettings(); }
+function saveUserSettings(settings) { return CellPilot.saveUserSettings(settings); }
+function getMLStorageInfo() { return CellPilot.getMLStorageInfo(); }
+function clearMLData() { return CellPilot.clearMLData(); }
+function resetSettings() { return CellPilot.resetSettings(); }
+function exportUserSettings() { return CellPilot.exportUserSettings(); }
+function disableMLFeatures() { return CellPilot.disableMLFeatures(); }
+function showHelp() { return CellPilot.showHelp(); }
+function showSmartFormulaAssistant() { return CellPilot.showSmartFormulaAssistant(); }
+function showMultiTabRelationshipMapper() { return CellPilot.showMultiTabRelationshipMapper(); }
+function showSmartFormulaDebugger() { return CellPilot.showSmartFormulaDebugger(); }
+function showDataValidationGenerator() { return CellPilot.showDataValidationGenerator(); }
+function showConditionalFormattingWizard() { return CellPilot.showConditionalFormattingWizard(); }
+function showPivotTableAssistant() { return CellPilot.showPivotTableAssistant(); }
+function showDataPipelineManager() { return CellPilot.showDataPipelineManager(); }
+function showCrossSheetFormulaBuilder() { return CellPilot.showCrossSheetFormulaBuilder(); }
+function showFormulaPerformanceOptimizer() { return CellPilot.showFormulaPerformanceOptimizer(); }
+function showIndustryTemplate(category) { return CellPilot.showIndustryTemplate(category); }
+function showExcelMigration() { return CellPilot.showExcelMigration(); }
+function showApiIntegration() { return CellPilot.showApiIntegration(); }
+function showDataValidation() { return CellPilot.showDataValidation(); }
+function showBatchOperations() { return CellPilot.showBatchOperations(); }
+function showUpgradeDialog() { return CellPilot.showUpgradeDialog(); }
+function showErrorDialog(title, message) { return CellPilot.showErrorDialog(title, message); }
+function showFeedback(type) { return CellPilot.showFeedback(type); }
+function showUpgradeOptions() { return CellPilot.showUpgradeOptions(); }
+function trackPlanSelection(plan) { return CellPilot.trackPlanSelection(plan); }
+
+// ============================================
+// GOOGLE WORKSPACE ADD-ON FUNCTIONS
+// ============================================
+
+function buildHomepage(e) { return CellPilot.buildHomepage(e); }
+function launchHtmlSidebarFromAddon() { return CellPilot.launchHtmlSidebarFromAddon(); }
+function launchTableizeFromAddon() { return CellPilot.launchTableizeFromAddon(); }
+function launchDuplicatesFromAddon() { return CellPilot.launchDuplicatesFromAddon(); }
+function launchFormulasFromAddon() { return CellPilot.launchFormulasFromAddon(); }
+function formatCategoryName(category) { return CellPilot.formatCategoryName(category); }
+
+// ============================================
+// VISUAL FORMULA BUILDER
+// ============================================
+
+function showVisualFormulaBuilder() { return CellPilot.showVisualFormulaBuilder(); }
+function suggestFormulaBasedOnData() { return CellPilot.suggestFormulaBasedOnData(); }
+function validateVisualFormula(formula) { return CellPilot.validateVisualFormula(formula); }
+function optimizeVisualFormula(formula) { return CellPilot.optimizeVisualFormula(formula); }
+function testVisualFormula(formula) { return CellPilot.testVisualFormula(formula); }
+function insertVisualFormula(formula) { return CellPilot.insertVisualFormula(formula); }
+function submitFeedback(data) { return CellPilot.submitFeedback(data); }
+
+// ============================================
+// SMART FORMULA ASSISTANT
+// ============================================
+
+function getSmartFormulaContext() { return CellPilot.getSmartFormulaContext(); }
+function insertSmartFormula(formula) { return CellPilot.insertSmartFormula(formula); }
+
+// ============================================
+// CARD SERVICE FUNCTIONS (FOR ADD-ON)
+// ============================================
+
+function createCellPilotMenu() { return CellPilot.createCellPilotMenu(); }
+function buildMainCard(context) { return CellPilot.buildMainCard(context); }
+function showDuplicateRemovalCard() { return CellPilot.showDuplicateRemovalCard(); }
+function showTextStandardizationCard() { return CellPilot.showTextStandardizationCard(); }
+function showFormulaBuilderCard() { return CellPilot.showFormulaBuilderCard(); }
+function showDateFormattingCard() { return CellPilot.showDateFormattingCard(); }
+function showFormulaTemplatesCard() { return CellPilot.showFormulaTemplatesCard(); }
+function showUpgradeCard() { return CellPilot.showUpgradeCard(); }
+
+// ============================================
+// CARD ACTION HANDLERS
+// ============================================
+
+function processDuplicateRemoval(e) { return CellPilot.processDuplicateRemoval(e); }
+function processTextStandardization(e) { return CellPilot.processTextStandardization(e); }
+function processFormulaGeneration(e) { return CellPilot.processFormulaGeneration(e); }
+function insertGeneratedFormula(e) { return CellPilot.insertGeneratedFormula(e); }
+
+// ============================================
+// CARD BUILDERS FOR MESSAGES
+// ============================================
+
+function buildErrorCard(title, message) { return CellPilot.buildErrorCard(title, message); }
+function buildSuccessCard(title, message) { return CellPilot.buildSuccessCard(title, message); }
+function buildFormulaResultCard(result, description) { return CellPilot.buildFormulaResultCard(result, description); }
+
+// ============================================
+// INDUSTRY TEMPLATES
+// ============================================
+
+function previewIndustryTemplate(templateType) { return CellPilot.previewIndustryTemplate(templateType); }
+function applyIndustryTemplate(templateType) { return CellPilot.applyIndustryTemplate(templateType); }
+function cleanupPreviewSheets() { return CellPilot.cleanupPreviewSheets(); }
+function navigateToSheet(sheetName) { return CellPilot.navigateToSheet(sheetName); }
+function previewTemplate(templateType) { return CellPilot.previewTemplate(templateType); }
+function cleanupIndustryPreviews() { return CellPilot.cleanupIndustryPreviews(); }
+
+// ============================================
+// CROSS-SHEET & ANALYSIS FUNCTIONS
+// ============================================
+
+function getCrossSheetInfo() { return CellPilot.getCrossSheetInfo(); }
+function previewSheetRange(sheetName, range) { return CellPilot.previewSheetRange(sheetName, range); }
+function getSmartFormulaSuggestions() { return CellPilot.getSmartFormulaSuggestions(); }
+function analyzeMultiTabRelationships() { return CellPilot.analyzeMultiTabRelationships(); }
+function generateRelationshipReport(relationshipData) { return CellPilot.generateRelationshipReport(relationshipData); }
+
+// ============================================
+// FORMULA DEBUGGING
+// ============================================
+
+function debugActiveFormula() { return CellPilot.debugActiveFormula(); }
+function debugSelectionFormulas() { return CellPilot.debugSelectionFormulas(); }
+function debugAllSheetFormulas() { return CellPilot.debugAllSheetFormulas(); }
+function applyFormulaFix(cellRef, formula) { return CellPilot.applyFormulaFix(cellRef, formula); }
+function analyzeDependencies() { return CellPilot.analyzeDependencies(); }
+function analyzeFormulaPerformance() { return CellPilot.analyzeFormulaPerformance(); }
+
+// ============================================
+// ML-POWERED FEATURES
+// ============================================
+
+function getUserLearningProfile() { return CellPilot.getUserLearningProfile(); }
+function saveUserLearningProfile(profile) { return CellPilot.saveUserLearningProfile(profile); }
+function trackMLFeedback(operation, prediction, userAction, metadata) { return CellPilot.trackMLFeedback(operation, prediction, userAction, metadata); }
+function enableMLFeatures() { return CellPilot.enableMLFeatures(); }
+function getMLStatus() { return CellPilot.getMLStatus(); }
+
+// ============================================
+// DATA VALIDATION & CONDITIONAL FORMATTING
+// ============================================
+
+function applyValidationRule(rule) { return CellPilot.applyValidationRule(rule); }
+function generateValidationRules() { return CellPilot.generateValidationRules(); }
+function applyConditionalFormat(rule) { return CellPilot.applyConditionalFormat(rule); }
+function generateFormatSuggestions() { return CellPilot.generateFormatSuggestions(); }
+
+// ============================================
+// FORMULA DISCOVERY & PATTERN DETECTION
+// ============================================
+
+function discoverFormulaPatterns() { return CellPilot.discoverFormulaPatterns(); }
+function getCommonFormulas() { return CellPilot.getCommonFormulas(); }
+function suggestFormulasML(description) { return CellPilot.suggestFormulasML(description); }
+
+// ============================================
+// CROSS-SHEET FORMULA BUILDER
+// ============================================
+
+function buildCrossSheetFormula(config) { return CellPilot.buildCrossSheetFormula(config); }
+function validateCrossSheetFormula(formula) { return CellPilot.validateCrossSheetFormula(formula); }
+function getSheetNames() {
+  try {
+    const sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+    return sheets.map(sheet => sheet.getName());
+  } catch (error) {
+    console.error('Error getting sheet names:', error);
+    return [];
+  }
 }
 
-// Main Features
-function showCellPilotSidebar() { CellPilot.showCellPilotSidebar(); }
-function tableize() { return CellPilot.tableize(); }
-function removeDuplicates() { return CellPilot.removeDuplicates(); }
-function cleanData() { return CellPilot.cleanData(); }
-function showSmartFormulaAssistant() { CellPilot.showSmartFormulaAssistant(); }
-function showFormulaBuilder() { CellPilot.showFormulaBuilder(); }
-function showAdvancedRestructuring() { CellPilot.showAdvancedRestructuring(); }
-function showIndustryTemplates() { CellPilot.showIndustryTemplates(); }
-function showConditionalFormattingWizard() { CellPilot.showConditionalFormattingWizard(); }
-function showCrossSheetFormulaBuilder() { CellPilot.showCrossSheetFormulaBuilder(); }
-function showDataPipeline() { CellPilot.showDataPipeline(); }
-function showDataValidationGenerator() { CellPilot.showDataValidationGenerator(); }
-function showSmartFormulaDebugger() { CellPilot.showSmartFormulaDebugger(); }
-function showPivotTableAssistant() { CellPilot.showPivotTableAssistant(); }
-function showSettings() { CellPilot.showSettings(); }
-function showHelpFeedback() { CellPilot.showHelpFeedback(); }
+// ============================================
+// FORMULA PERFORMANCE OPTIMIZER
+// ============================================
 
-// Supporting Functions
-function include(filename) { return CellPilot.include(filename); }
-function getCurrentUserContext() { return CellPilot.getCurrentUserContext(); }
-function getExtendedUserContext() { return CellPilot.getExtendedUserContext(); }
+function optimizeFormulaPerformance(formula) { return CellPilot.optimizeFormulaPerformance(formula); }
+function getFormulaPerformanceMetrics(formula) { return CellPilot.getFormulaPerformanceMetrics(formula); }
 
-// For complete list of 200+ functions, visit:
-// https://www.cellpilot.io/docs/functions`;
+// ============================================
+// TEMPLATE PREVIEW & APPLICATION
+// ============================================
+
+function getTemplateCategories() { return CellPilot.getTemplateCategories(); }
+function getTemplatesByCategory(category) { return CellPilot.getTemplatesByCategory(category); }
+function applyTemplate(templateId, options) { return CellPilot.applyTemplate(templateId, options); }
+
+// ============================================
+// ADVANCED PARSING & SMART TABLE
+// ============================================
+
+function smartParseML(data, options) { return CellPilot.smartParseML(data, options); }
+function detectColumnTypesML(data, headers) { return CellPilot.detectColumnTypesML(data, headers); }
+function learnFromParsingCorrection(columnIndex, correctType, context) { return CellPilot.learnFromParsingCorrection(columnIndex, correctType, context); }
+
+// ============================================
+// ADAPTIVE DUPLICATE DETECTION
+// ============================================
+
+function detectDuplicatesML(options) { return CellPilot.detectDuplicatesML(options); }
+function learnFromDuplicateFeedback(acceptedDuplicates, rejectedDuplicates, threshold) { return CellPilot.learnFromDuplicateFeedback(acceptedDuplicates, rejectedDuplicates, threshold); }
+function getAdaptiveDuplicateThreshold() { return CellPilot.getAdaptiveDuplicateThreshold(); }
+
+// ============================================
+// FORMULA LEARNING & SUGGESTIONS
+// ============================================
+
+function learnFromFormulaSelection(selectedFormula, description, wasSuccessful) { return CellPilot.learnFromFormulaSelection(selectedFormula, description, wasSuccessful); }
+function getPersonalizedFormulas() { return CellPilot.getPersonalizedFormulas(); }
+function predictNextFormula() { return CellPilot.predictNextFormula(); }
+function recordFormulaFeedback(params) { return CellPilot.recordFormulaFeedback(params); }
+function insertFormulaWithTracking(params) { return CellPilot.insertFormulaWithTracking(params); }
+
+// ============================================
+// PIVOT TABLE ASSISTANT FUNCTIONS
+// ============================================
+
+function analyzePivotData(range) { return CellPilot.analyzePivotData(range); }
+function createPivotFromSuggestion(suggestion) { return CellPilot.createPivotFromSuggestion(suggestion); }
+function applyPivotTemplate(templateName) { return CellPilot.applyPivotTemplate(templateName); }
+function getPivotTemplates() { return CellPilot.getPivotTemplates(); }
+function getPivotStats() { return CellPilot.getPivotStats(); }
+
+// ============================================
+// DATA PIPELINE MANAGER FUNCTIONS
+// ============================================
+
+function importPipelineData(config) { return CellPilot.importPipelineData(config); }
+function exportPipelineData(options) { return CellPilot.exportPipelineData(options); }
+function getPipelineHistory() { return CellPilot.getPipelineHistory(); }
+function getPipelineStats() { return CellPilot.getPipelineStats(); }
+function clearPipelineHistory() { return CellPilot.clearPipelineHistory(); }
+function addToPipelineHistory(item) { return CellPilot.addToPipelineHistory(item); }
+
+// ============================================
+// USER PREFERENCE LEARNING FUNCTIONS
+// ============================================
+
+function initializeUserPreferences() { return CellPilot.initializeUserPreferences(); }
+function trackUserAction(action, context) { return CellPilot.trackUserAction(action, context); }
+function getUserPreferenceSummary() { return CellPilot.getUserPreferenceSummary(); }
+function getFeatureRecommendations() { return CellPilot.getFeatureRecommendations(); }
+function getWorkflowSuggestions() { return CellPilot.getWorkflowSuggestions(); }
+function getPreferredSettings(feature) { return CellPilot.getPreferredSettings(feature); }
+function predictNextAction(currentAction) { return CellPilot.predictNextAction(currentAction); }
+function shouldAutomate(action, context) { return CellPilot.shouldAutomate(action, context); }
+function learnFromError(error, action, context) { return CellPilot.learnFromError(error, action, context); }
+function learnFromSuccess(action, context, duration) { return CellPilot.learnFromSuccess(action, context, duration); }
+function exportUserPreferences() { return CellPilot.exportUserPreferences(); }
+function resetUserPreferences() { return CellPilot.resetUserPreferences(); }
+
+// ============================================
+// ML PERFORMANCE FUNCTIONS
+// ============================================
+
+function getMLPerformanceStats() { return CellPilot.getMLPerformanceStats(); }
+function optimizeMLPerformance() { return CellPilot.optimizeMLPerformance(); }
+function getMLFeedbackHistory() { return CellPilot.getMLFeedbackHistory(); }
+function exportMLProfile() { return CellPilot.exportMLProfile(); }
+function importMLProfile(data) { return CellPilot.importMLProfile(data); }
+
+// ============================================
+// PREVIEW & VALIDATION FUNCTIONS
+// ============================================
+
+function generatePivotPreview(config) { return CellPilot.generatePivotPreview(config); }
+function generateImportPreview(config) { return CellPilot.generateImportPreview(config); }
+function generateExportPreview(config) { return CellPilot.generateExportPreview(config); }
+
+// ============================================
+// ENHANCED DASHBOARD FUNCTIONS
+// ============================================
+
+function createDashboard(sheet, config) { return CellPilot.createDashboard(sheet, config); }
+function setupClientsSheet(sheet) { return CellPilot.setupClientsSheet(sheet); }
+function setupFollowUpSheet(sheet) { return CellPilot.setupFollowUpSheet(sheet); }
+function setupRentalIncomeSheet(sheet) { return CellPilot.setupRentalIncomeSheet(sheet); }
+function setupPropertyComparisonSheet(sheet) { return CellPilot.setupPropertyComparisonSheet(sheet); }
+function setupSuppliersSheet(sheet) { return CellPilot.setupSuppliersSheet(sheet); }
+function setupPurchaseOrdersSheet(sheet) { return CellPilot.setupPurchaseOrdersSheet(sheet); }
+function setupCrewScheduleSheet(sheet) { return CellPilot.setupCrewScheduleSheet(sheet); }
+function setupPayrollSheet(sheet) { return CellPilot.setupPayrollSheet(sheet); }
+function setupCostImpactSheet(sheet) { return CellPilot.setupCostImpactSheet(sheet); }
+function setupApprovalsSheet(sheet) { return CellPilot.setupApprovalsSheet(sheet); }
+function setupCostBreakdownSheet(sheet) { return CellPilot.setupCostBreakdownSheet(sheet); }
+function setupContingencySheet(sheet) { return CellPilot.setupContingencySheet(sheet); }
+function setupAuthStatusSheet(sheet) { return CellPilot.setupAuthStatusSheet(sheet); }
+function setupProvidersSheet(sheet) { return CellPilot.setupProvidersSheet(sheet); }
+function setupClaimsSheet(sheet) { return CellPilot.setupClaimsSheet(sheet); }
+function setupARAgingSheet(sheet) { return CellPilot.setupARAgingSheet(sheet); }
+function setupAppealsSheet(sheet) { return CellPilot.setupAppealsSheet(sheet); }
+function setupDenialTrendsSheet(sheet) { return CellPilot.setupDenialTrendsSheet(sheet); }
+function setupEligibilitySheet(sheet) { return CellPilot.setupEligibilitySheet(sheet); }
+function setupBenefitsSheet(sheet) { return CellPilot.setupBenefitsSheet(sheet); }
+function setupSegmentsSheet(sheet) { return CellPilot.setupSegmentsSheet(sheet); }
+function setupEngagementSheet(sheet) { return CellPilot.setupEngagementSheet(sheet); }
+function setupMetricsSheet(sheet) { return CellPilot.setupMetricsSheet(sheet); }
+function setupChannelsSheet(sheet) { return CellPilot.setupChannelsSheet(sheet); }
+function setupTouchpointsSheet(sheet) { return CellPilot.setupTouchpointsSheet(sheet); }
+function setupConversionSheet(sheet) { return CellPilot.setupConversionSheet(sheet); }
+function setupPerformanceSheet(sheet) { return CellPilot.setupPerformanceSheet(sheet); }
+function setupBudgetSheet(sheet) { return CellPilot.setupBudgetSheet(sheet); }
+function setupProductsSheet(sheet) { return CellPilot.setupProductsSheet(sheet); }
+function setupCostsSheet(sheet) { return CellPilot.setupCostsSheet(sheet); }
+function setupTrendsSheet(sheet) { return CellPilot.setupTrendsSheet(sheet); }
+function setupSeasonalitySheet(sheet) { return CellPilot.setupSeasonalitySheet(sheet); }
+function setupStockLevelsSheet(sheet) { return CellPilot.setupStockLevelsSheet(sheet); }
+function setupReorderPointsSheet(sheet) { return CellPilot.setupReorderPointsSheet(sheet); }
+function setupResourceSheet(sheet) { return CellPilot.setupResourceSheet(sheet); }
+function setupExpensesSheet(sheet) { return CellPilot.setupExpensesSheet(sheet); }
+function setupRevenueSheet(sheet) { return CellPilot.setupRevenueSheet(sheet); }
+function setupTimesheetSheet(sheet) { return CellPilot.setupTimesheetSheet(sheet); }
+function setupInvoicesSheet(sheet) { return CellPilot.setupInvoicesSheet(sheet); }
+
+// ============================================
+// TEMPLATE MODULE PROXY FUNCTIONS
+// ============================================
+
+function buildTemplate(spreadsheet, config) { return CellPilot.TemplateBuilder.buildTemplate(spreadsheet, config); }
+function buildRealEstateTemplate(spreadsheet, templateType, isPreview) { return CellPilot.RealEstateTemplate.build(spreadsheet, templateType, isPreview); }
+function buildConstructionTemplate(spreadsheet, templateType, isPreview) { return CellPilot.ConstructionTemplate.build(spreadsheet, templateType, isPreview); }
+function buildHealthcareTemplate(spreadsheet, templateType, isPreview) { return CellPilot.HealthcareTemplate.build(spreadsheet, templateType, isPreview); }
+function buildMarketingTemplate(spreadsheet, templateType, isPreview) { return CellPilot.MarketingTemplate.build(spreadsheet, templateType, isPreview); }
+function buildEcommerceTemplate(spreadsheet, templateType, isPreview) { return CellPilot.EcommerceTemplate.build(spreadsheet, templateType, isPreview); }
+function buildConsultingTemplate(spreadsheet, templateType, isPreview) { return CellPilot.ConsultingTemplate.build(spreadsheet, templateType, isPreview); }
+
+// ============================================
+// END OF PROXY FUNCTIONS
+// ============================================`;
 }
 
 /**

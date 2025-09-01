@@ -70,9 +70,52 @@
       border-radius: 8px;
       font-family: 'Monaco', 'Menlo', monospace;
       font-size: 14px;
-      overflow-x: auto;
+      overflow: auto;
       position: relative;
       margin: 20px 0;
+      max-height: 300px;
+    }
+    
+    .script-id-container {
+      background: #f3f4f6;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+      position: relative;
+    }
+    
+    .script-id-box {
+      background: white;
+      padding: 12px;
+      border-radius: 6px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 13px;
+      word-break: break-all;
+      color: #1a202c;
+      margin-top: 8px;
+    }
+    
+    .copy-script-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background 0.2s;
+    }
+    
+    .copy-script-btn:hover {
+      background: #5a67d8;
+    }
+    
+    .copy-script-btn.copied {
+      background: #10b981;
     }
     
     .copy-btn {
@@ -189,23 +232,34 @@
       
       <div class="step">
         <h3>Step 2: Open Apps Script Editor</h3>
-        <p>
+        <p style="margin-bottom: 16px;">
           1. Open any Google Sheet (or create a new one)<br>
           2. Click <span class="highlight">Extensions</span> → <span class="highlight">Apps Script</span><br>
           3. Delete all existing code in the editor<br>
           4. Paste the code you just copied<br>
           5. Save the project (Ctrl+S or Cmd+S)
         </p>
+        <button class="button" onclick="openNewSheet()" style="margin-top: 10px;">
+          📄 Open New Google Sheet
+        </button>
       </div>
       
       <div class="step">
         <h3>Step 3: Add CellPilot Library</h3>
         <p>
           1. In Apps Script editor, click <span class="highlight">Libraries</span> (+) in the left sidebar<br>
-          2. In the "Script ID" field, paste: <br>
-          <code style="background: #e5e7eb; padding: 4px 8px; border-radius: 4px; font-size: 12px;">1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O</code><br>
+          2. Copy and paste this Script ID:
+        </p>
+        
+        <div class="script-id-container">
+          <button class="copy-script-btn" onclick="copyScriptId()">Copy Script ID</button>
+          <div style="font-weight: 600; color: #4a5568; font-size: 14px;">Script ID:</div>
+          <div class="script-id-box" id="script-id">1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O</div>
+        </div>
+        
+        <p>
           3. Click <span class="highlight">Look up</span><br>
-          4. Select Version: <span class="highlight">10</span> (or latest)<br>
+          4. Select Version: <span class="highlight">11</span> (or latest)<br>
           5. Make sure Identifier is: <span class="highlight">CellPilot</span><br>
           6. Click <span class="highlight">Add</span>
         </p>
@@ -223,11 +277,8 @@
       </div>
       
       <div style="text-align: center; margin-top: 40px;">
-        <button class="button" onclick="openNewSheet()">
-          Open New Google Sheet
-        </button>
-        <button class="button" style="margin-left: 10px;" onclick="loadInstallCode()">
-          Reload Installation Code
+        <button class="button" onclick="loadInstallCode()">
+          🔄 Reload Installation Code
         </button>
       </div>
       
@@ -270,6 +321,21 @@
         }, 2000);
       }).catch(function(err) {
         showError('Failed to copy code. Please select and copy manually.');
+      });
+    }
+    
+    function copyScriptId() {
+      const scriptId = document.getElementById('script-id').textContent;
+      navigator.clipboard.writeText(scriptId).then(function() {
+        const btn = document.querySelector('.copy-script-btn');
+        btn.textContent = '✅ Copied!';
+        btn.classList.add('copied');
+        setTimeout(function() {
+          btn.textContent = 'Copy Script ID';
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(function(err) {
+        showError('Failed to copy Script ID. Please select and copy manually.');
       });
     }
     
