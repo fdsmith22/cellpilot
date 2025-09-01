@@ -579,22 +579,22 @@ function createMainSidebarHtml(context) {
       /* Very light, subtle theme colors for different tab types */
       .quick-action-btn[data-theme="data"] {
         background: linear-gradient(135deg, #fafbfc 0%, #f0f7ff 100%);
-        border-color: #e1e7f0;
+        border-color: #d1dae6;
       }
       
       .quick-action-btn[data-theme="formula"] {
         background: linear-gradient(135deg, #fafdf9 0%, #f0fdf4 100%);
-        border-color: #e1f0e5;
+        border-color: #d1e6d8;
       }
       
       .quick-action-btn[data-theme="advanced"] {
         background: linear-gradient(135deg, #fffdf8 0%, #fef9f0 100%);
-        border-color: #f0e8d8;
+        border-color: #e6dcc8;
       }
       
       .quick-action-btn[data-theme="pipeline"] {
         background: linear-gradient(135deg, #fdfafd 0%, #fdf0f8 100%);
-        border-color: #f0e1ea;
+        border-color: #e6d1dc;
       }
       
       .quick-action-btn:hover {
@@ -668,6 +668,16 @@ function createMainSidebarHtml(context) {
       /* Dropdown sections */
       .dropdown-section {
         margin-bottom: 12px;
+      }
+      
+      .dropdown-section[data-theme="industry"] .dropdown-header {
+        background: linear-gradient(135deg, #fcfaff 0%, #f5f0ff 100%);
+        border-color: #dcd1e6;
+      }
+      
+      .dropdown-section[data-theme="industry"] .dropdown-header:hover {
+        border-color: #c8b8e0;
+        background: linear-gradient(135deg, #f2e8ff 0%, #e8daff 100%);
       }
       
       .dropdown-header {
@@ -858,7 +868,7 @@ function createMainSidebarHtml(context) {
           </svg>
         </a>
         <!-- Tier Badge -->
-        <div style="margin-left: auto; margin-right: 16px;">
+        <div style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%);">
           <span style="display: inline-block; padding: 4px 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 12px;">
             <?= context.tier || 'BETA' ?>
           </span>
@@ -963,7 +973,7 @@ function createMainSidebarHtml(context) {
       </div>
       
       <!-- Industry Templates Dropdown -->
-      <div class="dropdown-section">
+      <div class="dropdown-section" data-theme="industry">
         <div class="dropdown-header" onclick="toggleDropdown('industry')">
           <div class="dropdown-title">
             <div class="dropdown-text">
@@ -1003,13 +1013,13 @@ function createMainSidebarHtml(context) {
       
       
       <!-- Upgrade Card -->
-      <div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1)); border: 1px solid var(--primary-200); margin-top: 16px; padding: 12px; overflow: hidden;">
+      <div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1)); border: 1px solid var(--primary-200); margin-top: 16px; padding: 10px 12px; overflow: hidden;">
         <div style="text-align: center;">
-          <div style="font-size: 14px; font-weight: 600; color: var(--primary-700); margin-bottom: 6px;">Upgrade to Pro</div>
-          <div style="font-size: 11px; color: var(--gray-600); margin-bottom: 10px;">
+          <div style="font-size: 13px; font-weight: 600; color: var(--primary-700); margin-bottom: 4px;">Upgrade to Pro</div>
+          <div style="font-size: 10px; color: var(--gray-600); margin-bottom: 8px;">
             Unlimited operations • Advanced features
           </div>
-          <button class="btn btn-primary btn-no-ripple" style="width: 100%; padding: 6px; font-size: 12px; font-weight: 600;" onclick="event.stopPropagation(); google.script.run.showUpgradeOptions()">
+          <button class="btn btn-primary btn-no-ripple" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600;" onclick="event.stopPropagation(); google.script.run.showUpgradeOptions()">
             View Plans
           </button>
         </div>

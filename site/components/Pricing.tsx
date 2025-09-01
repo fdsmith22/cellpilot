@@ -4,53 +4,85 @@ import { useState } from 'react'
 import Link from 'next/link'
 import ScrollObserver from './ScrollObserver'
 
+const allFeatures = {
+  free: [
+    '100 operations per month',
+    'Tableize Data (basic)',
+    'Remove Duplicates',
+    'Clean Data (trim, case)',
+    'Basic Formula Assistant',
+    'Community support',
+  ],
+  starter: [
+    '500 operations per month',
+    'Everything in Free, plus:',
+    'Advanced Tableize with ML',
+    'Smart Formula Builder',
+    'Cross-Sheet Formulas',
+    'Data Validation Generator',
+    'Pivot Table Assistant',
+    'Email support',
+    'Usage analytics',
+  ],
+  professional: [
+    'Unlimited operations',
+    'Everything in Starter, plus:',
+    'Advanced Restructuring',
+    'Industry Templates (6 types)',
+    'Data Pipeline Manager',
+    'Excel Migration Tools',
+    'API Integration',
+    'Automation Workflows',
+    'Batch Operations',
+    'Priority support',
+  ],
+}
+
 const plans = [
   {
+    id: 'free',
     name: 'Free',
     price: '£0',
     period: 'forever',
     description: 'Get started with basic features',
-    features: [
-      '25 operations per month',
-      'Duplicate removal',
-      'Text cleaning',
-      'Basic formulas',
-      'Email support',
+    highlights: [
+      '100 operations/month',
+      'Basic cleaning tools',
+      'Community support',
     ],
+    features: allFeatures.free,
     cta: 'Get Started',
     ctaLink: '/install',
     popular: false,
   },
   {
+    id: 'starter',
     name: 'Starter',
     price: '£5.99',
     period: 'per month',
     description: 'For regular spreadsheet users',
-    features: [
-      '500 operations per month',
-      'All cleaning tools',
-      'Advanced formulas',
-      'Automatic backups',
-      'Priority support',
-      'Usage analytics',
+    highlights: [
+      '500 operations/month',
+      'ML-powered tools',
+      'Email support',
     ],
+    features: allFeatures.starter,
     cta: 'Try Free for 7 Days',
     ctaLink: '/install?plan=starter',
     popular: true,
   },
   {
+    id: 'professional',
     name: 'Professional',
     price: '£11.99',
     period: 'per month',
     description: 'For power users and teams',
-    features: [
+    highlights: [
       'Unlimited operations',
       'All features included',
-      'Email automation',
-      'Calendar integration',
-      'API access',
-      'Dedicated support',
+      'Priority support',
     ],
+    features: allFeatures.professional,
     cta: 'Try Free for 7 Days',
     ctaLink: '/install?plan=professional',
     popular: false,
@@ -58,7 +90,22 @@ const plans = [
 ]
 
 const Pricing = () => {
-  const [selectedPlan, setSelectedPlan] = useState<string>('Starter')
+  const [expandedPlan, setExpandedPlan] = useState<string | null>(null)
+  const [isAnimating, setIsAnimating] = useState(false)
+  
+  const handlePlanClick = (planId: string) => {
+    if (expandedPlan === planId) {
+      setIsAnimating(true)
+      setTimeout(() => {
+        setExpandedPlan(null)
+        setIsAnimating(false)
+      }, 300)
+    } else {
+      setIsAnimating(true)
+      setExpandedPlan(planId)
+      setTimeout(() => setIsAnimating(false), 300)
+    }
+  }
   
   return (
     <section id="pricing" className="snap-section relative overflow-hidden bg-transparent">
@@ -70,100 +117,167 @@ const Pricing = () => {
       {/* Seamless transition */}
       <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/70 to-white/80"></div>
       
-      {/* Removed grid pattern - using global grid */}
-      
       <div className="container-wrapper relative z-10 py-16 sm:py-20 lg:py-24">
         <div className="w-full">
-        <ScrollObserver className="text-center mb-6 sm:mb-8">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-3 sm:mb-4">
-            Simple Pricing
-          </h2>
-          <p className="text-sm sm:text-base md:text-lg text-neutral-600 leading-relaxed">
-            Start free and upgrade when you need more. Cancel anytime.
-          </p>
-        </ScrollObserver>
+          <ScrollObserver className="text-center mb-6 sm:mb-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-3 sm:mb-4">
+              Simple Pricing
+            </h2>
+            <p className="text-sm sm:text-base md:text-lg text-neutral-600 leading-relaxed">
+              Start free and upgrade when you need more. Cancel anytime.
+            </p>
+            <p className="text-xs sm:text-sm text-neutral-500 mt-2">
+              Click on a plan to see all features included
+            </p>
+          </ScrollObserver>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch mb-6 sm:mb-8">
-          {plans.map((plan, index) => (
-            <ScrollObserver
-              key={plan.name}
-              className={`scroll-observer-delay-${index * 100}`}
-            >
-              <div
-                onClick={() => setSelectedPlan(plan.name)}
-                className={`glass-card rounded-xl sm:rounded-2xl overflow-hidden h-full cursor-pointer transition-all duration-300 ${
-                  selectedPlan === plan.name 
-                    ? 'ring-2 ring-primary-500 scale-105 shadow-2xl bg-white/90' 
-                    : 'hover:scale-102 hover:shadow-xl'
-                }`}
+          {/* Expanded view */}
+          {expandedPlan && (
+            <div className={`mb-8 transition-all duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
+              {plans.filter(p => p.id === expandedPlan).map(plan => (
+                <div key={plan.id} className="max-w-4xl mx-auto">
+                  <div className="glass-card rounded-2xl overflow-hidden">
+                    <div className="grid lg:grid-cols-2 gap-6">
+                      {/* Plan summary */}
+                      <div className="p-6">
+                        {plan.popular && (
+                          <div className="inline-block bg-gradient-to-r from-primary-500 to-accent-teal px-3 py-1 rounded-full text-white text-xs font-medium mb-3">
+                            Most Popular
+                          </div>
+                        )}
+                        <h3 className="text-2xl font-bold text-neutral-900 mb-2">{plan.name}</h3>
+                        <p className="text-sm text-neutral-600 mb-4">{plan.description}</p>
+                        
+                        <div className="mb-6">
+                          <span className="text-4xl font-bold text-neutral-900">{plan.price}</span>
+                          <span className="text-sm text-neutral-600 ml-2">/{plan.period}</span>
+                        </div>
+
+                        <Link
+                          href={plan.ctaLink}
+                          className={`block w-full py-3 px-6 rounded-full text-center font-medium transition-all mb-4 ${
+                            plan.popular
+                              ? 'btn-primary'
+                              : 'bg-white border border-neutral-300 text-neutral-700 hover:bg-neutral-100'
+                          }`}
+                        >
+                          {plan.cta}
+                        </Link>
+
+                        <button
+                          onClick={() => handlePlanClick(plan.id)}
+                          className="text-sm text-neutral-500 hover:text-neutral-700 transition-colors"
+                        >
+                          ← Back to all plans
+                        </button>
+                      </div>
+
+                      {/* Full feature list */}
+                      <div className="p-6 bg-neutral-50/50">
+                        <h4 className="text-lg font-semibold text-neutral-900 mb-4">All Features Included:</h4>
+                        <ul className="space-y-2">
+                          {plan.features.map((feature, index) => (
+                            <li key={index} className="flex items-start">
+                              <svg
+                                className="h-5 w-5 text-accent-teal mt-0.5 mr-3 flex-shrink-0"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              <span className={`text-sm text-neutral-700 ${
+                                feature.startsWith('Everything') ? 'font-semibold' : ''
+                              }`}>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Collapsed view */}
+          <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch mb-6 sm:mb-8 transition-all duration-300 ${
+            expandedPlan ? 'opacity-0 max-h-0 overflow-hidden' : 'opacity-100'
+          }`}>
+            {plans.map((plan, index) => (
+              <ScrollObserver
+                key={plan.name}
+                className={`scroll-observer-delay-${index * 100}`}
               >
-              {(selectedPlan === plan.name || (plan.popular && !selectedPlan)) && (
-                <div className="bg-gradient-to-r from-primary-500 to-accent-teal px-4 py-2 text-center">
-                  <span className="text-white text-sm font-medium">
-                    {selectedPlan === plan.name ? 'Selected Plan' : 'Most Popular'}
-                  </span>
-                </div>
-              )}
-              
-              <div className="p-3 sm:p-4">
-                <h3 className="text-lg sm:text-xl font-bold text-neutral-900 mb-1">{plan.name}</h3>
-                <p className="text-xs sm:text-sm text-neutral-600 mb-3">{plan.description}</p>
-                
-                <div className="mb-4">
-                  <span className="text-2xl sm:text-3xl font-bold text-neutral-900">{plan.price}</span>
-                  <span className="text-xs sm:text-sm text-neutral-600 ml-1">/{plan.period}</span>
-                </div>
-
-                <ul className="space-y-1.5 mb-4">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-start">
-                      <svg
-                        className="h-4 w-4 text-accent-teal mt-0.5 mr-2 flex-shrink-0"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <span className="text-xs sm:text-sm text-neutral-700">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  href={plan.ctaLink}
-                  className={`block w-full py-2.5 px-5 rounded-full text-center text-sm font-medium transition-all ${
-                    plan.popular
-                      ? 'btn-primary'
-                      : 'bg-white border border-neutral-300 text-neutral-700 hover:bg-neutral-100'
+                <div
+                  onClick={() => handlePlanClick(plan.id)}
+                  className={`glass-card rounded-xl sm:rounded-2xl overflow-hidden h-full cursor-pointer transition-all duration-300 hover:scale-102 hover:shadow-xl ${
+                    plan.popular ? 'ring-2 ring-primary-300' : ''
                   }`}
                 >
-                  {plan.cta}
-                </Link>
-              </div>
-              </div>
-            </ScrollObserver>
-          ))}
-        </div>
+                  {plan.popular && (
+                    <div className="bg-gradient-to-r from-primary-500 to-accent-teal px-4 py-2 text-center">
+                      <span className="text-white text-sm font-medium">Most Popular</span>
+                    </div>
+                  )}
+                  
+                  <div className="p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-bold text-neutral-900 mb-1">{plan.name}</h3>
+                    <p className="text-xs sm:text-sm text-neutral-600 mb-3">{plan.description}</p>
+                    
+                    <div className="mb-4">
+                      <span className="text-2xl sm:text-3xl font-bold text-neutral-900">{plan.price}</span>
+                      <span className="text-xs sm:text-sm text-neutral-600 ml-1">/{plan.period}</span>
+                    </div>
 
-        <div className="mt-8 sm:mt-10 text-center px-4">
-          <div className="inline-flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 p-4 sm:p-6 rounded-xl sm:rounded-2xl glass-card">
-            <div className="flex items-center">
-              <svg className="w-4 sm:w-5 h-4 sm:h-5 text-accent-teal mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span className="text-sm sm:text-base text-neutral-700 font-medium">Cancel anytime</span>
-            </div>
-            <div className="flex items-center">
-              <svg className="w-4 sm:w-5 h-4 sm:h-5 text-accent-teal mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span className="text-sm sm:text-base text-neutral-700 font-medium">Secure payments</span>
-            </div>
+                    <ul className="space-y-2 mb-6">
+                      {plan.highlights.map((feature, index) => (
+                        <li key={index} className="flex items-start">
+                          <svg
+                            className="h-4 w-4 text-accent-teal mt-0.5 mr-2 flex-shrink-0"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          <span className="text-xs sm:text-sm text-neutral-700">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="text-center">
+                      <span className="text-xs text-primary-600 font-medium">
+                        Click to see all {plan.features.length} features →
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </ScrollObserver>
+            ))}
           </div>
+
+          <div className="mt-8 sm:mt-10 text-center px-4">
+            <div className="inline-flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 p-4 sm:p-6 rounded-xl sm:rounded-2xl glass-card">
+              <div className="flex items-center">
+                <svg className="w-4 sm:w-5 h-4 sm:h-5 text-accent-teal mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-sm sm:text-base text-neutral-700 font-medium">Cancel anytime</span>
+              </div>
+              <div className="flex items-center">
+                <svg className="w-4 sm:w-5 h-4 sm:h-5 text-accent-teal mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-sm sm:text-base text-neutral-700 font-medium">Secure payments</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
