@@ -573,6 +573,13 @@ function showIndustryTemplate(category) {
 }
 
 /**
+* Show CellM8 Presentation Helper
+*/
+function showCellM8() {
+  return CellPilot.showCellM8();
+}
+
+/**
 * Show Excel Migration tool
 */
 function showExcelMigration() {
