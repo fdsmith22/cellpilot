@@ -267,63 +267,67 @@ const Pricing = () => {
                 <div key={plan.id} className="max-w-5xl mx-auto">
                   <div className="glass-card rounded-2xl overflow-hidden shadow-2xl">
                     <div className="grid lg:grid-cols-2 gap-0">
-                      {/* Plan summary */}
-                      <div className="left-panel p-8 lg:p-10">
-                        {plan.popular && (
-                          <div className="inline-block bg-gradient-to-r from-primary-500 to-accent-teal px-3 py-1 rounded-full text-white text-xs font-medium mb-3">
-                            Most Popular
+                      {/* Plan summary - centered content */}
+                      <div className="left-panel p-8 lg:p-10 flex flex-col justify-center items-center text-center">
+                        <div className="w-full max-w-sm">
+                          {plan.popular && (
+                            <div className="inline-block bg-gradient-to-r from-primary-500 to-accent-teal px-3 py-1 rounded-full text-white text-xs font-medium mb-4">
+                              Most Popular
+                            </div>
+                          )}
+                          <h3 className="text-3xl font-bold text-neutral-900 mb-3">{plan.name}</h3>
+                          <p className="text-sm text-neutral-600 mb-6">{plan.description}</p>
+                          
+                          <div className="mb-8">
+                            <span className="text-5xl font-bold text-neutral-900">{plan.price}</span>
+                            <span className="text-lg text-neutral-600 ml-2">/{plan.period}</span>
                           </div>
-                        )}
-                        <h3 className="text-2xl font-bold text-neutral-900 mb-2">{plan.name}</h3>
-                        <p className="text-sm text-neutral-600 mb-4">{plan.description}</p>
-                        
-                        <div className="mb-6">
-                          <span className="text-4xl font-bold text-neutral-900">{plan.price}</span>
-                          <span className="text-sm text-neutral-600 ml-2">/{plan.period}</span>
+
+                          <Link
+                            href={plan.ctaLink}
+                            className={`block w-full py-3 px-6 rounded-full text-center font-medium transition-transform duration-300 mb-6 hover:scale-105 ${
+                              plan.popular
+                                ? 'btn-primary'
+                                : 'bg-white border border-neutral-300 text-neutral-700 hover:bg-neutral-100'
+                            }`}
+                          >
+                            {plan.cta}
+                          </Link>
+
+                          <button
+                            onClick={() => handlePlanClick(plan.id)}
+                            className="text-sm text-neutral-500 hover:text-neutral-700 transition-colors duration-300"
+                          >
+                            ← Back to all plans
+                          </button>
                         </div>
-
-                        <Link
-                          href={plan.ctaLink}
-                          className={`block w-full py-3 px-6 rounded-full text-center font-medium transition-transform duration-300 mb-4 hover:scale-105 ${
-                            plan.popular
-                              ? 'btn-primary'
-                              : 'bg-white border border-neutral-300 text-neutral-700 hover:bg-neutral-100'
-                          }`}
-                        >
-                          {plan.cta}
-                        </Link>
-
-                        <button
-                          onClick={() => handlePlanClick(plan.id)}
-                          className="text-sm text-neutral-500 hover:text-neutral-700 transition-colors duration-300"
-                        >
-                          ← Back to all plans
-                        </button>
                       </div>
 
-                      {/* Full feature list */}
-                      <div className="right-panel p-8 lg:p-10 bg-gradient-to-br from-neutral-50/50 to-white">
-                        <h4 className="text-lg font-semibold text-neutral-900 mb-4">All Features Included:</h4>
-                        <ul className="space-y-3">
-                          {plan.features.map((feature, index) => (
-                            <li key={index} className="feature-item flex items-start">
-                              <svg
-                                className="h-5 w-5 text-accent-teal mt-0.5 mr-3 flex-shrink-0"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                              <span className={`text-sm text-neutral-700 ${
-                                feature.startsWith('Everything') ? 'font-semibold text-primary-600' : ''
-                              }`}>{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
+                      {/* Full feature list - centered content */}
+                      <div className="right-panel p-8 lg:p-10 bg-gradient-to-br from-neutral-50/50 to-white flex flex-col justify-center">
+                        <div className="w-full max-w-sm mx-auto">
+                          <h4 className="text-lg font-semibold text-neutral-900 mb-6 text-center">All Features Included</h4>
+                          <ul className="space-y-3">
+                            {plan.features.map((feature, index) => (
+                              <li key={index} className="feature-item flex items-start">
+                                <svg
+                                  className="h-5 w-5 text-accent-teal mt-0.5 mr-3 flex-shrink-0"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                                <span className={`text-sm text-neutral-700 ${
+                                  feature.startsWith('Everything') ? 'font-semibold text-primary-600' : ''
+                                }`}>{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   </div>
