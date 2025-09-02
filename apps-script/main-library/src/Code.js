@@ -1761,28 +1761,20 @@ function showCellM8() {
 /**
  * CellM8 Helper Functions - Proxy to CellM8 object
  */
-function getCellM8Selection() {
-  return CellM8.getCurrentSelection();
-}
-
-function selectEntireDataRange() {
-  return CellM8.selectEntireDataRange();
-}
-
-function selectRange(rangeA1) {
-  return CellM8.selectRange(rangeA1);
-}
-
-function promptForSelection() {
-  return CellM8.promptForSelection();
-}
-
-function previewPresentation(config) {
+function previewCellM8Presentation(config) {
   return CellM8.previewPresentation(config);
 }
 
-function createPresentation(config) {
+function createCellM8Presentation(config) {
   return CellM8.createPresentation(config);
+}
+
+function testCellM8Function() {
+  return {
+    success: true,
+    message: 'CellM8 is working correctly',
+    timestamp: new Date().toISOString()
+  };
 }
 
 /**

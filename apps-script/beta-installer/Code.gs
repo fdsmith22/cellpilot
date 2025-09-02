@@ -709,49 +709,11 @@ function saveToGoogleDrive(content, filename, mimeType) { return CellPilot.saveT
 function prepareDataForExport(options) { return CellPilot.prepareDataForExport(options); }
 function showDataPipelineManager() { return CellPilot.showDataPipelineManager(); }
 
-// CellM8 Presentation Helper Functions
+// CellM8 Presentation Helper Functions (Simplified)
 function showCellM8() { return CellPilot.showCellM8(); }
-function createPresentation(config) { return CellPilot.createPresentation(config); }
-function getCellM8Selection() { return CellPilot.getCellM8Selection(); }
-function getCurrentSelection() { return CellPilot.getCurrentSelection(); }
-function selectEntireDataRange() { return CellPilot.selectEntireDataRange(); }
-function selectRange(rangeA1) { return CellPilot.selectRange(rangeA1); }
-function promptForSelection() { return CellPilot.promptForSelection(); }
-function extractSheetData(source) { return CellPilot.extractSheetData(source); }
-function getVisibleRange(sheet) { return CellPilot.getVisibleRange(sheet); }
-function analyzeDataWithAI(data) { return CellPilot.analyzeDataWithAI(data); }
-function calculateStatistics(data) { return CellPilot.calculateStatistics(data); }
-function detectTrend(data) { return CellPilot.detectTrend(data); }
-function calculateCorrelation(data1, data2) { return CellPilot.calculateCorrelation(data1, data2); }
-function calculateCompleteness(data) { return CellPilot.calculateCompleteness(data); }
-function previewPresentation(config) { return CellPilot.previewPresentation(config); }
-function generateSlideStructure(analysis, config) { return CellPilot.generateSlideStructure(analysis, config); }
-function createGoogleSlides(structure, config) { return CellPilot.createGoogleSlides(structure, config); }
-function createSlide(presentation, slideData, index, template) { return CellPilot.createSlide(presentation, slideData, index, template); }
-function createTitleSlide(slide, slideData, template) { return CellPilot.createTitleSlide(slide, slideData, template); }
-function createContentSlide(slide, slideData, template) { return CellPilot.createContentSlide(slide, slideData, template); }
-function createChartSlide(slide, slideData, template) { return CellPilot.createChartSlide(slide, slideData, template); }
-function createMetricsSlide(slide, slideData, template) { return CellPilot.createMetricsSlide(slide, slideData, template); }
-function createThankYouSlide(slide, slideData, template) { return CellPilot.createThankYouSlide(slide, slideData, template); }
-function createDataSlide(slide, slideData, template) { return CellPilot.createDataSlide(slide, slideData, template); }
-function applyTemplateToPresentation(presentation, template) { return CellPilot.applyTemplateToPresentation(presentation, template); }
-function mapChartType(type) { return CellPilot.mapChartType(type); }
-function recommendCharts(analysis) { return CellPilot.recommendCharts(analysis); }
-function generateInsights(data, analysis) { return CellPilot.generateInsights(data, analysis); }
-function generateRecommendations(analysis) { return CellPilot.generateRecommendations(analysis); }
-function generateNextSteps(analysis) { return CellPilot.generateNextSteps(analysis); }
-function extractKeyMetrics(data, analysis) { return CellPilot.extractKeyMetrics(data, analysis); }
-function formatDataOverview(analysis) { return CellPilot.formatDataOverview(analysis); }
-function cleanDataForPresentation(data, headers) { return CellPilot.cleanDataForPresentation(data, headers); }
-function detectDataTypes(data) { return CellPilot.detectDataTypes(data); }
-function detectColumnDataType(columnData) { return CellPilot.detectColumnDataType(columnData); }
-function generateDefaultHeaders(count) { return CellPilot.generateDefaultHeaders(count); }
-function analyzeTimeSeries(dateData) { return CellPilot.analyzeTimeSeries(dateData); }
-function detectFrequency(avgInterval) { return CellPilot.detectFrequency(avgInterval); }
-function analyzeCategories(categoryData) { return CellPilot.analyzeCategories(categoryData); }
-function formatNumber(num) { return CellPilot.formatNumber(num); }
-function chunkArray(array, size) { return CellPilot.chunkArray(array, size); }
-function trackPresentationCreation(config, result) { return CellPilot.trackPresentationCreation(config, result); }
+function previewCellM8Presentation(config) { return CellPilot.previewCellM8Presentation(config); }
+function createCellM8Presentation(config) { return CellPilot.createCellM8Presentation(config); }
+function testCellM8Function() { return CellPilot.testCellM8Function(); }
 
 // ============================================
 // END OF PROXY FUNCTIONS
