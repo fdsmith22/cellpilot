@@ -839,6 +839,35 @@
       }
     }
   </style>
+  <script>
+    // Define critical functions immediately to ensure they're available for onclick handlers
+    function selectSource(element, source) {
+      // Function will be properly implemented after DOM loads
+      // This stub ensures the function exists when HTML is parsed
+      if (window.selectSourceImpl) {
+        window.selectSourceImpl(element, source);
+      }
+    }
+    
+    function selectTemplate(element, template) {
+      // Function will be properly implemented after DOM loads
+      if (window.selectTemplateImpl) {
+        window.selectTemplateImpl(element, template);
+      }
+    }
+    
+    function backToMain() {
+      if (window.backToMainImpl) {
+        window.backToMainImpl();
+      }
+    }
+    
+    function uploadTemplate() {
+      if (window.uploadTemplateImpl) {
+        window.uploadTemplateImpl();
+      }
+    }
+  </script>
 </head>
 <body>
   <!-- Navigation Header with CellPilot Branding -->
@@ -1149,8 +1178,8 @@
     var selectedTemplate = 'corporate';
     var currentSelection = null;
     
-    // Define all functions immediately in global scope to ensure they're available
-    function selectSource(element, source) {
+    // Implementation of selectSource
+    window.selectSourceImpl = function(element, source) {
       document.querySelectorAll('.source-option').forEach(el => el.classList.remove('selected'));
       element.classList.add('selected');
       selectedSource = source;
@@ -1184,10 +1213,10 @@
       } else {
         customInput.style.display = 'none';
       }
-    }
+    };
     
-    // Also define with window prefix for redundancy
-    window.selectSource = selectSource;
+    // Update the stub to use the implementation
+    window.selectSource = window.selectSourceImpl;
     
     // Get current selection on load
     window.addEventListener('DOMContentLoaded', function() {
@@ -1211,13 +1240,16 @@
       }
     }
     
-    function backToMain() {
+    // Implementation of backToMain
+    window.backToMainImpl = function() {
       google.script.run.showCellPilotSidebar();
-    }
+    };
     
-    // This function is already defined above, removing duplicate
+    // Update the stub to use the implementation
+    window.backToMain = window.backToMainImpl;
     
-    function selectTemplate(element, template) {
+    // Implementation of selectTemplate
+    window.selectTemplateImpl = function(element, template) {
       document.querySelectorAll('.template-card').forEach(el => el.classList.remove('selected'));
       element.classList.add('selected');
       selectedTemplate = template;
@@ -1229,7 +1261,10 @@
       } else {
         customOptions.classList.remove('show');
       }
-    }
+    };
+    
+    // Update the stub to use the implementation
+    window.selectTemplate = window.selectTemplateImpl;
     
     function updateSlideCount(value) {
       document.getElementById('slideCount').textContent = value;
@@ -1242,10 +1277,14 @@
       options.classList.toggle('show');
     }
     
-    function uploadTemplate() {
+    // Implementation of uploadTemplate
+    window.uploadTemplateImpl = function() {
       // This would trigger file upload in a real implementation
       alert('Template upload feature coming soon! For now, please paste a Google Slides template URL.');
-    }
+    };
+    
+    // Update the stub to use the implementation
+    window.uploadTemplate = window.uploadTemplateImpl;
     
     function previewPresentation() {
       const config = gatherConfig();
