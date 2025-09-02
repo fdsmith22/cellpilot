@@ -72,7 +72,7 @@ function resetBetaNotification() {
 * This is the primary entry point for all features
 */
 function showCellPilotSidebar() {
-CellPilot.showCellPilotSidebar();
+  return CellPilot.showCellPilotSidebar();
 }
 
 /**
