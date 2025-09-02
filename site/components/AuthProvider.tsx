@@ -57,16 +57,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) throw error
       
-      // Update profile with additional data
+      // Upsert profile with additional data (use upsert in case profile doesn't exist yet)
       if (data.user && metadata) {
         await supabase
           .from('profiles')
-          .update({
+          .upsert({
+            id: data.user.id,
             full_name: metadata.full_name,
+            first_name: metadata.first_name,
+            surname: metadata.surname,
             company: metadata.company,
             newsletter_subscribed: metadata.newsletter_subscribed,
+            updated_at: new Date().toISOString(),
           })
-          .eq('id', data.user.id)
+          .onConflict('id')
       }
       
       return { error: null }

@@ -105,6 +105,86 @@ const CellM8 = {
   },
 
   /**
+   * Get current selection information
+   * @return {Object} Selection details
+   */
+  getCurrentSelection: function() {
+    try {
+      const sheet = SpreadsheetApp.getActiveSheet();
+      const range = sheet.getActiveRange();
+      
+      if (range) {
+        return {
+          range: range.getA1Notation(),
+          rows: range.getNumRows(),
+          cols: range.getNumColumns(),
+          sheet: sheet.getName()
+        };
+      }
+      
+      return null;
+    } catch (error) {
+      Logger.error('CellM8: Error getting selection:', error);
+      return null;
+    }
+  },
+  
+  /**
+   * Select entire data range on the sheet
+   */
+  selectEntireDataRange: function() {
+    try {
+      const sheet = SpreadsheetApp.getActiveSheet();
+      const dataRange = sheet.getDataRange();
+      sheet.setActiveRange(dataRange);
+      return true;
+    } catch (error) {
+      Logger.error('CellM8: Error selecting entire range:', error);
+      return false;
+    }
+  },
+  
+  /**
+   * Select a specific range
+   * @param {string} rangeA1 - A1 notation of range to select
+   */
+  selectRange: function(rangeA1) {
+    try {
+      const sheet = SpreadsheetApp.getActiveSheet();
+      const range = sheet.getRange(rangeA1);
+      sheet.setActiveRange(range);
+      return true;
+    } catch (error) {
+      Logger.error('CellM8: Error selecting range:', error);
+      return false;
+    }
+  },
+  
+  /**
+   * Prompt user to select a range
+   * @return {Object} Selected range information
+   */
+  promptForSelection: function() {
+    try {
+      const ui = SpreadsheetApp.getUi();
+      const response = ui.alert(
+        'Select Data Range',
+        'Please select the range you want to use on the sheet, then click OK.',
+        ui.ButtonSet.OK_CANCEL
+      );
+      
+      if (response === ui.Button.OK) {
+        return this.getCurrentSelection();
+      }
+      
+      return null;
+    } catch (error) {
+      Logger.error('CellM8: Error prompting for selection:', error);
+      return null;
+    }
+  },
+
+  /**
    * Main function to create presentation from sheet data
    * @param {Object} config - Configuration object
    * @return {Object} Result with presentation ID and URL
@@ -264,47 +344,122 @@ const CellM8 = {
         patterns: {},
         insights: [],
         chartRecommendations: [],
-        keyMetrics: []
+        keyMetrics: [],
+        correlations: [],
+        outliers: [],
+        summaryStats: {},
+        topValues: {}
       };
       
-      // Analyze each column
+      // First pass: Analyze each column
       data.headers.forEach((header, index) => {
-        const columnData = data.data.map(row => row[index]);
+        const columnData = data.data.map(row => row[index]).filter(val => val !== '' && val !== null);
         const dataType = this.detectColumnDataType(columnData);
         
         analysis.dataTypes[header] = dataType;
         
         if (dataType === 'number') {
-          // Calculate statistics
-          analysis.statistics[header] = this.calculateStatistics(columnData);
+          // Calculate detailed statistics
+          const stats = this.calculateStatistics(columnData);
+          analysis.statistics[header] = stats;
+          
+          // Find outliers
+          if (stats.mean && stats.stdDev) {
+            const outliers = columnData.filter(val => 
+              Math.abs(val - stats.mean) > 2 * stats.stdDev
+            );
+            if (outliers.length > 0) {
+              analysis.outliers.push({
+                column: header,
+                count: outliers.length,
+                values: outliers.slice(0, 5)
+              });
+              analysis.insights.push(`${header} contains ${outliers.length} outlier values`);
+            }
+          }
           
           // Detect trends
           const trend = this.detectTrend(columnData);
           if (trend) {
             analysis.patterns[header] = trend;
-            analysis.insights.push(`${header} shows a ${trend.direction} trend`);
+            analysis.insights.push(`${header} shows a ${trend.strength} ${trend.direction} trend (${(trend.confidence * 100).toFixed(0)}% confidence)`);
+          }
+          
+          // Add to key metrics
+          if (stats.mean) {
+            analysis.keyMetrics.push({
+              name: header,
+              value: stats.mean,
+              type: 'average',
+              formatted: this.formatNumber(stats.mean)
+            });
           }
         } else if (dataType === 'date') {
           // Analyze time series
           const timeSeries = this.analyzeTimeSeries(columnData);
           if (timeSeries) {
             analysis.patterns[header] = timeSeries;
+            analysis.insights.push(`Date range: ${timeSeries.startDate.toLocaleDateString()} to ${timeSeries.endDate.toLocaleDateString()}`);
+            analysis.insights.push(`Time series frequency: ${timeSeries.frequency}`);
           }
         } else if (dataType === 'category') {
-          // Analyze categories
+          // Analyze categories in detail
           const categories = this.analyzeCategories(columnData);
           analysis.statistics[header] = categories;
+          analysis.topValues[header] = categories.topValues || [];
+          
+          if (categories.uniqueValues) {
+            analysis.insights.push(`${header} has ${categories.uniqueValues} unique categories`);
+            if (categories.topValues && categories.topValues.length > 0) {
+              analysis.insights.push(`Most common ${header}: ${categories.topValues[0].value} (${categories.topValues[0].count} occurrences)`);
+            }
+          }
         }
       });
       
-      // Generate chart recommendations
+      // Second pass: Find correlations between numeric columns
+      const numericColumns = Object.entries(analysis.dataTypes)
+        .filter(([_, type]) => type === 'number')
+        .map(([header, _]) => header);
+      
+      if (numericColumns.length >= 2) {
+        for (let i = 0; i < numericColumns.length - 1; i++) {
+          for (let j = i + 1; j < numericColumns.length; j++) {
+            const col1Data = data.data.map(row => row[data.headers.indexOf(numericColumns[i])]);
+            const col2Data = data.data.map(row => row[data.headers.indexOf(numericColumns[j])]);
+            const correlation = this.calculateCorrelation(col1Data, col2Data);
+            
+            if (Math.abs(correlation) > 0.5) {
+              analysis.correlations.push({
+                columns: [numericColumns[i], numericColumns[j]],
+                value: correlation,
+                strength: Math.abs(correlation) > 0.7 ? 'strong' : 'moderate'
+              });
+              
+              const direction = correlation > 0 ? 'positive' : 'negative';
+              analysis.insights.push(`${analysis.correlations[analysis.correlations.length - 1].strength} ${direction} correlation between ${numericColumns[i]} and ${numericColumns[j]}`);
+            }
+          }
+        }
+      }
+      
+      // Generate comprehensive chart recommendations
       analysis.chartRecommendations = this.recommendCharts(analysis);
       
-      // Extract key metrics
-      analysis.keyMetrics = this.extractKeyMetrics(data, analysis);
+      // Generate overall summary statistics
+      analysis.summaryStats = {
+        totalRows: data.data.length,
+        totalColumns: data.headers.length,
+        numericColumns: numericColumns.length,
+        categoricalColumns: Object.values(analysis.dataTypes).filter(t => t === 'category').length,
+        dateColumns: Object.values(analysis.dataTypes).filter(t => t === 'date').length,
+        completeness: this.calculateCompleteness(data)
+      };
       
-      // Generate narrative insights
-      analysis.insights = this.generateInsights(data, analysis);
+      // Generate narrative insights if not enough found
+      if (analysis.insights.length < 5) {
+        analysis.insights = analysis.insights.concat(this.generateInsights(data, analysis));
+      }
       
       return analysis;
       
@@ -403,6 +558,123 @@ const CellM8 = {
   },
 
   /**
+   * Calculate correlation between two columns
+   * @param {Array} data1 - First column data
+   * @param {Array} data2 - Second column data
+   * @return {number} Correlation coefficient (-1 to 1)
+   */
+  calculateCorrelation: function(data1, data2) {
+    const nums1 = data1.filter(d => !isNaN(d) && d !== '').map(Number);
+    const nums2 = data2.filter(d => !isNaN(d) && d !== '').map(Number);
+    
+    if (nums1.length < 2 || nums2.length < 2 || nums1.length !== nums2.length) {
+      return 0;
+    }
+    
+    const n = nums1.length;
+    const mean1 = nums1.reduce((a, b) => a + b, 0) / n;
+    const mean2 = nums2.reduce((a, b) => a + b, 0) / n;
+    
+    let numerator = 0;
+    let denom1 = 0;
+    let denom2 = 0;
+    
+    for (let i = 0; i < n; i++) {
+      const diff1 = nums1[i] - mean1;
+      const diff2 = nums2[i] - mean2;
+      numerator += diff1 * diff2;
+      denom1 += diff1 * diff1;
+      denom2 += diff2 * diff2;
+    }
+    
+    const denominator = Math.sqrt(denom1 * denom2);
+    return denominator === 0 ? 0 : numerator / denominator;
+  },
+
+  /**
+   * Calculate data completeness
+   * @param {Array} data - Column data
+   * @return {number} Completeness percentage (0-100)
+   */
+  calculateCompleteness: function(data) {
+    if (!data || data.length === 0) return 0;
+    const nonEmpty = data.filter(d => d !== '' && d !== null && d !== undefined).length;
+    return (nonEmpty / data.length) * 100;
+  },
+
+  /**
+   * Generate preview of presentation structure
+   * @param {Object} config - User configuration
+   * @return {Object} Preview information
+   */
+  previewPresentation: function(config) {
+    try {
+      // Validate config has data source
+      if (!config.dataSource || !config.dataSource.type) {
+        return {
+          success: false,
+          error: 'Please select a data source first'
+        };
+      }
+      
+      // Extract sample data for preview
+      const source = config.dataSource;
+      const extractedData = this.extractSheetData(source);
+      
+      // Validate we have data
+      if (!extractedData || !extractedData.data || extractedData.data.data.length === 0) {
+        return {
+          success: false,
+          error: 'No data found in selected range'
+        };
+      }
+      
+      // Perform analysis
+      const analysis = this.analyzeDataWithAI(extractedData.data);
+      
+      // Add data info to analysis for slide generation
+      analysis.dataInfo = {
+        rows: extractedData.data.data.length,
+        columns: extractedData.data.headers.length
+      };
+      
+      // Ensure we have insights
+      if (!analysis.insights || analysis.insights.length === 0) {
+        analysis.insights = [
+          `Analyzing ${extractedData.data.data.length} rows of data`,
+          `${extractedData.data.headers.length} columns identified`,
+          'Data ready for presentation generation'
+        ];
+      }
+      
+      // Generate slide structure with actual slide count
+      config.slideCount = config.slideCount || 12;
+      const slideStructure = this.generateSlideStructure(analysis, config);
+      
+      return {
+        success: true,
+        slideCount: slideStructure.slides.length,
+        slides: slideStructure.slides.map(slide => ({
+          type: slide.type,
+          title: slide.title,
+          content: slide.content ? (slide.content.items ? slide.content.items.length + ' items' : 'data') : ''
+        })),
+        dataInfo: {
+          rows: extractedData.data.data.length,
+          columns: extractedData.data.headers.length
+        },
+        insights: analysis.insights.slice(0, 3)
+      };
+    } catch (error) {
+      Logger.error('CellM8: Error generating preview:', error);
+      return { 
+        success: false, 
+        error: 'Unable to generate preview: ' + error.message 
+      };
+    }
+  },
+
+  /**
    * Generate slide structure based on analysis
    * @param {Object} analysis - Data analysis results
    * @param {Object} config - User configuration
@@ -411,138 +683,358 @@ const CellM8 = {
   generateSlideStructure: function(analysis, config) {
     const slides = [];
     const template = this.templates[config.template || 'corporate'];
+    const targetSlideCount = config.slideCount || 12;
     
-    // Title slide
+    // Ensure analysis has required properties
+    if (!analysis) {
+      analysis = {
+        insights: [],
+        keyMetrics: [],
+        chartRecommendations: [],
+        dataTypes: {},
+        statistics: {},
+        patterns: {},
+        data: {}
+      };
+    }
+    
+    // 1. Title slide (always)
     slides.push({
       type: 'title',
       layout: template.layouts.title,
       title: config.presentationTitle || 'Data Analysis Presentation',
-      subtitle: `Generated from ${SpreadsheetApp.getActiveSheet().getName()} | ${new Date().toLocaleDateString()}`
+      subtitle: `Generated from ${SpreadsheetApp.getActiveSheet().getName()} | ${new Date().toLocaleDateString()}`,
+      visualization: 'none',
+      expandedContent: {
+        description: 'Title slide with presentation name and metadata',
+        details: [
+          `Sheet: ${SpreadsheetApp.getActiveSheet().getName()}`,
+          `Date: ${new Date().toLocaleDateString()}`,
+          `Template: ${template.name}`
+        ]
+      }
     });
     
-    // Executive summary (if style is executive)
-    if (config.presentationStyle === 'executive' || config.includeExecutiveSummary) {
+    // 2. Executive summary 
+    if (targetSlideCount >= 3) {
+      const summaryItems = analysis.insights && analysis.insights.length > 0 ? 
+        analysis.insights.slice(0, 4) : 
+        ['Data analysis in progress', 'Key findings will be highlighted', 'Recommendations to follow'];
+      
       slides.push({
         type: 'summary',
         layout: template.layouts.content,
         title: 'Executive Summary',
         content: {
           type: 'bullets',
-          items: analysis.insights.slice(0, 4)
-        }
-      });
-    }
-    
-    // Key metrics slide
-    if (analysis.keyMetrics.length > 0) {
-      slides.push({
-        type: 'metrics',
-        layout: template.layouts.content,
-        title: 'Key Metrics',
-        content: {
-          type: 'metrics',
-          items: analysis.keyMetrics
-        }
-      });
-    }
-    
-    // Data overview slide
-    slides.push({
-      type: 'overview',
-      layout: template.layouts.content,
-      title: 'Data Overview',
-      content: {
-        type: 'stats',
-        items: this.formatDataOverview(analysis)
-      }
-    });
-    
-    // Chart slides based on recommendations
-    const maxCharts = Math.min(analysis.chartRecommendations.length, Math.floor(config.slideCount * 0.5));
-    for (let i = 0; i < maxCharts; i++) {
-      const chart = analysis.chartRecommendations[i];
-      slides.push({
-        type: 'chart',
-        layout: template.layouts.chart,
-        title: chart.title,
-        content: {
-          type: 'chart',
-          chartType: chart.type,
-          data: chart.data,
-          options: chart.options
+          items: summaryItems
         },
-        notes: chart.insight || ''
+        visualization: 'text',
+        expandedContent: {
+          description: 'High-level summary of key findings and insights',
+          details: summaryItems,
+          dataPoints: analysis.keyMetrics ? analysis.keyMetrics.slice(0, 3) : [],
+          visualType: 'Bullet points with key metrics'
+        }
       });
     }
     
-    // Insights slides
-    if (analysis.insights.length > 4) {
-      const remainingInsights = analysis.insights.slice(4);
-      const insightChunks = this.chunkArray(remainingInsights, 4);
+    // 3. Data Overview slide
+    if (targetSlideCount >= 4) {
+      const overviewItems = [];
       
-      insightChunks.forEach((chunk, index) => {
+      // Add basic data stats
+      if (analysis.dataInfo) {
+        overviewItems.push(`Dataset contains ${analysis.dataInfo.rows || 0} records`);
+        overviewItems.push(`Analyzing ${analysis.dataInfo.columns || 0} data fields`);
+      }
+      
+      // Add data type breakdown
+      if (analysis.dataTypes && Object.keys(analysis.dataTypes).length > 0) {
+        const typeCount = {};
+        Object.values(analysis.dataTypes).forEach(type => {
+          typeCount[type] = (typeCount[type] || 0) + 1;
+        });
+        Object.entries(typeCount).forEach(([type, count]) => {
+          overviewItems.push(`${count} ${type} column${count > 1 ? 's' : ''} identified`);
+        });
+      }
+      
+      slides.push({
+        type: 'overview',
+        layout: template.layouts.content,
+        title: 'Data Overview',
+        content: {
+          type: 'bullets',
+          items: overviewItems.length > 0 ? overviewItems : ['Complete dataset analysis', 'Data quality assessment', 'Pattern identification']
+        },
+        visualization: 'statistics',
+        expandedContent: {
+          description: 'Statistical overview of the dataset',
+          details: overviewItems.length > 0 ? overviewItems : ['Complete dataset analysis', 'Data quality assessment', 'Pattern identification'],
+          dataInfo: analysis.dataInfo || {},
+          visualType: 'Statistical summary with data type breakdown'
+        }
+      });
+    }
+    
+    // 4. Key Metrics slides (if we have numeric data)
+    if (targetSlideCount >= 5 && analysis.statistics && Object.keys(analysis.statistics).length > 0) {
+      const statsEntries = Object.entries(analysis.statistics);
+      const metricsPerSlide = 3;
+      const numMetricSlides = Math.min(Math.ceil(statsEntries.length / metricsPerSlide), 2);
+      
+      for (let i = 0; i < numMetricSlides && slides.length < targetSlideCount - 2; i++) {
+        const metricsSlice = statsEntries.slice(i * metricsPerSlide, (i + 1) * metricsPerSlide);
+        const metricItems = metricsSlice.map(([column, stats]) => {
+          if (stats && stats.mean !== undefined) {
+            return `${column}: Average ${stats.mean.toFixed(2)}, Range ${stats.min.toFixed(2)} - ${stats.max.toFixed(2)}`;
+          }
+          return `${column}: Analysis in progress`;
+        });
+        
         slides.push({
-          type: 'insights',
+          type: 'metrics',
           layout: template.layouts.content,
-          title: `Key Findings ${insightChunks.length > 1 ? `(${index + 1})` : ''}`,
+          title: `Key Metrics${numMetricSlides > 1 ? ` (${i + 1})` : ''}`,
           content: {
             type: 'bullets',
-            items: chunk
+            items: metricItems
+          },
+          visualization: 'kpi',
+          expandedContent: {
+            description: 'Key performance indicators and metrics',
+            details: metricItems,
+            rawData: metricsSlice.map(([col, stats]) => ({
+              column: col,
+              stats: stats
+            })),
+            visualType: 'KPI cards with statistical values'
           }
         });
-      });
+      }
     }
     
-    // Trends slide (if detected)
-    const trendsData = Object.entries(analysis.patterns).filter(([_, pattern]) => pattern.direction);
-    if (trendsData.length > 0) {
+    // 5. Chart/Visualization slides (aim for 40% of remaining slides)
+    const chartsNeeded = Math.floor((targetSlideCount - slides.length - 1) * 0.4);
+    if (chartsNeeded > 0 && analysis.chartRecommendations && analysis.chartRecommendations.length > 0) {
+      const chartsToAdd = Math.min(chartsNeeded, analysis.chartRecommendations.length);
+      
+      for (let i = 0; i < chartsToAdd && slides.length < targetSlideCount - 2; i++) {
+        const chart = analysis.chartRecommendations[i];
+        slides.push({
+          type: 'chart',
+          layout: template.layouts.chart,
+          title: chart.title || `Data Visualization ${i + 1}`,
+          content: {
+            type: 'chart',
+            chartType: chart.type,
+            data: chart.data,
+            options: chart.options
+          },
+          notes: chart.insight || '',
+          visualization: chart.type ? chart.type.toLowerCase() : 'chart',
+          expandedContent: {
+            description: `${chart.type || 'Chart'} visualization of ${chart.title || 'data trends'}`,
+            details: [
+              `Chart Type: ${chart.type || 'Column'}`,
+              `Data Points: ${chart.data ? chart.data.length : 0}`,
+              chart.insight || 'Visual representation of data patterns'
+            ],
+            chartConfig: chart,
+            visualType: `${chart.type || 'Column'} chart`
+          }
+        });
+      }
+    }
+    
+    // 6. Data detail slides - create slides for each column with data
+    if (slides.length < targetSlideCount - 3) {
+      const headers = Object.keys(analysis.dataTypes || {});
+      const dataSlideCount = Math.min(headers.length, targetSlideCount - slides.length - 3);
+      
+      for (let i = 0; i < dataSlideCount; i++) {
+        const header = headers[i];
+        const dataType = analysis.dataTypes[header];
+        const stats = analysis.statistics[header];
+        
+        const slideContent = [];
+        slideContent.push(`Data Type: ${dataType || 'Unknown'}`);
+        
+        if (stats) {
+          if (stats.mean !== undefined) {
+            slideContent.push(`Average: ${stats.mean.toFixed(2)}`);
+            slideContent.push(`Range: ${stats.min.toFixed(2)} to ${stats.max.toFixed(2)}`);
+            if (stats.stdDev) {
+              slideContent.push(`Standard Deviation: ${stats.stdDev.toFixed(2)}`);
+            }
+          } else if (stats.uniqueValues) {
+            slideContent.push(`Unique Values: ${stats.uniqueValues}`);
+            if (stats.topValues) {
+              slideContent.push(`Most Common: ${stats.topValues.slice(0, 3).join(', ')}`);
+            }
+          }
+        }
+        
+        // Determine best visualization for this data type
+        let vizType = 'table';
+        if (dataType === 'number' && stats && stats.mean !== undefined) {
+          vizType = 'histogram';
+        } else if (dataType === 'category' && stats && stats.uniqueValues < 10) {
+          vizType = 'pie';
+        }
+        
+        slides.push({
+          type: 'data',
+          layout: template.layouts.content,
+          title: `Analysis: ${header}`,
+          content: {
+            type: 'bullets',
+            items: slideContent
+          },
+          visualization: vizType,
+          expandedContent: {
+            description: `Detailed analysis of ${header} column`,
+            details: slideContent,
+            statistics: stats || {},
+            dataType: dataType,
+            visualType: vizType === 'histogram' ? 'Histogram distribution' : 
+                       vizType === 'pie' ? 'Pie chart breakdown' : 
+                       'Data table view',
+            sampleData: analysis.data && analysis.data[header] ? 
+                       analysis.data[header].slice(0, 5) : []
+          }
+        });
+      }
+    }
+    
+    // 7. Insights slides - spread insights across multiple slides if needed
+    if (slides.length < targetSlideCount - 2 && analysis.insights && analysis.insights.length > 0) {
+      const remainingSlots = targetSlideCount - slides.length - 2; // Leave room for recommendations and thank you
+      const insightsPerSlide = 3;
+      const insightSlides = Math.min(Math.ceil(analysis.insights.length / insightsPerSlide), remainingSlots);
+      
+      for (let i = 0; i < insightSlides; i++) {
+        const startIdx = i * insightsPerSlide;
+        const insights = analysis.insights.slice(startIdx, startIdx + insightsPerSlide);
+        
+        if (insights.length > 0) {
+          slides.push({
+            type: 'insights',
+            layout: template.layouts.content,
+            title: `Key Insights ${insightSlides > 1 ? `(${i + 1})` : ''}`,
+            content: {
+              type: 'bullets',
+              items: insights
+            },
+            visualization: 'callouts',
+            expandedContent: {
+              description: 'Data-driven insights and discoveries',
+              details: insights,
+              visualType: 'Highlighted callout boxes',
+              importance: 'high'
+            }
+          });
+        }
+      }
+    }
+    
+    // 8. Trends slide (if detected and room available)
+    const trendsData = Object.entries(analysis.patterns || {}).filter(([_, pattern]) => pattern && pattern.direction);
+    if (trendsData.length > 0 && slides.length < targetSlideCount - 2) {
       slides.push({
         type: 'trends',
         layout: template.layouts.content,
         title: 'Trend Analysis',
         content: {
-          type: 'trends',
-          items: trendsData.map(([column, pattern]) => ({
+          type: 'bullets',
+          items: trendsData.map(([column, pattern]) => 
+            `${column}: ${pattern.strength || ''} ${pattern.direction || 'stable'} trend`
+          )
+        },
+        visualization: 'line',
+        expandedContent: {
+          description: 'Time-series and trend patterns in the data',
+          details: trendsData.map(([column, pattern]) => ({
             column: column,
-            trend: pattern.direction,
-            strength: pattern.strength
-          }))
+            trend: pattern.direction || 'stable',
+            strength: pattern.strength || 'weak',
+            rSquared: pattern.rSquared || 0
+          })),
+          visualType: 'Line chart with trend indicators'
         }
       });
     }
     
-    // Recommendations slide
-    slides.push({
-      type: 'recommendations',
-      layout: template.layouts.content,
-      title: 'Recommendations',
-      content: {
-        type: 'bullets',
-        items: this.generateRecommendations(analysis)
-      }
-    });
+    // 9. Fill remaining slides with pattern/category analysis
+    while (slides.length < targetSlideCount - 2) {
+      const slideNumber = slides.length - 3; // Subtract title, summary, overview
+      slides.push({
+        type: 'analysis',
+        layout: template.layouts.content,
+        title: `Data Analysis ${slideNumber}`,
+        content: {
+          type: 'bullets',
+          items: [
+            'Detailed pattern analysis',
+            'Statistical correlations identified',
+            'Data quality assessment complete',
+            'Further insights available upon request'
+          ]
+        },
+        visualization: 'mixed',
+        expandedContent: {
+          description: 'Additional data analysis and patterns',
+          details: [
+            'Cross-column correlation analysis',
+            'Outlier detection and handling',
+            'Data completeness assessment',
+            'Distribution analysis'
+          ],
+          visualType: 'Mixed visualizations (charts and tables)'
+        }
+      });
+    }
     
-    // Next steps slide
-    slides.push({
-      type: 'next_steps',
-      layout: template.layouts.content,
-      title: 'Next Steps',
-      content: {
-        type: 'numbered',
-        items: this.generateNextSteps(analysis)
-      }
-    });
+    // 10. Recommendations slide (always include if room)
+    if (slides.length < targetSlideCount - 1) {
+      const recommendations = this.generateRecommendations(analysis);
+      slides.push({
+        type: 'recommendations',
+        layout: template.layouts.content,
+        title: 'Recommendations',
+        content: {
+          type: 'bullets',
+          items: recommendations
+        },
+        visualization: 'action',
+        expandedContent: {
+          description: 'Actionable recommendations based on data analysis',
+          details: recommendations,
+          priority: 'high',
+          visualType: 'Action items with priority indicators'
+        }
+      });
+    }
     
-    // Thank you slide
-    slides.push({
-      type: 'thank_you',
-      layout: template.layouts.title,
-      title: 'Thank You',
-      subtitle: 'Questions?'
-    });
+    // 11. Thank you slide (always last)
+    if (slides.length < targetSlideCount) {
+      slides.push({
+        type: 'thank_you',
+        layout: template.layouts.title,
+        title: 'Thank You',
+        subtitle: 'Questions & Discussion',
+        visualization: 'none',
+        expandedContent: {
+          description: 'Closing slide',
+          details: ['Thank you for your attention', 'Open for questions and discussion'],
+          visualType: 'Title slide format'
+        }
+      });
+    }
     
-    // Trim to requested slide count
-    const finalSlides = slides.slice(0, config.slideCount || this.config.defaultSlides);
+    // Ensure we have exactly the requested number of slides
+    const finalSlides = slides.slice(0, targetSlideCount);
     
     return {
       slides: finalSlides,

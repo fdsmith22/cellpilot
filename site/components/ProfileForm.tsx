@@ -13,8 +13,8 @@ export default function ProfileForm({ user, profile }: ProfileFormProps) {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [formData, setFormData] = useState({
-    firstName: profile?.full_name?.split(' ')[0] || '',
-    surname: profile?.full_name?.split(' ').slice(1).join(' ') || '',
+    firstName: profile?.first_name || profile?.full_name?.split(' ')[0] || '',
+    surname: profile?.surname || profile?.full_name?.split(' ').slice(1).join(' ') || '',
     company: profile?.company || '',
     newsletter: profile?.newsletter_subscribed ?? true,
   })
@@ -34,6 +34,8 @@ export default function ProfileForm({ user, profile }: ProfileFormProps) {
       .from('profiles')
       .update({
         full_name: fullName,
+        first_name: formData.firstName || null,
+        surname: formData.surname || null,
         company: formData.company || null,
         newsletter_subscribed: formData.newsletter,
         updated_at: new Date().toISOString(),

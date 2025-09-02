@@ -2254,6 +2254,22 @@ function createPresentation(config) {
   return CellPilot.createPresentation(config); 
 }
 
+function getCurrentSelection() { 
+  return CellPilot.getCurrentSelection(); 
+}
+
+function selectEntireDataRange() { 
+  return CellPilot.selectEntireDataRange(); 
+}
+
+function selectRange(rangeA1) { 
+  return CellPilot.selectRange(rangeA1); 
+}
+
+function promptForSelection() { 
+  return CellPilot.promptForSelection(); 
+}
+
 function extractSheetData(source) { 
   return CellPilot.extractSheetData(source); 
 }
@@ -2272,6 +2288,18 @@ function calculateStatistics(data) {
 
 function detectTrend(data) { 
   return CellPilot.detectTrend(data); 
+}
+
+function calculateCorrelation(data1, data2) {
+  return CellPilot.calculateCorrelation(data1, data2);
+}
+
+function calculateCompleteness(data) {
+  return CellPilot.calculateCompleteness(data);
+}
+
+function previewPresentation(config) { 
+  return CellPilot.previewPresentation(config); 
 }
 
 function generateSlideStructure(analysis, config) { 

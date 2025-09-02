@@ -4,6 +4,11 @@
   <base target="_top">
   <?!= include('SharedStyles'); ?>
   <style>
+    /* Enhanced CellM8 styles with CellPilot branding */
+    body {
+      background: linear-gradient(180deg, #fafbff 0%, #ffffff 100%);
+    }
+    
     /* Template specific styles */
     .template-grid {
       display: grid;
@@ -15,23 +20,26 @@
     .template-card {
       padding: 12px;
       background: white;
-      border: 2px solid var(--gray-200);
-      border-radius: 8px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       text-align: center;
       position: relative;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
     
     .template-card:hover {
-      border-color: var(--primary-500);
-      transform: translateY(-2px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-color: var(--primary-400);
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(99, 102, 241, 0.05) 100%);
     }
     
     .template-card.selected {
-      border-color: var(--primary-600);
-      background: var(--primary-50);
+      border-color: var(--primary-500);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(99, 102, 241, 0.12) 100%);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
     
     .template-card.selected::after {
@@ -75,24 +83,28 @@
     
     /* Data source selection */
     .source-option {
-      padding: 12px;
+      padding: 14px;
       background: white;
-      border: 2px solid var(--gray-200);
-      border-radius: 8px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      margin-bottom: 8px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 10px;
       position: relative;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
     
     .source-option:hover {
-      border-color: var(--primary-500);
-      transform: translateY(-1px);
+      border-color: var(--primary-400);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(99, 102, 241, 0.05) 100%);
     }
     
     .source-option.selected {
-      border-color: var(--primary-600);
-      background: var(--primary-50);
+      border-color: var(--primary-500);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(99, 102, 241, 0.12) 100%);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
     
     .source-option.selected::after {
@@ -250,39 +262,45 @@
     
     .btn-preview {
       flex: 1;
-      padding: 10px;
+      padding: 12px;
       background: white;
-      border: 2px solid var(--primary-500);
+      border: 1.5px solid var(--primary-500);
       color: var(--primary-600);
-      border-radius: 6px;
-      font-size: 12px;
+      border-radius: 8px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 4px rgba(99, 102, 241, 0.1);
     }
     
     .btn-preview:hover {
-      background: var(--primary-50);
-      transform: translateY(-1px);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(99, 102, 241, 0.1) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+      border-color: var(--primary-600);
     }
     
     .btn-generate {
       flex: 2;
-      padding: 10px;
-      background: var(--primary-500);
-      border: 2px solid var(--primary-500);
+      padding: 12px;
+      background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+      border: none;
       color: white;
-      border-radius: 6px;
-      font-size: 12px;
+      border-radius: 8px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .btn-generate:hover:not(:disabled) {
-      background: var(--primary-600);
-      border-color: var(--primary-600);
-      transform: translateY(-1px);
+      background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
     }
     
     .btn-generate:disabled {
@@ -355,59 +373,452 @@
     /* Success message */
     .success-message {
       display: none;
-      padding: 12px;
-      background: var(--success-50);
-      border: 1px solid var(--success-200);
-      border-radius: 8px;
-      margin-top: 12px;
+      padding: 16px;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border: 1.5px solid var(--success-300);
+      border-radius: 10px;
+      margin-top: 16px;
+      box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1);
     }
     
     .success-message.show {
       display: block;
+      animation: slideIn 0.3s ease-out;
     }
     
     .success-title {
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 700;
       color: var(--success-700);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .success-icon {
+      width: 20px;
+      height: 20px;
+      background: var(--success-500);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
     }
     
     .success-text {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--success-600);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      line-height: 1.5;
     }
     
     .success-actions {
       display: flex;
-      gap: 6px;
+      gap: 8px;
     }
     
     .success-btn {
-      padding: 6px 12px;
+      padding: 8px 16px;
       background: var(--success-500);
       color: white;
       border: none;
-      border-radius: 4px;
-      font-size: 11px;
+      border-radius: 6px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     
     .success-btn:hover {
       background: var(--success-600);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(34, 197, 94, 0.2);
+    }
+    
+    .success-btn.secondary {
+      background: white;
+      color: var(--success-600);
+      border: 1px solid var(--success-300);
+    }
+    
+    .success-btn.secondary:hover {
+      background: var(--success-50);
+    }
+    
+    /* Preview Modal */
+    .preview-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    .preview-modal.show {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      animation: fadeIn 0.2s ease-out;
+    }
+    
+    .preview-content {
+      background: white;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 100%;
+      margin: 20px 0;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      animation: slideUp 0.3s ease-out;
+    }
+    
+    .preview-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .preview-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-800);
+    }
+    
+    .preview-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--gray-100);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--gray-600);
+      transition: all 0.2s ease;
+    }
+    
+    .preview-close:hover {
+      background: var(--gray-200);
+      transform: rotate(90deg);
+    }
+    
+    .preview-body {
+      padding: 20px;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    
+    .preview-info {
+      background: var(--info-50);
+      border: 1px solid var(--info-200);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .preview-info-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--info-700);
+      margin-bottom: 4px;
+    }
+    
+    .preview-info-text {
+      font-size: 11px;
+      color: var(--info-600);
+    }
+    
+    .slide-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .slide-item {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .slide-item:hover {
+      border-color: var(--primary-300);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .slide-item.expanded {
+      border-color: var(--primary-400);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    }
+    
+    .slide-header {
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .slide-header:hover {
+      background: var(--gray-50);
+    }
+    
+    .slide-number {
+      width: 28px;
+      height: 28px;
+      background: var(--primary-100);
+      color: var(--primary-600);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    
+    .slide-details {
+      flex: 1;
+    }
+    
+    .slide-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 2px;
+    }
+    
+    .slide-type {
+      font-size: 10px;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .visualization-badge {
+      padding: 3px 8px;
+      background: var(--primary-50);
+      color: var(--primary-700);
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'Courier New', monospace;
+      line-height: 1;
+    }
+    
+    .visualization-badge.chart { background: #fef3c7; color: #92400e; }
+    .visualization-badge.table { background: #e0e7ff; color: #3730a3; }
+    .visualization-badge.text { background: #f3f4f6; color: #374151; }
+    .visualization-badge.kpi { background: #d1fae5; color: #065f46; }
+    .visualization-badge.line { background: #fee2e2; color: #991b1b; }
+    .visualization-badge.pie { background: #fce7f3; color: #831843; }
+    .visualization-badge.histogram { background: #ede9fe; color: #5b21b6; }
+    .visualization-badge.statistics { background: #fef3c7; color: #92400e; }
+    .visualization-badge.callouts { background: #fef3c7; color: #d97706; }
+    .visualization-badge.action { background: #dcfce7; color: #166534; }
+    .visualization-badge.mixed { background: #f0f9ff; color: #075985; }
+    
+    .expand-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-400);
+      transition: transform 0.2s ease;
+    }
+    
+    .slide-item.expanded .expand-icon {
+      transform: rotate(90deg);
+    }
+    
+    .slide-expanded-content {
+      display: none;
+      padding: 0 12px 12px 52px;
+      animation: slideDown 0.2s ease-out;
+    }
+    
+    .slide-item.expanded .slide-expanded-content {
+      display: block;
+    }
+    
+    .expanded-section {
+      margin-bottom: 12px;
+    }
+    
+    .expanded-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    
+    .expanded-value {
+      font-size: 11px;
+      color: var(--gray-700);
+      line-height: 1.5;
+    }
+    
+    .data-preview {
+      background: var(--gray-50);
+      padding: 8px;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 10px;
+      color: var(--gray-600);
+      max-height: 100px;
+      overflow-y: auto;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .preview-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    
+    /* Loading Overlay */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    
+    .loading-overlay.show {
+      display: flex;
+      animation: fadeIn 0.2s ease-out;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--primary-500);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    .loading-text {
+      margin-top: 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+    
+    .loading-subtext {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideIn {
+      from { 
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Navigation Header -->
-  <div class="nav-header">
-    <button class="nav-back" onclick="backToMain()">←</button>
-    <div class="nav-title">
-      <h2>CellM8 Presentation Helper</h2>
-      <p>Transform spreadsheet data into professional presentations</p>
+  <!-- Navigation Header with CellPilot Branding -->
+  <div class="nav-header" style="background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%); border-bottom: 1px solid var(--gray-200); padding: 12px 16px; display: flex; align-items: center; gap: 12px;">
+    <button class="nav-back" onclick="backToMain()" style="background: white; border: 1px solid var(--gray-300); color: var(--gray-600); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.background='var(--gray-50)'; this.style.borderColor='var(--primary-300)'; this.style.color='var(--primary-600)'" onmouseout="this.style.background='white'; this.style.borderColor='var(--gray-300)'; this.style.color='var(--gray-600)'">←</button>
+    
+    <!-- CellPilot Logo -->
+    <svg viewBox="0 0 36 36" width="28" height="28" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+      <g transform="translate(1, 1)">
+        <path d="M4 4 Q4 0 8 0 L30 0 Q34 0 34 4 L34 30 Q34 34 30 34 L8 34 Q4 34 4 30 Z" 
+              fill="none" stroke="#2563eb" stroke-width="2"/>
+        <line x1="17" y1="0" x2="17" y2="34" stroke="#60a5fa" stroke-width="0.8"/>
+        <line x1="0" y1="17" x2="34" y2="17" stroke="#60a5fa" stroke-width="0.8"/>
+        <g transform="translate(7, 7)">
+          <rect x="0" y="0" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
+          <rect x="5" y="0" width="5" height="5" fill="#3b82f6" opacity="0.3"/>
+          <rect x="10" y="0" width="5" height="5" fill="#60a5fa" opacity="0.2"/>
+          <rect x="15" y="0" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
+          <rect x="0" y="5" width="5" height="5" fill="#60a5fa" opacity="0.2"/>
+          <rect x="5" y="5" width="5" height="5" fill="#3b82f6"/>
+          <rect x="10" y="5" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
+          <rect x="15" y="5" width="5" height="5" fill="#60a5fa" opacity="0.2"/>
+          <rect x="0" y="10" width="5" height="5" fill="#3b82f6" opacity="0.3"/>
+          <rect x="5" y="10" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
+          <rect x="10" y="10" width="5" height="5" fill="#60a5fa" opacity="0.2"/>
+          <rect x="15" y="10" width="5" height="5" fill="#3b82f6"/>
+          <rect x="0" y="15" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
+          <rect x="5" y="15" width="5" height="5" fill="#60a5fa" opacity="0.2"/>
+          <rect x="10" y="15" width="5" height="5" fill="#3b82f6" opacity="0.3"/>
+          <rect x="15" y="15" width="5" height="5" fill="#e5e7eb" opacity="0.8"/>
+        </g>
+      </g>
+    </svg>
+    
+    <div style="flex: 1;">
+      <h2 style="font-size: 20px; margin: 0; font-weight: 600; color: #1f2937;">Cell<span style="color: #2563eb;">M8</span></h2>
+      <p style="color: #64748b; font-size: 11px; margin: 2px 0 0 0; font-weight: 400;">Transform spreadsheet data into professional presentations</p>
     </div>
   </div>
   
@@ -419,19 +830,24 @@
         <div class="card-description">Choose what data to include in your presentation</div>
       </div>
       
-      <div class="source-option selected" onclick="selectSource(this, 'entire')">
+      <div class="source-option" onclick="selectSource(this, 'entire')">
         <div class="source-title">Entire Sheet</div>
         <div class="source-desc">Use all data from the current sheet</div>
       </div>
       
       <div class="source-option" onclick="selectSource(this, 'selection')">
         <div class="source-title">Selected Range</div>
-        <div class="source-desc">Use only the currently selected cells</div>
+        <div class="source-desc" id="selectionDesc">No range selected</div>
       </div>
       
-      <div class="source-option" onclick="selectSource(this, 'visible')">
-        <div class="source-title">Visible Cells Only</div>
-        <div class="source-desc">Exclude hidden rows and columns</div>
+      <div style="margin-bottom: 10px;">
+        <label class="option-item" style="display: flex; align-items: center; gap: 8px; padding: 12px; background: white; border: 1.5px solid var(--gray-200); border-radius: 10px; cursor: pointer;">
+          <input type="checkbox" id="includeHidden" style="width: 16px; height: 16px; cursor: pointer;">
+          <div style="flex: 1;">
+            <div style="font-size: 13px; font-weight: 600; color: var(--gray-700);">Include Hidden Cells</div>
+            <div style="font-size: 11px; color: var(--gray-500);">Include data from hidden rows and columns</div>
+          </div>
+        </label>
       </div>
       
       <div class="source-option" onclick="selectSource(this, 'custom')">
@@ -603,18 +1019,81 @@
     
     <!-- Success Message -->
     <div class="success-message" id="successMessage">
-      <div class="success-title">Presentation Created Successfully!</div>
-      <div class="success-text">Your presentation has been generated and saved to your Google Drive.</div>
+      <div class="success-title">
+        <span class="success-icon">✓</span>
+        Presentation Created Successfully!
+      </div>
+      <div class="success-text">
+        Your presentation has been generated with <span id="slideCountResult">0</span> slides and saved to your Google Drive.<br>
+        <span id="presentationName" style="font-weight: 600;"></span>
+      </div>
       <div class="success-actions">
-        <button class="success-btn" onclick="openPresentation()">Open Presentation</button>
-        <button class="success-btn" onclick="createAnother()">Create Another</button>
+        <button class="success-btn" onclick="openPresentation()">
+          <span>🔗</span> Open in Google Slides
+        </button>
+        <button class="success-btn secondary" onclick="createAnother()">Create Another</button>
       </div>
     </div>
   </div>
   
+  <!-- Preview Modal -->
+  <div class="preview-modal" id="previewModal">
+    <div class="preview-content">
+      <div class="preview-header">
+        <div class="preview-title">Presentation Preview</div>
+        <button class="preview-close" onclick="closePreview()">×</button>
+      </div>
+      <div class="preview-body">
+        <div class="preview-info">
+          <div class="preview-info-title">Data Analysis</div>
+          <div class="preview-info-text">
+            Analyzing <span id="previewRows">0</span> rows × <span id="previewCols">0</span> columns
+          </div>
+        </div>
+        <div id="previewInsights" style="margin-bottom: 16px;"></div>
+        <h4 style="font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">Slide Structure</h4>
+        <ul class="slide-list" id="slideList"></ul>
+      </div>
+      <div class="preview-footer">
+        <button class="btn-preview" style="padding: 8px 16px;" onclick="closePreview()">Close</button>
+        <button class="btn-generate" style="padding: 8px 16px; font-size: 12px;" onclick="generateFromPreview()">Generate Now</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Preparing your presentation...</div>
+    <div class="loading-subtext" id="loadingSubtext">This may take a moment</div>
+  </div>
+  
   <script>
-    let selectedSource = 'entire';
+    let selectedSource = null;  // Start with no selection
     let selectedTemplate = 'corporate';
+    let currentSelection = null;
+    
+    // Get current selection on load
+    window.addEventListener('DOMContentLoaded', function() {
+      google.script.run
+        .withSuccessHandler(updateSelectionDisplay)
+        .withFailureHandler(function(err) { console.error('Failed to get selection:', err); })
+        .getCurrentSelection();
+    });
+    
+    function updateSelectionDisplay(selection) {
+      currentSelection = selection;
+      const selectionDesc = document.getElementById('selectionDesc');
+      if (selection && selection.range) {
+        selectionDesc.textContent = selection.range + ' (' + selection.rows + ' rows × ' + selection.cols + ' cols)';
+        selectionDesc.style.color = 'var(--primary-600)';
+        selectionDesc.style.fontWeight = '500';
+      } else {
+        selectionDesc.textContent = 'No range selected';
+        selectionDesc.style.color = 'var(--gray-500)';
+        selectionDesc.style.fontWeight = '400';
+      }
+    }
     
     function backToMain() {
       google.script.run.showCellPilotSidebar();
@@ -624,6 +1103,28 @@
       document.querySelectorAll('.source-option').forEach(el => el.classList.remove('selected'));
       element.classList.add('selected');
       selectedSource = source;
+      
+      // Highlight the selection on the sheet
+      if (source === 'entire') {
+        google.script.run
+          .withFailureHandler(function(err) { console.error('Failed to select:', err); })
+          .selectEntireDataRange();
+      } else if (source === 'selection') {
+        if (currentSelection && currentSelection.range) {
+          google.script.run
+            .withFailureHandler(function(err) { console.error('Failed to select:', err); })
+            .selectRange(currentSelection.range);
+        } else {
+          // Prompt user to select a range
+          google.script.run
+            .withSuccessHandler(function(newSelection) {
+              updateSelectionDisplay(newSelection);
+              currentSelection = newSelection;
+            })
+            .withFailureHandler(function(err) { console.error('Failed to prompt:', err); })
+            .promptForSelection();
+        }
+      }
       
       // Show custom range input if needed
       const customInput = document.getElementById('customRangeInput');
@@ -671,7 +1172,7 @@
       google.script.run
         .withSuccessHandler(showPreview)
         .withFailureHandler(showError)
-        .generateSlideStructure(null, config);
+        .previewPresentation(config);
     }
     
     function generatePresentation() {
@@ -704,8 +1205,9 @@
       const config = {
         dataSource: {
           type: selectedSource,
-          includeHidden: selectedSource !== 'visible',
-          customRange: selectedSource === 'custom' ? document.getElementById('customRange').value : null
+          includeHidden: document.getElementById('includeHidden').checked,
+          customRange: selectedSource === 'custom' ? document.getElementById('customRange').value : null,
+          currentSelection: selectedSource === 'selection' ? currentSelection : null
         },
         template: selectedTemplate,
         slideCount: parseInt(document.getElementById('slideSlider').value),
@@ -736,30 +1238,211 @@
       return config;
     }
     
-    function showLoading(message) {
-      // Show loading indicator (implement as overlay)
-      console.log('Loading:', message);
+    function showLoading(message, subtext) {
+      const overlay = document.getElementById('loadingOverlay');
+      const loadingText = document.getElementById('loadingText');
+      const loadingSubtext = document.getElementById('loadingSubtext');
+      
+      loadingText.textContent = message || 'Processing...';
+      loadingSubtext.textContent = subtext || 'This may take a moment';
+      overlay.classList.add('show');
     }
     
     function hideLoading() {
-      // Hide loading indicator
-      console.log('Loading complete');
+      const overlay = document.getElementById('loadingOverlay');
+      overlay.classList.remove('show');
     }
     
-    function showPreview(structure) {
+    function showPreview(result) {
       hideLoading();
-      // Show preview of slide structure
-      console.log('Preview:', structure);
-      alert('Preview will show slide structure here');
+      
+      if (!result.success) {
+        showError({ message: result.error || 'Failed to generate preview' });
+        return;
+      }
+      
+      // Populate preview modal
+      document.getElementById('previewRows').textContent = result.dataInfo?.rows || 0;
+      document.getElementById('previewCols').textContent = result.dataInfo?.columns || 0;
+      
+      // Show insights if available
+      const insightsDiv = document.getElementById('previewInsights');
+      if (result.insights && result.insights.length > 0) {
+        insightsDiv.innerHTML = `
+          <div style="background: var(--primary-50); border: 1px solid var(--primary-200); border-radius: 8px; padding: 12px;">
+            <h5 style="font-size: 12px; font-weight: 600; color: var(--primary-700); margin-bottom: 8px;">Key Insights</h5>
+            <ul style="margin: 0; padding-left: 20px;">
+              ${result.insights.map(insight => `<li style="font-size: 11px; color: var(--primary-600); margin-bottom: 4px;">${insight}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+      } else {
+        insightsDiv.innerHTML = '';
+      }
+      
+      // Populate slide list with enhanced preview
+      const slideList = document.getElementById('slideList');
+      slideList.innerHTML = '';
+      
+      if (result.slides && result.slides.length > 0) {
+        result.slides.forEach((slide, index) => {
+          const slideItem = document.createElement('li');
+          slideItem.className = 'slide-item';
+          
+          // Get visualization icon
+          const getVizIcon = (type) => {
+            const icons = {
+              'chart': '▊',
+              'line': '╱',
+              'pie': '◐',
+              'table': '▦',
+              'text': '≡',
+              'kpi': '◆',
+              'histogram': '▁▃▅',
+              'statistics': '∑',
+              'callouts': '!',
+              'action': '→',
+              'mixed': '⊕',
+              'none': ''
+            };
+            return icons[type] || '▊';
+          };
+          
+          const vizType = slide.visualization || 'text';
+          const vizIcon = getVizIcon(vizType);
+          
+          // Build expanded content HTML
+          let expandedHTML = '';
+          if (slide.expandedContent) {
+            const ec = slide.expandedContent;
+            expandedHTML = `
+              <div class="slide-expanded-content">
+                <div class="expanded-section">
+                  <div class="expanded-label">Description</div>
+                  <div class="expanded-value">${ec.description || 'No description available'}</div>
+                </div>
+                ${ec.visualType ? `
+                  <div class="expanded-section">
+                    <div class="expanded-label">Visualization</div>
+                    <div class="expanded-value">${ec.visualType}</div>
+                  </div>
+                ` : ''}
+                ${ec.details && ec.details.length > 0 ? `
+                  <div class="expanded-section">
+                    <div class="expanded-label">Content Details</div>
+                    <div class="expanded-value">
+                      ${Array.isArray(ec.details) ? 
+                        '<ul style="margin: 0; padding-left: 16px;">' + 
+                        ec.details.map(d => `<li>${typeof d === 'object' ? JSON.stringify(d, null, 2) : d}</li>`).join('') + 
+                        '</ul>' : 
+                        ec.details}
+                    </div>
+                  </div>
+                ` : ''}
+                ${ec.dataPoints && ec.dataPoints.length > 0 ? `
+                  <div class="expanded-section">
+                    <div class="expanded-label">Key Metrics</div>
+                    <div class="data-preview">
+                      ${ec.dataPoints.map(dp => typeof dp === 'object' ? 
+                        `${dp.label || 'Metric'}: ${dp.value || 'N/A'}` : dp).join('<br>')}
+                    </div>
+                  </div>
+                ` : ''}
+                ${ec.sampleData && ec.sampleData.length > 0 ? `
+                  <div class="expanded-section">
+                    <div class="expanded-label">Sample Data</div>
+                    <div class="data-preview">
+                      ${ec.sampleData.slice(0, 5).join(', ')}${ec.sampleData.length > 5 ? '...' : ''}
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }
+          
+          slideItem.innerHTML = `
+            <div class="slide-header" onclick="toggleSlideExpansion(this.parentElement)">
+              <div class="slide-number">${index + 1}</div>
+              <div class="slide-details">
+                <div class="slide-title">${slide.title || 'Slide ' + (index + 1)}</div>
+                <div class="slide-type">
+                  ${slide.type || 'content'}
+                  ${vizType !== 'none' ? `
+                    <span class="visualization-badge ${vizType}">
+                      ${vizIcon} ${vizType}
+                    </span>
+                  ` : ''}
+                </div>
+              </div>
+              <div class="expand-icon">▶</div>
+            </div>
+            ${expandedHTML}
+          `;
+          slideList.appendChild(slideItem);
+        });
+      } else {
+        slideList.innerHTML = '<li style="text-align: center; padding: 20px; color: var(--gray-500); font-size: 12px;">No slides to preview</li>';
+      }
+      
+      // Add toggle function
+      window.toggleSlideExpansion = function(slideItem) {
+        slideItem.classList.toggle('expanded');
+      };
+      
+      // Show the modal
+      document.getElementById('previewModal').classList.add('show');
+    }
+    
+    function closePreview() {
+      document.getElementById('previewModal').classList.remove('show');
+    }
+    
+    function generateFromPreview() {
+      closePreview();
+      generatePresentation();
     }
     
     function showSuccess(result) {
+      hideLoading();
+      
+      // Update success message with details
+      document.getElementById('slideCountResult').textContent = result.slideCount || 0;
+      
+      // Set presentation name if available
+      const nameElement = document.getElementById('presentationName');
+      if (result.presentationName) {
+        nameElement.textContent = result.presentationName;
+        nameElement.style.display = 'block';
+      } else {
+        nameElement.style.display = 'none';
+      }
+      
+      // Store the URL for opening
+      window.presentationUrl = result.presentationUrl || result.url;
+      
+      // Show success message
       document.getElementById('successMessage').classList.add('show');
-      window.presentationUrl = result.url;
+      
+      // Scroll to success message
+      document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     
     function showError(error) {
-      alert('Error: ' + error.message);
+      hideLoading();
+      
+      // Create a better error display
+      const errorMessage = error.message || error.toString() || 'An unexpected error occurred';
+      
+      // You could create a modal for errors too, but for now use a styled alert
+      const errorHtml = `
+        <div style="background: var(--error-50); border: 1px solid var(--error-300); border-radius: 8px; padding: 12px; margin-top: 12px;">
+          <div style="font-size: 13px; font-weight: 600; color: var(--error-700); margin-bottom: 4px;">Error</div>
+          <div style="font-size: 12px; color: var(--error-600);">${errorMessage}</div>
+        </div>
+      `;
+      
+      // For now, use alert but you could insert this HTML into the page
+      alert('Error: ' + errorMessage);
     }
     
     function openPresentation() {

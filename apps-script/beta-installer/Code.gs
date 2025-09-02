@@ -712,11 +712,18 @@ function showDataPipelineManager() { return CellPilot.showDataPipelineManager();
 // CellM8 Presentation Helper Functions
 function showCellM8() { return CellPilot.showCellM8(); }
 function createPresentation(config) { return CellPilot.createPresentation(config); }
+function getCurrentSelection() { return CellPilot.getCurrentSelection(); }
+function selectEntireDataRange() { return CellPilot.selectEntireDataRange(); }
+function selectRange(rangeA1) { return CellPilot.selectRange(rangeA1); }
+function promptForSelection() { return CellPilot.promptForSelection(); }
 function extractSheetData(source) { return CellPilot.extractSheetData(source); }
 function getVisibleRange(sheet) { return CellPilot.getVisibleRange(sheet); }
 function analyzeDataWithAI(data) { return CellPilot.analyzeDataWithAI(data); }
 function calculateStatistics(data) { return CellPilot.calculateStatistics(data); }
 function detectTrend(data) { return CellPilot.detectTrend(data); }
+function calculateCorrelation(data1, data2) { return CellPilot.calculateCorrelation(data1, data2); }
+function calculateCompleteness(data) { return CellPilot.calculateCompleteness(data); }
+function previewPresentation(config) { return CellPilot.previewPresentation(config); }
 function generateSlideStructure(analysis, config) { return CellPilot.generateSlideStructure(analysis, config); }
 function createGoogleSlides(structure, config) { return CellPilot.createGoogleSlides(structure, config); }
 function createSlide(presentation, slideData, index, template) { return CellPilot.createSlide(presentation, slideData, index, template); }
