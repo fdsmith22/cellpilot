@@ -1150,7 +1150,7 @@
     var currentSelection = null;
     
     // Explicitly attach functions to window for onclick handlers
-    window.selectSource = function(element, source) {
+    function selectSource(element, source) {
       document.querySelectorAll('.source-option').forEach(el => el.classList.remove('selected'));
       element.classList.add('selected');
       selectedSource = source;
@@ -1193,7 +1193,7 @@
       .withFailureHandler(function(err) { console.error('Failed to get selection:', err); })
       .getCellM8Selection();
     
-    window.updateSelectionDisplay = function(selection) {
+    function updateSelectionDisplay(selection) {
       currentSelection = selection;
       const selectionDesc = document.getElementById('selectionDesc');
       if (selection && selection.range) {
@@ -1207,11 +1207,11 @@
       }
     }
     
-    window.backToMain = function() {
+    function backToMain() {
       google.script.run.showCellPilotSidebar();
     }
     
-    window.selectTemplate = function(element, template) {
+    function selectTemplate(element, template) {
       document.querySelectorAll('.template-card').forEach(el => el.classList.remove('selected'));
       element.classList.add('selected');
       selectedTemplate = template;
@@ -1225,27 +1225,27 @@
       }
     }
     
-    window.updateSlideCount = function(value) {
+    function updateSlideCount(value) {
       document.getElementById('slideCount').textContent = value;
     }
     
-    window.toggleAdvanced = function() {
+    function toggleAdvanced() {
       const toggle = document.querySelector('.advanced-toggle');
       const options = document.getElementById('advancedOptions');
       toggle.classList.toggle('expanded');
       options.classList.toggle('show');
     }
     
-    window.uploadTemplate = function() {
+    function uploadTemplate() {
       // This would trigger file upload in a real implementation
       alert('Template upload feature coming soon! For now, please paste a Google Slides template URL.');
     }
     
-    window.toggleSlideExpansion = function(slideItem) {
+    function toggleSlideExpansion(slideItem) {
       slideItem.classList.toggle('expanded');
     }
     
-    window.previewPresentation = function() {
+    function previewPresentation() {
       const config = gatherConfig();
       showLoading('Generating preview...', 'Preparing to analyze your data');
       
@@ -1267,7 +1267,7 @@
         .previewPresentation(config);
     }
     
-    window.generatePresentation = function() {
+    function generatePresentation() {
       const config = gatherConfig();
       
       // Validate custom template if selected
@@ -1293,7 +1293,7 @@
         .createPresentation(config);
     }
     
-    window.gatherConfig = function() {
+    function gatherConfig() {
       const config = {
         dataSource: {
           type: selectedSource,
@@ -1330,7 +1330,7 @@
       return config;
     }
     
-    window.showLoading = function(message, subtext) {
+    function showLoading(message, subtext) {
       const overlay = document.getElementById('loadingOverlay');
       const loadingText = document.getElementById('loadingText');
       const loadingSubtext = document.getElementById('loadingSubtext');
@@ -1356,7 +1356,7 @@
       overlay.classList.add('show');
     }
     
-    window.hideLoading = function() {
+    function hideLoading() {
       const overlay = document.getElementById('loadingOverlay');
       overlay.classList.remove('show');
       
@@ -1369,7 +1369,7 @@
       }, 300);
     }
     
-    window.updateLoadingStage = function(stage, status = 'active') {
+    function updateLoadingStage(stage, status = 'active') {
       const stageItem = document.querySelector(`[data-stage="${stage}"]`);
       if (!stageItem) return;
       
@@ -1425,7 +1425,7 @@
       }
     }
     
-    window.showPreview = function(result) {
+    function showPreview(result) {
       hideLoading();
       
       if (!result.success) {
@@ -1560,16 +1560,16 @@
       document.getElementById('previewModal').classList.add('show');
     }
     
-    window.closePreview = function() {
+    function closePreview() {
       document.getElementById('previewModal').classList.remove('show');
     }
     
-    window.generateFromPreview = function() {
+    function generateFromPreview() {
       closePreview();
       generatePresentation();
     }
     
-    window.showSuccess = function(result) {
+    function showSuccess(result) {
       hideLoading();
       
       console.log('Success result:', result); // Debug log
@@ -1612,7 +1612,7 @@
       document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     
-    window.showError = function(error) {
+    function showError(error) {
       hideLoading();
       
       // Create a better error display
@@ -1630,7 +1630,7 @@
       alert('Error: ' + errorMessage);
     }
     
-    window.openPresentation = function() {
+    function openPresentation() {
       console.log('Opening presentation, URL:', window.presentationUrl);
       
       if (window.presentationUrl) {
@@ -1647,7 +1647,7 @@
       }
     }
     
-    window.createAnother = function() {
+    function createAnother() {
       document.getElementById('successMessage').classList.remove('show');
       // Reset form
       document.getElementById('slideSlider').value = 12;

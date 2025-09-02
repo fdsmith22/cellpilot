@@ -2172,119 +2172,119 @@ function buildConsultingTemplate(spreadsheet, templateType, isPreview) {
 /**
  * Excel Migration Functions
  */
-function scanForExcelIssues() { 
-  return CellPilot.scanForExcelIssues(); 
+function scanForExcelIssues() {
+  return CellPilot.scanForExcelIssues();
 }
 
-function fixExcelIssues(options) { 
-  return CellPilot.fixExcelIssues(options); 
+function fixExcelIssues(options) {
+  return CellPilot.fixExcelIssues(options);
 }
 
-function convertXlookupToVlookup(formula) { 
-  return CellPilot.convertXlookupToVlookup(formula); 
+function convertXlookupToVlookup(formula) {
+  return CellPilot.convertXlookupToVlookup(formula);
 }
 
-function convertStructuredRefs(formula) { 
-  return CellPilot.convertStructuredRefs(formula); 
+function convertStructuredRefs(formula) {
+  return CellPilot.convertStructuredRefs(formula);
 }
 
-function optimizeVolatileFunction(formula) { 
-  return CellPilot.optimizeVolatileFunction(formula); 
+function optimizeVolatileFunction(formula) {
+  return CellPilot.optimizeVolatileFunction(formula);
 }
 
-function fixRefError(cellA1) { 
-  return CellPilot.fixRefError(cellA1); 
+function fixRefError(cellA1) {
+  return CellPilot.fixRefError(cellA1);
 }
 
-function importExcelData(pastedData) { 
-  return CellPilot.importExcelData(pastedData); 
+function importExcelData(pastedData) {
+  return CellPilot.importExcelData(pastedData);
 }
 
-function parseExcelValue(value) { 
-  return CellPilot.parseExcelValue(value); 
+function parseExcelValue(value) {
+  return CellPilot.parseExcelValue(value);
 }
 
-function convertExcelFormula(formula) { 
-  return CellPilot.convertExcelFormula(formula); 
+function convertExcelFormula(formula) {
+  return CellPilot.convertExcelFormula(formula);
 }
 
-function convertDateFunctions(formula) { 
-  return CellPilot.convertDateFunctions(formula); 
+function convertDateFunctions(formula) {
+  return CellPilot.convertDateFunctions(formula);
 }
 
-function convertDynamicArrays(formula) { 
-  return CellPilot.convertDynamicArrays(formula); 
+function convertDynamicArrays(formula) {
+  return CellPilot.convertDynamicArrays(formula);
 }
 
-function detectPivotTable(range) { 
-  return CellPilot.detectPivotTable(range); 
+function detectPivotTable(range) {
+  return CellPilot.detectPivotTable(range);
 }
 
-function convertConditionalFormatting(sheet) { 
-  return CellPilot.convertConditionalFormatting(sheet); 
+function convertConditionalFormatting(sheet) {
+  return CellPilot.convertConditionalFormatting(sheet);
 }
 
-function detectVBAMacros(content) { 
-  return CellPilot.detectVBAMacros(content); 
+function detectVBAMacros(content) {
+  return CellPilot.detectVBAMacros(content);
 }
 
-function createMigrationReport(migrationResults) { 
-  return CellPilot.createMigrationReport(migrationResults); 
+function createMigrationReport(migrationResults) {
+  return CellPilot.createMigrationReport(migrationResults);
 }
 
-function showExcelMigration() { 
-  return CellPilot.showExcelMigration(); 
+function showExcelMigration() {
+  return CellPilot.showExcelMigration();
 }
 
 /**
  * CellM8 Presentation Helper Functions
  */
-function showCellM8() { 
-  return CellPilot.showCellM8(); 
+function showCellM8() {
+  return CellPilot.showCellM8();
 }
 
-function createPresentation(config) { 
-  return CellPilot.createPresentation(config); 
+function createPresentation(config) {
+  return CellPilot.createPresentation(config);
 }
 
-function getCellM8Selection() { 
-  return CellPilot.getCellM8Selection(); 
+function getCellM8Selection() {
+  return CellPilot.getCellM8Selection();
 }
 
 function getCurrentSelection() {
   return CellPilot.getCurrentSelection();
 }
 
-function selectEntireDataRange() { 
-  return CellPilot.selectEntireDataRange(); 
+function selectEntireDataRange() {
+  return CellPilot.selectEntireDataRange();
 }
 
-function selectRange(rangeA1) { 
-  return CellPilot.selectRange(rangeA1); 
+function selectRange(rangeA1) {
+  return CellPilot.selectRange(rangeA1);
 }
 
-function promptForSelection() { 
-  return CellPilot.promptForSelection(); 
+function promptForSelection() {
+  return CellPilot.promptForSelection();
 }
 
-function extractSheetData(source) { 
-  return CellPilot.extractSheetData(source); 
+function extractSheetData(source) {
+  return CellPilot.extractSheetData(source);
 }
 
-function getVisibleRange(sheet) { 
-  return CellPilot.getVisibleRange(sheet); 
+function getVisibleRange(sheet) {
+  return CellPilot.getVisibleRange(sheet);
 }
 
-function analyzeDataWithAI(data) { 
-  return CellPilot.analyzeDataWithAI(data); 
+function analyzeDataWithAI(data) {
+  return CellPilot.analyzeDataWithAI(data);
 }
 
-function calculateStatistics(data) { 
-  return CellPilot.calculateStatistics(data); 
+function calculateStatistics(data) {
+  return CellPilot.calculateStatistics(data);
 }
 
-function detectTrend(data) { 
-  return CellPilot.detectTrend(data); 
+function detectTrend(data) {
+  return CellPilot.detectTrend(data);
 }
 
 function calculateCorrelation(data1, data2) {
@@ -2295,179 +2295,179 @@ function calculateCompleteness(data) {
   return CellPilot.calculateCompleteness(data);
 }
 
-function previewPresentation(config) { 
-  return CellPilot.previewPresentation(config); 
+function previewPresentation(config) {
+  return CellPilot.previewPresentation(config);
 }
 
-function generateSlideStructure(analysis, config) { 
-  return CellPilot.generateSlideStructure(analysis, config); 
+function generateSlideStructure(analysis, config) {
+  return CellPilot.generateSlideStructure(analysis, config);
 }
 
-function createGoogleSlides(structure, config) { 
-  return CellPilot.createGoogleSlides(structure, config); 
+function createGoogleSlides(structure, config) {
+  return CellPilot.createGoogleSlides(structure, config);
 }
 
-function createSlide(presentation, slideData, index, template) { 
-  return CellPilot.createSlide(presentation, slideData, index, template); 
+function createSlide(presentation, slideData, index, template) {
+  return CellPilot.createSlide(presentation, slideData, index, template);
 }
 
-function createTitleSlide(slide, slideData, template) { 
-  return CellPilot.createTitleSlide(slide, slideData, template); 
+function createTitleSlide(slide, slideData, template) {
+  return CellPilot.createTitleSlide(slide, slideData, template);
 }
 
-function createContentSlide(slide, slideData, template) { 
-  return CellPilot.createContentSlide(slide, slideData, template); 
+function createContentSlide(slide, slideData, template) {
+  return CellPilot.createContentSlide(slide, slideData, template);
 }
 
-function createChartSlide(slide, slideData, template) { 
-  return CellPilot.createChartSlide(slide, slideData, template); 
+function createChartSlide(slide, slideData, template) {
+  return CellPilot.createChartSlide(slide, slideData, template);
 }
 
-function createMetricsSlide(slide, slideData, template) { 
-  return CellPilot.createMetricsSlide(slide, slideData, template); 
+function createMetricsSlide(slide, slideData, template) {
+  return CellPilot.createMetricsSlide(slide, slideData, template);
 }
 
-function createThankYouSlide(slide, slideData, template) { 
-  return CellPilot.createThankYouSlide(slide, slideData, template); 
+function createThankYouSlide(slide, slideData, template) {
+  return CellPilot.createThankYouSlide(slide, slideData, template);
 }
 
-function createDataSlide(slide, slideData, template) { 
-  return CellPilot.createDataSlide(slide, slideData, template); 
+function createDataSlide(slide, slideData, template) {
+  return CellPilot.createDataSlide(slide, slideData, template);
 }
 
-function applyTemplateToPresentation(presentation, template) { 
-  return CellPilot.applyTemplateToPresentation(presentation, template); 
+function applyTemplateToPresentation(presentation, template) {
+  return CellPilot.applyTemplateToPresentation(presentation, template);
 }
 
-function mapChartType(type) { 
-  return CellPilot.mapChartType(type); 
+function mapChartType(type) {
+  return CellPilot.mapChartType(type);
 }
 
-function recommendCharts(analysis) { 
-  return CellPilot.recommendCharts(analysis); 
+function recommendCharts(analysis) {
+  return CellPilot.recommendCharts(analysis);
 }
 
-function generateInsights(data, analysis) { 
-  return CellPilot.generateInsights(data, analysis); 
+function generateInsights(data, analysis) {
+  return CellPilot.generateInsights(data, analysis);
 }
 
-function generateRecommendations(analysis) { 
-  return CellPilot.generateRecommendations(analysis); 
+function generateRecommendations(analysis) {
+  return CellPilot.generateRecommendations(analysis);
 }
 
-function generateNextSteps(analysis) { 
-  return CellPilot.generateNextSteps(analysis); 
+function generateNextSteps(analysis) {
+  return CellPilot.generateNextSteps(analysis);
 }
 
-function extractKeyMetrics(data, analysis) { 
-  return CellPilot.extractKeyMetrics(data, analysis); 
+function extractKeyMetrics(data, analysis) {
+  return CellPilot.extractKeyMetrics(data, analysis);
 }
 
-function formatDataOverview(analysis) { 
-  return CellPilot.formatDataOverview(analysis); 
+function formatDataOverview(analysis) {
+  return CellPilot.formatDataOverview(analysis);
 }
 
-function cleanDataForPresentation(data, headers) { 
-  return CellPilot.cleanDataForPresentation(data, headers); 
+function cleanDataForPresentation(data, headers) {
+  return CellPilot.cleanDataForPresentation(data, headers);
 }
 
-function detectDataTypes(data) { 
-  return CellPilot.detectDataTypes(data); 
+function detectDataTypes(data) {
+  return CellPilot.detectDataTypes(data);
 }
 
-function detectColumnDataType(columnData) { 
-  return CellPilot.detectColumnDataType(columnData); 
+function detectColumnDataType(columnData) {
+  return CellPilot.detectColumnDataType(columnData);
 }
 
-function generateDefaultHeaders(count) { 
-  return CellPilot.generateDefaultHeaders(count); 
+function generateDefaultHeaders(count) {
+  return CellPilot.generateDefaultHeaders(count);
 }
 
-function analyzeTimeSeries(dateData) { 
-  return CellPilot.analyzeTimeSeries(dateData); 
+function analyzeTimeSeries(dateData) {
+  return CellPilot.analyzeTimeSeries(dateData);
 }
 
-function detectFrequency(avgInterval) { 
-  return CellPilot.detectFrequency(avgInterval); 
+function detectFrequency(avgInterval) {
+  return CellPilot.detectFrequency(avgInterval);
 }
 
-function analyzeCategories(categoryData) { 
-  return CellPilot.analyzeCategories(categoryData); 
+function analyzeCategories(categoryData) {
+  return CellPilot.analyzeCategories(categoryData);
 }
 
-function formatNumber(num) { 
-  return CellPilot.formatNumber(num); 
+function formatNumber(num) {
+  return CellPilot.formatNumber(num);
 }
 
-function chunkArray(array, size) { 
-  return CellPilot.chunkArray(array, size); 
+function chunkArray(array, size) {
+  return CellPilot.chunkArray(array, size);
 }
 
-function trackPresentationCreation(config, result) { 
-  return CellPilot.trackPresentationCreation(config, result); 
+function trackPresentationCreation(config, result) {
+  return CellPilot.trackPresentationCreation(config, result);
 }
 
 /**
  * Data Pipeline Functions
  */
-function createDataPipeline(config) { 
-  return CellPilot.createDataPipeline(config); 
+function createDataPipeline(config) {
+  return CellPilot.createDataPipeline(config);
 }
 
-function runDataPipeline(pipelineId) { 
-  return CellPilot.runDataPipeline(pipelineId); 
+function runDataPipeline(pipelineId) {
+  return CellPilot.runDataPipeline(pipelineId);
 }
 
-function getDataPipelines() { 
-  return CellPilot.getDataPipelines(); 
+function getDataPipelines() {
+  return CellPilot.getDataPipelines();
 }
 
-function deleteDataPipeline(pipelineId) { 
-  return CellPilot.deleteDataPipeline(pipelineId); 
+function deleteDataPipeline(pipelineId) {
+  return CellPilot.deleteDataPipeline(pipelineId);
 }
 
-function importData(source) { 
-  return CellPilot.importData(source); 
+function importData(source) {
+  return CellPilot.importData(source);
 }
 
-function exportData(options) { 
-  return CellPilot.exportData(options); 
+function exportData(options) {
+  return CellPilot.exportData(options);
 }
 
-function exportToCSV(dataToExport, options) { 
-  return CellPilot.exportToCSV(dataToExport, options); 
+function exportToCSV(dataToExport, options) {
+  return CellPilot.exportToCSV(dataToExport, options);
 }
 
-function exportToJSON(dataToExport, options) { 
-  return CellPilot.exportToJSON(dataToExport, options); 
+function exportToJSON(dataToExport, options) {
+  return CellPilot.exportToJSON(dataToExport, options);
 }
 
-function exportToXML(dataToExport, options) { 
-  return CellPilot.exportToXML(dataToExport, options); 
+function exportToXML(dataToExport, options) {
+  return CellPilot.exportToXML(dataToExport, options);
 }
 
-function exportToHTML(dataToExport, options) { 
-  return CellPilot.exportToHTML(dataToExport, options); 
+function exportToHTML(dataToExport, options) {
+  return CellPilot.exportToHTML(dataToExport, options);
 }
 
-function exportToAPI(dataToExport, options) { 
-  return CellPilot.exportToAPI(dataToExport, options); 
+function exportToAPI(dataToExport, options) {
+  return CellPilot.exportToAPI(dataToExport, options);
 }
 
-function exportToEmail(dataToExport, options) { 
-  return CellPilot.exportToEmail(dataToExport, options); 
+function exportToEmail(dataToExport, options) {
+  return CellPilot.exportToEmail(dataToExport, options);
 }
 
-function saveToGoogleDrive(content, filename, mimeType) { 
-  return CellPilot.saveToGoogleDrive(content, filename, mimeType); 
+function saveToGoogleDrive(content, filename, mimeType) {
+  return CellPilot.saveToGoogleDrive(content, filename, mimeType);
 }
 
-function prepareDataForExport(options) { 
-  return CellPilot.prepareDataForExport(options); 
+function prepareDataForExport(options) {
+  return CellPilot.prepareDataForExport(options);
 }
 
-function showDataPipelineManager() { 
-  return CellPilot.showDataPipelineManager(); 
+function showDataPipelineManager() {
+  return CellPilot.showDataPipelineManager();
 }
 
 /**
