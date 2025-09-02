@@ -887,12 +887,12 @@
         <div class="card-description">Choose what data to include in your presentation</div>
       </div>
       
-      <div class="source-option" onclick="selectSource(this, &quot;entire&quot;)">
+      <div class="source-option" onclick='selectSource(this, "entire")'>
         <div class="source-title">Entire Sheet</div>
         <div class="source-desc">Use all data from the current sheet</div>
       </div>
       
-      <div class="source-option" onclick="selectSource(this, &quot;selection&quot;)">
+      <div class="source-option" onclick='selectSource(this, "selection")'>
         <div class="source-title">Selected Range</div>
         <div class="source-desc" id="selectionDesc">No range selected</div>
       </div>
@@ -907,7 +907,7 @@
         </label>
       </div>
       
-      <div class="source-option" onclick="selectSource(this, &quot;custom&quot;)">
+      <div class="source-option" onclick='selectSource(this, "custom")'>
         <div class="source-title">Custom Range</div>
         <div class="source-desc">Specify a custom range (e.g., A1:D10)</div>
       </div>
@@ -925,7 +925,7 @@
       </div>
       
       <div class="template-grid">
-        <div class="template-card selected" onclick="selectTemplate(this, &quot;corporate&quot;)">
+        <div class="template-card selected" onclick='selectTemplate(this, "corporate")'>
           <div class="template-preview" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6);">
             <span style="color: white;">A</span>
           </div>
@@ -933,7 +933,7 @@
           <div class="template-desc">Professional</div>
         </div>
         
-        <div class="template-card" onclick="selectTemplate(this, &quot;sales&quot;)">
+        <div class="template-card" onclick='selectTemplate(this, "sales")'>
           <div class="template-preview" style="background: linear-gradient(135deg, #ea580c, #fbbf24);">
             <span style="color: white;">$</span>
           </div>
@@ -941,7 +941,7 @@
           <div class="template-desc">Persuasive</div>
         </div>
         
-        <div class="template-card" onclick="selectTemplate(this, &quot;financial&quot;)">
+        <div class="template-card" onclick='selectTemplate(this, "financial")'>
           <div class="template-preview" style="background: linear-gradient(135deg, #059669, #10b981);">
             <span style="color: white;">%</span>
           </div>
@@ -949,7 +949,7 @@
           <div class="template-desc">Data-focused</div>
         </div>
         
-        <div class="template-card" onclick="selectTemplate(this, &quot;modern&quot;)">
+        <div class="template-card" onclick='selectTemplate(this, "modern")'>
           <div class="template-preview" style="background: linear-gradient(135deg, #7c3aed, #a78bfa);">
             <span style="color: white;">M</span>
           </div>
@@ -957,7 +957,7 @@
           <div class="template-desc">Creative</div>
         </div>
         
-        <div class="template-card" onclick="selectTemplate(this, &quot;minimal&quot;)">
+        <div class="template-card" onclick='selectTemplate(this, "minimal")'>
           <div class="template-preview" style="background: linear-gradient(135deg, #6b7280, #9ca3af);">
             <span style="color: white;">-</span>
           </div>
@@ -965,7 +965,7 @@
           <div class="template-desc">Clean & simple</div>
         </div>
         
-        <div class="template-card" onclick="selectTemplate(this, &quot;custom&quot;)">
+        <div class="template-card" onclick='selectTemplate(this, "custom")'>
           <div class="template-preview" style="background: linear-gradient(135deg, #dc2626, #f97316);">
             <span style="color: white;">+</span>
           </div>
@@ -1149,7 +1149,8 @@
     var selectedTemplate = 'corporate';
     var currentSelection = null;
     
-    function selectSource(element, source) {
+    // Explicitly attach functions to window for onclick handlers
+    window.selectSource = function(element, source) {
       document.querySelectorAll('.source-option').forEach(el => el.classList.remove('selected'));
       element.classList.add('selected');
       selectedSource = source;
@@ -1192,7 +1193,7 @@
       .withFailureHandler(function(err) { console.error('Failed to get selection:', err); })
       .getCurrentSelection();
     
-    function updateSelectionDisplay(selection) {
+    window.updateSelectionDisplay = function(selection) {
       currentSelection = selection;
       const selectionDesc = document.getElementById('selectionDesc');
       if (selection && selection.range) {
@@ -1206,11 +1207,11 @@
       }
     }
     
-    function backToMain() {
+    window.backToMain = function() {
       google.script.run.showCellPilotSidebar();
     }
     
-    function selectTemplate(element, template) {
+    window.selectTemplate = function(element, template) {
       document.querySelectorAll('.template-card').forEach(el => el.classList.remove('selected'));
       element.classList.add('selected');
       selectedTemplate = template;
@@ -1224,27 +1225,27 @@
       }
     }
     
-    function updateSlideCount(value) {
+    window.updateSlideCount = function(value) {
       document.getElementById('slideCount').textContent = value;
     }
     
-    function toggleAdvanced() {
+    window.toggleAdvanced = function() {
       const toggle = document.querySelector('.advanced-toggle');
       const options = document.getElementById('advancedOptions');
       toggle.classList.toggle('expanded');
       options.classList.toggle('show');
     }
     
-    function uploadTemplate() {
+    window.uploadTemplate = function() {
       // This would trigger file upload in a real implementation
       alert('Template upload feature coming soon! For now, please paste a Google Slides template URL.');
     }
     
-    function toggleSlideExpansion(slideItem) {
+    window.toggleSlideExpansion = function(slideItem) {
       slideItem.classList.toggle('expanded');
     }
     
-    function previewPresentation() {
+    window.previewPresentation = function() {
       const config = gatherConfig();
       showLoading('Generating preview...', 'Preparing to analyze your data');
       
@@ -1266,7 +1267,7 @@
         .previewPresentation(config);
     }
     
-    function generatePresentation() {
+    window.generatePresentation = function() {
       const config = gatherConfig();
       
       // Validate custom template if selected
@@ -1292,7 +1293,7 @@
         .createPresentation(config);
     }
     
-    function gatherConfig() {
+    window.gatherConfig = function() {
       const config = {
         dataSource: {
           type: selectedSource,
@@ -1329,7 +1330,7 @@
       return config;
     }
     
-    function showLoading(message, subtext) {
+    window.showLoading = function(message, subtext) {
       const overlay = document.getElementById('loadingOverlay');
       const loadingText = document.getElementById('loadingText');
       const loadingSubtext = document.getElementById('loadingSubtext');
@@ -1355,7 +1356,7 @@
       overlay.classList.add('show');
     }
     
-    function hideLoading() {
+    window.hideLoading = function() {
       const overlay = document.getElementById('loadingOverlay');
       overlay.classList.remove('show');
       
@@ -1368,7 +1369,7 @@
       }, 300);
     }
     
-    function updateLoadingStage(stage, status = 'active') {
+    window.updateLoadingStage = function(stage, status = 'active') {
       const stageItem = document.querySelector(`[data-stage="${stage}"]`);
       if (!stageItem) return;
       
@@ -1424,7 +1425,7 @@
       }
     }
     
-    function showPreview(result) {
+    window.showPreview = function(result) {
       hideLoading();
       
       if (!result.success) {
@@ -1559,16 +1560,16 @@
       document.getElementById('previewModal').classList.add('show');
     }
     
-    function closePreview() {
+    window.closePreview = function() {
       document.getElementById('previewModal').classList.remove('show');
     }
     
-    function generateFromPreview() {
+    window.generateFromPreview = function() {
       closePreview();
       generatePresentation();
     }
     
-    function showSuccess(result) {
+    window.showSuccess = function(result) {
       hideLoading();
       
       console.log('Success result:', result); // Debug log
@@ -1611,7 +1612,7 @@
       document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     
-    function showError(error) {
+    window.showError = function(error) {
       hideLoading();
       
       // Create a better error display
@@ -1629,7 +1630,7 @@
       alert('Error: ' + errorMessage);
     }
     
-    function openPresentation() {
+    window.openPresentation = function() {
       console.log('Opening presentation, URL:', window.presentationUrl);
       
       if (window.presentationUrl) {
@@ -1646,7 +1647,7 @@
       }
     }
     
-    function createAnother() {
+    window.createAnother = function() {
       document.getElementById('successMessage').classList.remove('show');
       // Reset form
       document.getElementById('slideSlider').value = 12;
