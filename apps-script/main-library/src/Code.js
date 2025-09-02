@@ -1750,7 +1750,8 @@ function showCellM8() {
     const html = HtmlService.createTemplateFromFile('CellM8Template')
       .evaluate()
       .setTitle('CellM8 - Presentation Helper')
-      .setWidth(320);
+      .setWidth(320)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     SpreadsheetApp.getUi().showSidebar(html);
   } catch (error) {
     showErrorDialog('Failed to load CellM8', error.message);
