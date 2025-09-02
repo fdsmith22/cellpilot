@@ -727,11 +727,13 @@ const CellM8 = {
       subtitle: `Generated from ${SpreadsheetApp.getActiveSheet().getName()} | ${new Date().toLocaleDateString()}`,
       visualization: 'none',
       expandedContent: {
-        description: 'Title slide with presentation name and metadata',
+        description: 'Opening slide with presentation title and metadata',
+        visualType: 'Title Layout',
         details: [
-          `Sheet: ${SpreadsheetApp.getActiveSheet().getName()}`,
-          `Date: ${new Date().toLocaleDateString()}`,
-          `Template: ${template.name}`
+          `Data Source: ${SpreadsheetApp.getActiveSheet().getName()}`,
+          `Generated: ${new Date().toLocaleDateString()}`,
+          `Template Style: ${template.name}`,
+          `Total Slides: ${targetSlideCount}`
         ]
       }
     });
