@@ -24,14 +24,34 @@ const CellM8 = {
         secondary: '#4472c4',
         accent: '#70ad47',
         background: '#ffffff',
-        text: '#333333'
+        backgroundAccent: '#f5f7fa',
+        text: '#2c3e50',
+        lightText: '#7f8c8d',
+        success: '#27ae60',
+        warning: '#f39c12',
+        error: '#e74c3c'
       },
-      fontFamily: 'Calibri',
+      fontFamily: 'Roboto',
+      titleFontFamily: 'Montserrat',
       layouts: {
         title: 'TITLE_AND_SUBTITLE',
         content: 'TITLE_AND_BODY',
         chart: 'TITLE_AND_TWO_COLUMNS',
         section: 'SECTION_HEADER'
+      },
+      slideDefaults: {
+        titleSize: 40,
+        subtitleSize: 24,
+        bodySize: 18,
+        captionSize: 12,
+        lineSpacing: 1.5,
+        paragraphSpacing: 12,
+        bulletIndent: 20
+      },
+      effects: {
+        titleShadow: true,
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        cornerRadius: 8
       }
     },
     sales: {
@@ -1056,13 +1076,16 @@ const CellM8 = {
    */
   createGoogleSlides: function(structure, config) {
     try {
-      // Create new presentation
-      const presentation = SlidesApp.create(
-        config.presentationTitle || 'CellPilot Analysis Presentation'
-      );
+      // Create new presentation with professional title
+      const presentationTitle = config.presentationTitle || 
+        `Data Analysis - ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
+      const presentation = SlidesApp.create(presentationTitle);
       
       const presentationId = presentation.getId();
       const template = structure.template;
+      
+      // Set presentation-wide theme
+      this.setupPresentationTheme(presentation, template);
       
       // Remove default slide
       const slides = presentation.getSlides();
@@ -1106,10 +1129,24 @@ const CellM8 = {
     try {
       let slide;
       
-      // Create slide with appropriate layout
-      const layoutName = slideData.layout || 'BLANK';
+      // Use predefined layout types
       const predefinedLayouts = presentation.getLayouts();
-      const layout = predefinedLayouts.find(l => l.getLayoutName() === layoutName) || predefinedLayouts[0];
+      let layout;
+      
+      // Map slide types to appropriate layouts
+      if (slideData.type === 'title' || slideData.type === 'thank_you') {
+        // Use title layout
+        layout = predefinedLayouts.find(l => 
+          l.getLayoutName().toLowerCase().includes('title') && 
+          !l.getLayoutName().toLowerCase().includes('content')
+        ) || predefinedLayouts[0];
+      } else {
+        // Use title and content layout for most slides
+        layout = predefinedLayouts.find(l => 
+          l.getLayoutName().toLowerCase().includes('title') && 
+          l.getLayoutName().toLowerCase().includes('content')
+        ) || predefinedLayouts[1];
+      }
       
       slide = presentation.appendSlide(layout);
       
@@ -1136,11 +1173,13 @@ const CellM8 = {
           
         case 'overview':
         case 'trends':
+        case 'data':
+        case 'analysis':
           this.createDataSlide(slide, slideData, template);
           break;
           
         case 'thank_you':
-          this.createThankYouSlide(slide, slideData, template);
+          this.createTitleSlide(slide, slideData, template);
           break;
           
         default:
@@ -1162,66 +1201,213 @@ const CellM8 = {
    * Create title slide
    */
   createTitleSlide: function(slide, slideData, template) {
-    const shapes = slide.getShapes();
-    
-    shapes.forEach(shape => {
-      const text = shape.getText();
-      const placeholder = shape.getPlaceholder();
+    try {
+      const shapes = slide.getShapes();
+      let titleSet = false;
+      let subtitleSet = false;
       
-      if (placeholder === SlidesApp.PlaceholderType.TITLE || 
-          placeholder === SlidesApp.PlaceholderType.CENTERED_TITLE) {
-        text.setText(slideData.title);
-        text.getTextStyle()
-          .setFontSize(40)
+      // First try to use placeholders
+      shapes.forEach(shape => {
+        const text = shape.getText();
+        const placeholder = shape.getPlaceholder();
+        
+        if (!titleSet && (placeholder === SlidesApp.PlaceholderType.TITLE || 
+            placeholder === SlidesApp.PlaceholderType.CENTERED_TITLE)) {
+          text.setText(slideData.title);
+          text.getTextStyle()
+            .setFontSize(40)
+            .setForegroundColor(template.colorScheme.primary)
+            .setFontFamily(template.fontFamily)
+            .setBold(true);
+          titleSet = true;
+        } else if (!subtitleSet && placeholder === SlidesApp.PlaceholderType.SUBTITLE) {
+          text.setText(slideData.subtitle || '');
+          text.getTextStyle()
+            .setFontSize(20)
+            .setForegroundColor(template.colorScheme.text)
+            .setFontFamily(template.fontFamily);
+          subtitleSet = true;
+        }
+      });
+      
+      // If no placeholders found, create professional text boxes
+      if (!titleSet) {
+        // Add decorative background shape
+        const bgShape = slide.insertShape(
+          SlidesApp.ShapeType.RECTANGLE,
+          0, 80, 720, 140
+        );
+        bgShape.getFill().setSolidFill(template.colorScheme.primary, 0.05);
+        bgShape.getBorder().setTransparent();
+        bgShape.sendToBack();
+        
+        const titleBox = slide.insertTextBox(slideData.title, 50, 100, 620, 100);
+        titleBox.getText().getTextStyle()
+          .setFontSize(44)
           .setForegroundColor(template.colorScheme.primary)
-          .setFontFamily(template.fontFamily)
+          .setFontFamily(template.titleFontFamily || template.fontFamily)
           .setBold(true);
-      } else if (placeholder === SlidesApp.PlaceholderType.SUBTITLE) {
-        text.setText(slideData.subtitle || '');
-        text.getTextStyle()
-          .setFontSize(20)
+        titleBox.getText().getParagraphStyle()
+          .setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+      }
+      
+      if (!subtitleSet && slideData.subtitle) {
+        const subtitleBox = slide.insertTextBox(slideData.subtitle, 50, 220, 620, 60);
+        subtitleBox.getText().getTextStyle()
+          .setFontSize(22)
           .setForegroundColor(template.colorScheme.text)
           .setFontFamily(template.fontFamily);
+        subtitleBox.getText().getParagraphStyle()
+          .setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+        
+        // Add a subtle line separator
+        const line = slide.insertLine(
+          SlidesApp.LineCategory.STRAIGHT,
+          260, 290, 460, 290
+        );
+        line.getLineFill().setSolidFill(template.colorScheme.primary, 0.3);
+        line.setWeight(2);
       }
-    });
+      
+      // Add professional footer elements for title slide
+      if (slideData.type === 'title') {
+        // Add date
+        const dateBox = slide.insertTextBox(
+          new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          }),
+          50, 450, 200, 30
+        );
+        dateBox.getText().getTextStyle()
+          .setFontSize(12)
+          .setForegroundColor(template.colorScheme.lightText || template.colorScheme.text)
+          .setFontFamily(template.fontFamily);
+          
+        // Add company/brand if available
+        const brandBox = slide.insertTextBox(
+          'Data Analysis Report',
+          470, 450, 200, 30
+        );
+        brandBox.getText().getTextStyle()
+          .setFontSize(12)
+          .setForegroundColor(template.colorScheme.lightText || template.colorScheme.text)
+          .setFontFamily(template.fontFamily);
+        brandBox.getText().getParagraphStyle()
+          .setParagraphAlignment(SlidesApp.ParagraphAlignment.END);
+      }
+    } catch (error) {
+      Logger.error('Error creating title slide:', error);
+    }
   },
 
   /**
    * Create content slide with bullets or text
    */
   createContentSlide: function(slide, slideData, template) {
-    const shapes = slide.getShapes();
-    
-    shapes.forEach(shape => {
-      const text = shape.getText();
-      const placeholder = shape.getPlaceholder();
+    try {
+      const shapes = slide.getShapes();
+      let titleSet = false;
+      let bodySet = false;
       
-      if (placeholder === SlidesApp.PlaceholderType.TITLE) {
-        text.setText(slideData.title);
-        text.getTextStyle()
-          .setFontSize(30)
-          .setForegroundColor(template.colorScheme.primary)
-          .setFontFamily(template.fontFamily)
-          .setBold(true);
-      } else if (placeholder === SlidesApp.PlaceholderType.BODY) {
-        if (slideData.content) {
-          if (slideData.content.type === 'bullets') {
-            const bulletText = slideData.content.items.map(item => '• ' + item).join('\n');
-            text.setText(bulletText);
-          } else if (slideData.content.type === 'numbered') {
-            const numberedText = slideData.content.items.map((item, i) => `${i + 1}. ${item}`).join('\n');
-            text.setText(numberedText);
-          } else if (slideData.content.type === 'text') {
-            text.setText(slideData.content.text);
-          }
-          
+      // Try to use placeholders first
+      shapes.forEach(shape => {
+        const text = shape.getText();
+        const placeholder = shape.getPlaceholder();
+        
+        if (!titleSet && placeholder === SlidesApp.PlaceholderType.TITLE) {
+          text.setText(slideData.title);
           text.getTextStyle()
+            .setFontSize(30)
+            .setForegroundColor(template.colorScheme.primary)
+            .setFontFamily(template.fontFamily)
+            .setBold(true);
+          titleSet = true;
+        } else if (!bodySet && placeholder === SlidesApp.PlaceholderType.BODY) {
+          if (slideData.content) {
+            if (slideData.content.type === 'bullets' && slideData.content.items) {
+              const bulletText = slideData.content.items.map(item => '• ' + item).join('\n');
+              text.setText(bulletText);
+            } else if (slideData.content.type === 'numbered' && slideData.content.items) {
+              const numberedText = slideData.content.items.map((item, i) => `${i + 1}. ${item}`).join('\n');
+              text.setText(numberedText);
+            } else if (slideData.content.type === 'text') {
+              text.setText(slideData.content.text || '');
+            }
+            
+            text.getTextStyle()
+              .setFontSize(18)
+              .setForegroundColor(template.colorScheme.text)
+              .setFontFamily(template.fontFamily);
+            bodySet = true;
+          }
+        }
+      });
+      
+      // If no placeholders found, create professional text boxes
+      if (!titleSet) {
+        // Add title with underline accent
+        const titleBox = slide.insertTextBox(slideData.title, 50, 30, 620, 50);
+        titleBox.getText().getTextStyle()
+          .setFontSize(32)
+          .setForegroundColor(template.colorScheme.primary)
+          .setFontFamily(template.titleFontFamily || template.fontFamily)
+          .setBold(true);
+          
+        // Add accent line under title
+        const accentLine = slide.insertLine(
+          SlidesApp.LineCategory.STRAIGHT,
+          50, 85, 150, 85
+        );
+        accentLine.getLineFill().setSolidFill(template.colorScheme.accent || template.colorScheme.primary);
+        accentLine.setWeight(3);
+      }
+      
+      if (!bodySet && slideData.content && slideData.content.items) {
+        // Create professional bullet points with proper spacing
+        const items = slideData.content.items;
+        const startY = 110;
+        const itemHeight = 35;
+        const bulletSymbol = template.bulletStyle || '●';
+        
+        items.forEach((item, index) => {
+          const y = startY + (index * itemHeight);
+          
+          // Add bullet symbol
+          const bulletBox = slide.insertTextBox(bulletSymbol, 60, y, 20, 30);
+          bulletBox.getText().getTextStyle()
+            .setFontSize(14)
+            .setForegroundColor(template.colorScheme.accent || template.colorScheme.primary)
+            .setFontFamily(template.fontFamily);
+          
+          // Add bullet text
+          const textBox = slide.insertTextBox(item, 90, y, 580, 30);
+          textBox.getText().getTextStyle()
             .setFontSize(18)
             .setForegroundColor(template.colorScheme.text)
-            .setFontFamily(template.fontFamily);
-        }
+            .setFontFamily(template.fontFamily)
+            .setLineSpacing(1.2);
+        });
       }
-    });
+      
+      // Add slide number footer (except for first slide)
+      const slideIndex = presentation.getSlides().indexOf(slide);
+      if (slideIndex > 0) {
+        const footerBox = slide.insertTextBox(
+          `${slideIndex + 1}`,
+          680, 470, 30, 20
+        );
+        footerBox.getText().getTextStyle()
+          .setFontSize(10)
+          .setForegroundColor(template.colorScheme.lightText || '#999999')
+          .setFontFamily(template.fontFamily);
+        footerBox.getText().getParagraphStyle()
+          .setParagraphAlignment(SlidesApp.ParagraphAlignment.END);
+      }
+    } catch (error) {
+      Logger.error('Error creating content slide:', error);
+    }
   },
 
   /**
@@ -1301,26 +1487,37 @@ const CellM8 = {
    * Create metrics slide with KPIs
    */
   createMetricsSlide: function(slide, slideData, template) {
-    // Add title
-    const shapes = slide.getShapes();
-    let titleSet = false;
-    
-    shapes.forEach(shape => {
-      const placeholder = shape.getPlaceholder();
-      if (!titleSet && placeholder === SlidesApp.PlaceholderType.TITLE) {
-        const text = shape.getText();
-        text.setText(slideData.title);
-        text.getTextStyle()
+    try {
+      // Add title
+      const shapes = slide.getShapes();
+      let titleSet = false;
+      
+      shapes.forEach(shape => {
+        const placeholder = shape.getPlaceholder();
+        if (!titleSet && placeholder === SlidesApp.PlaceholderType.TITLE) {
+          const text = shape.getText();
+          text.setText(slideData.title);
+          text.getTextStyle()
+            .setFontSize(30)
+            .setForegroundColor(template.colorScheme.primary)
+            .setFontFamily(template.fontFamily)
+            .setBold(true);
+          titleSet = true;
+        }
+      });
+      
+      // If no title placeholder, create title box
+      if (!titleSet) {
+        const titleBox = slide.insertTextBox(slideData.title, 50, 20, 620, 60);
+        titleBox.getText().getTextStyle()
           .setFontSize(30)
           .setForegroundColor(template.colorScheme.primary)
           .setFontFamily(template.fontFamily)
           .setBold(true);
-        titleSet = true;
       }
-    });
-    
-    // Add metrics as formatted text or shapes
-    if (slideData.content && slideData.content.items) {
+      
+      // Add metrics as formatted text or shapes
+      if (slideData.content && slideData.content.items) {
       const metrics = slideData.content.items;
       const startY = 150;
       const spacing = 80;
@@ -1346,6 +1543,9 @@ const CellM8 = {
           metricText.getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
         }
       });
+    }
+    } catch (error) {
+      Logger.error('Error creating metrics slide:', error);
     }
   },
 

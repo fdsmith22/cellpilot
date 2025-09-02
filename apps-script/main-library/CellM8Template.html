@@ -751,6 +751,63 @@
       color: var(--gray-500);
     }
     
+    .loading-stages {
+      margin-top: 24px;
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      min-width: 280px;
+    }
+    
+    .stage-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      font-size: 12px;
+      color: var(--gray-500);
+      transition: all 0.3s ease;
+    }
+    
+    .stage-item.active {
+      color: var(--primary-600);
+      font-weight: 500;
+    }
+    
+    .stage-item.active .stage-icon {
+      color: var(--primary-600);
+      animation: pulse 1.5s infinite;
+    }
+    
+    .stage-item.completed {
+      color: var(--success-600);
+    }
+    
+    .stage-item.completed .stage-icon {
+      color: var(--success-600);
+    }
+    
+    .stage-item.error {
+      color: var(--error-600);
+    }
+    
+    .stage-icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .stage-text {
+      flex: 1;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.2); }
+    }
+    
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
@@ -1066,6 +1123,24 @@
     <div class="spinner"></div>
     <div class="loading-text" id="loadingText">Preparing your presentation...</div>
     <div class="loading-subtext" id="loadingSubtext">This may take a moment</div>
+    <div class="loading-stages" id="loadingStages">
+      <div class="stage-item" data-stage="extract">
+        <span class="stage-icon">○</span>
+        <span class="stage-text">Extracting data from sheet</span>
+      </div>
+      <div class="stage-item" data-stage="analyze">
+        <span class="stage-icon">○</span>
+        <span class="stage-text">Analyzing data patterns</span>
+      </div>
+      <div class="stage-item" data-stage="structure">
+        <span class="stage-icon">○</span>
+        <span class="stage-text">Building slide structure</span>
+      </div>
+      <div class="stage-item" data-stage="generate">
+        <span class="stage-icon">○</span>
+        <span class="stage-text">Generating preview</span>
+      </div>
+    </div>
   </div>
   
   <script>
@@ -1242,15 +1317,95 @@
       const overlay = document.getElementById('loadingOverlay');
       const loadingText = document.getElementById('loadingText');
       const loadingSubtext = document.getElementById('loadingSubtext');
+      const stages = document.getElementById('loadingStages');
       
       loadingText.textContent = message || 'Processing...';
       loadingSubtext.textContent = subtext || 'This may take a moment';
+      
+      // Reset all stages
+      document.querySelectorAll('.stage-item').forEach(item => {
+        item.classList.remove('active', 'completed', 'error');
+        item.querySelector('.stage-icon').textContent = '○';
+      });
+      
+      // Show stages for preview generation
+      if (message && message.includes('preview')) {
+        stages.style.display = 'block';
+        updateLoadingStage('extract');
+      } else {
+        stages.style.display = 'none';
+      }
+      
       overlay.classList.add('show');
     }
     
     function hideLoading() {
       const overlay = document.getElementById('loadingOverlay');
       overlay.classList.remove('show');
+      
+      // Reset stages after hiding
+      setTimeout(() => {
+        document.querySelectorAll('.stage-item').forEach(item => {
+          item.classList.remove('active', 'completed', 'error');
+          item.querySelector('.stage-icon').textContent = '○';
+        });
+      }, 300);
+    }
+    
+    function updateLoadingStage(stage, status = 'active') {
+      const stageItem = document.querySelector(`[data-stage="${stage}"]`);
+      if (!stageItem) return;
+      
+      // Update current stage
+      stageItem.classList.remove('active', 'completed', 'error');
+      stageItem.classList.add(status);
+      
+      // Update icon
+      const icon = stageItem.querySelector('.stage-icon');
+      if (status === 'completed') {
+        icon.textContent = '✓';
+      } else if (status === 'active') {
+        icon.textContent = '●';
+      } else if (status === 'error') {
+        icon.textContent = '✗';
+      }
+      
+      // Mark previous stages as completed
+      if (status === 'active') {
+        const stages = ['extract', 'analyze', 'structure', 'generate'];
+        const currentIndex = stages.indexOf(stage);
+        for (let i = 0; i < currentIndex; i++) {
+          const prevStage = document.querySelector(`[data-stage="${stages[i]}"]`);
+          if (prevStage) {
+            prevStage.classList.remove('active');
+            prevStage.classList.add('completed');
+            prevStage.querySelector('.stage-icon').textContent = '✓';
+          }
+        }
+      }
+      
+      // Update main loading text based on stage
+      const loadingText = document.getElementById('loadingText');
+      const loadingSubtext = document.getElementById('loadingSubtext');
+      
+      switch(stage) {
+        case 'extract':
+          loadingText.textContent = 'Extracting data...';
+          loadingSubtext.textContent = 'Reading selected range from sheet';
+          break;
+        case 'analyze':
+          loadingText.textContent = 'Analyzing data...';
+          loadingSubtext.textContent = 'Finding patterns and insights';
+          break;
+        case 'structure':
+          loadingText.textContent = 'Building structure...';
+          loadingSubtext.textContent = 'Creating slide layout';
+          break;
+        case 'generate':
+          loadingText.textContent = 'Generating preview...';
+          loadingSubtext.textContent = 'Finalizing presentation preview';
+          break;
+      }
     }
     
     function showPreview(result) {
