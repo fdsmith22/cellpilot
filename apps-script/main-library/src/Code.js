@@ -1777,8 +1777,8 @@ function testCellM8Function() {
   };
 }
 
-function extractCellM8Data() {
-  return CellM8.extractSheetData();
+function extractCellM8Data(options) {
+  return CellM8.extractSheetData(options);
 }
 
 function analyzeCellM8Data(data) {

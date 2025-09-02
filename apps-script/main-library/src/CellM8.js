@@ -322,18 +322,30 @@ const CellM8 = {
   },
 
   /**
-   * Extract data from the current sheet
+   * Extract data from the current sheet or selection
    */
-  extractSheetData: function() {
+  extractSheetData: function(options) {
     try {
       const sheet = SpreadsheetApp.getActiveSheet();
-      const range = sheet.getDataRange();
+      let range;
+      
+      // Check if specific range is requested
+      if (options && options.rangeA1) {
+        range = sheet.getRange(options.rangeA1);
+      } else {
+        // Try to get active range first, fall back to data range
+        range = sheet.getActiveRange();
+        if (!range || range.getNumRows() === 1 && range.getNumColumns() === 1) {
+          range = sheet.getDataRange();
+        }
+      }
+      
       const values = range.getValues();
       
       if (values.length === 0) {
         return {
           success: false,
-          error: 'No data found in sheet'
+          error: 'No data found in selected range'
         };
       }
       
@@ -341,12 +353,17 @@ const CellM8 = {
       const headers = values[0];
       const data = values.slice(1);
       
+      // Filter out empty rows
+      const filteredData = data.filter(row => row.some(cell => cell !== '' && cell !== null));
+      
       return {
         success: true,
         headers: headers,
-        data: data,
-        rowCount: data.length,
-        columnCount: headers.length
+        data: filteredData,
+        rowCount: filteredData.length,
+        columnCount: headers.length,
+        range: range.getA1Notation(),
+        sheetName: sheet.getName()
       };
       
     } catch (error) {

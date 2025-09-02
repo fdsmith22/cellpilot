@@ -2255,8 +2255,8 @@ function testCellM8Function() {
   return CellPilot.testCellM8Function();
 }
 
-function extractCellM8Data() {
-  return CellPilot.extractCellM8Data();
+function extractCellM8Data(options) {
+  return CellPilot.extractCellM8Data(options);
 }
 
 function analyzeCellM8Data(data) {

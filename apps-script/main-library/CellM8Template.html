@@ -4,33 +4,155 @@
   <base target="_top">
   <?!= include('SharedStyles'); ?>
   <style>
+    /* Enhanced styles matching main panel */
+    .nav-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .nav-back {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .nav-back:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateX(-2px);
+    }
+    
+    .nav-title h2 {
+      color: white;
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .nav-title p {
+      color: rgba(255, 255, 255, 0.9);
+      margin: 2px 0 0 0;
+      font-size: 12px;
+    }
+    
+    /* Card styles matching main panel */
+    .card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
+    }
+    
+    .card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .card-header {
+      background: linear-gradient(135deg, #fafbfc 0%, #f0f7ff 100%);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    
+    .card-header h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+    
+    .card-header p {
+      margin: 2px 0 0 0;
+      font-size: 11px;
+      color: var(--gray-600);
+    }
+    
+    /* Status messages with gradient */
     .status-message {
       padding: 12px;
       margin: 10px 0;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 13px;
+      position: relative;
+      overflow: hidden;
     }
     
     .status-success {
-      background: var(--success-50);
-      border: 1px solid var(--success-200);
-      color: var(--success-700);
+      background: linear-gradient(135deg, #d4f4dd 0%, #c8f1d6 100%);
+      border: 1px solid var(--success-300);
+      color: var(--success-800);
     }
     
     .status-error {
-      background: var(--error-50);
-      border: 1px solid var(--error-200);
-      color: var(--error-700);
+      background: linear-gradient(135deg, #fee4e2 0%, #fecaca 100%);
+      border: 1px solid var(--error-300);
+      color: var(--error-800);
     }
     
     .status-info {
-      background: var(--info-50);
-      border: 1px solid var(--info-200);
-      color: var(--info-700);
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      border: 1px solid var(--info-300);
+      color: var(--info-800);
     }
     
+    /* Enhanced buttons */
+    .btn {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+    }
+    
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+      color: var(--gray-700);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    }
+    
+    .btn-success:hover {
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    /* Preview container with gradient */
     .preview-container {
-      background: var(--gray-50);
+      background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+      border: 1px solid var(--gray-200);
       border-radius: 8px;
       padding: 12px;
       margin: 12px 0;
@@ -39,21 +161,75 @@
     .slide-preview {
       background: white;
       border: 1px solid var(--gray-200);
-      border-radius: 4px;
-      padding: 8px;
+      border-radius: 6px;
+      padding: 10px;
       margin: 8px 0;
+      transition: all 0.2s ease;
+    }
+    
+    .slide-preview:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transform: translateX(2px);
     }
     
     .slide-preview h4 {
       margin: 0 0 4px 0;
       font-size: 12px;
       color: var(--gray-700);
+      font-weight: 600;
     }
     
     .slide-preview p {
       margin: 0;
       font-size: 11px;
       color: var(--gray-600);
+      line-height: 1.4;
+    }
+    
+    /* Selection info box */
+    #currentSelection {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border: 1px solid var(--info-200);
+    }
+    
+    #currentSelection code {
+      background: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--primary-600);
+      border: 1px solid var(--gray-200);
+    }
+    
+    /* Form controls enhancement */
+    .form-control {
+      border: 1px solid var(--gray-300);
+      transition: all 0.2s ease;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary-500);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      outline: none;
+    }
+    
+    .form-label {
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+    
+    /* Result container with gradient */
+    .status-success {
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--success-300);
+    }
+    
+    #presentationUrl {
+      font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+      font-size: 11px;
+      background: linear-gradient(135deg, #fafbfc 0%, #f0f7ff 100%);
     }
   </style>
 </head>
@@ -434,31 +610,31 @@
       // Call server function
       google.script.run
         .withSuccessHandler(function(result) {
-          if (result.success && result.presentationId) {
+          console.log('Create presentation result:', result);
+          if (result.success && result.url) {
             presentationUrl = result.url;
+            showResult(result);
+            showStatus('Presentation created successfully!', 'success');
             
-            // Apply template
-            google.script.run
-              .withSuccessHandler(function(templateResult) {
-                if (templateResult.success) {
-                  showResult(result);
-                  showStatus('Presentation created with ' + config.template + ' template!', 'success');
-                } else {
-                  showResult(result);
-                  showStatus('Presentation created (template not applied)', 'success');
-                }
-              })
-              .withFailureHandler(function(error) {
-                showResult(result);
-                showStatus('Presentation created (template error)', 'success');
-              })
-              .applyCellM8Template(result, config.template);
+            // Optionally apply template (for future enhancement)
+            if (config.template && config.template !== 'simple') {
+              google.script.run
+                .withSuccessHandler(function(templateResult) {
+                  console.log('Template applied:', templateResult);
+                })
+                .withFailureHandler(function(error) {
+                  console.log('Template error:', error);
+                })
+                .applyCellM8Template({id: result.presentationId}, config.template);
+            }
           } else {
             showStatus(result.error || 'Failed to create presentation', 'error');
+            console.error('Creation failed:', result);
           }
         })
         .withFailureHandler(function(error) {
           showStatus('Error: ' + error.message, 'error');
+          console.error('Creation error:', error);
         })
         .createCellM8Presentation(config);
     }

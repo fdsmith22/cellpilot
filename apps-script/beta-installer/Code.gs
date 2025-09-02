@@ -714,7 +714,7 @@ function showCellM8() { return CellPilot.showCellM8(); }
 function previewCellM8Presentation(config) { return CellPilot.previewCellM8Presentation(config); }
 function createCellM8Presentation(config) { return CellPilot.createCellM8Presentation(config); }
 function testCellM8Function() { return CellPilot.testCellM8Function(); }
-function extractCellM8Data() { return CellPilot.extractCellM8Data(); }
+function extractCellM8Data(options) { return CellPilot.extractCellM8Data(options); }
 function analyzeCellM8Data(data) { return CellPilot.analyzeCellM8Data(data); }
 function generateCellM8Slides(presentation, data, config) { return CellPilot.generateCellM8Slides(presentation, data, config); }
 function applyCellM8Template(presentation, templateName) { return CellPilot.applyCellM8Template(presentation, templateName); }
