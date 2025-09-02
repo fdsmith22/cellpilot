@@ -1777,6 +1777,34 @@ function testCellM8Function() {
   };
 }
 
+function extractCellM8Data() {
+  return CellM8.extractSheetData();
+}
+
+function analyzeCellM8Data(data) {
+  return CellM8.analyzeData(data);
+}
+
+function generateCellM8Slides(presentation, data, config) {
+  return CellM8.generateSlides(presentation, data, config);
+}
+
+function applyCellM8Template(presentation, templateName) {
+  return CellM8.applyTemplate(presentation, templateName);
+}
+
+function createCellM8Chart(data, chartType) {
+  return CellM8.createChart(data, chartType);
+}
+
+function exportCellM8Presentation(presentationId, format) {
+  return CellM8.exportPresentation(presentationId, format);
+}
+
+function shareCellM8Presentation(presentationId, emails, permission) {
+  return CellM8.sharePresentation(presentationId, emails, permission);
+}
+
 /**
  * Show a toast notification
  * @param {string} message - The message to display

@@ -2237,7 +2237,7 @@ function showExcelMigration() {
 }
 
 /**
- * CellM8 Presentation Helper Functions (Simplified)
+ * CellM8 Presentation Helper Functions (Expanded)
  */
 function showCellM8() {
   return CellPilot.showCellM8();
@@ -2253,6 +2253,34 @@ function createCellM8Presentation(config) {
 
 function testCellM8Function() {
   return CellPilot.testCellM8Function();
+}
+
+function extractCellM8Data() {
+  return CellPilot.extractCellM8Data();
+}
+
+function analyzeCellM8Data(data) {
+  return CellPilot.analyzeCellM8Data(data);
+}
+
+function generateCellM8Slides(presentation, data, config) {
+  return CellPilot.generateCellM8Slides(presentation, data, config);
+}
+
+function applyCellM8Template(presentation, templateName) {
+  return CellPilot.applyCellM8Template(presentation, templateName);
+}
+
+function createCellM8Chart(data, chartType) {
+  return CellPilot.createCellM8Chart(data, chartType);
+}
+
+function exportCellM8Presentation(presentationId, format) {
+  return CellPilot.exportCellM8Presentation(presentationId, format);
+}
+
+function shareCellM8Presentation(presentationId, emails, permission) {
+  return CellPilot.shareCellM8Presentation(presentationId, emails, permission);
 }
 
 /**

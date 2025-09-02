@@ -98,6 +98,15 @@
             <option value="10">10 slides</option>
           </select>
         </div>
+        
+        <div class="form-group">
+          <label class="form-label">Template Style</label>
+          <select id="templateStyle" class="form-control">
+            <option value="simple" selected>Simple</option>
+            <option value="professional">Professional</option>
+            <option value="modern">Modern</option>
+          </select>
+        </div>
       </div>
     </div>
     
@@ -166,7 +175,8 @@
       const config = {
         title: document.getElementById('presentationTitle').value,
         subtitle: document.getElementById('presentationSubtitle').value,
-        slideCount: parseInt(document.getElementById('slideCount').value)
+        slideCount: parseInt(document.getElementById('slideCount').value),
+        template: document.getElementById('templateStyle').value
       };
       
       if (!config.title) {
@@ -175,23 +185,51 @@
       }
       
       // Show loading
-      showStatus('Generating preview...', 'info');
+      showStatus('Analyzing data and generating preview...', 'info');
       
-      // Call server function
+      // First extract and analyze data
       google.script.run
-        .withSuccessHandler(function(result) {
-          if (result.success) {
-            currentPreview = result;
-            displayPreview(result);
-            showStatus('Preview generated successfully', 'success');
+        .withSuccessHandler(function(dataResult) {
+          if (dataResult.success) {
+            // Now analyze the data
+            google.script.run
+              .withSuccessHandler(function(analysisResult) {
+                if (analysisResult.success) {
+                  config.analysis = analysisResult.analysis;
+                  config.data = dataResult;
+                  
+                  // Generate preview with analyzed data
+                  google.script.run
+                    .withSuccessHandler(function(result) {
+                      if (result.success) {
+                        currentPreview = result;
+                        currentPreview.analysis = analysisResult.analysis;
+                        displayPreview(result);
+                        showStatus('Preview generated with data analysis', 'success');
+                      } else {
+                        showStatus(result.error || 'Failed to generate preview', 'error');
+                      }
+                    })
+                    .withFailureHandler(function(error) {
+                      showStatus('Error: ' + error.message, 'error');
+                    })
+                    .previewCellM8Presentation(config);
+                } else {
+                  showStatus('Failed to analyze data', 'error');
+                }
+              })
+              .withFailureHandler(function(error) {
+                showStatus('Error analyzing data: ' + error.message, 'error');
+              })
+              .analyzeCellM8Data(dataResult);
           } else {
-            showStatus(result.error || 'Failed to generate preview', 'error');
+            showStatus('No data found to preview', 'error');
           }
         })
         .withFailureHandler(function(error) {
-          showStatus('Error: ' + error.message, 'error');
+          showStatus('Error extracting data: ' + error.message, 'error');
         })
-        .previewCellM8Presentation(config);
+        .extractCellM8Data();
     }
     
     // Display preview
@@ -203,7 +241,30 @@
       
       if (preview.dataInfo) {
         html += '<p style="font-size: 11px; color: var(--gray-600); margin-bottom: 8px;">';
-        html += 'Data: ' + preview.dataInfo.rows + ' rows × ' + preview.dataInfo.columns + ' columns</p>';
+        html += 'Data: ' + preview.dataInfo.rows + ' rows × ' + preview.dataInfo.columns + ' columns';
+        
+        if (preview.analysis && preview.analysis.completeness) {
+          html += ' | Completeness: ' + preview.analysis.completeness + '%';
+        }
+        html += '</p>';
+      }
+      
+      // Show analysis insights if available
+      if (preview.analysis && preview.analysis.statistics) {
+        html += '<div style="background: var(--info-50); padding: 8px; border-radius: 4px; margin-bottom: 8px;">';
+        html += '<p style="font-size: 11px; margin: 0; font-weight: 600;">Data Analysis:</p>';
+        html += '<ul style="margin: 4px 0 0 16px; padding: 0; font-size: 11px;">';
+        
+        const stats = Object.keys(preview.analysis.statistics).slice(0, 3);
+        stats.forEach(function(key) {
+          const stat = preview.analysis.statistics[key];
+          if (stat && stat.average) {
+            html += '<li>' + key + ': Avg ' + Math.round(stat.average) + '</li>';
+          }
+        });
+        
+        html += '</ul>';
+        html += '</div>';
       }
       
       // Show slide previews
@@ -211,7 +272,17 @@
         preview.slides.forEach(function(slide, index) {
           html += '<div class="slide-preview">';
           html += '<h4>Slide ' + (index + 1) + ': ' + slide.title + '</h4>';
-          html += '<p>' + (slide.subtitle || slide.content || '') + '</p>';
+          
+          if (slide.bullets && slide.bullets.length > 0) {
+            html += '<ul style="margin: 4px 0 0 16px; padding: 0; font-size: 10px;">';
+            slide.bullets.forEach(function(bullet) {
+              html += '<li>' + bullet + '</li>';
+            });
+            html += '</ul>';
+          } else {
+            html += '<p>' + (slide.subtitle || slide.content || '') + '</p>';
+          }
+          
           html += '</div>';
         });
       }
@@ -226,6 +297,7 @@
         title: document.getElementById('presentationTitle').value,
         subtitle: document.getElementById('presentationSubtitle').value,
         slideCount: parseInt(document.getElementById('slideCount').value),
+        template: document.getElementById('templateStyle').value,
         content: currentPreview ? currentPreview.slides : []
       };
       
@@ -235,15 +307,30 @@
       }
       
       // Show loading
-      showStatus('Creating presentation...', 'info');
+      showStatus('Creating presentation with ' + config.template + ' template...', 'info');
       
       // Call server function
       google.script.run
         .withSuccessHandler(function(result) {
-          if (result.success) {
+          if (result.success && result.presentationId) {
             presentationUrl = result.url;
-            showResult(result);
-            showStatus('Presentation created successfully!', 'success');
+            
+            // Apply template
+            google.script.run
+              .withSuccessHandler(function(templateResult) {
+                if (templateResult.success) {
+                  showResult(result);
+                  showStatus('Presentation created with ' + config.template + ' template!', 'success');
+                } else {
+                  showResult(result);
+                  showStatus('Presentation created (template not applied)', 'success');
+                }
+              })
+              .withFailureHandler(function(error) {
+                showResult(result);
+                showStatus('Presentation created (template error)', 'success');
+              })
+              .applyCellM8Template(result, config.template);
           } else {
             showStatus(result.error || 'Failed to create presentation', 'error');
           }

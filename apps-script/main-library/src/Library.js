@@ -157,11 +157,18 @@ var detectVBAMacros = detectVBAMacros || function(content) { return ExcelMigrati
 var createMigrationReport = createMigrationReport || function(migrationResults) { return ExcelMigration.createMigrationReport(migrationResults); };
 var showExcelMigration = showExcelMigration || function() { return showExcelMigration(); };
 
-// CellM8 Presentation Functions (Simplified)
+// CellM8 Presentation Functions (Expanded)
 var showCellM8 = showCellM8 || function() { return showCellM8(); };
 var previewCellM8Presentation = previewCellM8Presentation || function(config) { return previewCellM8Presentation(config); };
 var createCellM8Presentation = createCellM8Presentation || function(config) { return createCellM8Presentation(config); };
 var testCellM8Function = testCellM8Function || function() { return testCellM8Function(); };
+var extractCellM8Data = extractCellM8Data || function() { return extractCellM8Data(); };
+var analyzeCellM8Data = analyzeCellM8Data || function(data) { return analyzeCellM8Data(data); };
+var generateCellM8Slides = generateCellM8Slides || function(presentation, data, config) { return generateCellM8Slides(presentation, data, config); };
+var applyCellM8Template = applyCellM8Template || function(presentation, templateName) { return applyCellM8Template(presentation, templateName); };
+var createCellM8Chart = createCellM8Chart || function(data, chartType) { return createCellM8Chart(data, chartType); };
+var exportCellM8Presentation = exportCellM8Presentation || function(presentationId, format) { return exportCellM8Presentation(presentationId, format); };
+var shareCellM8Presentation = shareCellM8Presentation || function(presentationId, emails, permission) { return shareCellM8Presentation(presentationId, emails, permission); };
 var chunkArray = chunkArray || function(array, size) { return CellM8.chunkArray(array, size); };
 var trackPresentationCreation = trackPresentationCreation || function(config, result) { return CellM8.trackPresentationCreation(config, result); };
 
