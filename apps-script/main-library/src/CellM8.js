@@ -181,37 +181,62 @@ const CellM8 = {
       const slides = pres.getSlides();
       const titleSlide = slides[0];
       
-      // Set title and subtitle
-      const titleShape = titleSlide.getPlaceholder(SlidesApp.PlaceholderType.TITLE);
-      const subtitleShape = titleSlide.getPlaceholder(SlidesApp.PlaceholderType.SUBTITLE);
+      // Set title and subtitle using page elements
+      const pageElements = titleSlide.getPageElements();
       
-      if (titleShape) {
-        titleShape.getText().setText(config.title);
-      }
-      
-      if (subtitleShape) {
-        const subtitle = config.subtitle || `Data Analysis - ${dataResult.rowCount} rows × ${dataResult.columnCount} columns`;
-        subtitleShape.getText().setText(subtitle);
+      // Find title and subtitle shapes
+      for (let i = 0; i < pageElements.length; i++) {
+        const element = pageElements[i];
+        const type = element.getPageElementType();
+        
+        if (type === SlidesApp.PageElementType.SHAPE) {
+          const shape = element.asShape();
+          try {
+            const placeholder = shape.getPlaceholderType();
+            
+            if (placeholder === SlidesApp.PlaceholderType.TITLE || 
+                placeholder === SlidesApp.PlaceholderType.CENTERED_TITLE) {
+              shape.getText().setText(config.title);
+            } else if (placeholder === SlidesApp.PlaceholderType.SUBTITLE || 
+                       placeholder === SlidesApp.PlaceholderType.BODY) {
+              const subtitle = config.subtitle || `Data Analysis - ${dataResult.rowCount} rows × ${dataResult.columnCount} columns`;
+              shape.getText().setText(subtitle);
+            }
+          } catch (e) {
+            // Not a placeholder, skip
+          }
+        }
       }
       
       // Add overview slide
       const overviewSlide = pres.appendSlide(SlidesApp.PredefinedLayout.TITLE_AND_BODY);
-      const overviewTitle = overviewSlide.getPlaceholder(SlidesApp.PlaceholderType.TITLE);
-      const overviewBody = overviewSlide.getPlaceholder(SlidesApp.PlaceholderType.BODY);
       
-      if (overviewTitle) {
-        overviewTitle.getText().setText('Data Overview');
-      }
-      
-      if (overviewBody) {
-        let overviewText = `Dataset Information:\n`;
-        overviewText += `• Total Rows: ${dataResult.rowCount}\n`;
-        overviewText += `• Total Columns: ${dataResult.columnCount}\n`;
-        overviewText += `• Headers: ${dataResult.headers.slice(0, 5).join(', ')}`;
-        if (dataResult.headers.length > 5) {
-          overviewText += ` (and ${dataResult.headers.length - 5} more)`;
+      // Get page elements and find placeholders
+      const overviewElements = overviewSlide.getPageElements();
+      for (let i = 0; i < overviewElements.length; i++) {
+        const element = overviewElements[i];
+        if (element.getPageElementType() === SlidesApp.PageElementType.SHAPE) {
+          const shape = element.asShape();
+          try {
+            const placeholder = shape.getPlaceholderType();
+            
+            if (placeholder === SlidesApp.PlaceholderType.TITLE || 
+                placeholder === SlidesApp.PlaceholderType.CENTERED_TITLE) {
+              shape.getText().setText('Data Overview');
+            } else if (placeholder === SlidesApp.PlaceholderType.BODY) {
+              let overviewText = `Dataset Information:\n`;
+              overviewText += `• Total Rows: ${dataResult.rowCount}\n`;
+              overviewText += `• Total Columns: ${dataResult.columnCount}\n`;
+              overviewText += `• Headers: ${dataResult.headers.slice(0, 5).join(', ')}`;
+              if (dataResult.headers.length > 5) {
+                overviewText += ` (and ${dataResult.headers.length - 5} more)`;
+              }
+              shape.getText().setText(overviewText);
+            }
+          } catch (e) {
+            // Not a placeholder
+          }
         }
-        overviewBody.getText().setText(overviewText);
       }
       
       // Add data table slide (if data exists)
@@ -282,19 +307,28 @@ const CellM8 = {
               }
             }
           } else {
-            // Regular slide
-            const title = slide.getPlaceholder(SlidesApp.PlaceholderType.TITLE);
-            const body = slide.getPlaceholder(SlidesApp.PlaceholderType.BODY);
-            
-            if (title) {
-              title.getText().setText(slideData.title || `Slide ${i + 3}`);
-            }
-            
-            if (body) {
-              if (slideData.bullets && slideData.bullets.length > 0) {
-                body.getText().setText(slideData.bullets.join('\n• '));
-              } else {
-                body.getText().setText(slideData.content || slideData.subtitle || '');
+            // Regular slide - find placeholders safely
+            const slideElements = slide.getPageElements();
+            for (let j = 0; j < slideElements.length; j++) {
+              const element = slideElements[j];
+              if (element.getPageElementType() === SlidesApp.PageElementType.SHAPE) {
+                const shape = element.asShape();
+                try {
+                  const placeholder = shape.getPlaceholderType();
+                  
+                  if (placeholder === SlidesApp.PlaceholderType.TITLE || 
+                      placeholder === SlidesApp.PlaceholderType.CENTERED_TITLE) {
+                    shape.getText().setText(slideData.title || `Slide ${i + 3}`);
+                  } else if (placeholder === SlidesApp.PlaceholderType.BODY) {
+                    if (slideData.bullets && slideData.bullets.length > 0) {
+                      shape.getText().setText(slideData.bullets.join('\n• '));
+                    } else {
+                      shape.getText().setText(slideData.content || slideData.subtitle || '');
+                    }
+                  }
+                } catch (e) {
+                  // Not a placeholder
+                }
               }
             }
           }
