@@ -1242,11 +1242,23 @@
     
     function previewPresentation() {
       const config = gatherConfig();
-      showLoading('Generating preview...');
+      showLoading('Generating preview...', 'Preparing to analyze your data');
+      
+      // Simulate stage progression for better UX
+      setTimeout(() => updateLoadingStage('extract'), 100);
+      setTimeout(() => updateLoadingStage('analyze'), 800);
+      setTimeout(() => updateLoadingStage('structure'), 1500);
+      setTimeout(() => updateLoadingStage('generate'), 2200);
       
       google.script.run
-        .withSuccessHandler(showPreview)
-        .withFailureHandler(showError)
+        .withSuccessHandler(result => {
+          updateLoadingStage('generate', 'completed');
+          setTimeout(() => showPreview(result), 300);
+        })
+        .withFailureHandler(error => {
+          hideLoading();
+          showError(error);
+        })
         .previewPresentation(config);
     }
     
@@ -1560,6 +1572,8 @@
     function showSuccess(result) {
       hideLoading();
       
+      console.log('Success result:', result); // Debug log
+      
       // Update success message with details
       document.getElementById('slideCountResult').textContent = result.slideCount || 0;
       
@@ -1572,8 +1586,24 @@
         nameElement.style.display = 'none';
       }
       
-      // Store the URL for opening
+      // Store the URL for opening - check both possible properties
       window.presentationUrl = result.presentationUrl || result.url;
+      
+      // Debug: log the URL
+      console.log('Presentation URL:', window.presentationUrl);
+      
+      // If no URL, show an error message
+      if (!window.presentationUrl) {
+        console.error('No presentation URL found in result:', result);
+        // Still show success but disable the open button
+        const openBtn = document.querySelector('.success-btn');
+        if (openBtn) {
+          openBtn.disabled = true;
+          openBtn.style.opacity = '0.5';
+          openBtn.style.cursor = 'not-allowed';
+          openBtn.title = 'URL not available';
+        }
+      }
       
       // Show success message
       document.getElementById('successMessage').classList.add('show');
@@ -1601,8 +1631,19 @@
     }
     
     function openPresentation() {
+      console.log('Opening presentation, URL:', window.presentationUrl);
+      
       if (window.presentationUrl) {
-        window.open(window.presentationUrl, '_blank');
+        // Ensure the URL is complete
+        let url = window.presentationUrl;
+        if (!url.startsWith('http')) {
+          // If it's just an ID, construct the full URL
+          url = `https://docs.google.com/presentation/d/${url}/edit`;
+        }
+        console.log('Opening URL:', url);
+        window.open(url, '_blank');
+      } else {
+        alert('Presentation URL is not available. Please try generating the presentation again.');
       }
     }
     
