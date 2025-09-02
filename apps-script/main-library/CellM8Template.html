@@ -1186,12 +1186,11 @@
     }
     
     // Get current selection when page loads
-    window.addEventListener('DOMContentLoaded', function() {
-      google.script.run
-        .withSuccessHandler(updateSelectionDisplay)
-        .withFailureHandler(function(err) { console.error('Failed to get selection:', err); })
-        .getCurrentSelection();
-    });
+    // Use immediate execution instead of DOMContentLoaded
+    google.script.run
+      .withSuccessHandler(updateSelectionDisplay)
+      .withFailureHandler(function(err) { console.error('Failed to get selection:', err); })
+      .getCurrentSelection();
     
     function updateSelectionDisplay(selection) {
       currentSelection = selection;
