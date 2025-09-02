@@ -1149,34 +1149,8 @@
     var selectedTemplate = 'corporate';
     var currentSelection = null;
     
-    // Get current selection on load
-    window.addEventListener('DOMContentLoaded', function() {
-      google.script.run
-        .withSuccessHandler(updateSelectionDisplay)
-        .withFailureHandler(function(err) { console.error('Failed to get selection:', err); })
-        .getCurrentSelection();
-    });
-    
-    function updateSelectionDisplay(selection) {
-      currentSelection = selection;
-      const selectionDesc = document.getElementById('selectionDesc');
-      if (selection && selection.range) {
-        selectionDesc.textContent = selection.range + ' (' + selection.rows + ' rows × ' + selection.cols + ' cols)';
-        selectionDesc.style.color = 'var(--primary-600)';
-        selectionDesc.style.fontWeight = '500';
-      } else {
-        selectionDesc.textContent = 'No range selected';
-        selectionDesc.style.color = 'var(--gray-500)';
-        selectionDesc.style.fontWeight = '400';
-      }
-    }
-    
-    window.backToMain = function() {
-      google.script.run.showCellPilotSidebar();
-    }
-    
-    // Make function globally accessible
-    window.selectSource = function(element, source) {
+    // Define all functions immediately in global scope to ensure they're available
+    function selectSource(element, source) {
       document.querySelectorAll('.source-option').forEach(el => el.classList.remove('selected'));
       element.classList.add('selected');
       selectedSource = source;
@@ -1212,7 +1186,38 @@
       }
     }
     
-    window.selectTemplate = function(element, template) {
+    // Also define with window prefix for redundancy
+    window.selectSource = selectSource;
+    
+    // Get current selection on load
+    window.addEventListener('DOMContentLoaded', function() {
+      google.script.run
+        .withSuccessHandler(updateSelectionDisplay)
+        .withFailureHandler(function(err) { console.error('Failed to get selection:', err); })
+        .getCurrentSelection();
+    });
+    
+    function updateSelectionDisplay(selection) {
+      currentSelection = selection;
+      const selectionDesc = document.getElementById('selectionDesc');
+      if (selection && selection.range) {
+        selectionDesc.textContent = selection.range + ' (' + selection.rows + ' rows × ' + selection.cols + ' cols)';
+        selectionDesc.style.color = 'var(--primary-600)';
+        selectionDesc.style.fontWeight = '500';
+      } else {
+        selectionDesc.textContent = 'No range selected';
+        selectionDesc.style.color = 'var(--gray-500)';
+        selectionDesc.style.fontWeight = '400';
+      }
+    }
+    
+    function backToMain() {
+      google.script.run.showCellPilotSidebar();
+    }
+    
+    // This function is already defined above, removing duplicate
+    
+    function selectTemplate(element, template) {
       document.querySelectorAll('.template-card').forEach(el => el.classList.remove('selected'));
       element.classList.add('selected');
       selectedTemplate = template;
@@ -1226,7 +1231,7 @@
       }
     }
     
-    window.updateSlideCount = function(value) {
+    function updateSlideCount(value) {
       document.getElementById('slideCount').textContent = value;
     }
     
@@ -1237,12 +1242,12 @@
       options.classList.toggle('show');
     }
     
-    window.uploadTemplate = function() {
+    function uploadTemplate() {
       // This would trigger file upload in a real implementation
       alert('Template upload feature coming soon! For now, please paste a Google Slides template URL.');
     }
     
-    window.previewPresentation = function() {
+    function previewPresentation() {
       const config = gatherConfig();
       showLoading('Generating preview...', 'Preparing to analyze your data');
       
@@ -1264,7 +1269,7 @@
         .previewPresentation(config);
     }
     
-    window.generatePresentation = function() {
+    function generatePresentation() {
       const config = gatherConfig();
       
       // Validate custom template if selected
@@ -1562,11 +1567,11 @@
       document.getElementById('previewModal').classList.add('show');
     }
     
-    window.closePreview = function() {
+    function closePreview() {
       document.getElementById('previewModal').classList.remove('show');
     }
     
-    window.generateFromPreview = function() {
+    function generateFromPreview() {
       closePreview();
       generatePresentation();
     }
@@ -1632,7 +1637,7 @@
       alert('Error: ' + errorMessage);
     }
     
-    window.openPresentation = function() {
+    function openPresentation() {
       console.log('Opening presentation, URL:', window.presentationUrl);
       
       if (window.presentationUrl) {
@@ -1649,7 +1654,7 @@
       }
     }
     
-    window.createAnother = function() {
+    function createAnother() {
       document.getElementById('successMessage').classList.remove('show');
       // Reset form
       document.getElementById('slideSlider').value = 12;
