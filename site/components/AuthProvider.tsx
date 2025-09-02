@@ -70,7 +70,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             newsletter_subscribed: metadata.newsletter_subscribed,
             updated_at: new Date().toISOString(),
           })
-          .onConflict('id')
       }
       
       return { error: null }
