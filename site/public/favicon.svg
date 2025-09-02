@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 64 64" width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(4, 4)">
+    <path d="M4 4 Q4 0 8 0 L48 0 Q52 0 52 4 L52 52 Q52 56 48 56 L8 56 Q4 56 4 52 Z" 
+          fill="none" stroke="#2563eb" stroke-width="2.5"/>
+    <line x1="28" y1="0" x2="28" y2="56" stroke="#60a5fa" stroke-width="1"/>
+    <line x1="4" y1="28" x2="52" y2="28" stroke="#60a5fa" stroke-width="1"/>
+    <g transform="translate(8, 8)">
+      <rect x="0" y="0" width="8" height="8" fill="#e5e7eb" opacity="0.8"/>
+      <rect x="8" y="0" width="8" height="8" fill="#3b82f6" opacity="0.3"/>
+      <rect x="16" y="0" width="8" height="8" fill="#60a5fa" opacity="0.2"/>
+      <rect x="24" y="0" width="8" height="8" fill="#e5e7eb" opacity="0.8"/>
+      <rect x="0" y="8" width="8" height="8" fill="#60a5fa" opacity="0.2"/>
+      <rect x="8" y="8" width="8" height="8" fill="#3b82f6"/>
+      <rect x="16" y="8" width="8" height="8" fill="#e5e7eb" opacity="0.8"/>
+      <rect x="24" y="8" width="8" height="8" fill="#60a5fa" opacity="0.3"/>
+      <rect x="0" y="16" width="8" height="8" fill="#e5e7eb" opacity="0.8"/>
+      <rect x="8" y="16" width="8" height="8" fill="#60a5fa" opacity="0.2"/>
+      <rect x="16" y="16" width="8" height="8" fill="#e5e7eb" opacity="0.8"/>
+      <rect x="24" y="16" width="8" height="8" fill="#e5e7eb" opacity="0.8"/>
+    </g>
+    <g transform="translate(28, 28)">
+      <circle r="4" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+      <line x1="-6" y1="0" x2="6" y2="0" stroke="#2563eb" stroke-width="1"/>
+      <line x1="0" y1="-6" x2="0" y2="6" stroke="#2563eb" stroke-width="1"/>
+    </g>
+  </g>
+</svg>
