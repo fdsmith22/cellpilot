@@ -1805,6 +1805,22 @@ function shareCellM8Presentation(presentationId, emails, permission) {
   return CellM8.sharePresentation(presentationId, emails, permission);
 }
 
+function getCellM8Selection() {
+  return CellM8.getCurrentSelection();
+}
+
+function selectCellM8EntireDataRange() {
+  return CellM8.selectEntireDataRange();
+}
+
+function selectCellM8Range(rangeA1) {
+  return CellM8.selectRange(rangeA1);
+}
+
+function getCellM8AvailableSheets() {
+  return CellM8.getAvailableSheets();
+}
+
 /**
  * Show a toast notification
  * @param {string} message - The message to display

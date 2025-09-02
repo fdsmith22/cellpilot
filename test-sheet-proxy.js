@@ -2283,6 +2283,22 @@ function shareCellM8Presentation(presentationId, emails, permission) {
   return CellPilot.shareCellM8Presentation(presentationId, emails, permission);
 }
 
+function getCellM8Selection() {
+  return CellPilot.getCellM8Selection();
+}
+
+function selectCellM8EntireDataRange() {
+  return CellPilot.selectCellM8EntireDataRange();
+}
+
+function selectCellM8Range(rangeA1) {
+  return CellPilot.selectCellM8Range(rangeA1);
+}
+
+function getCellM8AvailableSheets() {
+  return CellPilot.getCellM8AvailableSheets();
+}
+
 /**
  * Data Pipeline Functions
  */

@@ -1,13 +1,100 @@
-# CellPilot Project - Complete Development Context & CellM8 Integration Summary
+# CellM8 Integration & Development Guide
 
 ## Project Overview
-CellPilot is a Google Sheets add-on distributed as a Google Apps Script library. It provides advanced spreadsheet functionality including data pipeline tools, visualization helpers, and the newly integrated CellM8 presentation generator.
+CellPilot is a Google Sheets add-on distributed as a Google Apps Script library. CellM8 is a presentation generator feature that transforms spreadsheet data into Google Slides presentations.
 
 ### Key Project Locations
 - **Main Library**: `/home/freddy/cellpilot/apps-script/main-library/`
 - **Beta Installer**: `/home/freddy/cellpilot/apps-script/beta-installer/`
 - **Test Proxy**: `/home/freddy/cellpilot/test-sheet-proxy.js`
 - **Deployment**: Using `clasp` CLI for Google Apps Script
+
+## CellM8 Development Process - CRITICAL STEPS
+
+### When Adding New CellM8 Features - Follow This Exact Process:
+
+#### Step 1: Add Function to CellM8.js
+```javascript
+// In /apps-script/main-library/src/CellM8.js
+const CellM8 = {
+  // Add your new function here
+  yourNewFunction: function(params) {
+    try {
+      // Implementation
+      return { success: true, data: result };
+    } catch (error) {
+      Logger.error('Error in yourNewFunction:', error);
+      return { success: false, error: error.toString() };
+    }
+  }
+};
+```
+
+#### Step 2: Create Proxy in Code.js
+```javascript
+// In /apps-script/main-library/src/Code.js
+// Add in the CellM8 Helper Functions section (around line 1761)
+function yourNewCellM8Function(params) {
+  return CellM8.yourNewFunction(params);
+}
+```
+
+#### Step 3: Export in Library.js
+```javascript
+// In /apps-script/main-library/src/Library.js
+// Add in CellM8 section (around line 160)
+var yourNewCellM8Function = yourNewCellM8Function || function(params) { 
+  return yourNewCellM8Function(params); 
+};
+```
+
+#### Step 4: Add to Beta Installer
+```javascript
+// In /apps-script/beta-installer/Code.gs
+// Add in CellM8 section (around line 712)
+function yourNewCellM8Function(params) { 
+  return CellPilot.yourNewCellM8Function(params); 
+}
+```
+
+#### Step 5: Add to Test Sheet Proxy
+```javascript
+// In /test-sheet-proxy.js
+// Add in CellM8 section (around line 2240)
+function yourNewCellM8Function(params) {
+  return CellPilot.yourNewCellM8Function(params);
+}
+```
+
+#### Step 6: Update UI Template if Needed
+```javascript
+// In /apps-script/main-library/CellM8Template.html
+// Call your function from JavaScript
+google.script.run
+  .withSuccessHandler(function(result) {
+    // Handle success
+  })
+  .withFailureHandler(function(error) {
+    // Handle error
+  })
+  .yourNewCellM8Function(params);
+```
+
+### Deployment Commands
+```bash
+# From /apps-script/main-library
+clasp push
+
+# From /apps-script/beta-installer  
+cd ../beta-installer && clasp push
+
+# Deploy new version
+clasp deploy --description "CellM8: Added new feature"
+
+# Commit changes
+git add -A
+git commit -m "CellM8: Description of changes"
+```
 
 ## Architecture & Function Export Pattern
 
@@ -88,7 +175,36 @@ CardService.newTextParagraph()
   .setText('<b>CellM8 Presentation Helper</b>\nTransform data into presentations')
 ```
 
-### All 34 CellM8 Functions (Must be in all 4 locations)
+## Current CellM8 Implementation Status (2025-09-02)
+
+### Core Functions (Implemented & Working)
+```javascript
+// Basic operations
+showCellM8()                          // Opens the CellM8 sidebar
+testCellM8Function()                  // Tests CellM8 connectivity
+extractCellM8Data()                   // Extracts data from active sheet
+getCurrentSelection()                 // Gets selected range info
+
+// Presentation operations  
+previewCellM8Presentation(config)    // Generates preview
+createCellM8Presentation(config)     // Creates actual presentation
+generateCellM8Slides(presentation, data, config) // Generates slide content
+
+// Analysis functions
+analyzeCellM8Data(data)              // Analyzes data for insights
+detectColumnType(columnData)         // Detects column data types
+calculateColumnStats(columnData)     // Calculates statistics
+
+// Template and styling
+applyCellM8Template(presentation, templateName) // Applies templates
+createCellM8Chart(data, chartType)   // Creates charts
+
+// Export and sharing
+exportCellM8Presentation(presentationId, format) // Export as PDF/PPTX
+shareCellM8Presentation(presentationId, emails, permission) // Share
+```
+
+### Functions to Re-implement (From Original)
 ```javascript
 // Core functions
 showCellM8()

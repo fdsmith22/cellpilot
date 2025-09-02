@@ -169,6 +169,10 @@ var applyCellM8Template = applyCellM8Template || function(presentation, template
 var createCellM8Chart = createCellM8Chart || function(data, chartType) { return createCellM8Chart(data, chartType); };
 var exportCellM8Presentation = exportCellM8Presentation || function(presentationId, format) { return exportCellM8Presentation(presentationId, format); };
 var shareCellM8Presentation = shareCellM8Presentation || function(presentationId, emails, permission) { return shareCellM8Presentation(presentationId, emails, permission); };
+var getCellM8Selection = getCellM8Selection || function() { return getCellM8Selection(); };
+var selectCellM8EntireDataRange = selectCellM8EntireDataRange || function() { return selectCellM8EntireDataRange(); };
+var selectCellM8Range = selectCellM8Range || function(rangeA1) { return selectCellM8Range(rangeA1); };
+var getCellM8AvailableSheets = getCellM8AvailableSheets || function() { return getCellM8AvailableSheets(); };
 var chunkArray = chunkArray || function(array, size) { return CellM8.chunkArray(array, size); };
 var trackPresentationCreation = trackPresentationCreation || function(config, result) { return CellM8.trackPresentationCreation(config, result); };
 

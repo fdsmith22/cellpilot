@@ -38,13 +38,21 @@ const CellM8 = {
           range: range.getA1Notation(),
           rows: range.getNumRows(),
           cols: range.getNumColumns(),
-          sheetName: sheet.getName()
+          sheetName: sheet.getName(),
+          hasSelection: true
         };
       }
       
+      // If no selection, return info about the entire sheet
+      const dataRange = sheet.getDataRange();
       return {
-        success: false,
-        message: 'No range selected'
+        success: true,
+        range: dataRange.getA1Notation(),
+        rows: dataRange.getNumRows(),
+        cols: dataRange.getNumColumns(),
+        sheetName: sheet.getName(),
+        hasSelection: false,
+        message: 'No range selected - using entire sheet'
       };
     } catch (error) {
       Logger.error('Error getting selection:', error);
@@ -56,7 +64,85 @@ const CellM8 = {
   },
 
   /**
-   * Create a simple presentation
+   * Select entire data range
+   */
+  selectEntireDataRange: function() {
+    try {
+      const sheet = SpreadsheetApp.getActiveSheet();
+      const dataRange = sheet.getDataRange();
+      sheet.setActiveRange(dataRange);
+      
+      return {
+        success: true,
+        range: dataRange.getA1Notation(),
+        rows: dataRange.getNumRows(),
+        cols: dataRange.getNumColumns()
+      };
+    } catch (error) {
+      Logger.error('Error selecting entire range:', error);
+      return {
+        success: false,
+        error: error.toString()
+      };
+    }
+  },
+
+  /**
+   * Select specific range
+   */
+  selectRange: function(rangeA1) {
+    try {
+      const sheet = SpreadsheetApp.getActiveSheet();
+      const range = sheet.getRange(rangeA1);
+      sheet.setActiveRange(range);
+      
+      return {
+        success: true,
+        range: range.getA1Notation(),
+        rows: range.getNumRows(),
+        cols: range.getNumColumns()
+      };
+    } catch (error) {
+      Logger.error('Error selecting range:', error);
+      return {
+        success: false,
+        error: error.toString()
+      };
+    }
+  },
+
+  /**
+   * Get available sheets
+   */
+  getAvailableSheets: function() {
+    try {
+      const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+      const sheets = spreadsheet.getSheets();
+      
+      const sheetInfo = sheets.map(sheet => ({
+        name: sheet.getName(),
+        rows: sheet.getMaxRows(),
+        cols: sheet.getMaxColumns(),
+        dataRows: sheet.getDataRange().getNumRows(),
+        dataCols: sheet.getDataRange().getNumColumns()
+      }));
+      
+      return {
+        success: true,
+        sheets: sheetInfo,
+        activeSheet: spreadsheet.getActiveSheet().getName()
+      };
+    } catch (error) {
+      Logger.error('Error getting sheets:', error);
+      return {
+        success: false,
+        error: error.toString()
+      };
+    }
+  },
+
+  /**
+   * Create a presentation with data
    */
   createPresentation: function(config) {
     try {
@@ -70,6 +156,20 @@ const CellM8 = {
         };
       }
 
+      // Extract data if not provided
+      let dataResult = null;
+      if (!config.data) {
+        dataResult = this.extractSheetData();
+        if (!dataResult.success) {
+          return {
+            success: false,
+            error: 'Failed to extract data: ' + dataResult.error
+          };
+        }
+      } else {
+        dataResult = config.data;
+      }
+
       // Create presentation using Slides API
       const presentation = SlidesApp.create(config.title);
       const presentationId = presentation.getId();
@@ -77,11 +177,11 @@ const CellM8 = {
       // Get the presentation for editing
       const pres = SlidesApp.openById(presentationId);
       
-      // Add a simple title slide
+      // Add title slide
       const slides = pres.getSlides();
       const titleSlide = slides[0];
       
-      // Get title and subtitle placeholders
+      // Set title and subtitle
       const titleShape = titleSlide.getPlaceholder(SlidesApp.PlaceholderType.TITLE);
       const subtitleShape = titleSlide.getPlaceholder(SlidesApp.PlaceholderType.SUBTITLE);
       
@@ -89,23 +189,114 @@ const CellM8 = {
         titleShape.getText().setText(config.title);
       }
       
-      if (subtitleShape && config.subtitle) {
-        subtitleShape.getText().setText(config.subtitle);
+      if (subtitleShape) {
+        const subtitle = config.subtitle || `Data Analysis - ${dataResult.rowCount} rows × ${dataResult.columnCount} columns`;
+        subtitleShape.getText().setText(subtitle);
       }
       
-      // Add content slides based on config
-      if (config.content && config.content.length > 0) {
-        for (let i = 0; i < Math.min(config.content.length, 5); i++) {
-          const slide = pres.appendSlide(SlidesApp.PredefinedLayout.TITLE_AND_BODY);
-          const title = slide.getPlaceholder(SlidesApp.PlaceholderType.TITLE);
-          const body = slide.getPlaceholder(SlidesApp.PlaceholderType.BODY);
-          
-          if (title) {
-            title.getText().setText(config.content[i].title || `Slide ${i + 2}`);
+      // Add overview slide
+      const overviewSlide = pres.appendSlide(SlidesApp.PredefinedLayout.TITLE_AND_BODY);
+      const overviewTitle = overviewSlide.getPlaceholder(SlidesApp.PlaceholderType.TITLE);
+      const overviewBody = overviewSlide.getPlaceholder(SlidesApp.PlaceholderType.BODY);
+      
+      if (overviewTitle) {
+        overviewTitle.getText().setText('Data Overview');
+      }
+      
+      if (overviewBody) {
+        let overviewText = `Dataset Information:\n`;
+        overviewText += `• Total Rows: ${dataResult.rowCount}\n`;
+        overviewText += `• Total Columns: ${dataResult.columnCount}\n`;
+        overviewText += `• Headers: ${dataResult.headers.slice(0, 5).join(', ')}`;
+        if (dataResult.headers.length > 5) {
+          overviewText += ` (and ${dataResult.headers.length - 5} more)`;
+        }
+        overviewBody.getText().setText(overviewText);
+      }
+      
+      // Add data table slide (if data exists)
+      if (dataResult.data && dataResult.data.length > 0) {
+        const tableSlide = pres.appendSlide(SlidesApp.PredefinedLayout.BLANK);
+        
+        // Add title
+        const titleElement = tableSlide.insertTextBox('Sample Data', 20, 20, 600, 50);
+        titleElement.getText().getTextStyle().setFontSize(24).setBold(true);
+        
+        // Create table
+        const numRows = Math.min(6, dataResult.data.length + 1); // +1 for headers
+        const numCols = Math.min(5, dataResult.headers.length);
+        const table = tableSlide.insertTable(numRows, numCols, 20, 80, 680, 300);
+        
+        // Add headers
+        for (let col = 0; col < numCols; col++) {
+          const cell = table.getCell(0, col);
+          cell.getText().setText(String(dataResult.headers[col] || ''));
+          cell.getFill().setSolidFill('#f0f0f0');
+          cell.getText().getTextStyle().setBold(true);
+        }
+        
+        // Add data rows
+        for (let row = 0; row < numRows - 1; row++) {
+          for (let col = 0; col < numCols; col++) {
+            const cell = table.getCell(row + 1, col);
+            const value = dataResult.data[row] && dataResult.data[row][col];
+            cell.getText().setText(String(value || ''));
           }
+        }
+      }
+      
+      // Add content slides if provided
+      if (config.content && config.content.length > 0) {
+        for (let i = 0; i < Math.min(config.content.length, config.slideCount || 5); i++) {
+          const slideData = config.content[i];
+          const layout = slideData.type === 'table' ? 
+            SlidesApp.PredefinedLayout.BLANK : 
+            SlidesApp.PredefinedLayout.TITLE_AND_BODY;
           
-          if (body) {
-            body.getText().setText(config.content[i].body || 'Content goes here');
+          const slide = pres.appendSlide(layout);
+          
+          if (slideData.type === 'table' && slideData.headers && slideData.rows) {
+            // Create table slide
+            const titleElement = slide.insertTextBox(slideData.title || 'Data Table', 20, 20, 600, 50);
+            titleElement.getText().getTextStyle().setFontSize(24).setBold(true);
+            
+            const table = slide.insertTable(
+              Math.min(slideData.rows.length + 1, 10),
+              Math.min(slideData.headers.length, 5),
+              20, 80, 680, 300
+            );
+            
+            // Add headers
+            for (let col = 0; col < Math.min(slideData.headers.length, 5); col++) {
+              const cell = table.getCell(0, col);
+              cell.getText().setText(String(slideData.headers[col]));
+              cell.getFill().setSolidFill('#f0f0f0');
+              cell.getText().getTextStyle().setBold(true);
+            }
+            
+            // Add rows
+            for (let row = 0; row < Math.min(slideData.rows.length, 9); row++) {
+              for (let col = 0; col < Math.min(slideData.headers.length, 5); col++) {
+                const cell = table.getCell(row + 1, col);
+                cell.getText().setText(String(slideData.rows[row][col] || ''));
+              }
+            }
+          } else {
+            // Regular slide
+            const title = slide.getPlaceholder(SlidesApp.PlaceholderType.TITLE);
+            const body = slide.getPlaceholder(SlidesApp.PlaceholderType.BODY);
+            
+            if (title) {
+              title.getText().setText(slideData.title || `Slide ${i + 3}`);
+            }
+            
+            if (body) {
+              if (slideData.bullets && slideData.bullets.length > 0) {
+                body.getText().setText(slideData.bullets.join('\n• '));
+              } else {
+                body.getText().setText(slideData.content || slideData.subtitle || '');
+              }
+            }
           }
         }
       }
