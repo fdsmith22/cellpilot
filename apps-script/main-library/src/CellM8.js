@@ -284,8 +284,10 @@ const CellM8 = {
       
       return {
         success: true,
-        data: cleanedData,
-        headers: headers,
+        data: {
+          data: cleanedData,
+          headers: headers
+        },
         metadata: {
           sheetName: sheet.getName(),
           rowCount: data.length,
@@ -337,19 +339,20 @@ const CellM8 = {
    * @return {Object} Analysis results
    */
   analyzeDataWithAI: function(data) {
+    const analysis = {
+      dataTypes: {},
+      statistics: {},
+      patterns: {},
+      insights: [],
+      chartRecommendations: [],
+      keyMetrics: [],
+      correlations: [],
+      outliers: [],
+      summaryStats: {},
+      topValues: {}
+    };
+    
     try {
-      const analysis = {
-        dataTypes: {},
-        statistics: {},
-        patterns: {},
-        insights: [],
-        chartRecommendations: [],
-        keyMetrics: [],
-        correlations: [],
-        outliers: [],
-        summaryStats: {},
-        topValues: {}
-      };
       
       // First pass: Analyze each column
       data.headers.forEach((header, index) => {
@@ -382,7 +385,7 @@ const CellM8 = {
           const trend = this.detectTrend(columnData);
           if (trend) {
             analysis.patterns[header] = trend;
-            analysis.insights.push(`${header} shows a ${trend.strength} ${trend.direction} trend (${(trend.confidence * 100).toFixed(0)}% confidence)`);
+            analysis.insights.push(`${header} shows a ${trend.strength} ${trend.direction} trend (R² = ${(trend.rSquared * 100).toFixed(0)}%)`);
           }
           
           // Add to key metrics
@@ -465,13 +468,15 @@ const CellM8 = {
       
     } catch (error) {
       Logger.error('CellM8: Error analyzing data:', error);
+      console.error('CellM8 analyzeDataWithAI error:', error);
+      // Return partial analysis if possible
       return {
-        dataTypes: {},
-        statistics: {},
-        patterns: {},
-        insights: ['Unable to fully analyze data'],
-        chartRecommendations: [],
-        keyMetrics: []
+        dataTypes: analysis.dataTypes || {},
+        statistics: analysis.statistics || {},
+        patterns: analysis.patterns || {},
+        insights: analysis.insights.length > 0 ? analysis.insights : ['Data analysis in progress'],
+        chartRecommendations: analysis.chartRecommendations || [],
+        keyMetrics: analysis.keyMetrics || []
       };
     }
   },
@@ -654,11 +659,7 @@ const CellM8 = {
       return {
         success: true,
         slideCount: slideStructure.slides.length,
-        slides: slideStructure.slides.map(slide => ({
-          type: slide.type,
-          title: slide.title,
-          content: slide.content ? (slide.content.items ? slide.content.items.length + ' items' : 'data') : ''
-        })),
+        slides: slideStructure.slides, // Return full slide objects with all properties
         dataInfo: {
           rows: extractedData.data.data.length,
           columns: extractedData.data.headers.length
