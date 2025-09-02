@@ -264,16 +264,16 @@
         <p>Choose the data to include</p>
       </div>
       <div class="card-body">
-        <div id="currentSelection" style="padding: 8px; background: var(--gray-50); border-radius: 4px; margin-bottom: 12px;">
+        <div id="currentSelection" style="padding: 8px; background: var(--gray-50); border-radius: 4px; margin-bottom: 12px; overflow: hidden;">
           <p style="margin: 0; font-size: 12px; color: var(--gray-600);">Loading selection...</p>
         </div>
         
-        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-          <button class="btn btn-sm" onclick="selectEntireData()" style="flex: 1;">
+        <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+          <button class="btn btn-sm" onclick="selectEntireData()" style="flex: 1; min-width: 100px; white-space: nowrap;">
             Use All Data
           </button>
-          <button class="btn btn-sm" onclick="useCurrentSelection()" style="flex: 1;">
-            Use Selected Range
+          <button class="btn btn-sm" onclick="useCurrentSelection()" style="flex: 1; min-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            Use Selected
           </button>
         </div>
         
@@ -361,11 +361,11 @@
               <input type="text" id="presentationUrl" readonly style="width: 100%; padding: 4px; font-size: 11px; border: 1px solid var(--gray-200); border-radius: 3px; background: var(--gray-50);">
             </div>
             
-            <div style="display: flex; gap: 8px;">
-              <button class="btn btn-sm btn-success" onclick="openPresentation()" style="flex: 1;">
-                Open in Google Slides
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn btn-sm btn-success" onclick="openPresentation()" style="flex: 1; min-width: 120px; white-space: normal; padding: 8px 12px;">
+                Open Slides
               </button>
-              <button class="btn btn-sm" onclick="copyPresentationLink()" style="flex: 1;">
+              <button class="btn btn-sm" onclick="copyPresentationLink()" style="flex: 1; min-width: 80px;">
                 Copy Link
               </button>
             </div>

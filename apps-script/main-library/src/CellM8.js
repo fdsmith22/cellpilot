@@ -243,36 +243,46 @@ const CellM8 = {
       if (dataResult.data && dataResult.data.length > 0) {
         const tableSlide = pres.appendSlide(SlidesApp.PredefinedLayout.BLANK);
         
-        // Add title
-        const titleElement = tableSlide.insertTextBox('Sample Data', 20, 20, 600, 50);
-        titleElement.getText().getTextStyle().setFontSize(24).setBold(true);
+        // Add title with proper positioning
+        const titleElement = tableSlide.insertTextBox('Sample Data', 30, 20, 400, 40);
+        titleElement.getText().getTextStyle().setFontSize(20).setBold(true);
         
-        // Create table
-        const numRows = Math.min(6, dataResult.data.length + 1); // +1 for headers
-        const numCols = Math.min(5, dataResult.headers.length);
-        const table = tableSlide.insertTable(numRows, numCols, 20, 80, 680, 300);
+        // Create smaller, properly sized table
+        const numRows = Math.min(5, dataResult.data.length + 1); // +1 for headers, max 5 rows total
+        const numCols = Math.min(4, dataResult.headers.length); // Max 4 columns for readability
         
-        // Add headers
+        // Smaller table that fits on slide
+        const table = tableSlide.insertTable(numRows, numCols, 30, 70, 400, 200);
+        
+        // Add headers with smaller font
         for (let col = 0; col < numCols; col++) {
           const cell = table.getCell(0, col);
-          cell.getText().setText(String(dataResult.headers[col] || ''));
-          cell.getFill().setSolidFill('#f0f0f0');
-          cell.getText().getTextStyle().setBold(true);
+          const headerText = String(dataResult.headers[col] || '').substring(0, 15); // Limit header length
+          cell.getText().setText(headerText);
+          cell.getFill().setSolidFill('#e5e7eb');
+          cell.getText().getTextStyle().setBold(true).setFontSize(10);
         }
         
-        // Add data rows
+        // Add data rows with truncated text
         for (let row = 0; row < numRows - 1; row++) {
           for (let col = 0; col < numCols; col++) {
             const cell = table.getCell(row + 1, col);
             const value = dataResult.data[row] && dataResult.data[row][col];
-            cell.getText().setText(String(value || ''));
+            const cellText = String(value || '').substring(0, 20); // Limit cell text length
+            cell.getText().setText(cellText);
+            cell.getText().getTextStyle().setFontSize(9);
           }
         }
       }
       
+      // Calculate how many more slides we need
+      const currentSlideCount = pres.getSlides().length;
+      const targetSlideCount = config.slideCount || 5;
+      const additionalSlidesNeeded = targetSlideCount - currentSlideCount;
+      
       // Add content slides if provided
       if (config.content && config.content.length > 0) {
-        for (let i = 0; i < Math.min(config.content.length, config.slideCount || 5); i++) {
+        for (let i = 0; i < Math.min(config.content.length, additionalSlidesNeeded); i++) {
           const slideData = config.content[i];
           const layout = slideData.type === 'table' ? 
             SlidesApp.PredefinedLayout.BLANK : 
@@ -329,6 +339,40 @@ const CellM8 = {
                 } catch (e) {
                   // Not a placeholder
                 }
+              }
+            }
+          }
+        }
+      }
+      
+      // Add additional slides if we haven't reached the target count
+      const finalSlideCount = pres.getSlides().length;
+      if (finalSlideCount < targetSlideCount) {
+        const remainingSlides = targetSlideCount - finalSlideCount;
+        
+        // Add insight slides based on data analysis
+        for (let i = 0; i < remainingSlides; i++) {
+          const insightSlide = pres.appendSlide(SlidesApp.PredefinedLayout.TITLE_AND_BODY);
+          
+          // Find placeholders safely
+          const slideElements = insightSlide.getPageElements();
+          for (let j = 0; j < slideElements.length; j++) {
+            const element = slideElements[j];
+            if (element.getPageElementType() === SlidesApp.PageElementType.SHAPE) {
+              const shape = element.asShape();
+              try {
+                const placeholder = shape.getPlaceholderType();
+                
+                if (placeholder === SlidesApp.PlaceholderType.TITLE || 
+                    placeholder === SlidesApp.PlaceholderType.CENTERED_TITLE) {
+                  const titles = ['Key Insights', 'Data Summary', 'Analysis Results', 'Next Steps', 'Recommendations'];
+                  shape.getText().setText(titles[i % titles.length]);
+                } else if (placeholder === SlidesApp.PlaceholderType.BODY) {
+                  const content = this.generateInsightContent(dataResult, i);
+                  shape.getText().setText(content);
+                }
+              } catch (e) {
+                // Not a placeholder
               }
             }
           }
@@ -737,6 +781,38 @@ const CellM8 = {
     }
   },
 
+  /**
+   * Generate insight content for additional slides
+   */
+  generateInsightContent: function(dataResult, slideIndex) {
+    const insights = [
+      `• Dataset contains ${dataResult.rowCount} records\n• ${dataResult.columnCount} data fields analyzed\n• Data completeness: ${Math.round((dataResult.rowCount * dataResult.columnCount - this.countEmptyCells(dataResult)) / (dataResult.rowCount * dataResult.columnCount) * 100)}%`,
+      `• Primary columns: ${dataResult.headers.slice(0, 3).join(', ')}\n• Total data points: ${dataResult.rowCount * dataResult.columnCount}\n• Sheet name: ${dataResult.sheetName || 'Active Sheet'}`,
+      `• Data range: ${dataResult.range || 'Full dataset'}\n• Non-empty rows: ${dataResult.rowCount}\n• Analysis complete`,
+      `• Review data quality\n• Identify patterns and trends\n• Create visualizations\n• Share insights with stakeholders`,
+      `• Consider adding charts for visual impact\n• Group related data together\n• Focus on key metrics\n• Update regularly for accuracy`
+    ];
+    
+    return insights[slideIndex % insights.length];
+  },
+  
+  /**
+   * Count empty cells in data
+   */
+  countEmptyCells: function(dataResult) {
+    let emptyCount = 0;
+    if (dataResult.data) {
+      for (let row of dataResult.data) {
+        for (let cell of row) {
+          if (cell === '' || cell === null || cell === undefined) {
+            emptyCount++;
+          }
+        }
+      }
+    }
+    return emptyCount;
+  },
+  
   /**
    * Share presentation
    */
