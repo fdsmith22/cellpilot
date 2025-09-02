@@ -887,12 +887,12 @@
         <div class="card-description">Choose what data to include in your presentation</div>
       </div>
       
-      <div class="source-option" onclick="selectSource(this, 'entire')">
+      <div class="source-option" data-source="entire">
         <div class="source-title">Entire Sheet</div>
         <div class="source-desc">Use all data from the current sheet</div>
       </div>
       
-      <div class="source-option" onclick="selectSource(this, 'selection')">
+      <div class="source-option" data-source="selection">
         <div class="source-title">Selected Range</div>
         <div class="source-desc" id="selectionDesc">No range selected</div>
       </div>
@@ -907,7 +907,7 @@
         </label>
       </div>
       
-      <div class="source-option" onclick="selectSource(this, 'custom')">
+      <div class="source-option" data-source="custom">
         <div class="source-title">Custom Range</div>
         <div class="source-desc">Specify a custom range (e.g., A1:D10)</div>
       </div>
@@ -925,7 +925,7 @@
       </div>
       
       <div class="template-grid">
-        <div class="template-card selected" onclick="selectTemplate(this, 'corporate')">
+        <div class="template-card selected" data-template="corporate">
           <div class="template-preview" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6);">
             <span style="color: white;">A</span>
           </div>
@@ -933,7 +933,7 @@
           <div class="template-desc">Professional</div>
         </div>
         
-        <div class="template-card" onclick="selectTemplate(this, 'sales')">
+        <div class="template-card" data-template="sales">
           <div class="template-preview" style="background: linear-gradient(135deg, #ea580c, #fbbf24);">
             <span style="color: white;">$</span>
           </div>
@@ -941,7 +941,7 @@
           <div class="template-desc">Persuasive</div>
         </div>
         
-        <div class="template-card" onclick="selectTemplate(this, 'financial')">
+        <div class="template-card" data-template="financial">
           <div class="template-preview" style="background: linear-gradient(135deg, #059669, #10b981);">
             <span style="color: white;">%</span>
           </div>
@@ -949,7 +949,7 @@
           <div class="template-desc">Data-focused</div>
         </div>
         
-        <div class="template-card" onclick="selectTemplate(this, 'modern')">
+        <div class="template-card" data-template="modern">
           <div class="template-preview" style="background: linear-gradient(135deg, #7c3aed, #a78bfa);">
             <span style="color: white;">M</span>
           </div>
@@ -957,7 +957,7 @@
           <div class="template-desc">Creative</div>
         </div>
         
-        <div class="template-card" onclick="selectTemplate(this, 'minimal')">
+        <div class="template-card" data-template="minimal">
           <div class="template-preview" style="background: linear-gradient(135deg, #6b7280, #9ca3af);">
             <span style="color: white;">-</span>
           </div>
@@ -965,7 +965,7 @@
           <div class="template-desc">Clean & simple</div>
         </div>
         
-        <div class="template-card" onclick="selectTemplate(this, 'custom')">
+        <div class="template-card" data-template="custom">
           <div class="template-preview" style="background: linear-gradient(135deg, #dc2626, #f97316);">
             <span style="color: white;">+</span>
           </div>
@@ -1085,10 +1085,10 @@
         <span id="presentationName" style="font-weight: 600;"></span>
       </div>
       <div class="success-actions">
-        <button class="success-btn" onclick="openPresentation()">
+        <button class="success-btn" id="openBtn">
           <span>🔗</span> Open in Google Slides
         </button>
-        <button class="success-btn secondary" onclick="createAnother()">Create Another</button>
+        <button class="success-btn secondary" id="createAnotherBtn">Create Another</button>
       </div>
     </div>
   </div>
@@ -1185,8 +1185,54 @@
       }
     }
     
-    // Get current selection on load
-    window.addEventListener('DOMContentLoaded', function() {
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Attach click handlers to source options
+      document.querySelectorAll('.source-option[data-source]').forEach(function(element) {
+        element.addEventListener('click', function() {
+          selectSource(this, this.getAttribute('data-source'));
+        });
+      });
+      
+      // Attach click handlers to template cards
+      document.querySelectorAll('.template-card[data-template]').forEach(function(element) {
+        element.addEventListener('click', function() {
+          selectTemplate(this, this.getAttribute('data-template'));
+        });
+      });
+      
+      // Attach click handlers to buttons
+      var backBtn = document.getElementById('backBtn');
+      if (backBtn) backBtn.addEventListener('click', backToMain);
+      
+      var uploadBtn = document.getElementById('uploadBtn');
+      if (uploadBtn) uploadBtn.addEventListener('click', uploadTemplate);
+      
+      var advancedToggle = document.getElementById('advancedToggle');
+      if (advancedToggle) advancedToggle.addEventListener('click', toggleAdvanced);
+      
+      var previewBtn = document.getElementById('previewBtn');
+      if (previewBtn) previewBtn.addEventListener('click', previewPresentation);
+      
+      var generateBtn = document.getElementById('generateBtn');
+      if (generateBtn) generateBtn.addEventListener('click', generatePresentation);
+      
+      var openBtn = document.getElementById('openBtn');
+      if (openBtn) openBtn.addEventListener('click', openPresentation);
+      
+      var createAnotherBtn = document.getElementById('createAnotherBtn');
+      if (createAnotherBtn) createAnotherBtn.addEventListener('click', createAnother);
+      
+      var closePreviewBtn = document.getElementById('closePreviewBtn');
+      if (closePreviewBtn) closePreviewBtn.addEventListener('click', closePreview);
+      
+      var closePreviewBtn2 = document.getElementById('closePreviewBtn2');
+      if (closePreviewBtn2) closePreviewBtn2.addEventListener('click', closePreview);
+      
+      var generateFromPreviewBtn = document.getElementById('generateFromPreviewBtn');
+      if (generateFromPreviewBtn) generateFromPreviewBtn.addEventListener('click', generateFromPreview);
+      
+      // Get current selection
       google.script.run
         .withSuccessHandler(updateSelectionDisplay)
         .withFailureHandler(function(err) { console.error('Failed to get selection:', err); })
@@ -1533,7 +1579,7 @@
           }
           
           slideItem.innerHTML = `
-            <div class="slide-header" onclick="toggleSlideExpansion(this.parentElement)">
+            <div class="slide-header" data-action="expand">
               <div class="slide-number">${index + 1}</div>
               <div class="slide-details">
                 <div class="slide-title">${slide.title || 'Slide ' + (index + 1)}</div>
@@ -1556,7 +1602,12 @@
         slideList.innerHTML = '<li style="text-align: center; padding: 20px; color: var(--gray-500); font-size: 12px;">No slides to preview</li>';
       }
       
-      // Toggle function is defined globally
+      // Add event listeners for dynamically created slide headers
+      document.querySelectorAll('.slide-header[data-action="expand"]').forEach(function(header) {
+        header.addEventListener('click', function() {
+          toggleSlideExpansion(this.parentElement);
+        });
+      });
       
       // Show the modal
       document.getElementById('previewModal').classList.add('show');
