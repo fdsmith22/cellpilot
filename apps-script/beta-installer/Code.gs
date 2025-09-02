@@ -712,6 +712,7 @@ function showDataPipelineManager() { return CellPilot.showDataPipelineManager();
 // CellM8 Presentation Helper Functions
 function showCellM8() { return CellPilot.showCellM8(); }
 function createPresentation(config) { return CellPilot.createPresentation(config); }
+function getCellM8Selection() { return CellPilot.getCellM8Selection(); }
 function getCurrentSelection() { return CellPilot.getCurrentSelection(); }
 function selectEntireDataRange() { return CellPilot.selectEntireDataRange(); }
 function selectRange(rangeA1) { return CellPilot.selectRange(rangeA1); }

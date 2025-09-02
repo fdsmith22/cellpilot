@@ -2254,8 +2254,12 @@ function createPresentation(config) {
   return CellPilot.createPresentation(config); 
 }
 
-function getCurrentSelection() { 
-  return CellPilot.getCurrentSelection(); 
+function getCellM8Selection() { 
+  return CellPilot.getCellM8Selection(); 
+}
+
+function getCurrentSelection() {
+  return CellPilot.getCurrentSelection();
 }
 
 function selectEntireDataRange() { 

@@ -1758,6 +1758,33 @@ function showCellM8() {
 }
 
 /**
+ * CellM8 Helper Functions - Proxy to CellM8 object
+ */
+function getCellM8Selection() {
+  return CellM8.getCurrentSelection();
+}
+
+function selectEntireDataRange() {
+  return CellM8.selectEntireDataRange();
+}
+
+function selectRange(rangeA1) {
+  return CellM8.selectRange(rangeA1);
+}
+
+function promptForSelection() {
+  return CellM8.promptForSelection();
+}
+
+function previewPresentation(config) {
+  return CellM8.previewPresentation(config);
+}
+
+function createPresentation(config) {
+  return CellM8.createPresentation(config);
+}
+
+/**
  * Show a toast notification
  * @param {string} message - The message to display
  * @param {string} title - The title of the toast (optional)

@@ -1191,7 +1191,7 @@
     google.script.run
       .withSuccessHandler(updateSelectionDisplay)
       .withFailureHandler(function(err) { console.error('Failed to get selection:', err); })
-      .getCurrentSelection();
+      .getCellM8Selection();
     
     window.updateSelectionDisplay = function(selection) {
       currentSelection = selection;
