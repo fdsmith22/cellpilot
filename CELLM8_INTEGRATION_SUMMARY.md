@@ -1,0 +1,351 @@
+# CellPilot Project - Complete Development Context & CellM8 Integration Summary
+
+## Project Overview
+CellPilot is a Google Sheets add-on distributed as a Google Apps Script library. It provides advanced spreadsheet functionality including data pipeline tools, visualization helpers, and the newly integrated CellM8 presentation generator.
+
+### Key Project Locations
+- **Main Library**: `/home/freddy/cellpilot/apps-script/main-library/`
+- **Beta Installer**: `/home/freddy/cellpilot/apps-script/beta-installer/`
+- **Test Proxy**: `/home/freddy/cellpilot/test-sheet-proxy.js`
+- **Deployment**: Using `clasp` CLI for Google Apps Script
+
+## Architecture & Function Export Pattern
+
+### Critical Understanding: How CellPilot Functions Work
+CellPilot uses a **multi-layer proxy architecture** for function distribution:
+
+1. **Core Implementation** (`/apps-script/main-library/src/`)
+   - Actual function implementations live here
+   - Example: `Code.js` contains `showCellM8()` implementation
+
+2. **Library Export Layer** (`/apps-script/main-library/src/Library.js`)
+   - EVERY function must be exported here for library access
+   - Uses conditional variable assignment pattern:
+   ```javascript
+   var showCellM8 = showCellM8 || function() { return showCellM8(); };
+   var createPresentation = createPresentation || function(config) { return CellM8.createPresentation(config); };
+   ```
+
+3. **Beta Installer Proxy** (`/apps-script/beta-installer/Code.gs`)
+   - Simple proxy functions that call the library
+   ```javascript
+   function showCellM8() { return CellPilot.showCellM8(); }
+   function createPresentation(config) { return CellPilot.createPresentation(config); }
+   ```
+
+4. **Test Sheet Proxy** (`/test-sheet-proxy.js`)
+   - Development/testing proxy file
+   - Must include ALL functions for local testing
+   ```javascript
+   function showCellM8() { 
+     return CellPilot.showCellM8(); 
+   }
+   ```
+
+### IMPORTANT: When Adding New Features
+**EVERY new function must be added to ALL FOUR locations:**
+1. Implementation in `/apps-script/main-library/src/` files
+2. Export in `/apps-script/main-library/src/Library.js`
+3. Proxy in `/apps-script/beta-installer/Code.gs`
+4. Proxy in `/test-sheet-proxy.js`
+
+Missing any location will cause "function not found" errors!
+
+## CellM8 Integration Details
+
+### What is CellM8?
+CellM8 is a presentation helper that transforms spreadsheet data into Google Slides presentations. It was fully integrated on 2025-09-02.
+
+### Integration Components
+
+#### 1. Core Implementation Files
+- **CellM8.js** (`/apps-script/main-library/src/CellM8.js`)
+  - Main CellM8 class with all presentation generation logic
+  - 34 total functions including:
+    - `createPresentation(config)`
+    - `extractSheetData(source)`
+    - `generateSlides(presentation, data, config)`
+    - Template application functions
+    - Data visualization functions
+
+#### 2. UI Template
+- **CellM8Template.html** (`/apps-script/main-library/CellM8Template.html`)
+  - Uses CellPilot design system via `<?!= include('SharedStyles'); ?>`
+  - Navigation header with back button
+  - Card-based layout matching other panels
+  - Custom template options for branding
+  - NO EMOJIS (per user requirement)
+
+#### 3. Menu Integration
+- Added to main menu in `Code.js`:
+```javascript
+.addItem('CellM8 - Presentation Helper', 'showCellM8')
+```
+
+- Sidebar card in main panel (made compact):
+```javascript
+CardService.newTextParagraph()
+  .setText('<b>CellM8 Presentation Helper</b>\nTransform data into presentations')
+```
+
+### All 34 CellM8 Functions (Must be in all 4 locations)
+```javascript
+// Core functions
+showCellM8()
+createPresentation(config)
+extractSheetData(source)
+generateSlides(presentation, data, config)
+applyTemplate(presentation, template)
+createTitleSlide(presentation, config)
+createDataSlide(presentation, data, config)
+createChartSlide(presentation, chartData, config)
+createTableSlide(presentation, tableData, config)
+createSummarySlide(presentation, data, config)
+
+// Helper functions
+formatDataForPresentation(data)
+generateChartFromData(data, chartType)
+createTableFromData(data, maxRows)
+applyCustomStyling(slide, styles)
+addTransitions(presentation, transitionType)
+exportPresentation(presentation, format)
+sharePresentation(presentation, emails, permission)
+getTemplates()
+saveAsTemplate(presentation, name)
+loadTemplate(templateId)
+
+// Data processing functions
+aggregateData(data, groupBy, aggregationType)
+filterData(data, criteria)
+sortData(data, column, direction)
+pivotData(data, rowField, columnField, valueField)
+calculateStatistics(data)
+
+// Validation functions  
+validateDataSource(source)
+validateConfiguration(config)
+checkPermissions()
+
+// Error handling functions
+handleCellM8Error(error)
+logActivity(action, details)
+
+// Integration functions
+connectToSheets(spreadsheetId)
+connectToSlides(presentationId)
+refreshData()
+schedulePresentation(config, cronExpression)
+```
+
+## UI Design System Patterns
+
+### SharedStyles Include
+**CRITICAL**: Must use `HtmlService.createTemplateFromFile()` not `createHtmlOutputFromFile()`
+```javascript
+// CORRECT - Processes server-side includes
+const html = HtmlService.createTemplateFromFile('CellM8Template')
+  .evaluate()
+  
+// WRONG - Shows <?!= include('SharedStyles'); ?> as text
+const html = HtmlService.createHtmlOutputFromFile('CellM8Template')
+```
+
+### Standard UI Components
+1. **Navigation Header**:
+```html
+<div class="nav-header">
+  <button class="nav-back" onclick="backToMain()">←</button>
+  <div class="nav-title">
+    <h2>Feature Name</h2>
+    <p>Feature description</p>
+  </div>
+</div>
+```
+
+2. **Card Sections**:
+```html
+<div class="card">
+  <div class="card-header">
+    <h3>Section Title</h3>
+    <p>Section description</p>
+  </div>
+  <div class="card-body">
+    <!-- Content -->
+  </div>
+</div>
+```
+
+3. **Form Controls**:
+```html
+<input type="text" class="form-control" placeholder="...">
+<select class="form-control">
+<button class="btn btn-primary">
+```
+
+### Design Requirements
+- NO EMOJIS in UI (user preference)
+- Consistent color scheme via CSS variables
+- Card-based layouts with proper spacing
+- Navigation consistency across all panels
+
+## Deployment Process
+
+### Steps for Deploying Changes
+1. **Push to Apps Script**:
+```bash
+clasp push
+```
+
+2. **Create New Deployment** (if needed):
+```bash
+clasp deploy --description "Feature description"
+```
+
+3. **Check Deployments**:
+```bash
+clasp deployments
+```
+
+### Current Active Deployment
+- **ID**: AKfycby-NVIhyCmnypgp9HRL-STtV9SSC3H97MCpHYA5--UMOCDIZMr5JdhAe6wX6ToJLLgO4Q
+- **Version**: @13
+- **Description**: CellM8 Menu Integration Fix
+
+## Project Context Checking Process
+
+### Before Developing Any Feature
+1. **Check existing patterns**:
+```bash
+# Find similar features
+grep -r "function show" src/
+# Check UI templates
+ls -la *Template.html
+```
+
+2. **Verify design system**:
+```bash
+# Check SharedStyles usage
+grep "include('SharedStyles')" *.html
+# Check existing card layouts
+grep "card-header" *.html
+```
+
+3. **Check function exports**:
+```bash
+# Verify Library.js exports
+grep "var functionName" src/Library.js
+# Check beta installer proxies
+grep "function functionName" ../beta-installer/Code.gs
+# Check test proxy
+grep "function functionName" ../../test-sheet-proxy.js
+```
+
+## Common Issues & Solutions
+
+### Issue 1: "google.script.run.functionName is not a function"
+**Cause**: Function not exported in Library.js or missing from proxy files
+**Solution**: Add to all 4 locations (implementation, Library.js, beta-installer, test-proxy)
+
+### Issue 2: Template shows "<?!= include('SharedStyles'); ?>" as text
+**Cause**: Using `createHtmlOutputFromFile` instead of `createTemplateFromFile`
+**Solution**: Use `HtmlService.createTemplateFromFile('TemplateName').evaluate()`
+
+### Issue 3: UI styling doesn't match
+**Cause**: Not using standard design system classes
+**Solution**: Copy patterns from DataPipelineTemplate.html or TableizeTemplate.html
+
+### Issue 4: Function works in dev but not in production
+**Cause**: Forgot to create new deployment after changes
+**Solution**: Run `clasp push` then `clasp deploy`
+
+## Testing Checklist for New Features
+
+1. ✅ Function implemented in appropriate src/ file
+2. ✅ Function exported in Library.js
+3. ✅ Proxy added to beta-installer/Code.gs
+4. ✅ Proxy added to test-sheet-proxy.js
+5. ✅ UI template uses SharedStyles include
+6. ✅ UI follows design system (cards, navigation, forms)
+7. ✅ No emojis in UI
+8. ✅ Menu item added if needed
+9. ✅ Sidebar card added if needed
+10. ✅ Changes pushed via clasp
+11. ✅ New deployment created if needed
+
+## Recent Changes Summary (2025-09-02)
+
+### Files Modified for CellM8 Integration
+1. **src/Code.js**
+   - Added `showCellM8()` function with proper template processing
+   - Added CellM8 menu item
+   - Added compact CellM8 card to sidebar
+
+2. **src/Library.js**
+   - Added all 34 CellM8 function exports
+
+3. **beta-installer/Code.gs**
+   - Added all 34 CellM8 proxy functions
+
+4. **test-sheet-proxy.js**
+   - Added all 34 CellM8 proxy functions
+
+5. **CellM8Template.html**
+   - Complete redesign with CellPilot design system
+   - Added navigation header
+   - Card-based layout
+   - Custom template options
+   - Removed all emojis
+
+6. **src/CellM8.js**
+   - Full implementation of presentation generation
+   - 34 functions for complete functionality
+
+## Git Status
+- Repository: Main branch, up to date
+- Latest commit: CellM8 integration completed
+- All changes pushed to Apps Script
+
+## Next Steps for Continuation
+When resuming development:
+1. Run `git pull` to ensure latest changes
+2. Check `clasp deployments` for current version
+3. Verify all proxy files are in sync
+4. Use this document as reference for adding new features
+
+## Environment Details
+- Platform: Linux
+- Working directory: `/home/freddy/cellpilot/apps-script/main-library`
+- Google Apps Script Library ID: `1EZDAGoLY8UEMdbfKTZO-AQ7pkiPe-n-zrz3Rw0ec6VBBH5MdC43Avx0O`
+- Beta installer uses this library via `CellPilot` identifier
+
+## Key Commands Reference
+```bash
+# Deploy changes
+clasp push
+clasp deploy --description "Description"
+
+# Check status
+clasp deployments
+git status
+git diff
+
+# Search patterns
+grep -r "pattern" src/
+grep "functionName" src/Library.js
+
+# File locations
+cd /home/freddy/cellpilot/apps-script/main-library
+cd /home/freddy/cellpilot/apps-script/beta-installer
+```
+
+## Critical Rules for Development
+1. **ALWAYS** add new functions to all 4 locations
+2. **ALWAYS** use `createTemplateFromFile` for templates with includes
+3. **NEVER** use emojis in UI
+4. **ALWAYS** follow existing design patterns
+5. **ALWAYS** test in both development and after deployment
+6. **ALWAYS** create new deployment for production changes
+
+---
+*This summary created on 2025-09-02 after successful CellM8 integration*
+*Use this document to maintain consistency when adding new features*

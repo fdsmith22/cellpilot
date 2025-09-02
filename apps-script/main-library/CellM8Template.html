@@ -4,102 +4,34 @@
   <base target="_top">
   <?!= include('SharedStyles'); ?>
   <style>
-    /* Prevent horizontal scrolling */
-    body {
-      overflow-x: hidden;
-      max-width: 100%;
-    }
-    
-    .container {
-      max-width: 100%;
-      overflow-x: hidden;
-    }
-    
-    /* Data source options */
-    .source-option {
-      background: white;
-      border: 1.5px solid var(--gray-200);
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      transition: all var(--transition-fast);
-      max-width: 100%;
-      box-sizing: border-box;
-      position: relative;
-    }
-    
-    .source-option:hover {
-      border-color: var(--primary-300);
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.02), rgba(99, 102, 241, 0.05));
-      transform: translateY(-1px);
-      box-shadow: var(--elevation-1);
-    }
-    
-    .source-option.selected {
-      border-color: var(--primary-500);
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(99, 102, 241, 0.10));
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    }
-    
-    .source-option.selected::after {
-      content: '✓';
-      position: absolute;
-      top: 10px;
-      right: 12px;
-      width: 20px;
-      height: 20px;
-      background: var(--primary-500);
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
-    }
-    
-    .source-option-title {
-      font-weight: 600;
-      font-size: 13px;
-      color: var(--gray-700);
-      margin-bottom: 4px;
-    }
-    
-    .source-option-desc {
-      font-size: 11px;
-      color: var(--gray-500);
-      line-height: 1.4;
-    }
-    
-    /* Template grid */
+    /* Template specific styles */
     .template-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
     }
     
     .template-card {
-      background: white;
-      border: 1.5px solid var(--gray-200);
-      border-radius: 10px;
       padding: 12px;
+      background: white;
+      border: 2px solid var(--gray-200);
+      border-radius: 8px;
       cursor: pointer;
-      transition: all var(--transition-fast);
+      transition: all 0.2s ease;
       text-align: center;
       position: relative;
     }
     
     .template-card:hover {
-      border-color: var(--primary-300);
-      transform: translateY(-1px);
-      box-shadow: var(--elevation-1);
+      border-color: var(--primary-500);
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
     .template-card.selected {
-      border-color: var(--primary-500);
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(99, 102, 241, 0.10));
+      border-color: var(--primary-600);
+      background: var(--primary-50);
     }
     
     .template-card.selected::after {
@@ -107,73 +39,128 @@
       position: absolute;
       top: 8px;
       right: 8px;
-      width: 16px;
-      height: 16px;
-      background: var(--primary-500);
+      width: 18px;
+      height: 18px;
+      background: var(--primary-600);
       color: white;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: bold;
+    }
+    
+    .template-preview {
+      height: 48px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 8px;
     }
     
     .template-name {
       font-size: 12px;
       font-weight: 600;
       color: var(--gray-700);
-      margin-top: 8px;
     }
     
-    .template-preview {
-      height: 50px;
-      border-radius: 6px;
+    .template-desc {
+      font-size: 10px;
+      color: var(--gray-500);
+      margin-top: 2px;
+    }
+    
+    /* Data source selection */
+    .source-option {
+      padding: 12px;
+      background: white;
+      border: 2px solid var(--gray-200);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    
+    .source-option:hover {
+      border-color: var(--primary-500);
+      transform: translateY(-1px);
+    }
+    
+    .source-option.selected {
+      border-color: var(--primary-600);
+      background: var(--primary-50);
+    }
+    
+    .source-option.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 18px;
+      height: 18px;
+      background: var(--primary-600);
+      color: white;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
-      opacity: 0.8;
+      font-size: 11px;
     }
     
-    /* Slide count slider */
+    .source-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 2px;
+    }
+    
+    .source-desc {
+      font-size: 11px;
+      color: var(--gray-500);
+    }
+    
+    /* Slide configuration */
     .slide-config {
       background: var(--gray-50);
       border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 16px;
+      padding: 12px;
+      margin-bottom: 12px;
     }
     
     .slide-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     
     .slide-label {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--gray-700);
     }
     
     .slide-count {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--primary-600);
       background: white;
-      padding: 4px 12px;
+      padding: 4px 10px;
       border-radius: 6px;
       border: 1px solid var(--primary-200);
     }
     
     .slide-slider {
       width: 100%;
-      height: 6px;
+      height: 4px;
       -webkit-appearance: none;
       appearance: none;
       background: var(--gray-200);
-      border-radius: 3px;
+      border-radius: 2px;
       outline: none;
       cursor: pointer;
     }
@@ -181,68 +168,140 @@
     .slide-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       background: var(--primary-500);
       border-radius: 50%;
       cursor: pointer;
-      border: 3px solid white;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      border: 2px solid white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
     
     .slide-slider::-moz-range-thumb {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       background: var(--primary-500);
       border-radius: 50%;
       cursor: pointer;
-      border: 3px solid white;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      border: 2px solid white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
     
     .slide-range {
       display: flex;
       justify-content: space-between;
-      margin-top: 6px;
+      margin-top: 4px;
       font-size: 10px;
       color: var(--gray-500);
     }
     
-    /* Presentation style dropdown */
-    .style-select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1.5px solid var(--gray-200);
+    /* Custom template section */
+    .custom-template-options {
+      display: none;
+      padding: 12px;
+      background: var(--info-50);
       border-radius: 8px;
-      font-size: 13px;
-      color: var(--gray-700);
-      background: white;
+      margin-top: 8px;
+      border: 1px solid var(--info-200);
+    }
+    
+    .custom-template-options.show {
+      display: block;
+    }
+    
+    .upload-area {
+      border: 2px dashed var(--gray-300);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 12px;
       cursor: pointer;
-      transition: all var(--transition-fast);
-      margin-bottom: 16px;
+      transition: all 0.2s ease;
     }
     
-    .style-select:hover {
-      border-color: var(--primary-300);
-    }
-    
-    .style-select:focus {
+    .upload-area:hover {
       border-color: var(--primary-500);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      background: var(--primary-50);
+    }
+    
+    .upload-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+      opacity: 0.6;
+    }
+    
+    .upload-text {
+      font-size: 12px;
+      color: var(--gray-600);
+      margin-bottom: 4px;
+    }
+    
+    .upload-hint {
+      font-size: 10px;
+      color: var(--gray-500);
+    }
+    
+    /* Action buttons */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    
+    .btn-preview {
+      flex: 1;
+      padding: 10px;
+      background: white;
+      border: 2px solid var(--primary-500);
+      color: var(--primary-600);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-preview:hover {
+      background: var(--primary-50);
+      transform: translateY(-1px);
+    }
+    
+    .btn-generate {
+      flex: 2;
+      padding: 10px;
+      background: var(--primary-500);
+      border: 2px solid var(--primary-500);
+      color: white;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-generate:hover:not(:disabled) {
+      background: var(--primary-600);
+      border-color: var(--primary-600);
+      transform: translateY(-1px);
+    }
+    
+    .btn-generate:disabled {
+      background: var(--gray-300);
+      border-color: var(--gray-300);
+      cursor: not-allowed;
     }
     
     /* Advanced options */
     .advanced-toggle {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px;
+      gap: 6px;
+      padding: 8px;
       background: var(--gray-50);
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all var(--transition-fast);
-      margin-bottom: 12px;
+      transition: all 0.2s ease;
+      margin-bottom: 8px;
       font-size: 12px;
       color: var(--gray-600);
     }
@@ -270,9 +329,8 @@
       padding: 12px;
       background: white;
       border: 1px solid var(--gray-200);
-      border-radius: 8px;
-      margin-top: -4px;
-      margin-bottom: 16px;
+      border-radius: 6px;
+      margin-bottom: 12px;
     }
     
     .advanced-options.show {
@@ -282,121 +340,26 @@
     .option-item {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 8px 0;
+      gap: 8px;
+      padding: 6px 0;
       font-size: 12px;
       color: var(--gray-700);
     }
     
     .option-checkbox {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       cursor: pointer;
     }
     
-    /* Action buttons */
-    .action-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    
-    .btn-preview {
-      flex: 1;
-      padding: 12px;
-      background: white;
-      color: var(--primary-600);
-      border: 1.5px solid var(--primary-500);
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all var(--transition-fast);
-    }
-    
-    .btn-preview:hover {
-      background: var(--primary-50);
-      transform: translateY(-1px);
-      box-shadow: var(--elevation-1);
-    }
-    
-    .btn-generate {
-      flex: 2;
-      padding: 12px;
-      background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all var(--transition-fast);
-    }
-    
-    .btn-generate:hover:not(:disabled) {
-      background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
-      transform: translateY(-1px);
-      box-shadow: var(--elevation-2);
-    }
-    
-    .btn-generate:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    
-    /* Loading state */
-    .loading-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(255, 255, 255, 0.95);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-    }
-    
-    .loading-overlay.show {
-      display: flex;
-    }
-    
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid var(--gray-200);
-      border-top-color: var(--primary-500);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    .loading-text {
-      margin-top: 16px;
-      font-size: 14px;
-      color: var(--gray-600);
-      text-align: center;
-    }
-    
-    .loading-step {
-      font-size: 12px;
-      color: var(--gray-500);
-      margin-top: 8px;
-    }
-    
-    /* Success state */
+    /* Success message */
     .success-message {
       display: none;
-      padding: 16px;
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.15));
-      border: 1.5px solid var(--success-500);
-      border-radius: 10px;
-      margin-top: 16px;
+      padding: 12px;
+      background: var(--success-50);
+      border: 1px solid var(--success-200);
+      border-radius: 8px;
+      margin-top: 12px;
     }
     
     .success-message.show {
@@ -404,120 +367,174 @@
     }
     
     .success-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--success-700);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     
     .success-text {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--success-600);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     
     .success-actions {
       display: flex;
-      gap: 8px;
+      gap: 6px;
     }
     
     .success-btn {
-      padding: 8px 12px;
+      padding: 6px 12px;
       background: var(--success-500);
       color: white;
       border: none;
-      border-radius: 6px;
-      font-size: 12px;
+      border-radius: 4px;
+      font-size: 11px;
       font-weight: 600;
       cursor: pointer;
-      transition: all var(--transition-fast);
+      transition: all 0.2s ease;
     }
     
     .success-btn:hover {
       background: var(--success-600);
-      transform: translateY(-1px);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Header -->
-    <div class="header">
-      <h2 class="title">CellM8 Presentation Helper</h2>
-      <p class="subtitle">Transform your spreadsheet data into professional presentations</p>
+  <!-- Navigation Header -->
+  <div class="nav-header">
+    <button class="nav-back" onclick="backToMain()">←</button>
+    <div class="nav-title">
+      <h2>CellM8 Presentation Helper</h2>
+      <p>Transform spreadsheet data into professional presentations</p>
     </div>
-    
+  </div>
+  
+  <div class="container">
     <!-- Data Source Section -->
-    <div class="section">
-      <div class="section-header">
-        <h3 class="section-title">Data Source</h3>
-        <span class="section-helper">Choose what data to include</span>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Select Data Source</div>
+        <div class="card-description">Choose what data to include in your presentation</div>
       </div>
       
       <div class="source-option selected" onclick="selectSource(this, 'entire')">
-        <div class="source-option-title">Entire Sheet</div>
-        <div class="source-option-desc">Use all data from the current sheet</div>
+        <div class="source-title">Entire Sheet</div>
+        <div class="source-desc">Use all data from the current sheet</div>
       </div>
       
       <div class="source-option" onclick="selectSource(this, 'selection')">
-        <div class="source-option-title">Selected Range</div>
-        <div class="source-option-desc">Use only the currently selected cells</div>
+        <div class="source-title">Selected Range</div>
+        <div class="source-desc">Use only the currently selected cells</div>
       </div>
       
       <div class="source-option" onclick="selectSource(this, 'visible')">
-        <div class="source-option-title">Visible Cells Only</div>
-        <div class="source-option-desc">Exclude hidden rows and columns</div>
+        <div class="source-title">Visible Cells Only</div>
+        <div class="source-desc">Exclude hidden rows and columns</div>
       </div>
       
       <div class="source-option" onclick="selectSource(this, 'custom')">
-        <div class="source-option-title">Custom Range</div>
-        <div class="source-option-desc">Specify a custom range (e.g., A1:D10)</div>
+        <div class="source-title">Custom Range</div>
+        <div class="source-desc">Specify a custom range (e.g., A1:D10)</div>
+      </div>
+      
+      <div id="customRangeInput" style="display: none; margin-top: 8px;">
+        <input type="text" class="form-control" id="customRange" placeholder="Enter range (e.g., A1:D10)">
       </div>
     </div>
     
     <!-- Template Selection -->
-    <div class="section">
-      <div class="section-header">
-        <h3 class="section-title">Presentation Template</h3>
-        <span class="section-helper">Choose a design theme</span>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Presentation Template</div>
+        <div class="card-description">Choose a design theme or upload your own</div>
       </div>
       
       <div class="template-grid">
         <div class="template-card selected" onclick="selectTemplate(this, 'corporate')">
           <div class="template-preview" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6);">
-            <span style="color: white; font-size: 24px;">A</span>
+            <span style="color: white;">A</span>
           </div>
           <div class="template-name">Corporate</div>
+          <div class="template-desc">Professional</div>
         </div>
         
         <div class="template-card" onclick="selectTemplate(this, 'sales')">
-          <div class="template-preview" style="background: linear-gradient(135deg, #f97316, #fbbf24);">
-            <span style="color: white; font-size: 24px;">$</span>
+          <div class="template-preview" style="background: linear-gradient(135deg, #ea580c, #fbbf24);">
+            <span style="color: white;">$</span>
           </div>
           <div class="template-name">Sales</div>
+          <div class="template-desc">Persuasive</div>
         </div>
         
         <div class="template-card" onclick="selectTemplate(this, 'financial')">
           <div class="template-preview" style="background: linear-gradient(135deg, #059669, #10b981);">
-            <span style="color: white; font-size: 24px;">%</span>
+            <span style="color: white;">%</span>
           </div>
           <div class="template-name">Financial</div>
+          <div class="template-desc">Data-focused</div>
         </div>
         
         <div class="template-card" onclick="selectTemplate(this, 'modern')">
           <div class="template-preview" style="background: linear-gradient(135deg, #7c3aed, #a78bfa);">
-            <span style="color: white; font-size: 24px;">M</span>
+            <span style="color: white;">M</span>
           </div>
           <div class="template-name">Modern</div>
+          <div class="template-desc">Creative</div>
+        </div>
+        
+        <div class="template-card" onclick="selectTemplate(this, 'minimal')">
+          <div class="template-preview" style="background: linear-gradient(135deg, #6b7280, #9ca3af);">
+            <span style="color: white;">-</span>
+          </div>
+          <div class="template-name">Minimal</div>
+          <div class="template-desc">Clean & simple</div>
+        </div>
+        
+        <div class="template-card" onclick="selectTemplate(this, 'custom')">
+          <div class="template-preview" style="background: linear-gradient(135deg, #dc2626, #f97316);">
+            <span style="color: white;">+</span>
+          </div>
+          <div class="template-name">Custom</div>
+          <div class="template-desc">Your brand</div>
+        </div>
+      </div>
+      
+      <!-- Custom Template Options -->
+      <div class="custom-template-options" id="customTemplateOptions">
+        <div class="form-group">
+          <label class="label">Template Settings</label>
+          <div class="upload-area" onclick="uploadTemplate()">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">Click to select template file</div>
+            <div class="upload-hint">Or enter Google Slides template URL below</div>
+          </div>
+          
+          <input type="text" class="form-control" id="templateUrl" placeholder="https://docs.google.com/presentation/d/...">
+          
+          <div style="margin-top: 12px;">
+            <label class="label">Brand Colors (Optional)</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="color" id="primaryColor" value="#1e3a8a" style="width: 50px; height: 30px;">
+              <input type="color" id="secondaryColor" value="#3b82f6" style="width: 50px; height: 30px;">
+              <input type="color" id="accentColor" value="#10b981" style="width: 50px; height: 30px;">
+            </div>
+          </div>
+          
+          <div style="margin-top: 12px;">
+            <label class="label">Company Logo URL (Optional)</label>
+            <input type="text" class="form-control" id="logoUrl" placeholder="https://example.com/logo.png">
+          </div>
         </div>
       </div>
     </div>
     
     <!-- Slide Configuration -->
-    <div class="section">
-      <div class="section-header">
-        <h3 class="section-title">Slide Configuration</h3>
-        <span class="section-helper">Customize your presentation</span>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Slide Configuration</div>
+        <div class="card-description">Customize your presentation settings</div>
       </div>
       
       <div class="slide-config">
@@ -532,15 +549,17 @@
         </div>
       </div>
       
-      <label class="label">Presentation Style</label>
-      <select class="style-select" id="presentationStyle">
-        <option value="executive">Executive Summary</option>
-        <option value="detailed" selected>Detailed Analysis</option>
-        <option value="sales">Sales Pitch</option>
-        <option value="financial">Financial Report</option>
-        <option value="project">Project Update</option>
-        <option value="custom">Custom</option>
-      </select>
+      <div class="form-group">
+        <label class="label">Presentation Style</label>
+        <select class="form-select" id="presentationStyle">
+          <option value="executive">Executive Summary</option>
+          <option value="detailed" selected>Detailed Analysis</option>
+          <option value="sales">Sales Pitch</option>
+          <option value="financial">Financial Report</option>
+          <option value="project">Project Update</option>
+          <option value="educational">Educational</option>
+        </select>
+      </div>
     </div>
     
     <!-- Advanced Options -->
@@ -556,7 +575,7 @@
       </div>
       <div class="option-item">
         <input type="checkbox" class="option-checkbox" id="includeInsights" checked>
-        <label for="includeInsights">Generate AI insights</label>
+        <label for="includeInsights">Generate data insights</label>
       </div>
       <div class="option-item">
         <input type="checkbox" class="option-checkbox" id="includeRecommendations" checked>
@@ -569,6 +588,10 @@
       <div class="option-item">
         <input type="checkbox" class="option-checkbox" id="includeAppendix">
         <label for="includeAppendix">Add data appendix</label>
+      </div>
+      <div class="option-item">
+        <input type="checkbox" class="option-checkbox" id="includeTransitions">
+        <label for="includeTransitions">Add slide transitions</label>
       </div>
     </div>
     
@@ -589,27 +612,40 @@
     </div>
   </div>
   
-  <!-- Loading Overlay -->
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="spinner"></div>
-    <div class="loading-text">Creating your presentation...</div>
-    <div class="loading-step" id="loadingStep">Analyzing data...</div>
-  </div>
-  
   <script>
     let selectedSource = 'entire';
     let selectedTemplate = 'corporate';
+    
+    function backToMain() {
+      google.script.run.showCellPilotSidebar();
+    }
     
     function selectSource(element, source) {
       document.querySelectorAll('.source-option').forEach(el => el.classList.remove('selected'));
       element.classList.add('selected');
       selectedSource = source;
+      
+      // Show custom range input if needed
+      const customInput = document.getElementById('customRangeInput');
+      if (source === 'custom') {
+        customInput.style.display = 'block';
+      } else {
+        customInput.style.display = 'none';
+      }
     }
     
     function selectTemplate(element, template) {
       document.querySelectorAll('.template-card').forEach(el => el.classList.remove('selected'));
       element.classList.add('selected');
       selectedTemplate = template;
+      
+      // Show custom template options if needed
+      const customOptions = document.getElementById('customTemplateOptions');
+      if (template === 'custom') {
+        customOptions.classList.add('show');
+      } else {
+        customOptions.classList.remove('show');
+      }
     }
     
     function updateSlideCount(value) {
@@ -623,9 +659,15 @@
       options.classList.toggle('show');
     }
     
+    function uploadTemplate() {
+      // This would trigger file upload in a real implementation
+      alert('Template upload feature coming soon! For now, please paste a Google Slides template URL.');
+    }
+    
     function previewPresentation() {
       const config = gatherConfig();
-      // Show preview in modal or generate sample
+      showLoading('Generating preview...');
+      
       google.script.run
         .withSuccessHandler(showPreview)
         .withFailureHandler(showError)
@@ -634,48 +676,36 @@
     
     function generatePresentation() {
       const config = gatherConfig();
-      const loadingOverlay = document.getElementById('loadingOverlay');
-      const loadingStep = document.getElementById('loadingStep');
       
-      loadingOverlay.classList.add('show');
-      
-      // Update loading steps
-      const steps = [
-        'Analyzing data...',
-        'Identifying patterns...',
-        'Generating insights...',
-        'Creating slides...',
-        'Applying design...',
-        'Finalizing presentation...'
-      ];
-      
-      let stepIndex = 0;
-      const stepInterval = setInterval(() => {
-        if (stepIndex < steps.length) {
-          loadingStep.textContent = steps[stepIndex];
-          stepIndex++;
+      // Validate custom template if selected
+      if (selectedTemplate === 'custom') {
+        const templateUrl = document.getElementById('templateUrl').value;
+        if (!templateUrl && !config.customTemplate.colors.primary) {
+          alert('Please provide a template URL or select brand colors for custom template.');
+          return;
         }
-      }, 2000);
+      }
+      
+      showLoading('Creating your presentation...');
       
       google.script.run
         .withSuccessHandler((result) => {
-          clearInterval(stepInterval);
-          loadingOverlay.classList.remove('show');
+          hideLoading();
           showSuccess(result);
         })
         .withFailureHandler((error) => {
-          clearInterval(stepInterval);
-          loadingOverlay.classList.remove('show');
+          hideLoading();
           showError(error);
         })
         .createPresentation(config);
     }
     
     function gatherConfig() {
-      return {
+      const config = {
         dataSource: {
           type: selectedSource,
-          includeHidden: selectedSource !== 'visible'
+          includeHidden: selectedSource !== 'visible',
+          customRange: selectedSource === 'custom' ? document.getElementById('customRange').value : null
         },
         template: selectedTemplate,
         slideCount: parseInt(document.getElementById('slideSlider').value),
@@ -685,25 +715,51 @@
           includeInsights: document.getElementById('includeInsights').checked,
           includeRecommendations: document.getElementById('includeRecommendations').checked,
           includeNextSteps: document.getElementById('includeNextSteps').checked,
-          includeAppendix: document.getElementById('includeAppendix').checked
+          includeAppendix: document.getElementById('includeAppendix').checked,
+          includeTransitions: document.getElementById('includeTransitions').checked
         }
       };
+      
+      // Add custom template settings if selected
+      if (selectedTemplate === 'custom') {
+        config.customTemplate = {
+          url: document.getElementById('templateUrl').value,
+          colors: {
+            primary: document.getElementById('primaryColor').value,
+            secondary: document.getElementById('secondaryColor').value,
+            accent: document.getElementById('accentColor').value
+          },
+          logoUrl: document.getElementById('logoUrl').value
+        };
+      }
+      
+      return config;
+    }
+    
+    function showLoading(message) {
+      // Show loading indicator (implement as overlay)
+      console.log('Loading:', message);
+    }
+    
+    function hideLoading() {
+      // Hide loading indicator
+      console.log('Loading complete');
     }
     
     function showPreview(structure) {
+      hideLoading();
       // Show preview of slide structure
       console.log('Preview:', structure);
-      alert('Preview feature coming soon!');
+      alert('Preview will show slide structure here');
     }
     
     function showSuccess(result) {
       document.getElementById('successMessage').classList.add('show');
-      // Store presentation URL for opening
       window.presentationUrl = result.url;
     }
     
     function showError(error) {
-      alert('Error creating presentation: ' + error.message);
+      alert('Error: ' + error.message);
     }
     
     function openPresentation() {
@@ -714,10 +770,11 @@
     
     function createAnother() {
       document.getElementById('successMessage').classList.remove('show');
-      // Reset form to defaults
+      // Reset form
       document.getElementById('slideSlider').value = 12;
       updateSlideCount(12);
       document.getElementById('presentationStyle').value = 'detailed';
+      selectTemplate(document.querySelector('.template-card'), 'corporate');
     }
   </script>
 </body>
