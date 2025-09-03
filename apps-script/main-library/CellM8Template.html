@@ -319,11 +319,42 @@
         <div class="form-group">
           <label class="form-label">Template Style</label>
           <select id="templateStyle" class="form-control">
-            <option value="simple" selected>Simple</option>
-            <option value="professional">Professional</option>
-            <option value="modern">Modern</option>
+            <option value="simple">Simple (Basic)</option>
+            <option value="professional" selected>Professional (Recommended)</option>
+            <option value="modern">Modern (Gradient)</option>
+            <option value="elegant">Elegant (Clean)</option>
           </select>
+          <p style="font-size: 11px; color: var(--gray-600); margin: 4px 0 0 0;">
+            Professional templates include charts, metrics, and smart layouts
+          </p>
         </div>
+      </div>
+    </div>
+    
+    <!-- Features Card -->
+    <div class="card" id="featuresCard" style="display: none;">
+      <div class="card-header" style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);">
+        <h3 style="color: var(--info-800);">Professional Features</h3>
+        <p style="color: var(--info-700);">Your presentation will include:</p>
+      </div>
+      <div class="card-body">
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Smart data visualization with charts
+          </li>
+          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Key metrics dashboard
+          </li>
+          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Professional formatting and colors
+          </li>
+          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Automatic data analysis
+          </li>
+          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Clean, uncluttered layouts
+          </li>
+        </ul>
       </div>
     </div>
     
@@ -384,7 +415,27 @@
     // Initialize on load
     window.onload = function() {
       updateSelectionInfo();
+      setupTemplateListener();
     };
+    
+    // Setup template change listener
+    function setupTemplateListener() {
+      const templateSelect = document.getElementById('templateStyle');
+      const featuresCard = document.getElementById('featuresCard');
+      
+      templateSelect.addEventListener('change', function() {
+        if (this.value !== 'simple') {
+          featuresCard.style.display = 'block';
+        } else {
+          featuresCard.style.display = 'none';
+        }
+      });
+      
+      // Show initially if professional is selected
+      if (templateSelect.value !== 'simple') {
+        featuresCard.style.display = 'block';
+      }
+    }
     
     // Navigation function
     function backToMain() {

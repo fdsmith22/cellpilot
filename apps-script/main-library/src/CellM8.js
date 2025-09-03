@@ -177,6 +177,29 @@ const CellM8 = {
       // Get the presentation for editing
       const pres = SlidesApp.openById(presentationId);
       
+      // Use intelligent slide generator if available
+      if (typeof CellM8SlideGenerator !== 'undefined' && config.template !== 'simple') {
+        const generatorSuccess = CellM8SlideGenerator.generateProfessionalPresentation(
+          pres,
+          dataResult,
+          config
+        );
+        
+        if (generatorSuccess) {
+          // Professional presentation created successfully
+          const url = pres.getUrl();
+          return {
+            success: true,
+            presentationId: presentationId,
+            url: url,
+            slideCount: pres.getSlides().length,
+            message: 'Professional presentation created successfully'
+          };
+        }
+      }
+      
+      // Fall back to simple presentation if generator fails or simple template selected
+      
       // Add title slide
       const slides = pres.getSlides();
       const titleSlide = slides[0];
