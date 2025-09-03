@@ -319,14 +319,15 @@
         <div class="form-group">
           <label class="form-label">Template Style</label>
           <select id="templateStyle" class="form-control">
-            <option value="simple">Simple (Basic)</option>
-            <option value="corporate" selected>Corporate (Professional)</option>
-            <option value="modern">Modern (Contemporary)</option>
-            <option value="elegant">Elegant (Minimalist)</option>
-            <option value="vibrant">Vibrant (Bold)</option>
+            <option value="professional" selected>Professional (Google Blue)</option>
+            <option value="modern">Modern (Purple Gradient)</option>
+            <option value="corporate">Corporate (Navy Blue)</option>
+            <option value="elegant">Elegant (Dark Slate)</option>
+            <option value="vibrant">Vibrant (Coral & Teal)</option>
+            <option value="dark">Dark (Night Mode)</option>
           </select>
           <p style="font-size: 11px; color: var(--gray-600); margin: 4px 0 0 0;">
-            Advanced templates include 20 chart types, AI insights, and smart layouts
+            All themes include golden ratio layouts, smart charts, gradients, and speaker notes
           </p>
         </div>
         
@@ -347,36 +348,36 @@
     </div>
     
     <!-- Features Card -->
-    <div class="card" id="featuresCard" style="display: none;">
+    <div class="card" id="featuresCard">
       <div class="card-header" style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);">
         <h3 style="color: var(--info-800);">Professional Features</h3>
-        <p style="color: var(--info-700);">Your presentation will include:</p>
+        <p style="color: var(--info-700);">All presentations include:</p>
       </div>
       <div class="card-body">
         <ul style="list-style: none; padding: 0; margin: 0;">
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> 20 chart types (line, bar, pie, treemap, gauge, etc.)
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Smart chart selection based on data type
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> AI-powered insights and recommendations
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Golden ratio layouts for perfect positioning
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Advanced metrics dashboard with KPIs
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Gradient backgrounds and modern effects
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Correlation and trend analysis
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Professional typography with Google Sans
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Professional themes with gradients
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Speaker notes on every slide
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> 100+ shape types for visualization
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Data insights and key metrics
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Executive summary generation
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Executive summary with KPI cards
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Smart content and narrative creation
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> No overlaps or overflows guaranteed
           </li>
         </ul>
       </div>
@@ -442,23 +443,10 @@
       setupTemplateListener();
     };
     
-    // Setup template change listener
+    // Setup template change listener (no longer needed but kept for future use)
     function setupTemplateListener() {
-      const templateSelect = document.getElementById('templateStyle');
-      const featuresCard = document.getElementById('featuresCard');
-      
-      templateSelect.addEventListener('change', function() {
-        if (this.value !== 'simple') {
-          featuresCard.style.display = 'block';
-        } else {
-          featuresCard.style.display = 'none';
-        }
-      });
-      
-      // Show initially if professional is selected
-      if (templateSelect.value !== 'simple') {
-        featuresCard.style.display = 'block';
-      }
+      // All templates now have professional features
+      // Features card is always visible
     }
     
     // Navigation function
