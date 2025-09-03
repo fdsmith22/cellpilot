@@ -202,40 +202,7 @@ const CellM8 = {
       // Get the presentation for editing
       const pres = SlidesApp.openById(presentationId);
       
-      // Use Pro slide generator if available (highest priority)
-      if (typeof CellM8SlideGeneratorPro !== 'undefined' && config.template !== 'simple') {
-        try {
-          // Prepare configuration for Pro generator
-          const proConfig = {
-            title: config.title,
-            subtitle: config.subtitle,
-            theme: config.template || 'corporate',
-            slideCount: config.slideCount || 5,
-            callToAction: true,
-            data: dataResult
-          };
-          
-          // Generate professional presentation
-          const result = CellM8SlideGeneratorPro.generatePresentation(pres, dataResult, proConfig);
-          
-          if (result.success) {
-            // Professional presentation created successfully
-            const url = pres.getUrl();
-            return {
-              success: true,
-              presentationId: presentationId,
-              url: url,
-              slideCount: pres.getSlides().length,
-              message: 'Professional presentation created with beautiful design'
-            };
-          }
-        } catch (generatorError) {
-          Logger.warn('Pro generator failed, falling back:', generatorError);
-          // Continue to fallback below
-        }
-      }
-      
-      // Use advanced intelligent slide generator if Pro not available
+      // Use advanced intelligent slide generator (after Optimal)
       if (typeof CellM8SlideGeneratorAdvanced !== 'undefined' && config.template !== 'simple') {
         try {
           // Prepare configuration for advanced generator
