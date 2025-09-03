@@ -320,12 +320,27 @@
           <label class="form-label">Template Style</label>
           <select id="templateStyle" class="form-control">
             <option value="simple">Simple (Basic)</option>
-            <option value="professional" selected>Professional (Recommended)</option>
-            <option value="modern">Modern (Gradient)</option>
-            <option value="elegant">Elegant (Clean)</option>
+            <option value="corporate" selected>Corporate (Professional)</option>
+            <option value="modern">Modern (Contemporary)</option>
+            <option value="elegant">Elegant (Minimalist)</option>
+            <option value="vibrant">Vibrant (Bold)</option>
           </select>
           <p style="font-size: 11px; color: var(--gray-600); margin: 4px 0 0 0;">
-            Professional templates include charts, metrics, and smart layouts
+            Advanced templates include 20 chart types, AI insights, and smart layouts
+          </p>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Master Template</label>
+          <select id="masterTemplate" class="form-control">
+            <option value="default" selected>Default</option>
+            <option value="executive">Executive (C-Suite)</option>
+            <option value="technical">Technical (Data-Focused)</option>
+            <option value="sales">Sales (Engaging)</option>
+            <option value="educational">Educational (Learning)</option>
+          </select>
+          <p style="font-size: 11px; color: var(--gray-600); margin: 4px 0 0 0;">
+            Master templates define overall presentation structure
           </p>
         </div>
       </div>
@@ -340,19 +355,28 @@
       <div class="card-body">
         <ul style="list-style: none; padding: 0; margin: 0;">
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Smart data visualization with charts
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> 20 chart types (line, bar, pie, treemap, gauge, etc.)
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Key metrics dashboard
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> AI-powered insights and recommendations
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Professional formatting and colors
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Advanced metrics dashboard with KPIs
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Automatic data analysis
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Correlation and trend analysis
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Clean, uncluttered layouts
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Professional themes with gradients
+          </li>
+          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> 100+ shape types for visualization
+          </li>
+          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Executive summary generation
+          </li>
+          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Smart content and narrative creation
           </li>
         </ul>
       </div>
@@ -658,6 +682,7 @@
         subtitle: document.getElementById('presentationSubtitle').value,
         slideCount: parseInt(document.getElementById('slideCount').value),
         template: document.getElementById('templateStyle').value,
+        masterTemplate: document.getElementById('masterTemplate').value,
         content: currentPreview ? currentPreview.slides : []
       };
       

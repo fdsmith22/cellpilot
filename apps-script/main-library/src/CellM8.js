@@ -177,15 +177,21 @@ const CellM8 = {
       // Get the presentation for editing
       const pres = SlidesApp.openById(presentationId);
       
-      // Use intelligent slide generator if available
-      if (typeof CellM8SlideGenerator !== 'undefined' && config.template !== 'simple') {
-        const generatorSuccess = CellM8SlideGenerator.generateProfessionalPresentation(
-          pres,
-          dataResult,
-          config
-        );
-        
-        if (generatorSuccess) {
+      // Use advanced intelligent slide generator if available
+      if (typeof CellM8SlideGeneratorAdvanced !== 'undefined' && config.template !== 'simple') {
+        try {
+          // Prepare configuration for advanced generator
+          const advancedConfig = {
+            title: config.title,
+            subtitle: config.subtitle,
+            theme: config.template || 'corporate',
+            templateType: config.masterTemplate || 'default',
+            data: dataResult
+          };
+          
+          // Generate advanced presentation
+          CellM8SlideGeneratorAdvanced.generatePresentation(pres, dataResult, advancedConfig);
+          
           // Professional presentation created successfully
           const url = pres.getUrl();
           return {
@@ -193,8 +199,36 @@ const CellM8 = {
             presentationId: presentationId,
             url: url,
             slideCount: pres.getSlides().length,
-            message: 'Professional presentation created successfully'
+            message: 'Advanced professional presentation created with intelligent insights'
           };
+        } catch (generatorError) {
+          Logger.warn('Advanced generator failed, falling back:', generatorError);
+          // Continue to fallback below
+        }
+      }
+      
+      // Try standard intelligent slide generator if advanced not available
+      if (typeof CellM8SlideGenerator !== 'undefined' && config.template !== 'simple') {
+        try {
+          const generatorSuccess = CellM8SlideGenerator.generateProfessionalPresentation(
+            pres,
+            dataResult,
+            config
+          );
+          
+          if (generatorSuccess) {
+            // Professional presentation created successfully
+            const url = pres.getUrl();
+            return {
+              success: true,
+              presentationId: presentationId,
+              url: url,
+              slideCount: pres.getSlides().length,
+              message: 'Professional presentation created successfully'
+            };
+          }
+        } catch (generatorError) {
+          Logger.warn('Standard generator failed, falling back:', generatorError);
         }
       }
       
