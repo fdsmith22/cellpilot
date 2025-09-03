@@ -155,6 +155,20 @@ CellM8 is a presentation helper that transforms spreadsheet data into Google Sli
     - Template application functions
     - Data visualization functions
 
+- **CellM8SlideGenerator.js** (`/apps-script/main-library/src/CellM8SlideGenerator.js`)
+  - Professional slide generation with templates and smart layouts
+  - Data analysis and chart creation
+
+- **CellM8SlideGeneratorAdvanced.js** (`/apps-script/main-library/src/CellM8SlideGeneratorAdvanced.js`) 
+  - Next-generation AI-powered slide generation (3000+ lines)
+  - 20 chart types with intelligent selection
+  - Advanced data analysis (correlations, trends, outliers)
+  - Professional themes (corporate, modern, elegant, vibrant)
+  - Master templates (executive, technical, sales, educational)
+  - Shape composition system (100+ shapes)
+  - Visual effects engine
+  - Intelligent content generation
+
 #### 2. UI Template
 - **CellM8Template.html** (`/apps-script/main-library/CellM8Template.html`)
   - Uses CellPilot design system via `<?!= include('SharedStyles'); ?>`
@@ -323,9 +337,9 @@ clasp deployments
 ```
 
 ### Current Active Deployment
-- **ID**: AKfycby-NVIhyCmnypgp9HRL-STtV9SSC3H97MCpHYA5--UMOCDIZMr5JdhAe6wX6ToJLLgO4Q
-- **Version**: @13
-- **Description**: CellM8 Menu Integration Fix
+- **ID**: AKfycbyPA5zqXx3pQOOG_m5AdZP38XQ32mYJQF0IBxKpe14xnMG9Nb4RFAIpg7YQOqHc05wBHA
+- **Version**: @21
+- **Description**: CellM8 Advanced: 20 chart types, AI insights, master templates
 
 ## Project Context Checking Process
 
@@ -464,4 +478,19 @@ cd /home/freddy/cellpilot/apps-script/beta-installer
 
 ---
 *This summary created on 2025-09-02 after successful CellM8 integration*
+*Updated on 2025-09-03 with advanced AI-powered slide generation system*
 *Use this document to maintain consistency when adding new features*
+
+## Latest Advanced Features (2025-09-03)
+
+### CellM8SlideGeneratorAdvanced Capabilities
+- **20 Chart Types**: Line, Bar, Pie, Bubble, Scatter, Treemap, Gauge, Geo, Histogram, and more
+- **AI-Powered Analysis**: Automatic insights, correlations, trend detection, outlier identification
+- **Professional Themes**: 4 color palettes with gradient effects and professional styling
+- **Master Templates**: 5 templates for different presentation contexts (executive, technical, sales, educational)
+- **Smart Content**: Executive summaries, key takeaways, next steps generated automatically
+- **Visual Effects**: Simulated gradients, shadows, glow effects, depth layers
+- **Shape Library**: 100+ shapes for complex visualizations
+- **Intelligent Layouts**: 7 predefined layouts optimized for different content types
+
+The system now creates boardroom-ready presentations that tell a compelling data story with appropriate visualizations, meaningful insights, and professional design - all generated automatically from spreadsheet data.
