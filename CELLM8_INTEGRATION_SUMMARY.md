@@ -169,6 +169,21 @@ CellM8 is a presentation helper that transforms spreadsheet data into Google Sli
   - Visual effects engine
   - Intelligent content generation
 
+- **CellM8SlideGeneratorPro.js** (`/apps-script/main-library/src/CellM8SlideGeneratorPro.js`)
+  - Complete redesign with proper slide management
+  - Beautiful gradient backgrounds with color blending
+  - Smart data presentation (no overflow)
+  - Professional themes and layouts
+
+- **CellM8SlideGeneratorOptimal.js** (`/apps-script/main-library/src/CellM8SlideGeneratorOptimal.js`)
+  - Research-based implementation using best practices
+  - Three-request method to eliminate placeholders
+  - Build-from-scratch approach for consistency
+  - Intelligent data analysis and visualization
+  - Safe margins and error handling
+
+**Note**: The generator files are internal helper modules called by CellM8.js and do not require proxy functions in the 4-location pattern.
+
 #### 2. UI Template
 - **CellM8Template.html** (`/apps-script/main-library/CellM8Template.html`)
   - Uses CellPilot design system via `<?!= include('SharedStyles'); ?>`
@@ -478,7 +493,10 @@ cd /home/freddy/cellpilot/apps-script/beta-installer
 
 ---
 *This summary created on 2025-09-02 after successful CellM8 integration*
-*Updated on 2025-09-03 with advanced AI-powered slide generation system*
+*Updated on 2025-09-03 with multiple slide generation systems:*
+- *Advanced: AI-powered with 20 chart types*
+- *Pro: Beautiful gradients and smart layouts*
+- *Optimal: Research-based best practices*
 *Use this document to maintain consistency when adding new features*
 
 ## Latest Advanced Features (2025-09-03)
