@@ -210,6 +210,7 @@ const CellM8SlideGenerator = {
   createPresentation: function(title, data, config) {
     try {
       Logger.log('Starting optimal presentation creation');
+      Logger.log('Config received:', JSON.stringify(config));
       
       // Step 1: Create new presentation
       const presentation = this.createCleanPresentation(title);
@@ -704,6 +705,10 @@ const CellM8SlideGenerator = {
     const themeName = themeMap[config.template] || 'professional';
     const theme = this.THEMES[themeName] || this.THEMES.professional;
     
+    Logger.log('Template selected: ' + config.template);
+    Logger.log('Theme name resolved: ' + themeName);
+    Logger.log('Theme colors: ' + JSON.stringify(theme));
+    
     plan.forEach((slideSpec, index) => {
       Logger.log('Building slide ' + (index + 1) + ': ' + slideSpec.type);
       
@@ -769,6 +774,8 @@ const CellM8SlideGenerator = {
    * Build title slide
    */
   buildTitleSlide: function(slide, spec, theme) {
+    Logger.log('Building title slide with theme: ' + JSON.stringify(theme.gradients));
+    
     // Add gradient background
     this.addGradientBackground(slide, theme.gradients.primary[0], theme.gradients.primary[1]);
     
@@ -1184,35 +1191,45 @@ const CellM8SlideGenerator = {
    * Add gradient background to slide
    */
   addGradientBackground: function(slide, color1, color2, angle) {
-    // Create two rectangles to simulate gradient
-    const bgTop = slide.insertShape(
-      SlidesApp.ShapeType.RECTANGLE,
-      0, 0,
-      this.SLIDE_WIDTH, this.SLIDE_HEIGHT / 2
-    );
-    bgTop.getFill().setSolidFill(color1);
-    bgTop.getBorder().setTransparent();
-    bgTop.sendToBack();
-    
-    const bgBottom = slide.insertShape(
-      SlidesApp.ShapeType.RECTANGLE,
-      0, this.SLIDE_HEIGHT / 2,
-      this.SLIDE_WIDTH, this.SLIDE_HEIGHT / 2
-    );
-    bgBottom.getFill().setSolidFill(color2);
-    bgBottom.getBorder().setTransparent();
-    bgBottom.sendToBack();
-    
-    // Add blending overlay
-    const blend = slide.insertShape(
-      SlidesApp.ShapeType.RECTANGLE,
-      0, this.SLIDE_HEIGHT * 0.4,
-      this.SLIDE_WIDTH, this.SLIDE_HEIGHT * 0.2
-    );
-    blend.getFill().setSolidFill(color1);
-    blend.getFill().setTransparency(0.5);
-    blend.getBorder().setTransparent();
-    blend.sendToBack();
+    try {
+      Logger.log('Adding gradient background: ' + color1 + ' to ' + color2);
+      
+      // Create two rectangles to simulate gradient
+      const bgTop = slide.insertShape(
+        SlidesApp.ShapeType.RECTANGLE,
+        0, 0,
+        this.SLIDE_WIDTH, this.SLIDE_HEIGHT / 2
+      );
+      bgTop.getFill().setSolidFill(color1);
+      bgTop.getBorder().setTransparent();
+      bgTop.sendToBack();
+      
+      const bgBottom = slide.insertShape(
+        SlidesApp.ShapeType.RECTANGLE,
+        0, this.SLIDE_HEIGHT / 2,
+        this.SLIDE_WIDTH, this.SLIDE_HEIGHT / 2
+      );
+      bgBottom.getFill().setSolidFill(color2);
+      bgBottom.getBorder().setTransparent();
+      bgBottom.sendToBack();
+      
+      // Add blending overlay
+      const blend = slide.insertShape(
+        SlidesApp.ShapeType.RECTANGLE,
+        0, this.SLIDE_HEIGHT * 0.4,
+        this.SLIDE_WIDTH, this.SLIDE_HEIGHT * 0.2
+      );
+      blend.getFill().setSolidFill(color1);
+      blend.getFill().setTransparency(0.5);
+      blend.getBorder().setTransparent();
+      blend.sendToBack();
+      
+      Logger.log('Gradient background added successfully');
+    } catch (error) {
+      Logger.error('Error adding gradient background:', error);
+      // Fall back to solid color
+      this.addBackground(slide, color1);
+    }
   },
   
   /**

@@ -171,9 +171,12 @@ const CellM8 = {
       }
       
       // Try CellM8SlideGenerator FIRST (creates its own presentation)
-      if (typeof CellM8SlideGenerator !== 'undefined' && config.template !== 'simple') {
+      // All templates now use the enhanced generator
+      if (typeof CellM8SlideGenerator !== 'undefined') {
         try {
           Logger.log('Using CellM8 slide generator with research-based approach');
+          Logger.log('Config template selected: ' + config.template);
+          Logger.log('Config master template: ' + config.masterTemplate);
           
           const generatorResult = CellM8SlideGenerator.createPresentation(
             config.title || 'Data Presentation',
@@ -182,7 +185,8 @@ const CellM8 = {
               title: config.title,
               subtitle: config.subtitle,
               slideCount: config.slideCount || 5,
-              theme: config.template === 'dark' ? 'dark' : 'professional'
+              template: config.template || 'professional',  // Pass template directly
+              masterTemplate: config.masterTemplate
             }
           );
           
