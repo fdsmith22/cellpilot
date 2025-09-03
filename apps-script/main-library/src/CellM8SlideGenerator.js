@@ -1504,3 +1504,11 @@ const CellM8SlideGenerator = {
     });
   }
 };
+
+// Attach SlideGenerator to CellM8 when this file loads
+if (typeof CellM8 !== 'undefined') {
+  CellM8.SlideGenerator = CellM8SlideGenerator;
+  Logger.log('CellM8SlideGenerator attached to CellM8');
+} else {
+  Logger.warn('CellM8 not found - CellM8SlideGenerator not attached');
+}

@@ -205,19 +205,18 @@ const CellM8 = {
         dataResult = config.data;
       }
       
-      // Check if CellM8SlideGenerator exists
-      Logger.log('=== DEBUGGING CellM8SlideGenerator ===');
-      Logger.log('Type of CellM8SlideGenerator: ' + typeof CellM8SlideGenerator);
+      // Check if CellM8.SlideGenerator exists (as a property of CellM8)
+      Logger.log('=== DEBUGGING CellM8.SlideGenerator ===');
+      Logger.log('Type of CellM8.SlideGenerator: ' + typeof CellM8.SlideGenerator);
       
-      // Try CellM8SlideGenerator FIRST (creates its own presentation)
-      // All templates now use the enhanced generator
-      if (typeof CellM8SlideGenerator !== 'undefined') {
+      // Use the SlideGenerator if it exists
+      if (CellM8.SlideGenerator) {
         try {
-          Logger.log('CellM8SlideGenerator IS DEFINED - Using it');
+          Logger.log('CellM8.SlideGenerator IS DEFINED - Using it');
           Logger.log('Config template selected: ' + config.template);
           Logger.log('Config master template: ' + config.masterTemplate);
           
-          const generatorResult = CellM8SlideGenerator.createPresentation(
+          const generatorResult = CellM8.SlideGenerator.createPresentation(
             config.title || 'Data Presentation',
             dataResult,
             {
@@ -232,21 +231,21 @@ const CellM8 = {
           Logger.log('Generator returned: ' + JSON.stringify(generatorResult));
           
           if (generatorResult.success) {
-            Logger.log('CellM8 slide generator SUCCEEDED - returning result');
+            Logger.log('CellM8.SlideGenerator SUCCEEDED - returning result');
             return generatorResult;
           } else {
             Logger.log('Generator returned but success=false');
           }
         } catch (error) {
-          Logger.error('CellM8SlideGenerator threw ERROR: ' + error.toString());
+          Logger.error('CellM8.SlideGenerator threw ERROR: ' + error.toString());
           Logger.error('Stack: ' + error.stack);
         }
       } else {
-        Logger.warn('CellM8SlideGenerator is UNDEFINED - falling back to simple');
+        Logger.warn('CellM8.SlideGenerator is UNDEFINED');
       }
 
-      // CellM8SlideGenerator is required - no fallback
-      Logger.error('CRITICAL: CellM8SlideGenerator is not available!');
+      // SlideGenerator is required - no fallback
+      Logger.error('CRITICAL: CellM8.SlideGenerator is not available!');
       return {
         success: false,
         error: 'Presentation generator not loaded. Please refresh and try again.'
