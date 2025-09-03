@@ -169,8 +169,33 @@ const CellM8 = {
       } else {
         dataResult = config.data;
       }
+      
+      // Try Optimal generator FIRST (creates its own presentation)
+      if (typeof CellM8SlideGeneratorOptimal !== 'undefined' && config.template !== 'simple') {
+        try {
+          Logger.log('Using Optimal slide generator with research-based approach');
+          
+          const optimalResult = CellM8SlideGeneratorOptimal.createPresentation(
+            config.title || 'Data Presentation',
+            dataResult,
+            {
+              title: config.title,
+              subtitle: config.subtitle,
+              slideCount: config.slideCount || 5,
+              theme: config.template === 'dark' ? 'dark' : 'professional'
+            }
+          );
+          
+          if (optimalResult.success) {
+            Logger.log('Optimal generator succeeded');
+            return optimalResult;
+          }
+        } catch (error) {
+          Logger.warn('Optimal generator failed, falling back:', error);
+        }
+      }
 
-      // Create presentation using Slides API
+      // Create presentation using Slides API (fallback approach)
       const presentation = SlidesApp.create(config.title);
       const presentationId = presentation.getId();
       
