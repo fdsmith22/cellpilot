@@ -804,7 +804,7 @@ const CellM8SlideGenerator = {
     
     titleBox.getText().getTextStyle()
       .setFontSize(this.TYPOGRAPHY.display)
-      .setFontFamily('Google Sans')
+      .setFontFamily('Arial')  // Use Arial for compatibility
       .setBold(true)
       .setForegroundColor('#FFFFFF');
     
@@ -823,7 +823,7 @@ const CellM8SlideGenerator = {
       
       subtitleBox.getText().getTextStyle()
         .setFontSize(this.TYPOGRAPHY.subtitle)
-        .setFontFamily('Google Sans')
+        .setFontFamily('Arial')
         .setForegroundColor('#FFFFFF');
       
       subtitleBox.getText().getParagraphStyle()
@@ -853,7 +853,7 @@ const CellM8SlideGenerator = {
     );
     dateBox.getText().getTextStyle()
       .setFontSize(this.TYPOGRAPHY.caption)
-      .setFontFamily('Google Sans')
+      .setFontFamily('Arial')
       .setForegroundColor('#FFFFFF');
     dateBox.getText().getTextStyle().setTransparency(0.7);
     dateBox.getText().getParagraphStyle()
@@ -991,7 +991,7 @@ const CellM8SlideGenerator = {
       cell.getText().setText(headerText);
       cell.getText().getTextStyle()
         .setFontSize(this.TYPOGRAPHY.caption)
-        .setFontFamily('Google Sans')
+        .setFontFamily('Arial')
         .setBold(true)
         .setForegroundColor('#FFFFFF');
       cell.getText().getParagraphStyle()
@@ -1019,7 +1019,7 @@ const CellM8SlideGenerator = {
         const isNumeric = !isNaN(parseFloat(value)) && isFinite(value);
         cell.getText().getTextStyle()
           .setFontSize(this.TYPOGRAPHY.caption)
-          .setFontFamily('Google Sans')
+          .setFontFamily('Arial')
           .setForegroundColor(isNumeric ? theme.text : theme.textLight);
         
         // Align numbers to right, text to left
@@ -1058,7 +1058,7 @@ const CellM8SlideGenerator = {
       );
       infoBox.getText().getTextStyle()
         .setFontSize(this.TYPOGRAPHY.caption)
-        .setFontFamily('Google Sans')
+        .setFontFamily('Arial')
         .setForegroundColor(theme.textLight)
         .setItalic(true);
       infoBox.getText().getParagraphStyle()
@@ -1246,7 +1246,7 @@ const CellM8SlideGenerator = {
     );
     titleBox.getText().getTextStyle()
       .setFontSize(this.TYPOGRAPHY.title)
-      .setFontFamily('Google Sans')
+      .setFontFamily('Arial')
       .setBold(true)
       .setForegroundColor(theme.primary);
     
@@ -1418,7 +1418,7 @@ const CellM8SlideGenerator = {
           );
           numberBox.getText().getTextStyle()
             .setFontSize(this.TYPOGRAPHY.overline)
-            .setFontFamily('Google Sans')
+            .setFontFamily('Arial')
             .setForegroundColor('#9aa0a6');
           numberBox.getText().getParagraphStyle()
             .setParagraphAlignment(SlidesApp.ParagraphAlignment.END);
