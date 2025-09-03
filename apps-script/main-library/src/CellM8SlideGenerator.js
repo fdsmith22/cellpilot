@@ -1,10 +1,10 @@
 /**
- * CellM8 Optimal Slide Generator
- * Complete rewrite using research-based best practices
- * Avoids all common pitfalls and creates truly clean presentations
+ * CellM8 Slide Generator
+ * Research-based implementation using Google Slides API best practices
+ * The ONLY working generator that properly handles placeholders and formatting
  */
 
-const CellM8SlideGeneratorOptimal = {
+const CellM8SlideGenerator = {
   
   // Constants
   SLIDE_WIDTH: 720,

@@ -170,12 +170,12 @@ const CellM8 = {
         dataResult = config.data;
       }
       
-      // Try Optimal generator FIRST (creates its own presentation)
-      if (typeof CellM8SlideGeneratorOptimal !== 'undefined' && config.template !== 'simple') {
+      // Try CellM8SlideGenerator FIRST (creates its own presentation)
+      if (typeof CellM8SlideGenerator !== 'undefined' && config.template !== 'simple') {
         try {
-          Logger.log('Using Optimal slide generator with research-based approach');
+          Logger.log('Using CellM8 slide generator with research-based approach');
           
-          const optimalResult = CellM8SlideGeneratorOptimal.createPresentation(
+          const generatorResult = CellM8SlideGenerator.createPresentation(
             config.title || 'Data Presentation',
             dataResult,
             {
@@ -186,16 +186,16 @@ const CellM8 = {
             }
           );
           
-          if (optimalResult.success) {
-            Logger.log('Optimal generator succeeded');
-            return optimalResult;
+          if (generatorResult.success) {
+            Logger.log('CellM8 slide generator succeeded');
+            return generatorResult;
           }
         } catch (error) {
-          Logger.warn('Optimal generator failed, falling back:', error);
+          Logger.warn('CellM8 slide generator failed, falling back:', error);
         }
       }
 
-      // Fall back to simple presentation if Optimal generator is not available or simple template selected
+      // Fall back to simple presentation if CellM8SlideGenerator is not available or simple template selected
       // This creates a basic presentation using the legacy approach
       Logger.log('Falling back to simple presentation creation');
       
