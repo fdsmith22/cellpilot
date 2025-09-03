@@ -703,11 +703,16 @@ const CellM8SlideGenerator = {
     };
     
     const themeName = themeMap[config.template] || 'professional';
+    Logger.log('Looking for theme: ' + themeName);
+    Logger.log('Available themes: ' + Object.keys(this.THEMES).join(', '));
+    
     const theme = this.THEMES[themeName] || this.THEMES.professional;
     
     Logger.log('Template selected: ' + config.template);
     Logger.log('Theme name resolved: ' + themeName);
-    Logger.log('Theme colors: ' + JSON.stringify(theme));
+    Logger.log('Theme object exists: ' + (theme ? 'yes' : 'no'));
+    Logger.log('Theme has primary color: ' + (theme && theme.primary ? theme.primary : 'no'));
+    Logger.log('Theme has gradients: ' + (theme && theme.gradients ? 'yes' : 'no'));
     
     plan.forEach((slideSpec, index) => {
       Logger.log('Building slide ' + (index + 1) + ': ' + slideSpec.type);
@@ -774,23 +779,37 @@ const CellM8SlideGenerator = {
    * Build title slide
    */
   buildTitleSlide: function(slide, spec, theme) {
-    Logger.log('Building title slide with theme: ' + JSON.stringify(theme.gradients));
-    
-    // Add gradient background
-    this.addGradientBackground(slide, theme.gradients.primary[0], theme.gradients.primary[1]);
-    
-    // Add decorative shape overlay
-    const overlay = slide.insertShape(
-      SlidesApp.ShapeType.RECTANGLE,
-      0,
-      this.SLIDE_HEIGHT * 0.7,
-      this.SLIDE_WIDTH,
-      this.SLIDE_HEIGHT * 0.3
-    );
-    overlay.getFill().setSolidFill(theme.primaryVariant);
-    overlay.getFill().setTransparency(0.3);
-    overlay.getBorder().setTransparent();
-    overlay.sendToBack();
+    try {
+      Logger.log('Building title slide');
+      Logger.log('Theme object: ' + JSON.stringify(theme));
+      Logger.log('Theme has gradients: ' + (theme.gradients ? 'yes' : 'no'));
+      
+      // Add gradient background with safety check
+      if (theme.gradients && theme.gradients.primary) {
+        Logger.log('Adding gradient background');
+        this.addGradientBackground(slide, theme.gradients.primary[0], theme.gradients.primary[1]);
+      } else {
+        Logger.log('No gradients defined, using solid background');
+        this.addBackground(slide, theme.primary || '#1a73e8');
+      }
+      
+      // Add decorative shape overlay with safety check
+      const overlayColor = theme.primaryVariant || theme.primary || '#1557b0';
+      Logger.log('Adding overlay with color: ' + overlayColor);
+      const overlay = slide.insertShape(
+        SlidesApp.ShapeType.RECTANGLE,
+        0,
+        this.SLIDE_HEIGHT * 0.7,
+        this.SLIDE_WIDTH,
+        this.SLIDE_HEIGHT * 0.3
+      );
+      overlay.getFill().setSolidFill(overlayColor);
+      overlay.getFill().setTransparency(0.3);
+      overlay.getBorder().setTransparent();
+      overlay.sendToBack();
+    } catch (error) {
+      Logger.error('Error in buildTitleSlide beginning:', error);
+    }
     
     // Add title with golden ratio positioning
     const titleY = (this.SLIDE_HEIGHT / this.GOLDEN_RATIO) - 30;
