@@ -195,69 +195,16 @@ const CellM8 = {
         }
       }
 
-      // Create presentation using Slides API (fallback approach)
+      // Fall back to simple presentation if Optimal generator is not available or simple template selected
+      // This creates a basic presentation using the legacy approach
+      Logger.log('Falling back to simple presentation creation');
+      
+      // Create presentation using Slides API
       const presentation = SlidesApp.create(config.title);
       const presentationId = presentation.getId();
       
       // Get the presentation for editing
       const pres = SlidesApp.openById(presentationId);
-      
-      // Use advanced intelligent slide generator (after Optimal)
-      if (typeof CellM8SlideGeneratorAdvanced !== 'undefined' && config.template !== 'simple') {
-        try {
-          // Prepare configuration for advanced generator
-          const advancedConfig = {
-            title: config.title,
-            subtitle: config.subtitle,
-            theme: config.template || 'corporate',
-            templateType: config.masterTemplate || 'default',
-            data: dataResult
-          };
-          
-          // Generate advanced presentation
-          CellM8SlideGeneratorAdvanced.generatePresentation(pres, dataResult, advancedConfig);
-          
-          // Professional presentation created successfully
-          const url = pres.getUrl();
-          return {
-            success: true,
-            presentationId: presentationId,
-            url: url,
-            slideCount: pres.getSlides().length,
-            message: 'Advanced professional presentation created with intelligent insights'
-          };
-        } catch (generatorError) {
-          Logger.warn('Advanced generator failed, falling back:', generatorError);
-          // Continue to fallback below
-        }
-      }
-      
-      // Try standard intelligent slide generator if advanced not available
-      if (typeof CellM8SlideGenerator !== 'undefined' && config.template !== 'simple') {
-        try {
-          const generatorSuccess = CellM8SlideGenerator.generateProfessionalPresentation(
-            pres,
-            dataResult,
-            config
-          );
-          
-          if (generatorSuccess) {
-            // Professional presentation created successfully
-            const url = pres.getUrl();
-            return {
-              success: true,
-              presentationId: presentationId,
-              url: url,
-              slideCount: pres.getSlides().length,
-              message: 'Professional presentation created successfully'
-            };
-          }
-        } catch (generatorError) {
-          Logger.warn('Standard generator failed, falling back:', generatorError);
-        }
-      }
-      
-      // Fall back to simple presentation if generator fails or simple template selected
       
       // Add title slide
       const slides = pres.getSlides();
