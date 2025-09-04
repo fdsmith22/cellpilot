@@ -11,13 +11,47 @@ CellPilot is a Google Sheets add-on distributed as a Google Apps Script library.
 
 ## CellM8 Development Process - CRITICAL STEPS
 
-### When Adding New CellM8 Features - Follow This Exact Process:
+### ⚠️ CRITICAL SCOPE STRUCTURE TO PREVENT TypeError ISSUES ⚠️
 
-#### Step 1: Add Function to CellM8.js
+The CellM8 object has a nested structure with `SlideGenerator` as a sub-object. Functions MUST be placed in the correct scope:
+
 ```javascript
 // In /apps-script/main-library/src/CellM8.js
 const CellM8 = {
-  // Add your new function here
+  // Main CellM8 functions go here (lines 1-647)
+  extractSheetData: function() { ... },
+  analyzeData: function() { ... },
+  
+  // SlideGenerator is a NESTED object (lines 648-3796)
+  SlideGenerator: {
+    // ALL slide-building functions MUST be inside SlideGenerator
+    buildTitleSlide: function() { ... },
+    buildTableSlide: function() { ... },
+    createDashboardLayout: function() { ... },
+    analyzeDataIntelligently: function() { ... },
+    
+    // Functions here use 'this' to call other SlideGenerator functions
+    // this.analyzeDataIntelligently() ✓ (works - function is in same scope)
+    // this.createDashboardLayout() ✓ (works - function is in same scope)
+  },
+  
+  // More main CellM8 functions (lines 3797+)
+}
+```
+
+### Common TypeError Fixes:
+- **Error**: `TypeError: this.functionName is not a function`
+- **Cause**: Function is defined in wrong scope (main CellM8 instead of SlideGenerator, or vice versa)
+- **Solution**: Move the function to the correct scope:
+  - If called with `this.` from within SlideGenerator → Function MUST be in SlideGenerator (lines 648-3796)
+  - If called with `CellM8.` or from outside → Function should be in main CellM8 object
+
+### When Adding New CellM8 Features - Follow This Exact Process:
+
+#### Step 1: Determine Correct Scope in CellM8.js
+```javascript
+// For general CellM8 functions (data extraction, analysis, etc.)
+const CellM8 = {
   yourNewFunction: function(params) {
     try {
       // Implementation
@@ -25,6 +59,18 @@ const CellM8 = {
     } catch (error) {
       Logger.error('Error in yourNewFunction:', error);
       return { success: false, error: error.toString() };
+    }
+  }
+};
+
+// For slide-building functions (MUST be inside SlideGenerator)
+const CellM8 = {
+  SlideGenerator: {
+    yourSlideFunction: function(slide, spec, data, theme) {
+      // Can call other SlideGenerator functions with this
+      this.addBackground(slide, theme.background);
+      this.analyzeDataIntelligently(data);
+      // Implementation
     }
   }
 };

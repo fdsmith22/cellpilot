@@ -796,89 +796,103 @@ const CellM8 = {
     PROFESSIONAL_THEMES: {
       'executive': {
         name: 'Executive Suite',
-        primary: '#2C3E50',
-        secondary: '#34495E',
-        accent: '#3498DB',
+        primary: '#1B2951',  // Deep professional blue
+        primaryVariant: '#2A3F6F',
+        secondary: '#4A6FA5',  // Lighter blue
+        accent: '#4285F4',  // Google blue accent
         background: '#FFFFFF',
-        surface: '#F8F9FA',
+        surface: '#F7F9FC',  // Very subtle blue-gray
         text: '#2C3E50',
-        textLight: '#7F8C8D',
-        chartColors: ['#3498DB', '#2ECC71', '#F39C12', '#E74C3C', '#9B59B6', '#1ABC9C'],
+        textLight: '#5F6368',  // Google gray
+        borderColor: '#DFE3E8',
+        chartColors: ['#4285F4', '#34A853', '#FBBC04', '#EA4335', '#9B51E0', '#00ACC1'],
         fontTitle: 'Georgia',
         fontBody: 'Arial',
         chartStyle: 'clean',
-        gridlines: '#ECF0F1',
+        gridlines: '#E8EAED',
         gradients: {
-          primary: ['#FFFFFF', '#E8F4FD'],
-          overlay: ['rgba(52, 152, 219, 0.08)', 'rgba(52, 152, 219, 0.04)']
-        }
+          primary: ['#F7F9FC', '#E3E9F3'],  // Subtle blue gradient
+          overlay: ['rgba(66, 133, 244, 0.03)', 'rgba(27, 41, 81, 0.02)']
+        },
+        darkMode: false
       },
       'modern': {
         name: 'Modern Tech',
-        primary: '#6C5CE7',
-        secondary: '#A29BFE',
-        accent: '#74B9FF',
+        primary: '#5E4FDB',  // Softer purple
+        primaryVariant: '#7C6FE8',
+        secondary: '#9B8DF1',  // Lighter purple
+        accent: '#00BCD4',  // Cyan accent
         background: '#FFFFFF',
-        surface: '#FFEEFE',
+        surface: '#F9F7FF',  // Very subtle purple tint
         text: '#2D3436',
         textLight: '#636E72',
-        chartColors: ['#6C5CE7', '#74B9FF', '#A29BFE', '#FFEAA7', '#FD79A8', '#55EFC4'],
+        borderColor: '#E4E0F7',
+        chartColors: ['#5E4FDB', '#00BCD4', '#9B8DF1', '#FFB74D', '#FF7979', '#81C784'],
         fontTitle: 'Roboto',
         fontBody: 'Roboto',
         chartStyle: 'modern',
         gridlines: '#F0F3F7',
         gradients: {
-          primary: ['#FFFFFF', '#F0ECFF'],
-          overlay: ['rgba(108, 92, 231, 0.06)', 'rgba(116, 185, 255, 0.05)']
-        }
+          primary: ['#F9F7FF', '#EDE9FF'],  // Subtle purple gradient
+          overlay: ['rgba(94, 79, 219, 0.04)', 'rgba(0, 188, 212, 0.03)']
+        },
+        darkMode: false
       },
-      'nature': {
-        name: 'Natural Green',
-        primary: '#27AE60',
-        secondary: '#16A085',
-        accent: '#F39C12',
+      'elegant': {
+        name: 'Elegant Minimal',
+        primary: '#2E3440',  // Nord Polar Night
+        primaryVariant: '#3B4252',
+        secondary: '#88C0D0',  // Nord Frost
+        accent: '#BF616A',  // Nord Aurora Red
         background: '#FFFFFF',
-        surface: '#F0FFF4',
-        text: '#2C3E50',
-        textLight: '#7F8C8D',
-        chartColors: ['#27AE60', '#16A085', '#3498DB', '#F39C12', '#E67E22', '#8E44AD'],
-        fontTitle: 'Merriweather',
-        fontBody: 'Open Sans',
-        chartStyle: 'organic',
-        gridlines: '#E8F8F5',
-        gradients: {
-          primary: ['#FFFFFF', '#E6F7ED'],
-          overlay: ['rgba(39, 174, 96, 0.06)', 'rgba(22, 160, 133, 0.05)']
-        }
-      },
-      'minimal': {
-        name: 'Minimal Clean',
-        primary: '#34495E',
-        secondary: '#95A5A6',
-        accent: '#E74C3C',
-        background: '#FFFFFF',
-        surface: '#FAFAFA',
-        text: '#2C3E50',
-        textLight: '#7F8C8D',
-        chartColors: ['#34495E', '#3498DB', '#E74C3C', '#95A5A6', '#2ECC71', '#F39C12'],
+        surface: '#FAFBFC',  // Very light gray
+        text: '#2E3440',
+        textLight: '#4C566A',
+        borderColor: '#E5E9EC',
+        chartColors: ['#88C0D0', '#BF616A', '#A3BE8C', '#D08770', '#B48EAD', '#5E81AC'],
         fontTitle: 'Helvetica',
         fontBody: 'Helvetica',
         chartStyle: 'minimal',
-        gridlines: '#ECF0F1',
+        gridlines: '#ECEFF4',
         gradients: {
-          primary: ['#FFFFFF', '#F0F0F0'],
-          overlay: ['rgba(52, 73, 94, 0.05)', 'rgba(149, 165, 166, 0.04)']
-        }
+          primary: ['#FAFBFC', '#F0F2F5'],  // Subtle gray gradient
+          overlay: ['rgba(46, 52, 64, 0.02)', 'rgba(136, 192, 208, 0.02)']
+        },
+        darkMode: false
+      },
+      'professional': {
+        name: 'Professional Blue',
+        primary: '#003D82',  // Deep corporate blue
+        primaryVariant: '#005AAA',
+        secondary: '#0078D4',  // Microsoft blue
+        accent: '#40E0D0',  // Turquoise accent
+        background: '#FFFFFF',
+        surface: '#F3F6FB',
+        text: '#323130',
+        textLight: '#605E5C',
+        borderColor: '#D9DCE0',
+        chartColors: ['#0078D4', '#40E0D0', '#003D82', '#107C10', '#FFB900', '#E74856'],
+        fontTitle: 'Georgia',
+        fontBody: 'Segoe UI',
+        chartStyle: 'professional',
+        gridlines: '#EDEBE9',
+        gradients: {
+          primary: ['#F3F6FB', '#E1E9F4'],  // Professional blue gradient
+          overlay: ['rgba(0, 120, 212, 0.03)', 'rgba(0, 61, 130, 0.02)']
+        },
+        darkMode: false
       },
       'dark': {
         name: 'Dark Professional',
-        primary: '#BB86FC',
-        secondary: '#03DAC6',
-        accent: '#CF6679',
+        primary: '#BB86FC',  // Material purple
+        primaryVariant: '#9965F4',
+        secondary: '#03DAC6',  // Material teal
+        accent: '#CF6679',  // Material pink
         background: '#121212',
         surface: '#1E1E1E',
         text: '#FFFFFF',
         textLight: '#B0B0B0',
+        borderColor: '#2C2C2C',
         chartColors: ['#BB86FC', '#03DAC6', '#CF6679', '#FFB86C', '#50FA7B', '#FF79C6'],
         fontTitle: 'Roboto',
         fontBody: 'Roboto',
@@ -886,8 +900,8 @@ const CellM8 = {
         darkMode: true,
         gridlines: '#2C2C2C',
         gradients: {
-          primary: ['#1A1A1A', '#2D2D2D'],
-          overlay: ['rgba(187, 134, 252, 0.08)', 'rgba(3, 218, 198, 0.08)']
+          primary: ['#1A1A1A', '#242424'],  // Dark gradient
+          overlay: ['rgba(187, 134, 252, 0.08)', 'rgba(3, 218, 198, 0.06)']
         }
       }
     },
@@ -1037,7 +1051,7 @@ const CellM8 = {
           const headerCell = table.getCell(0, col);
           headerCell.getFill().setSolidFill(theme.primary);
           headerCell.getText().getTextStyle()
-            .setForegroundColor('#FFFFFF')
+            .setForegroundColor(theme.darkMode ? '#FFFFFF' : theme.text || '#2C3E50')
             .setFontFamily(theme.fontTitle)
             .setBold(true);
         }
@@ -1927,13 +1941,23 @@ const CellM8 = {
             columns: secondViz.groupBy ? [secondViz.groupBy, secondViz.measure] : null
           });
         } else if (plan.length < requestedSlides - 1 && analysis.numericColumns && analysis.numericColumns.length > 1) {
-          // Fallback: Create a different chart type with different columns
+          // Create a line chart with different numeric column
           plan.push({
             type: 'chart',
             chartType: 'line',
-            title: 'Trend Analysis',
+            title: 'Trend: ' + analysis.numericColumns[1].name,
             createNew: true,
+            vizIndex: 1,
             useAlternateColumns: true  // Flag to use different columns
+          });
+        } else if (plan.length < requestedSlides - 1 && analysis.categoryColumns && analysis.categoryColumns.length > 0) {
+          // Create a pie chart for distribution
+          plan.push({
+            type: 'chart',
+            chartType: 'pie',
+            title: 'Distribution: ' + analysis.categoryColumns[0].name,
+            createNew: true,
+            vizIndex: 2
           });
         }
         
@@ -2091,9 +2115,10 @@ const CellM8 = {
       });
       
       // Remove any extra slides
-      const slides = presentation.getSlides();
+      let slides = presentation.getSlides();
       while (slides.length > plan.length) {
         slides[slides.length - 1].remove();
+        slides = presentation.getSlides(); // Re-fetch after removal
       }
     },
     
@@ -2174,7 +2199,7 @@ const CellM8 = {
         120,
         3
       );
-      decorLine.getFill().setSolidFill('#FFFFFF');
+      decorLine.getFill().setSolidFill(theme.darkMode ? '#FFFFFF' : theme.accent || '#4285F4');
       // Note: transparency on fill removed - not supported
       decorLine.getBorder().setTransparent();
       
@@ -2190,7 +2215,7 @@ const CellM8 = {
       dateBox.getText().getTextStyle()
         .setFontSize(this.TYPOGRAPHY.caption)
         .setFontFamily('Arial')
-        .setForegroundColor('#FFFFFF');
+        .setForegroundColor(theme.darkMode ? '#FFFFFF' : theme.textLight || '#666666');
       // Note: text transparency would be: dateBox.getText().getTextStyle().setTransparency(0.7);
       dateBox.getText().getParagraphStyle()
         .setParagraphAlignment(SlidesApp.ParagraphAlignment.END);
@@ -2230,22 +2255,16 @@ const CellM8 = {
       try {
         const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
         const sheet = spreadsheet.getActiveSheet();
-        let charts = sheet.getCharts();
         
-        // Create chart if none exists or if we need a specific type
-        if (!charts || charts.length === 0 || spec.createNew) {
-          Logger.log('Creating new linked chart in Sheets');
-          // Pass theme name to chart creation
-          spec.themeName = theme.name || 'executive';
-          const chart = this.createSheetsChart(sheet, data, analysis, spec);
-          if (chart) {
-            charts = [chart];
-          }
-        }
+        // Always create a new chart for each slide to ensure uniqueness
+        Logger.log('Creating new linked chart for: ' + spec.title + ' with vizIndex: ' + spec.vizIndex);
+        spec.themeName = theme.name || 'executive';
         
-        if (charts && charts.length > 0) {
-          Logger.log('Inserting linked Sheets chart');
-          const chart = charts[0];
+        // Create unique chart based on vizIndex
+        const chart = this.createSheetsChart(sheet, data, analysis, spec);
+        
+        if (chart) {
+          Logger.log('Inserting linked Sheets chart with unique data');
           
           // Calculate optimal position for chart
           const chartWidth = this.SLIDE_WIDTH - this.SAFE_MARGINS.left - this.SAFE_MARGINS.right;
@@ -2260,6 +2279,14 @@ const CellM8 = {
             chartWidth,
             chartHeight
           );
+          
+          // Remove the chart from the sheet after inserting into slide
+          // to avoid accumulating charts in the spreadsheet
+          try {
+            sheet.removeChart(chart);
+          } catch (e) {
+            // Chart may already be removed
+          }
           
           // Add visual indicator that chart is linked
           const linkIndicator = slide.insertTextBox(
@@ -2304,11 +2331,32 @@ const CellM8 = {
      */
     createSheetsChart: function(sheet, dataStructure, analysis, spec) {
       try {
-        // Use the correct visualization based on spec.vizIndex
-        const vizIndex = spec.vizIndex || 0;
-        const visualization = analysis.suggestedVisualizations && analysis.suggestedVisualizations[vizIndex] 
-          ? analysis.suggestedVisualizations[vizIndex]
-          : analysis.suggestedVisualizations ? analysis.suggestedVisualizations[0] : null;
+        // Use the correct visualization based on spec.vizIndex or create unique visualizations
+        const vizIndex = spec.vizIndex !== undefined ? spec.vizIndex : 0;
+        let visualization = null;
+        
+        // Ensure we're using different visualizations for each chart
+        if (analysis.suggestedVisualizations && analysis.suggestedVisualizations.length > vizIndex) {
+          visualization = analysis.suggestedVisualizations[vizIndex];
+        } else if (analysis.suggestedVisualizations && analysis.suggestedVisualizations.length > 0) {
+          // If we don't have enough visualizations, create variations
+          const baseViz = analysis.suggestedVisualizations[0];
+          if (vizIndex === 1 && analysis.numericColumns.length > 1) {
+            // Use different columns for the second chart
+            visualization = {
+              ...baseViz,
+              type: 'line_chart',
+              title: 'Trend Analysis',
+              measure: analysis.numericColumns[1].name
+            };
+          } else if (vizIndex === 2) {
+            visualization = {
+              ...baseViz,
+              type: 'pie_chart',
+              title: 'Distribution Analysis'
+            };
+          }
+        }
         
         // Determine chart type from the selected visualization
         const chartType = this.mapToSheetsChartType(
@@ -2319,7 +2367,7 @@ const CellM8 = {
         const dataRange = this.selectChartDataRange(sheet, dataStructure, {
           ...analysis,
           suggestedVisualizations: visualization ? [visualization] : analysis.suggestedVisualizations
-        });
+        }, spec);
         if (!dataRange) {
           Logger.log('Could not determine data range for chart');
           return null;
@@ -2389,15 +2437,14 @@ const CellM8 = {
     /**
      * Select appropriate data range for chart
      */
-    selectChartDataRange: function(sheet, dataStructure, analysis) {
+    selectChartDataRange: function(sheet, dataStructure, analysis, spec) {
       try {
         // Get the data range that includes headers
         const numRows = Math.min(dataStructure.data.length + 1, 100); // Limit to 100 rows
         const numCols = dataStructure.headers.length;
         
-        // Find the best columns for the chart
-        let startCol = 1;
-        let endCol = numCols;
+        // Find the best columns for the chart based on visualization
+        const vizIndex = spec && spec.vizIndex !== undefined ? spec.vizIndex : 0;
         
         // If we have specific columns identified, use those
         if (analysis.suggestedVisualizations && analysis.suggestedVisualizations[0]) {
@@ -2409,9 +2456,39 @@ const CellM8 = {
             const measureIndex = dataStructure.headers.indexOf(suggestion.measure) + 1;
             
             if (groupByIndex > 0 && measureIndex > 0) {
-              // Create a range with just these two columns
+              // For second chart, try to use different columns if available
+              if (vizIndex === 1 && analysis.numericColumns && analysis.numericColumns.length > 1) {
+                // Find a different measure column
+                const altMeasure = analysis.numericColumns.find(col => col.name !== suggestion.measure);
+                if (altMeasure) {
+                  const altMeasureIndex = dataStructure.headers.indexOf(altMeasure.name) + 1;
+                  if (altMeasureIndex > 0) {
+                    const range1 = sheet.getRange(1, groupByIndex, numRows, 1);
+                    const range2 = sheet.getRange(1, altMeasureIndex, numRows, 1);
+                    return [range1, range2];
+                  }
+                }
+              }
+              
+              // Default: use the suggested columns
               const range1 = sheet.getRange(1, groupByIndex, numRows, 1);
               const range2 = sheet.getRange(1, measureIndex, numRows, 1);
+              return [range1, range2];
+            }
+          }
+        }
+        
+        // For different chart indices, try to select different column combinations
+        if (vizIndex > 0 && analysis.numericColumns && analysis.numericColumns.length > vizIndex) {
+          // Use different numeric columns for different charts
+          const numericCol = analysis.numericColumns[Math.min(vizIndex, analysis.numericColumns.length - 1)];
+          const numericIndex = dataStructure.headers.indexOf(numericCol.name) + 1;
+          
+          if (analysis.categoryColumns && analysis.categoryColumns.length > 0) {
+            const categoryIndex = dataStructure.headers.indexOf(analysis.categoryColumns[0].name) + 1;
+            if (categoryIndex > 0 && numericIndex > 0) {
+              const range1 = sheet.getRange(1, categoryIndex, numRows, 1);
+              const range2 = sheet.getRange(1, numericIndex, numRows, 1);
               return [range1, range2];
             }
           }
@@ -2430,23 +2507,39 @@ const CellM8 = {
      * Configure chart-specific options
      */
     configureChartOptions: function(chartBuilder, chartType, analysis) {
-      // Common options for all charts
+      // Common options for all charts with focus on horizontal labels
       chartBuilder
         .setOption('legend', { position: 'bottom' })
         .setOption('fontSize', 12)
         .setOption('vAxis', {
+          title: '',
           textStyle: {
             fontSize: 11
           },
+          format: 'short',
           textPosition: 'out',
+          slantedText: false,
+          slantedTextAngle: 0,
           viewWindow: { min: 0 }
         })
         .setOption('hAxis', {
+          title: '',
           textStyle: {
             fontSize: 11
           },
-          slantedText: true,
-          slantedTextAngle: 45
+          format: 'short',
+          slantedText: false,
+          slantedTextAngle: 0,
+          textPosition: 'out',
+          maxAlternation: 1,
+          showTextEvery: 1,
+          maxTextLines: 1
+        })
+        .setOption('chartArea', {
+          left: 80,  // More space for vertical axis labels
+          right: 50,
+          top: 30,
+          bottom: 80
         });
       
       // Type-specific options
@@ -2779,7 +2872,7 @@ const CellM8 = {
     },
     
     /**
-     * Build table slide with native Google Slides tables
+     * Build table slide with data overview metrics instead of raw table
      */
     buildTableSlide: function(slide, spec, data, theme) {
       // Apply gradient background
@@ -2792,110 +2885,276 @@ const CellM8 = {
       
       // Ensure data structure is valid
       if (!data || !data.headers || !data.data) {
-        this.addErrorMessage(slide, 'No data available for table', theme);
+        this.addErrorMessage(slide, 'No data available for overview', theme);
         return;
       }
       
-      const maxRows = spec.maxRows || 8; // Reduced for better visibility
-      const maxCols = spec.maxCols || 6;
-      const actualRows = Math.min(data.data.length, maxRows);
-      const actualCols = Math.min(data.headers.length, maxCols);
+      // Analyze data for overview metrics
+      const analysis = this.analyzeDataIntelligently(data);
+      const startY = 100;
       
-      const tableWidth = this.SLIDE_WIDTH - this.SAFE_MARGINS.left - this.SAFE_MARGINS.right;
-      const rowHeight = 32; // Optimal row height
-      const headerHeight = 40; // Slightly larger header
-      const tableHeight = headerHeight + (actualRows * rowHeight);
-      const tableY = 100;
+      // Create metric cards layout
+      const cardWidth = 155;
+      const cardHeight = 85;
+      const spacing = 15;
+      const cardsPerRow = 4;
       
-      // Create native table
-      const table = slide.insertTable(
-        actualRows + 1,
-        actualCols,
-        this.SAFE_MARGINS.left,
-        tableY,
-        tableWidth,
-        tableHeight
-      );
+      // Create overview metrics
+      const metrics = [];
       
-      // Configure table properties
-      table.getBorder().setWeight(0); // Remove outer border
+      // Core data metrics
+      metrics.push({
+        value: data.data.length.toLocaleString(),
+        label: 'Total Records',
+        icon: '📊',
+        color: theme.accent
+      });
       
-      // Style header row
-      for (let col = 0; col < actualCols; col++) {
-        const cell = table.getCell(0, col);
-        cell.getFill().setSolidFill(theme.primary);
-        
-        const headerText = data.headers[col] ? data.headers[col].toString().toUpperCase() : '';
-        cell.getText().setText(headerText);
-        cell.getText().getTextStyle()
-          .setFontSize(this.TYPOGRAPHY.caption)
-          .setFontFamily('Arial')
-          .setBold(true)
-          .setForegroundColor('#FFFFFF');
-        cell.getText().getParagraphStyle()
-          .setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
-      }
+      metrics.push({
+        value: data.headers.length.toString(),
+        label: 'Data Columns',
+        icon: '📈',
+        color: theme.primary
+      });
       
-      // Add data rows
-      for (let row = 0; row < actualRows; row++) {
-        for (let col = 0; col < actualCols; col++) {
-          const cell = table.getCell(row + 1, col);
+      // Add numeric statistics
+      if (analysis.numericColumns && analysis.numericColumns.length > 0) {
+        const numericCol = analysis.numericColumns[0];
+        if (numericCol.stats) {
+          metrics.push({
+            value: this.formatMetricValue(numericCol.stats.average),
+            label: 'Avg ' + this.truncateLabel(numericCol.name, 12),
+            icon: '📉',
+            color: theme.secondary
+          });
           
-          // Alternate row colors
-          if (row % 2 === 0) {
-            cell.getFill().setSolidFill(theme.background);
-          } else {
-            cell.getFill().setSolidFill(theme.surfaceVariant || theme.surface);
-          }
-          
-          const value = data.data[row][col];
-          const formattedValue = this.formatCellValue(value);
-          cell.getText().setText(formattedValue);
-          
-          const isNumeric = !isNaN(parseFloat(value)) && isFinite(value);
-          cell.getText().getTextStyle()
-            .setFontSize(this.TYPOGRAPHY.caption)
-            .setFontFamily('Arial')
-            .setForegroundColor(isNumeric ? theme.text : theme.textLight);
-          
-          cell.getText().getParagraphStyle()
-            .setParagraphAlignment(
-              isNumeric ? SlidesApp.ParagraphAlignment.END : SlidesApp.ParagraphAlignment.START
-            );
+          metrics.push({
+            value: this.formatMetricValue(numericCol.stats.max),
+            label: 'Max ' + this.truncateLabel(numericCol.name, 12),
+            icon: '⬆️',
+            color: '#27AE60'
+          });
         }
       }
       
-      // Add summary if data is truncated
-      if (data.data.length > actualRows || data.headers.length > actualCols) {
-        const cardY = tableY + tableHeight + 20;
-        const cardWidth = 300;
-        const cardHeight = 40;
-        const cardX = (this.SLIDE_WIDTH - cardWidth) / 2;
+      // Add category insights
+      if (analysis.categoryColumns && analysis.categoryColumns.length > 0) {
+        const catCol = analysis.categoryColumns[0];
+        metrics.push({
+          value: catCol.uniqueCount.toString(),
+          label: catCol.name + ' Types',
+          icon: '🏷️',
+          color: theme.accent
+        });
+      }
+      
+      // Data completeness
+      const completeness = this.calculateDataCompleteness(data);
+      metrics.push({
+        value: completeness + '%',
+        label: 'Completeness',
+        icon: '✓',
+        color: completeness > 90 ? '#27AE60' : '#F39C12'
+      });
+      
+      // If we have date columns, add date range
+      if (analysis.dateColumns && analysis.dateColumns.length > 0) {
+        const dateRange = this.getDateRange(data, analysis.dateColumns[0]);
+        if (dateRange) {
+          metrics.push({
+            value: dateRange,
+            label: 'Date Range',
+            icon: '📅',
+            color: theme.primary
+          });
+        }
+      }
+      
+      // Calculate layout
+      const totalWidth = (cardWidth * cardsPerRow) + (spacing * (cardsPerRow - 1));
+      const startX = (this.SLIDE_WIDTH - totalWidth) / 2;
+      
+      // Create metric cards
+      metrics.slice(0, 8).forEach((metric, index) => {
+        const row = Math.floor(index / cardsPerRow);
+        const col = index % cardsPerRow;
+        const x = startX + col * (cardWidth + spacing);
+        const y = startY + row * (cardHeight + spacing);
         
+        // Card background
         const card = slide.insertShape(
           SlidesApp.ShapeType.RECTANGLE,
-          cardX, cardY, cardWidth, cardHeight
+          x, y, cardWidth, cardHeight
         );
-        card.getFill().setSolidFill(theme.surfaceVariant || theme.surface);
-        card.getBorder().getLineFill().setSolidFill(theme.primary);
+        card.getFill().setSolidFill(theme.surface);
+        card.getBorder().getLineFill().setSolidFill(metric.color || theme.borderColor);
         card.getBorder().setWeight(1);
         
-        const infoText = `Displaying ${actualRows} of ${data.data.length} rows • ${actualCols} of ${data.headers.length} columns`;
-        const infoBox = slide.insertTextBox(
-          infoText,
-          cardX,
-          cardY + 12,
-          cardWidth,
-          20
+        // Icon
+        if (metric.icon) {
+          const iconBox = slide.insertTextBox(
+            metric.icon,
+            x + 10, y + 8, 30, 30
+          );
+          iconBox.getText().getTextStyle()
+            .setFontSize(20);
+        }
+        
+        // Metric value
+        const valueBox = slide.insertTextBox(
+          metric.value,
+          x + 45, y + 12, cardWidth - 50, 30
         );
-        infoBox.getText().getTextStyle()
-          .setFontSize(this.TYPOGRAPHY.caption)
+        valueBox.getText().getTextStyle()
+          .setFontSize(22)
           .setFontFamily('Arial')
-          .setForegroundColor(theme.textLight)
-          .setItalic(true);
-        infoBox.getText().getParagraphStyle()
+          .setBold(true)
+          .setForegroundColor(metric.color || theme.primary);
+        valueBox.getText().getParagraphStyle()
+          .setParagraphAlignment(SlidesApp.ParagraphAlignment.END);
+        
+        // Metric label
+        const labelBox = slide.insertTextBox(
+          metric.label,
+          x + 10, y + 45, cardWidth - 20, 30
+        );
+        labelBox.getText().getTextStyle()
+          .setFontSize(11)
+          .setFontFamily('Arial')
+          .setForegroundColor(theme.textLight);
+        labelBox.getText().getParagraphStyle()
           .setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+      });
+      
+      // Add data structure summary
+      const summaryY = startY + (Math.ceil(metrics.length / cardsPerRow) * (cardHeight + spacing)) + 30;
+      const summaryWidth = 650;
+      const summaryX = (this.SLIDE_WIDTH - summaryWidth) / 2;
+      
+      // Create summary text
+      const summaryParts = [];
+      summaryParts.push(`Dataset: ${data.data.length} rows × ${data.headers.length} columns`);
+      
+      if (analysis.numericColumns.length > 0) {
+        summaryParts.push(`${analysis.numericColumns.length} numeric fields`);
       }
+      if (analysis.categoryColumns.length > 0) {
+        summaryParts.push(`${analysis.categoryColumns.length} categorical fields`);
+      }
+      if (analysis.dateColumns.length > 0) {
+        summaryParts.push(`${analysis.dateColumns.length} date fields`);
+      }
+      
+      const summaryText = summaryParts.join(' • ');
+      
+      const summaryBox = slide.insertTextBox(
+        '📋 ' + summaryText,
+        summaryX,
+        summaryY,
+        summaryWidth,
+        30
+      );
+      summaryBox.getText().getTextStyle()
+        .setFontSize(12)
+        .setFontFamily('Arial')
+        .setForegroundColor(theme.textLight)
+        .setItalic(true);
+      summaryBox.getText().getParagraphStyle()
+        .setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+      
+      // Add column names preview
+      const columnsPreview = 'Columns: ' + data.headers.slice(0, 5).map(h => this.truncateLabel(h, 15)).join(', ') + 
+                            (data.headers.length > 5 ? ` +${data.headers.length - 5} more` : '');
+      
+      const columnsBox = slide.insertTextBox(
+        columnsPreview,
+        summaryX,
+        summaryY + 35,
+        summaryWidth,
+        20
+      );
+      columnsBox.getText().getTextStyle()
+        .setFontSize(10)
+        .setFontFamily('Arial')
+        .setForegroundColor(theme.textLight);
+      columnsBox.getText().getParagraphStyle()
+        .setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+    },
+    
+    /**
+     * Calculate data completeness percentage
+     */
+    calculateDataCompleteness: function(data) {
+      let totalCells = 0;
+      let filledCells = 0;
+      
+      data.data.forEach(row => {
+        row.forEach(cell => {
+          totalCells++;
+          if (cell !== null && cell !== '' && cell !== undefined) {
+            filledCells++;
+          }
+        });
+      });
+      
+      return totalCells > 0 ? Math.round((filledCells / totalCells) * 100) : 0;
+    },
+    
+    /**
+     * Get date range from data
+     */
+    getDateRange: function(data, dateColumn) {
+      if (!dateColumn || !dateColumn.index) return null;
+      
+      const dates = data.data
+        .map(row => row[dateColumn.index])
+        .filter(val => val)
+        .map(val => new Date(val))
+        .filter(d => !isNaN(d));
+      
+      if (dates.length === 0) return null;
+      
+      const minDate = new Date(Math.min(...dates));
+      const maxDate = new Date(Math.max(...dates));
+      
+      const formatDate = (d) => {
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const day = d.getDate().toString().padStart(2, '0');
+        return `${month}/${day}/${d.getFullYear()}`;
+      };
+      
+      if (minDate.getTime() === maxDate.getTime()) {
+        return formatDate(minDate);
+      } else {
+        return formatDate(minDate) + ' - ' + formatDate(maxDate);
+      }
+    },
+    
+    /**
+     * Format metric value for display
+     */
+    formatMetricValue: function(value) {
+      if (typeof value === 'number') {
+        if (value >= 1000000) {
+          return (value / 1000000).toFixed(1) + 'M';
+        } else if (value >= 1000) {
+          return (value / 1000).toFixed(1) + 'K';
+        } else if (value < 1 && value > 0) {
+          return value.toFixed(2);
+        } else {
+          return Math.round(value).toString();
+        }
+      }
+      return String(value).substring(0, 10);
+    },
+    
+    /**
+     * Truncate label to fit
+     */
+    truncateLabel: function(label, maxLength) {
+      const str = String(label);
+      if (str.length <= maxLength) return str;
+      return str.substring(0, maxLength - 3) + '...';
     },
     
     /**
@@ -2972,7 +3231,7 @@ const CellM8 = {
         .setFontSize(32)
         .setFontFamily('Arial')
         .setBold(true)
-        .setForegroundColor('#FFFFFF');
+        .setForegroundColor(theme.darkMode ? '#FFFFFF' : theme.text || '#2C3E50');
       titleBox.getText().getParagraphStyle()
         .setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
       
@@ -2993,7 +3252,7 @@ const CellM8 = {
           .setFontSize(20)
           .setFontFamily('Arial')
           .setBold(true)
-          .setForegroundColor('#FFFFFF');
+          .setForegroundColor(theme.darkMode ? '#FFFFFF' : theme.text || '#2C3E50');
         
         // Step text
         const stepBox = slide.insertTextBox(
@@ -3005,7 +3264,7 @@ const CellM8 = {
         stepBox.getText().getTextStyle()
           .setFontSize(16)
           .setFontFamily('Arial')
-          .setForegroundColor('#FFFFFF');
+          .setForegroundColor(theme.darkMode ? '#FFFFFF' : theme.textLight || '#666666');
       });
     },
     
@@ -4510,7 +4769,7 @@ const CellM8 = {
       cell.getText().setText(data.headers[col] || '');
       cell.getText().getTextStyle()
         .setFontSize(9)
-        .setForegroundColor('#FFFFFF')
+        .setForegroundColor(theme.darkMode ? '#FFFFFF' : theme.text || '#2C3E50')
         .setBold(true);
     }
     
