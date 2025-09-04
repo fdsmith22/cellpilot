@@ -2300,6 +2300,61 @@ function getCellM8AvailableSheets() {
 }
 
 /**
+ * CellM8 Phase 2 Functions - Professional Themes and Advanced Features
+ */
+function applyProfessionalTheme(presentation, themeName) {
+  return CellPilot.applyProfessionalTheme(presentation, themeName);
+}
+
+function createDashboardLayout(slide, config) {
+  return CellPilot.createDashboardLayout(slide, config);
+}
+
+function configureAdvancedChart(chartBuilder, config) {
+  return CellPilot.configureAdvancedChart(chartBuilder, config);
+}
+
+function createSheetsChart(sheet, dataStructure, analysis, spec) {
+  return CellPilot.createSheetsChart(sheet, dataStructure, analysis, spec);
+}
+
+function applySlideTransitions(presentation, transitionType) {
+  return CellPilot.applySlideTransitions(presentation, transitionType);
+}
+
+function addChartAnnotations(chartBuilder, annotations) {
+  return CellPilot.addChartAnnotations(chartBuilder, annotations);
+}
+
+function applyChartAnimation(chartBuilder, animationType) {
+  return CellPilot.applyChartAnimation(chartBuilder, animationType);
+}
+
+function applyConditionalChartFormatting(chartBuilder, data, rules) {
+  return CellPilot.applyConditionalChartFormatting(chartBuilder, data, rules);
+}
+
+function createExecutiveDashboard(slide, data, theme) {
+  return CellPilot.createExecutiveDashboard(slide, data, theme);
+}
+
+function createQuadViewDashboard(slide, charts, theme) {
+  return CellPilot.createQuadViewDashboard(slide, charts, theme);
+}
+
+function createFocusDetailDashboard(slide, mainChart, detailData, theme) {
+  return CellPilot.createFocusDetailDashboard(slide, mainChart, detailData, theme);
+}
+
+function createTimelineDashboard(slide, timelineData, theme) {
+  return CellPilot.createTimelineDashboard(slide, timelineData, theme);
+}
+
+function createComparisonDashboard(slide, comparisonData, theme) {
+  return CellPilot.createComparisonDashboard(slide, comparisonData, theme);
+}
+
+/**
  * Data Pipeline Functions
  */
 function createDataPipeline(config) {

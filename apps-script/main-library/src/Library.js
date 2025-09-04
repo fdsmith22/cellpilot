@@ -181,6 +181,21 @@ var createCellM8DashboardSlide = createCellM8DashboardSlide || function(slide, d
 var applyCellM8ProfessionalTheme = applyCellM8ProfessionalTheme || function(presentation, themeName) { return applyCellM8ProfessionalTheme(presentation, themeName); };
 var createCellM8DashboardWithLayout = createCellM8DashboardWithLayout || function(slide, layoutName, data, analysis, theme) { return createCellM8DashboardWithLayout(slide, layoutName, data, analysis, theme); };
 
+// CellM8 Phase 2 Functions - Direct exports without CellM8 prefix
+var applyProfessionalTheme = applyProfessionalTheme || function(presentation, themeName) { return CellM8.applyProfessionalTheme(presentation, themeName); };
+var createDashboardLayout = createDashboardLayout || function(slide, config) { return CellM8.createDashboardLayout(slide, config); };
+var configureAdvancedChart = configureAdvancedChart || function(chartBuilder, config) { return CellM8.configureAdvancedChart(chartBuilder, config); };
+var createSheetsChart = createSheetsChart || function(sheet, dataStructure, analysis, spec) { return CellM8.createSheetsChart(sheet, dataStructure, analysis, spec); };
+var applySlideTransitions = applySlideTransitions || function(presentation, transitionType) { return CellM8.applySlideTransitions(presentation, transitionType); };
+var addChartAnnotations = addChartAnnotations || function(chartBuilder, annotations) { return CellM8.addChartAnnotations(chartBuilder, annotations); };
+var applyChartAnimation = applyChartAnimation || function(chartBuilder, animationType) { return CellM8.applyChartAnimation(chartBuilder, animationType); };
+var applyConditionalChartFormatting = applyConditionalChartFormatting || function(chartBuilder, data, rules) { return CellM8.applyConditionalChartFormatting(chartBuilder, data, rules); };
+var createExecutiveDashboard = createExecutiveDashboard || function(slide, data, theme) { return CellM8.createExecutiveDashboard(slide, data, theme); };
+var createQuadViewDashboard = createQuadViewDashboard || function(slide, charts, theme) { return CellM8.createQuadViewDashboard(slide, charts, theme); };
+var createFocusDetailDashboard = createFocusDetailDashboard || function(slide, mainChart, detailData, theme) { return CellM8.createFocusDetailDashboard(slide, mainChart, detailData, theme); };
+var createTimelineDashboard = createTimelineDashboard || function(slide, timelineData, theme) { return CellM8.createTimelineDashboard(slide, timelineData, theme); };
+var createComparisonDashboard = createComparisonDashboard || function(slide, comparisonData, theme) { return CellM8.createComparisonDashboard(slide, comparisonData, theme); };
+
 // Smart Assistant Functions
 var getSmartSuggestions = getSmartSuggestions || function() { return getSmartSuggestions(); };
 var applySmartSuggestion = applySmartSuggestion || function(suggestionId) { return applySmartSuggestion(suggestionId); };

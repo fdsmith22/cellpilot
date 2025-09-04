@@ -2244,7 +2244,6 @@ const CellM8 = {
         
         // Set chart-specific options based on type
         this.configureChartOptions(chartBuilder, chartType, analysis);
-        }
         
         const chart = chartBuilder.build();
         sheet.insertChart(chart);
