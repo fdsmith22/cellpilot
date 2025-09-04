@@ -1777,6 +1777,26 @@ function testCellM8Function() {
   };
 }
 
+function refreshCellM8PresentationCharts(presentationId) {
+  return CellM8.refreshPresentationCharts(presentationId);
+}
+
+function cleanupCellM8SheetsCharts(keepCount) {
+  return CellM8.cleanupSheetsCharts(keepCount);
+}
+
+function createCellM8DashboardSlide(slide, data, analysis, theme) {
+  return CellM8.createDashboardSlide(slide, data, analysis, theme);
+}
+
+function applyCellM8ProfessionalTheme(presentation, themeName) {
+  return CellM8.applyProfessionalTheme(presentation, themeName);
+}
+
+function createCellM8DashboardWithLayout(slide, layoutName, data, analysis, theme) {
+  return CellM8.createDashboardWithLayout(slide, layoutName, data, analysis, theme);
+}
+
 function extractCellM8Data(options) {
   return CellM8.extractSheetData(options);
 }

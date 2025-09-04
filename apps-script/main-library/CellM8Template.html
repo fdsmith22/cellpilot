@@ -4,6 +4,29 @@
   <base target="_top">
   <?!= include('SharedStyles'); ?>
   <style>
+    /* Simple loading indicator */
+    .loading-indicator {
+      display: none;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      margin: 10px 0;
+    }
+    
+    .loading-indicator.show {
+      display: block;
+    }
+    
+    /* Button disabled state */
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
     /* Enhanced styles matching main panel */
     .nav-header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -257,6 +280,11 @@
     <!-- Status Message -->
     <div id="statusMessage" style="display: none;"></div>
     
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="loading-indicator">
+      Processing your request...
+    </div>
+    
     <!-- Data Selection Card -->
     <div class="card">
       <div class="card-header">
@@ -317,31 +345,32 @@
         </div>
         
         <div class="form-group">
-          <label class="form-label">Template Style</label>
+          <label class="form-label">Professional Theme</label>
           <select id="templateStyle" class="form-control">
-            <option value="professional" selected>Professional (Google Blue)</option>
-            <option value="modern">Modern (Purple Gradient)</option>
-            <option value="corporate">Corporate (Navy Blue)</option>
-            <option value="elegant">Elegant (Dark Slate)</option>
-            <option value="vibrant">Vibrant (Coral & Teal)</option>
-            <option value="dark">Dark (Night Mode)</option>
+            <option value="professional" selected>Executive (Gradient Blue)</option>
+            <option value="modern">Tech (Purple Modern)</option>
+            <option value="corporate">Executive Classic (Navy)</option>
+            <option value="elegant">Minimal (Clean White)</option>
+            <option value="vibrant">Nature (Green Energy)</option>
+            <option value="dark">Finance (Dark Professional)</option>
           </select>
           <p style="font-size: 11px; color: var(--gray-600); margin: 4px 0 0 0;">
-            All themes include golden ratio layouts, smart charts, gradients, and speaker notes
+            All themes include linked charts, dashboard layouts, and auto-updating data
           </p>
         </div>
         
         <div class="form-group">
-          <label class="form-label">Master Template</label>
+          <label class="form-label">Dashboard Layout</label>
           <select id="masterTemplate" class="form-control">
-            <option value="default" selected>Default</option>
-            <option value="executive">Executive (C-Suite)</option>
-            <option value="technical">Technical (Data-Focused)</option>
-            <option value="sales">Sales (Engaging)</option>
-            <option value="educational">Educational (Learning)</option>
+            <option value="default" selected>Auto-Select (Smart Layout)</option>
+            <option value="executive">Executive Summary</option>
+            <option value="quadview">Quad View (4 Charts)</option>
+            <option value="focus">Focus + Detail</option>
+            <option value="timeline">Timeline View</option>
+            <option value="comparison">Comparison Layout</option>
           </select>
           <p style="font-size: 11px; color: var(--gray-600); margin: 4px 0 0 0;">
-            Master templates define overall presentation structure
+            Professional dashboard layouts with live data connections
           </p>
         </div>
       </div>
@@ -356,28 +385,28 @@
       <div class="card-body">
         <ul style="list-style: none; padding: 0; margin: 0;">
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Smart chart selection based on data type
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Live linked charts that auto-update with data
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Golden ratio layouts for perfect positioning
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Professional themes with gradient effects
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Gradient backgrounds and modern effects
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Dashboard layouts optimized for executives
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Professional typography with Google Sans
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Native Google Sheets chart integration
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Speaker notes on every slide
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Animated transitions and effects
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Data insights and key metrics
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Smart KPI cards with data insights
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Executive summary with KPI cards
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Speaker notes with presentation tips
           </li>
           <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> No overlaps or overflows guaranteed
+            <span style="color: var(--success-600); font-weight: 600;">✓</span> Professional table formatting with alternating rows
           </li>
         </ul>
       </div>
@@ -390,7 +419,7 @@
         <p>See what will be created</p>
       </div>
       <div class="card-body">
-        <button class="btn btn-secondary btn-block" onclick="generatePreview()">
+        <button class="btn btn-secondary btn-block" onclick="generatePreview(this)" id="previewBtn">
           Generate Preview
         </button>
         
@@ -403,7 +432,7 @@
     <!-- Action Buttons -->
     <div class="card">
       <div class="card-body">
-        <button class="btn btn-primary btn-block" onclick="createPresentation()">
+        <button class="btn btn-primary btn-block" onclick="createPresentation(this)" id="createBtn">
           Create Presentation
         </button>
         
@@ -543,7 +572,7 @@
     }
     
     // Generate preview
-    function generatePreview() {
+    function generatePreview(btn) {
       const config = {
         title: document.getElementById('presentationTitle').value,
         subtitle: document.getElementById('presentationSubtitle').value,
@@ -556,7 +585,10 @@
         return;
       }
       
-      // Show loading
+      // Simple loading state
+      if (!btn) btn = document.getElementById('previewBtn');
+      btn.disabled = true;
+      btn.textContent = 'Generating...';
       showStatus('Analyzing data and generating preview...', 'info');
       
       // First extract and analyze data
@@ -573,6 +605,8 @@
                   // Generate preview with analyzed data
                   google.script.run
                     .withSuccessHandler(function(result) {
+                      btn.disabled = false;
+                      btn.textContent = 'Generate Preview';
                       if (result.success) {
                         currentPreview = result;
                         currentPreview.analysis = analysisResult.analysis;
@@ -583,22 +617,32 @@
                       }
                     })
                     .withFailureHandler(function(error) {
+                      btn.disabled = false;
+                      btn.textContent = 'Generate Preview';
                       showStatus('Error: ' + error.message, 'error');
                     })
                     .previewCellM8Presentation(config);
                 } else {
+                  btn.disabled = false;
+                  btn.textContent = 'Generate Preview';
                   showStatus('Failed to analyze data', 'error');
                 }
               })
               .withFailureHandler(function(error) {
+                btn.disabled = false;
+                btn.textContent = 'Generate Preview';
                 showStatus('Error analyzing data: ' + error.message, 'error');
               })
               .analyzeCellM8Data(dataResult);
           } else {
+            btn.disabled = false;
+            btn.textContent = 'Generate Preview';
             showStatus('No data found to preview', 'error');
           }
         })
         .withFailureHandler(function(error) {
+          btn.disabled = false;
+          btn.textContent = 'Generate Preview';
           showStatus('Error extracting data: ' + error.message, 'error');
         })
         .extractCellM8Data();
@@ -664,7 +708,7 @@
     }
     
     // Create presentation
-    function createPresentation() {
+    function createPresentation(btn) {
       const config = {
         title: document.getElementById('presentationTitle').value,
         subtitle: document.getElementById('presentationSubtitle').value,
@@ -679,15 +723,22 @@
         return;
       }
       
-      // Show loading
-      showStatus('Creating presentation with ' + config.template + ' template...', 'info');
+      // Simple loading state
+      if (!btn) btn = document.getElementById('createBtn');
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+      showLoading('Creating presentation with ' + config.template + ' theme...');
       
       // Call server function
       google.script.run
         .withSuccessHandler(function(result) {
           console.log('Create presentation result:', result);
+          
           if (result.success && result.url) {
             presentationUrl = result.url;
+            hideLoading();
+            btn.disabled = false;
+            btn.textContent = 'Create Presentation';
             showResult(result);
             showStatus('Presentation created successfully!', 'success');
             
@@ -703,11 +754,17 @@
                 .applyCellM8Template({id: result.presentationId}, config.template);
             }
           } else {
+            hideLoading();
+            btn.disabled = false;
+            btn.textContent = 'Create Presentation';
             showStatus(result.error || 'Failed to create presentation', 'error');
             console.error('Creation failed:', result);
           }
         })
         .withFailureHandler(function(error) {
+          hideLoading();
+          btn.disabled = false;
+          btn.textContent = 'Create Presentation';
           showStatus('Error: ' + error.message, 'error');
           console.error('Creation error:', error);
         })
@@ -762,6 +819,39 @@
           alert('Test failed: ' + error.message);
         })
         .testCellM8Function();
+    }
+    
+    // Simple loading functions
+    function showLoading(message) {
+      const indicator = document.getElementById('loadingIndicator');
+      if (indicator) {
+        indicator.textContent = message || 'Processing...';
+        indicator.classList.add('show');
+      }
+    }
+    
+    function hideLoading() {
+      const indicator = document.getElementById('loadingIndicator');
+      if (indicator) {
+        indicator.classList.remove('show');
+      }
+    }
+    
+    // Enhanced status function
+    function showStatus(message, type) {
+      const statusDiv = document.getElementById('statusMessage');
+      if (statusDiv) {
+        statusDiv.className = 'status-message status-' + type;
+        statusDiv.textContent = message;
+        statusDiv.style.display = 'block';
+        
+        // Auto-hide after 5 seconds for non-error messages
+        if (type !== 'error') {
+          setTimeout(function() {
+            statusDiv.style.display = 'none';
+          }, 5000);
+        }
+      }
     }
   </script>
 </body>

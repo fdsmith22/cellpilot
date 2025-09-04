@@ -175,6 +175,11 @@ var selectCellM8Range = selectCellM8Range || function(rangeA1) { return selectCe
 var getCellM8AvailableSheets = getCellM8AvailableSheets || function() { return getCellM8AvailableSheets(); };
 var chunkArray = chunkArray || function(array, size) { return CellM8.chunkArray(array, size); };
 var trackPresentationCreation = trackPresentationCreation || function(config, result) { return CellM8.trackPresentationCreation(config, result); };
+var refreshCellM8PresentationCharts = refreshCellM8PresentationCharts || function(presentationId) { return refreshCellM8PresentationCharts(presentationId); };
+var cleanupCellM8SheetsCharts = cleanupCellM8SheetsCharts || function(keepCount) { return cleanupCellM8SheetsCharts(keepCount); };
+var createCellM8DashboardSlide = createCellM8DashboardSlide || function(slide, data, analysis, theme) { return createCellM8DashboardSlide(slide, data, analysis, theme); };
+var applyCellM8ProfessionalTheme = applyCellM8ProfessionalTheme || function(presentation, themeName) { return applyCellM8ProfessionalTheme(presentation, themeName); };
+var createCellM8DashboardWithLayout = createCellM8DashboardWithLayout || function(slide, layoutName, data, analysis, theme) { return createCellM8DashboardWithLayout(slide, layoutName, data, analysis, theme); };
 
 // Smart Assistant Functions
 var getSmartSuggestions = getSmartSuggestions || function() { return getSmartSuggestions(); };

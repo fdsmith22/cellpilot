@@ -332,9 +332,9 @@ clasp deployments
 ```
 
 ### Current Active Deployment
-- **ID**: AKfycbyPA5zqXx3pQOOG_m5AdZP38XQ32mYJQF0IBxKpe14xnMG9Nb4RFAIpg7YQOqHc05wBHA
-- **Version**: @21
-- **Description**: CellM8 Advanced: 20 chart types, AI insights, master templates
+- **ID**: AKfycbz5mg1PT_qMdco7LbkGzA0wZScn0gWcfnBFk04V-huLL-OhzP7zaCc1C6M9T_GhafFdJA
+- **Version**: @24
+- **Description**: CellM8 SlideGenerator: Enhanced integration with professional themes, visual effects, and advanced slide generation capabilities
 
 ## Project Context Checking Process
 
@@ -501,3 +501,21 @@ This is the ONLY generator that consistently produces clean, professional presen
 - Renamed CellM8SlideGeneratorOptimal → CellM8SlideGenerator
 - Updated all references in CellM8.js
 - Deployed successfully as version @21
+
+### CellM8 SlideGenerator Embedded (2025-09-03)
+- **Problem Solved**: CellM8SlideGenerator was not accessible when CellM8 used as library
+- **Solution**: Embedded entire SlideGenerator code directly into CellM8.js as `CellM8.SlideGenerator` property
+- **Result**: Themes, gradients, and visual effects now properly apply to presentations
+- **Features Working**:
+  - 6 Professional themes (Professional, Modern, Dark, Vibrant, Elegant, Corporate)
+  - Gradient backgrounds with color transitions
+  - Golden ratio layouts for optimal visual balance
+  - Typography scale based on Material Design
+  - Smart data analysis and chart selection
+  - Enhanced table formatting with alternating rows
+  - Speaker notes on all slides
+  - Slide numbering and date stamps
+- **Fixed Issues**:
+  - Removed unsupported `setTransparency()` calls on shape fills
+  - Ensured SlideGenerator always available in library context
+- **Deployed**: Version @24
