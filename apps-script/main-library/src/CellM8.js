@@ -796,79 +796,99 @@ const CellM8 = {
     PROFESSIONAL_THEMES: {
       'executive': {
         name: 'Executive Suite',
-        primary: '#1B2951',
-        secondary: '#C9A961',
-        accent: '#E74C3C',
+        primary: '#2C3E50',
+        secondary: '#34495E',
+        accent: '#3498DB',
         background: '#FFFFFF',
         surface: '#F8F9FA',
-        text: '#1B2951',
-        textLight: '#5F6368',
-        chartColors: ['#1B2951', '#C9A961', '#E74C3C', '#3498DB', '#95A5A6', '#2ECC71'],
+        text: '#2C3E50',
+        textLight: '#7F8C8D',
+        chartColors: ['#3498DB', '#2ECC71', '#F39C12', '#E74C3C', '#9B59B6', '#1ABC9C'],
         fontTitle: 'Georgia',
         fontBody: 'Arial',
         chartStyle: 'clean',
-        gridlines: '#E0E0E0'
+        gridlines: '#ECF0F1',
+        gradients: {
+          primary: ['#FFFFFF', '#F8F9FA'],
+          overlay: ['rgba(52, 152, 219, 0.05)', 'rgba(52, 152, 219, 0.02)']
+        }
       },
-      'tech': {
-        name: 'Tech Innovation',
-        primary: '#00D4FF',
-        secondary: '#0A0E27',
-        accent: '#FF006E',
-        background: '#0F111A',
-        surface: '#1A1D29',
-        text: '#FFFFFF',
-        textLight: '#8892B0',
-        chartColors: ['#00D4FF', '#FF006E', '#FFBE0B', '#FB5607', '#8338EC', '#3A86FF'],
-        fontTitle: 'Roboto',
-        fontBody: 'Roboto',
-        chartStyle: 'neon',
-        darkMode: true,
-        gridlines: '#2A2D3A'
-      },
-      'nature': {
-        name: 'Natural Earth',
-        primary: '#2D5A3E',
-        secondary: '#8B7355',
-        accent: '#E8B04B',
-        background: '#FAFAF8',
-        surface: '#F5F2EA',
+      'modern': {
+        name: 'Modern Tech',
+        primary: '#6C5CE7',
+        secondary: '#A29BFE',
+        accent: '#74B9FF',
+        background: '#FFFFFF',
+        surface: '#FFEEFE',
         text: '#2D3436',
         textLight: '#636E72',
-        chartColors: ['#2D5A3E', '#8B7355', '#E8B04B', '#A8C09A', '#D4A574', '#6B8E23'],
+        chartColors: ['#6C5CE7', '#74B9FF', '#A29BFE', '#FFEAA7', '#FD79A8', '#55EFC4'],
+        fontTitle: 'Roboto',
+        fontBody: 'Roboto',
+        chartStyle: 'modern',
+        gridlines: '#F0F3F7',
+        gradients: {
+          primary: ['#FFFFFF', '#FFEEFE'],
+          overlay: ['rgba(108, 92, 231, 0.03)', 'rgba(116, 185, 255, 0.03)']
+        }
+      },
+      'nature': {
+        name: 'Natural Green',
+        primary: '#27AE60',
+        secondary: '#16A085',
+        accent: '#F39C12',
+        background: '#FFFFFF',
+        surface: '#F0FFF4',
+        text: '#2C3E50',
+        textLight: '#7F8C8D',
+        chartColors: ['#27AE60', '#16A085', '#3498DB', '#F39C12', '#E67E22', '#8E44AD'],
         fontTitle: 'Merriweather',
         fontBody: 'Open Sans',
         chartStyle: 'organic',
-        gridlines: '#DDD9D0'
+        gridlines: '#E8F8F5',
+        gradients: {
+          primary: ['#FFFFFF', '#F0FFF4'],
+          overlay: ['rgba(39, 174, 96, 0.03)', 'rgba(22, 160, 133, 0.03)']
+        }
       },
       'minimal': {
         name: 'Minimal Clean',
-        primary: '#000000',
-        secondary: '#FFFFFF',
-        accent: '#FF0000',
+        primary: '#34495E',
+        secondary: '#95A5A6',
+        accent: '#E74C3C',
         background: '#FFFFFF',
         surface: '#FAFAFA',
-        text: '#000000',
-        textLight: '#666666',
-        chartColors: ['#000000', '#333333', '#666666', '#999999', '#CCCCCC', '#FF0000'],
+        text: '#2C3E50',
+        textLight: '#7F8C8D',
+        chartColors: ['#34495E', '#3498DB', '#E74C3C', '#95A5A6', '#2ECC71', '#F39C12'],
         fontTitle: 'Helvetica',
         fontBody: 'Helvetica',
         chartStyle: 'minimal',
-        gridlines: '#F0F0F0'
+        gridlines: '#ECF0F1',
+        gradients: {
+          primary: ['#FFFFFF', '#FAFAFA'],
+          overlay: ['rgba(52, 73, 94, 0.02)', 'rgba(149, 165, 166, 0.02)']
+        }
       },
-      'finance': {
-        name: 'Financial Report',
-        primary: '#003366',
-        secondary: '#DAA520',
-        accent: '#228B22',
-        background: '#FFFFFF',
-        surface: '#F0F4F7',
-        text: '#003366',
-        textLight: '#516B7D',
-        chartColors: ['#003366', '#DAA520', '#228B22', '#DC143C', '#4682B4', '#708090'],
-        fontTitle: 'Times New Roman',
-        fontBody: 'Calibri',
-        chartStyle: 'traditional',
-        gridlines: '#D0D7DE'
+      'dark': {
+        name: 'Dark Professional',
+        primary: '#BB86FC',
+        secondary: '#03DAC6',
+        accent: '#CF6679',
+        background: '#121212',
+        surface: '#1E1E1E',
+        text: '#FFFFFF',
+        textLight: '#B0B0B0',
+        chartColors: ['#BB86FC', '#03DAC6', '#CF6679', '#FFB86C', '#50FA7B', '#FF79C6'],
+        fontTitle: 'Roboto',
+        fontBody: 'Roboto',
+        chartStyle: 'modern',
+        darkMode: true,
+        gridlines: '#2C2C2C',
+        gradients: {
+          primary: ['#121212', '#1E1E1E'],
+          overlay: ['rgba(187, 134, 252, 0.05)', 'rgba(3, 218, 198, 0.05)']
+        }
       }
     },
     
@@ -1837,7 +1857,9 @@ const CellM8 = {
      */
     planSlideStructure: function(analysis, config) {
       const plan = [];
-      const requestedSlides = config.slideCount || 5;
+      const requestedSlides = parseInt(config.slideCount) || 5;
+      
+      Logger.log('Planning ' + requestedSlides + ' slides');
       
       // Always start with title slide
       plan.push({
@@ -1846,52 +1868,94 @@ const CellM8 = {
         subtitle: config.subtitle || analysis.dataSummary
       });
       
-      // Add executive summary if we have enough slides
-      if (requestedSlides >= 4 && analysis.keyMetrics.length > 0) {
-        plan.push({
-          type: 'summary',
-          metrics: analysis.keyMetrics.slice(0, 4)
-        });
-      }
+      // Calculate remaining slides after title and conclusion
+      const middleSlides = requestedSlides - 2; // -1 for title, -1 for conclusion
       
-      // Add data visualization
-      if (analysis.bestChartType && analysis.numericColumns.length > 0 && requestedSlides >= 3) {
-        plan.push({
-          type: 'chart',
-          chartType: analysis.bestChartType,
-          title: 'Data Visualization'
-        });
-      }
-      
-      // Add data table
-      if (analysis.totalRows <= 20 && requestedSlides >= plan.length + 2) {
-        plan.push({
-          type: 'table',
-          title: 'Data Overview',
-          maxRows: 10,
-          maxCols: 6
-        });
-      }
-      
-      // Add insights slide
-      if (analysis.insights.length > 0 && requestedSlides >= plan.length + 2) {
-        plan.push({
-          type: 'insights',
-          title: 'Key Insights',
-          insights: analysis.insights
-        });
+      // Build middle slides based on available data and requested count
+      if (middleSlides > 0) {
+        // Priority 1: Executive summary (if metrics available)
+        if (analysis.keyMetrics && analysis.keyMetrics.length > 0) {
+          plan.push({
+            type: 'summary',
+            metrics: analysis.keyMetrics.slice(0, 4),
+            keyInsight: analysis.insights ? analysis.insights[0] : null
+          });
+        }
+        
+        // Priority 2: Primary chart
+        if (plan.length < requestedSlides - 1 && analysis.numericColumns && analysis.numericColumns.length > 0) {
+          plan.push({
+            type: 'chart',
+            chartType: analysis.bestChartType || 'column',
+            title: 'Data Analysis',
+            createNew: true
+          });
+        }
+        
+        // Priority 3: Additional charts for different data aspects
+        if (plan.length < requestedSlides - 1 && analysis.numericColumns && analysis.numericColumns.length > 1) {
+          plan.push({
+            type: 'chart',
+            chartType: 'line',
+            title: 'Trend Analysis',
+            createNew: true
+          });
+        }
+        
+        // Priority 4: Data table
+        if (plan.length < requestedSlides - 1) {
+          plan.push({
+            type: 'table',
+            title: 'Data Overview',
+            maxRows: Math.min(10, analysis.totalRows || 10),
+            maxCols: Math.min(6, analysis.totalColumns || 6)
+          });
+        }
+        
+        // Priority 5: Insights
+        if (plan.length < requestedSlides - 1 && analysis.insights && analysis.insights.length > 0) {
+          plan.push({
+            type: 'insights',
+            title: 'Key Insights',
+            insights: analysis.insights.slice(0, 5)
+          });
+        }
+        
+        // Fill remaining slots with additional content
+        while (plan.length < requestedSlides - 1) {
+          if (analysis.categoryColumns && analysis.categoryColumns.length > 0 && 
+              plan.filter(s => s.type === 'chart').length < 3) {
+            // Add another chart
+            plan.push({
+              type: 'chart',
+              chartType: 'pie',
+              title: 'Distribution Analysis',
+              createNew: true
+            });
+          } else {
+            // Add a generic content slide
+            plan.push({
+              type: 'insights',
+              title: 'Additional Analysis',
+              insights: ['Data contains ' + (analysis.totalRows || 0) + ' records',
+                        'Analyzed across ' + (analysis.totalColumns || 0) + ' dimensions']
+            });
+          }
+        }
       }
       
       // Always end with conclusion
-      if (requestedSlides > plan.length) {
-        plan.push({
-          type: 'conclusion',
-          title: 'Conclusion',
-          nextSteps: this.generateNextSteps(analysis)
-        });
-      }
+      plan.push({
+        type: 'conclusion',
+        title: 'Conclusion',
+        nextSteps: this.generateNextSteps(analysis)
+      });
       
-      return plan.slice(0, requestedSlides);
+      // Ensure we have exactly the requested number of slides
+      const finalPlan = plan.slice(0, requestedSlides);
+      Logger.log('Final plan has ' + finalPlan.length + ' slides');
+      
+      return finalPlan;
     },
     
     /**
@@ -2120,7 +2184,12 @@ const CellM8 = {
      * Build chart slide with native linked charts
      */
     buildChartSlide: function(slide, spec, data, analysis, theme) {
-      this.addBackground(slide, theme.background);
+      // Apply gradient background if available
+      if (theme.gradients && theme.gradients.primary) {
+        this.addGradientBackground(slide, theme.gradients.primary[0], theme.gradients.primary[1]);
+      } else {
+        this.addBackground(slide, theme.background);
+      }
       this.addSlideTitle(slide, spec.title || 'Data Visualization', theme);
       
       try {
@@ -2322,7 +2391,21 @@ const CellM8 = {
       // Common options for all charts
       chartBuilder
         .setOption('legend', { position: 'bottom' })
-        .setOption('fontSize', 12);
+        .setOption('fontSize', 12)
+        .setOption('vAxis', {
+          textStyle: {
+            fontSize: 11
+          },
+          slantedText: false,  // Keep text horizontal
+          textPosition: 'out'
+        })
+        .setOption('hAxis', {
+          textStyle: {
+            fontSize: 11
+          },
+          slantedText: true,
+          slantedTextAngle: 45
+        });
       
       // Type-specific options
       switch (chartType) {
@@ -2657,7 +2740,12 @@ const CellM8 = {
      * Build table slide with native Google Slides tables
      */
     buildTableSlide: function(slide, spec, data, theme) {
-      this.addGradientBackground(slide, theme.background, theme.surface);
+      // Apply gradient background
+      if (theme.gradients && theme.gradients.primary) {
+        this.addGradientBackground(slide, theme.gradients.primary[0], theme.gradients.primary[1]);
+      } else {
+        this.addGradientBackground(slide, theme.background, theme.surface);
+      }
       this.addSlideTitle(slide, spec.title || 'Data Overview', theme);
       
       // Ensure data structure is valid
@@ -2772,7 +2860,12 @@ const CellM8 = {
      * Build insights slide
      */
     buildInsightsSlide: function(slide, spec, theme) {
-      this.addBackground(slide, theme.background);
+      // Apply gradient background
+      if (theme.gradients && theme.gradients.primary) {
+        this.addGradientBackground(slide, theme.gradients.primary[0], theme.gradients.primary[1]);
+      } else {
+        this.addBackground(slide, theme.background);
+      }
       this.addSlideTitle(slide, spec.title || 'Key Insights', theme);
       
       const insights = spec.insights || [];
@@ -2810,7 +2903,21 @@ const CellM8 = {
      * Build conclusion slide
      */
     buildConclusionSlide: function(slide, spec, theme) {
-      this.addBackground(slide, theme.primary);
+      // Apply gradient background with overlay
+      if (theme.gradients && theme.gradients.overlay) {
+        this.addGradientBackground(slide, theme.gradients.primary[0], theme.gradients.primary[1]);
+        // Add subtle overlay
+        const overlay = slide.insertShape(
+          SlidesApp.ShapeType.RECTANGLE,
+          0, 0, this.SLIDE_WIDTH, this.SLIDE_HEIGHT
+        );
+        overlay.getFill().setSolidFill(theme.primary);
+        overlay.getBorder().setTransparent();
+        overlay.sendToBack();
+        // Note: Can't set transparency in Slides API
+      } else {
+        this.addBackground(slide, theme.primary);
+      }
       
       const titleBox = slide.insertTextBox(
         spec.title || 'Next Steps',
@@ -2864,7 +2971,12 @@ const CellM8 = {
      * Build default slide
      */
     buildDefaultSlide: function(slide, spec, theme) {
-      this.addBackground(slide, theme.background);
+      // Apply gradient background
+      if (theme.gradients && theme.gradients.primary) {
+        this.addGradientBackground(slide, theme.gradients.primary[0], theme.gradients.primary[1]);
+      } else {
+        this.addBackground(slide, theme.background);
+      }
       this.addSlideTitle(slide, spec.title || 'Slide', theme);
     },
     
