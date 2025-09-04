@@ -3702,6 +3702,96 @@ const CellM8 = {
       
       presentation.setName(config.title || 'Data Presentation');
       Logger.log('Applied finishing touches to presentation');
+    },
+    
+    /**
+     * Create dashboard layout based on config
+     * Phase 2 function for professional dashboard layouts
+     */
+    createDashboardLayout: function(slide, config) {
+      try {
+        Logger.log('Creating dashboard layout with config:', config);
+        // Extract layout type and theme from config
+        const layoutType = config.type || 'executive';
+        const theme = config.theme || this.PROFESSIONAL_THEMES.executive;
+        const data = config.data || {};
+        
+        // Map layout types to dashboard layouts
+        const layoutMap = {
+          'executive': 'executive_summary',
+          'quad': 'quad_view',
+          'focus': 'focus_detail',
+          'timeline': 'timeline_view',
+          'comparison': 'comparison_view'
+        };
+        
+        const layoutName = layoutMap[layoutType] || 'executive_summary';
+        
+        // For now, use a simple fallback since createDashboardWithLayout may not exist
+        // TODO: Implement full dashboard layout system
+        Logger.log('Creating dashboard layout type: ' + layoutName);
+        
+        // Simple implementation for now
+        this.addBackground(slide, theme.background || '#FFFFFF');
+        this.addSlideTitle(slide, data.title || 'Executive Summary', theme);
+        
+        // Add metrics if provided
+        if (data.metrics && data.metrics.length > 0) {
+          const metrics = data.metrics;
+          const cardWidth = 140;
+          const cardHeight = 80;
+          const spacing = 20;
+          const startX = (this.SLIDE_WIDTH - (metrics.length * cardWidth + (metrics.length - 1) * spacing)) / 2;
+          const startY = 120;
+          
+          metrics.forEach((metric, index) => {
+            const x = startX + index * (cardWidth + spacing);
+            
+            // Card background
+            const card = slide.insertShape(
+              SlidesApp.ShapeType.RECTANGLE,
+              x, startY, cardWidth, cardHeight
+            );
+            card.getFill().setSolidFill(theme.surface || '#F8F9FA');
+            card.getBorder().getLineFill().setSolidFill(theme.primary || '#4285F4');
+            card.getBorder().setWeight(1);
+            
+            // Metric value
+            const valueBox = slide.insertTextBox(
+              metric.value ? metric.value.toString() : '0',
+              x, startY + 15, cardWidth, 30
+            );
+            valueBox.getText().getTextStyle()
+              .setFontSize(24)
+              .setFontFamily('Arial')
+              .setBold(true)
+              .setForegroundColor(theme.primary || '#4285F4');
+            valueBox.getText().getParagraphStyle()
+              .setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+            
+            // Metric label
+            const labelBox = slide.insertTextBox(
+              metric.label || '',
+              x, startY + 45, cardWidth, 20
+            );
+            labelBox.getText().getTextStyle()
+              .setFontSize(12)
+              .setFontFamily('Arial')
+              .setForegroundColor(theme.textLight || '#5F6368');
+            labelBox.getText().getParagraphStyle()
+              .setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
+          });
+        }
+        
+        return true;
+        
+      } catch (error) {
+        Logger.error('Error in createDashboardLayout:', error);
+        // Fallback to simple layout
+        this.addBackground(slide, '#FFFFFF');
+        this.addSlideTitle(slide, 'Dashboard', {});
+        return false;
+      }
     }
   },
   
@@ -4006,45 +4096,6 @@ const CellM8 = {
     }
   },
   
-  /**
-   * Create dashboard layout based on config
-   * Phase 2 function for professional dashboard layouts
-   */
-  createDashboardLayout: function(slide, config) {
-    try {
-      Logger.log('Creating dashboard layout with config:', config);
-      // Extract layout type and theme from config
-      const layoutType = config.type || 'executive';
-      const theme = config.theme || this.PROFESSIONAL_THEMES.executive;
-      const data = config.data || {};
-      
-      // Map layout types to dashboard layouts
-      const layoutMap = {
-        'executive': 'executive_summary',
-        'quad': 'quad_view',
-        'focus': 'focus_detail',
-        'timeline': 'timeline_view',
-        'comparison': 'comparison_view'
-      };
-      
-      const layoutName = layoutMap[layoutType] || 'executive_summary';
-      
-      // Use the existing createDashboardWithLayout function
-      const analysis = {
-        keyMetrics: data.metrics || [],
-        insights: data.highlights || []
-      };
-      
-      return this.createDashboardWithLayout(slide, layoutName, data, analysis, theme);
-      
-    } catch (error) {
-      Logger.error('Error in createDashboardLayout:', error);
-      // Fallback to simple layout
-      this.addBackground(slide, config.theme ? config.theme.background : '#FFFFFF');
-      this.addSlideTitle(slide, config.data ? config.data.title : 'Dashboard', config.theme);
-      return false;
-    }
-  },
   
   // Dashboard creation helper functions for different layouts
   createExecutiveDashboard: function(slide, data, theme) {
