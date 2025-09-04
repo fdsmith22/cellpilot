@@ -809,8 +809,8 @@ const CellM8 = {
         chartStyle: 'clean',
         gridlines: '#ECF0F1',
         gradients: {
-          primary: ['#FFFFFF', '#F8F9FA'],
-          overlay: ['rgba(52, 152, 219, 0.05)', 'rgba(52, 152, 219, 0.02)']
+          primary: ['#FFFFFF', '#E8F4FD'],
+          overlay: ['rgba(52, 152, 219, 0.08)', 'rgba(52, 152, 219, 0.04)']
         }
       },
       'modern': {
@@ -828,8 +828,8 @@ const CellM8 = {
         chartStyle: 'modern',
         gridlines: '#F0F3F7',
         gradients: {
-          primary: ['#FFFFFF', '#FFEEFE'],
-          overlay: ['rgba(108, 92, 231, 0.03)', 'rgba(116, 185, 255, 0.03)']
+          primary: ['#FFFFFF', '#F0ECFF'],
+          overlay: ['rgba(108, 92, 231, 0.06)', 'rgba(116, 185, 255, 0.05)']
         }
       },
       'nature': {
@@ -847,8 +847,8 @@ const CellM8 = {
         chartStyle: 'organic',
         gridlines: '#E8F8F5',
         gradients: {
-          primary: ['#FFFFFF', '#F0FFF4'],
-          overlay: ['rgba(39, 174, 96, 0.03)', 'rgba(22, 160, 133, 0.03)']
+          primary: ['#FFFFFF', '#E6F7ED'],
+          overlay: ['rgba(39, 174, 96, 0.06)', 'rgba(22, 160, 133, 0.05)']
         }
       },
       'minimal': {
@@ -866,8 +866,8 @@ const CellM8 = {
         chartStyle: 'minimal',
         gridlines: '#ECF0F1',
         gradients: {
-          primary: ['#FFFFFF', '#FAFAFA'],
-          overlay: ['rgba(52, 73, 94, 0.02)', 'rgba(149, 165, 166, 0.02)']
+          primary: ['#FFFFFF', '#F0F0F0'],
+          overlay: ['rgba(52, 73, 94, 0.05)', 'rgba(149, 165, 166, 0.04)']
         }
       },
       'dark': {
@@ -886,8 +886,8 @@ const CellM8 = {
         darkMode: true,
         gridlines: '#2C2C2C',
         gradients: {
-          primary: ['#121212', '#1E1E1E'],
-          overlay: ['rgba(187, 134, 252, 0.05)', 'rgba(3, 218, 198, 0.05)']
+          primary: ['#1A1A1A', '#2D2D2D'],
+          overlay: ['rgba(187, 134, 252, 0.08)', 'rgba(3, 218, 198, 0.08)']
         }
       }
     },
@@ -1462,17 +1462,37 @@ const CellM8 = {
     detectRelationships: function(headers, data, analysis) {
       const relationships = [];
       
-      // Look for hierarchy patterns (e.g., Employee -> Department -> Salary)
+      // Find ALL meaningful category-numeric relationships
       if (analysis.categoryColumns.length > 0 && analysis.numericColumns.length > 0) {
-        const primaryCategory = analysis.categoryColumns[0];
-        const primaryNumeric = analysis.numericColumns[0];
-        
-        relationships.push({
-          type: 'aggregation',
-          groupBy: primaryCategory.name,
-          measure: primaryNumeric.name,
-          description: `${primaryNumeric.name} by ${primaryCategory.name}`
-        });
+        // Create relationships for multiple combinations, not just the first
+        for (let catIdx = 0; catIdx < Math.min(analysis.categoryColumns.length, 3); catIdx++) {
+          for (let numIdx = 0; numIdx < Math.min(analysis.numericColumns.length, 3); numIdx++) {
+            const category = analysis.categoryColumns[catIdx];
+            const numeric = analysis.numericColumns[numIdx];
+            
+            relationships.push({
+              type: 'aggregation',
+              groupBy: category.name,
+              measure: numeric.name,
+              description: `${numeric.name} by ${category.name}`,
+              priority: catIdx === 0 && numIdx === 0 ? 1 : 2
+            });
+          }
+        }
+      }
+      
+      // Add scatter plot relationships for numeric-numeric comparisons
+      if (analysis.numericColumns.length >= 2) {
+        for (let i = 0; i < Math.min(analysis.numericColumns.length - 1, 2); i++) {
+          for (let j = i + 1; j < Math.min(analysis.numericColumns.length, 3); j++) {
+            relationships.push({
+              type: 'scatter',
+              xColumn: analysis.numericColumns[i].name,
+              yColumn: analysis.numericColumns[j].name,
+              description: `${analysis.numericColumns[i].name} vs ${analysis.numericColumns[j].name}`
+            });
+          }
+        }
       }
       
       // Look for person-location-metric patterns
@@ -1882,23 +1902,38 @@ const CellM8 = {
           });
         }
         
-        // Priority 2: Primary chart
-        if (plan.length < requestedSlides - 1 && analysis.numericColumns && analysis.numericColumns.length > 0) {
+        // Priority 2: Primary chart using first suggested visualization
+        if (plan.length < requestedSlides - 1 && analysis.suggestedVisualizations && analysis.suggestedVisualizations.length > 0) {
+          const firstViz = analysis.suggestedVisualizations[0];
           plan.push({
             type: 'chart',
-            chartType: analysis.bestChartType || 'column',
-            title: 'Data Analysis',
-            createNew: true
+            chartType: firstViz.type || 'column',
+            title: firstViz.title || 'Data Analysis',
+            createNew: true,
+            vizIndex: 0,  // Use first visualization
+            columns: firstViz.groupBy ? [firstViz.groupBy, firstViz.measure] : null
           });
         }
         
-        // Priority 3: Additional charts for different data aspects
-        if (plan.length < requestedSlides - 1 && analysis.numericColumns && analysis.numericColumns.length > 1) {
+        // Priority 3: Secondary chart using different visualization
+        if (plan.length < requestedSlides - 1 && analysis.suggestedVisualizations && analysis.suggestedVisualizations.length > 1) {
+          const secondViz = analysis.suggestedVisualizations[1];
+          plan.push({
+            type: 'chart',
+            chartType: secondViz.type || 'line',
+            title: secondViz.title || 'Trend Analysis',
+            createNew: true,
+            vizIndex: 1,  // Use second visualization
+            columns: secondViz.groupBy ? [secondViz.groupBy, secondViz.measure] : null
+          });
+        } else if (plan.length < requestedSlides - 1 && analysis.numericColumns && analysis.numericColumns.length > 1) {
+          // Fallback: Create a different chart type with different columns
           plan.push({
             type: 'chart',
             chartType: 'line',
             title: 'Trend Analysis',
-            createNew: true
+            createNew: true,
+            useAlternateColumns: true  // Flag to use different columns
           });
         }
         
@@ -2106,7 +2141,7 @@ const CellM8 = {
         .setFontSize(this.TYPOGRAPHY.display)
         .setFontFamily('Arial')
         .setBold(true)
-        .setForegroundColor('#FFFFFF');
+        .setForegroundColor(theme.darkMode ? '#FFFFFF' : theme.text || '#2C3E50');
       
       titleBox.getText().getParagraphStyle()
         .setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
@@ -2124,7 +2159,7 @@ const CellM8 = {
         subtitleBox.getText().getTextStyle()
           .setFontSize(this.TYPOGRAPHY.subtitle)
           .setFontFamily('Arial')
-          .setForegroundColor('#FFFFFF');
+          .setForegroundColor(theme.darkMode ? '#FFFFFF' : theme.text || '#2C3E50');
         
         subtitleBox.getText().getParagraphStyle()
           .setParagraphAlignment(SlidesApp.ParagraphAlignment.CENTER);
@@ -2269,15 +2304,22 @@ const CellM8 = {
      */
     createSheetsChart: function(sheet, dataStructure, analysis, spec) {
       try {
-        // Determine optimal chart type
+        // Use the correct visualization based on spec.vizIndex
+        const vizIndex = spec.vizIndex || 0;
+        const visualization = analysis.suggestedVisualizations && analysis.suggestedVisualizations[vizIndex] 
+          ? analysis.suggestedVisualizations[vizIndex]
+          : analysis.suggestedVisualizations ? analysis.suggestedVisualizations[0] : null;
+        
+        // Determine chart type from the selected visualization
         const chartType = this.mapToSheetsChartType(
-          analysis.suggestedVisualizations && analysis.suggestedVisualizations[0] 
-            ? analysis.suggestedVisualizations[0].type 
-            : 'bar_chart'
+          visualization ? visualization.type : (spec.chartType || 'bar_chart')
         );
         
-        // Select appropriate data range
-        const dataRange = this.selectChartDataRange(sheet, dataStructure, analysis);
+        // Select appropriate data range based on the visualization
+        const dataRange = this.selectChartDataRange(sheet, dataStructure, {
+          ...analysis,
+          suggestedVisualizations: visualization ? [visualization] : analysis.suggestedVisualizations
+        });
         if (!dataRange) {
           Logger.log('Could not determine data range for chart');
           return null;
@@ -2396,8 +2438,8 @@ const CellM8 = {
           textStyle: {
             fontSize: 11
           },
-          slantedText: false,  // Keep text horizontal
-          textPosition: 'out'
+          textPosition: 'out',
+          viewWindow: { min: 0 }
         })
         .setOption('hAxis', {
           textStyle: {
