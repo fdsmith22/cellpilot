@@ -29,7 +29,22 @@ function testCellPilotConnection() {
 
     // Test a simple function
     const context = CellPilot.getCurrentUserContext();
-    return { success: true, message: 'CellPilot library connected successfully!', context: context };
+    
+    // Test if Phase 2 functions exist
+    const phase2Functions = {
+      createDashboardLayout: typeof CellPilot.createDashboardLayout === 'function',
+      applyProfessionalTheme: typeof CellPilot.applyProfessionalTheme === 'function',
+      configureAdvancedChart: typeof CellPilot.configureAdvancedChart === 'function',
+      createSheetsChart: typeof CellPilot.createSheetsChart === 'function'
+    };
+    
+    return { 
+      success: true, 
+      message: 'CellPilot library connected successfully!', 
+      context: context,
+      phase2Functions: phase2Functions,
+      libraryVersion: 'Please update to version 47 or latest'
+    };
   } catch (e) {
     return { success: false, error: e.toString() };
   }

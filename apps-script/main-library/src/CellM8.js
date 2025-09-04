@@ -4008,9 +4008,11 @@ const CellM8 = {
   
   /**
    * Create dashboard layout based on config
+   * Phase 2 function for professional dashboard layouts
    */
   createDashboardLayout: function(slide, config) {
     try {
+      Logger.log('Creating dashboard layout with config:', config);
       // Extract layout type and theme from config
       const layoutType = config.type || 'executive';
       const theme = config.theme || this.PROFESSIONAL_THEMES.executive;
