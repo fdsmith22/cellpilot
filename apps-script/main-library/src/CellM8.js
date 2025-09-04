@@ -2501,6 +2501,85 @@ const CellM8 = {
     },
     
     /**
+     * Apply slide transitions to presentation
+     */
+    applySlideTransitions: function(presentation, transitionType) {
+      try {
+        const transitions = {
+          'fade': { transitionType: 'FADE', duration: 0.5 },
+          'slide': { transitionType: 'SLIDE_FROM_RIGHT', duration: 0.4 },
+          'flip': { transitionType: 'FLIP', duration: 0.6 },
+          'cube': { transitionType: 'CUBE', duration: 0.7 },
+          'dissolve': { transitionType: 'DISSOLVE', duration: 0.5 }
+        };
+        
+        const transition = transitions[transitionType] || transitions.fade;
+        const slides = presentation.getSlides();
+        
+        // Note: Google Slides API has limited transition support via Apps Script
+        // This is a placeholder for future enhancement
+        Logger.log('Applied transition type: ' + transitionType);
+        
+        return true;
+      } catch (error) {
+        Logger.log('Error applying slide transitions: ' + error);
+        return false;
+      }
+    },
+    
+    /**
+     * Apply chart animations
+     */
+    applyChartAnimation: function(chartBuilder, animationType) {
+      try {
+        const animations = {
+          'subtle': { startup: true, duration: 500, easing: 'linear' },
+          'smooth': { startup: true, duration: 1000, easing: 'inAndOut' },
+          'dramatic': { startup: true, duration: 2000, easing: 'out' },
+          'bounce': { startup: true, duration: 1500, easing: 'inAndOut' }
+        };
+        
+        const animation = animations[animationType] || animations.smooth;
+        chartBuilder.setOption('animation', animation);
+        return chartBuilder;
+      } catch (error) {
+        Logger.log('Error applying chart animation: ' + error);
+        return chartBuilder;
+      }
+    },
+    
+    /**
+     * Add annotations to chart
+     */
+    addChartAnnotations: function(chartBuilder, annotations) {
+      try {
+        if (annotations && annotations.length > 0) {
+          chartBuilder.setOption('annotations', {
+            textStyle: {
+              fontSize: 12,
+              color: '#666666',
+              bold: true
+            },
+            boxStyle: {
+              stroke: '#888',
+              strokeWidth: 1,
+              gradient: {
+                color1: '#fbf6a7',
+                color2: '#33b679',
+                x1: '0%', y1: '0%',
+                x2: '100%', y2: '100%'
+              }
+            }
+          });
+        }
+        return chartBuilder;
+      } catch (error) {
+        Logger.log('Error adding chart annotations: ' + error);
+        return chartBuilder;
+      }
+    },
+    
+    /**
      * Apply conditional formatting to chart based on data values
      */
     applyConditionalChartFormatting: function(chartBuilder, data, rules) {
@@ -3925,6 +4004,68 @@ const CellM8 = {
         { id: 'comparison', type: 'table', position: { x: 40, y: 420, w: 680, h: 80 } }
       ]
     }
+  },
+  
+  /**
+   * Create dashboard layout based on config
+   */
+  createDashboardLayout: function(slide, config) {
+    try {
+      // Extract layout type and theme from config
+      const layoutType = config.type || 'executive';
+      const theme = config.theme || this.PROFESSIONAL_THEMES.executive;
+      const data = config.data || {};
+      
+      // Map layout types to dashboard layouts
+      const layoutMap = {
+        'executive': 'executive_summary',
+        'quad': 'quad_view',
+        'focus': 'focus_detail',
+        'timeline': 'timeline_view',
+        'comparison': 'comparison_view'
+      };
+      
+      const layoutName = layoutMap[layoutType] || 'executive_summary';
+      
+      // Use the existing createDashboardWithLayout function
+      const analysis = {
+        keyMetrics: data.metrics || [],
+        insights: data.highlights || []
+      };
+      
+      return this.createDashboardWithLayout(slide, layoutName, data, analysis, theme);
+      
+    } catch (error) {
+      Logger.error('Error in createDashboardLayout:', error);
+      // Fallback to simple layout
+      this.addBackground(slide, config.theme ? config.theme.background : '#FFFFFF');
+      this.addSlideTitle(slide, config.data ? config.data.title : 'Dashboard', config.theme);
+      return false;
+    }
+  },
+  
+  // Dashboard creation helper functions for different layouts
+  createExecutiveDashboard: function(slide, data, theme) {
+    return this.createDashboardWithLayout(slide, 'executive_summary', data, {}, theme);
+  },
+  
+  createQuadViewDashboard: function(slide, charts, theme) {
+    return this.createDashboardWithLayout(slide, 'quad_view', { charts: charts }, {}, theme);
+  },
+  
+  createFocusDetailDashboard: function(slide, mainChart, detailData, theme) {
+    return this.createDashboardWithLayout(slide, 'focus_detail', 
+      { mainChart: mainChart, details: detailData }, {}, theme);
+  },
+  
+  createTimelineDashboard: function(slide, timelineData, theme) {
+    return this.createDashboardWithLayout(slide, 'timeline_view', 
+      { timeline: timelineData }, {}, theme);
+  },
+  
+  createComparisonDashboard: function(slide, comparisonData, theme) {
+    return this.createDashboardWithLayout(slide, 'comparison_view', 
+      { comparison: comparisonData }, {}, theme);
   },
   
   /**
