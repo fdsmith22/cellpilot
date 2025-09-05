@@ -1,888 +1,860 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <base target="_top">
-  <?!= include('SharedStyles'); ?>
-  <style>
-    /* Simple loading indicator */
-    .loading-indicator {
-      display: none;
-      padding: 12px;
-      background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
-      color: white;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 600;
-      margin: 10px 0;
-    }
-    
-    .loading-indicator.show {
-      display: block;
-    }
-    
-    /* Button disabled state */
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    
-    /* Enhanced styles matching main panel */
-    .nav-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .nav-back {
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 18px;
-      font-weight: 600;
-    }
-    
-    .nav-back:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: translateX(-2px);
-    }
-    
-    .nav-title h2 {
-      color: white;
-      margin: 0;
-      font-size: 20px;
-      font-weight: 700;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    }
-    
-    .nav-title p {
-      color: rgba(255, 255, 255, 0.9);
-      margin: 2px 0 0 0;
-      font-size: 12px;
-    }
-    
-    /* Card styles matching main panel */
-    .card {
-      background: white;
-      border: 1px solid var(--gray-200);
-      border-radius: 12px;
-      margin-bottom: 16px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      transition: all 0.2s ease;
-    }
-    
-    .card:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
-    
-    .card-header {
-      background: linear-gradient(135deg, #fafbfc 0%, #f0f7ff 100%);
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--gray-100);
-    }
-    
-    .card-header h3 {
-      margin: 0;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--gray-800);
-    }
-    
-    .card-header p {
-      margin: 2px 0 0 0;
-      font-size: 11px;
-      color: var(--gray-600);
-    }
-    
-    /* Status messages with gradient */
-    .status-message {
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 8px;
-      font-size: 13px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .status-success {
-      background: linear-gradient(135deg, #d4f4dd 0%, #c8f1d6 100%);
-      border: 1px solid var(--success-300);
-      color: var(--success-800);
-    }
-    
-    .status-error {
-      background: linear-gradient(135deg, #fee4e2 0%, #fecaca 100%);
-      border: 1px solid var(--error-300);
-      color: var(--error-800);
-    }
-    
-    .status-info {
-      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-      border: 1px solid var(--info-300);
-      color: var(--info-800);
-    }
-    
-    /* Enhanced buttons */
-    .btn {
-      background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
-    }
-    
-    .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-      background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
-    }
-    
-    .btn-secondary {
-      background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-      color: var(--gray-700);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-    
-    .btn-secondary:hover {
-      background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
-    }
-    
-    .btn-success {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
-    }
-    
-    .btn-success:hover {
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    }
-    
-    /* Preview container with gradient */
-    .preview-container {
-      background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-      border: 1px solid var(--gray-200);
-      border-radius: 8px;
-      padding: 12px;
-      margin: 12px 0;
-    }
-    
-    .slide-preview {
-      background: white;
-      border: 1px solid var(--gray-200);
-      border-radius: 6px;
-      padding: 10px;
-      margin: 8px 0;
-      transition: all 0.2s ease;
-    }
-    
-    .slide-preview:hover {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      transform: translateX(2px);
-    }
-    
-    .slide-preview h4 {
-      margin: 0 0 4px 0;
-      font-size: 12px;
-      color: var(--gray-700);
-      font-weight: 600;
-    }
-    
-    .slide-preview p {
-      margin: 0;
-      font-size: 11px;
-      color: var(--gray-600);
-      line-height: 1.4;
-    }
-    
-    /* Selection info box */
-    #currentSelection {
-      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-      border: 1px solid var(--info-200);
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      max-width: 100%;
-    }
-    
-    #currentSelection p {
-      word-break: break-word;
-      overflow-wrap: anywhere;
-    }
-    
-    #currentSelection code {
-      background: white;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 11px;
-      color: var(--primary-600);
-      border: 1px solid var(--gray-200);
-      word-break: break-all;
-      display: inline-block;
-      max-width: 100%;
-    }
-    
-    /* Form controls enhancement */
-    .form-control {
-      border: 1px solid var(--gray-300);
-      transition: all 0.2s ease;
-    }
-    
-    .form-control:focus {
-      border-color: var(--primary-500);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-      outline: none;
-    }
-    
-    .form-label {
-      font-weight: 600;
-      color: var(--gray-700);
-    }
-    
-    /* Result container with gradient */
-    .status-success {
-      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-      padding: 16px;
-      border-radius: 8px;
-      border: 1px solid var(--success-300);
-    }
-    
-    #presentationUrl {
-      font-family: 'SF Mono', Monaco, 'Courier New', monospace;
-      font-size: 11px;
-      background: linear-gradient(135deg, #fafbfc 0%, #f0f7ff 100%);
-    }
-  </style>
-</head>
-<body>
-  <div class="nav-header" style="background: linear-gradient(135deg, #f0f7ff 0%, #e0e7ff 100%); border-bottom: 1px solid #c7d2fe; padding: 12px 14px;">
-    <button class="nav-back" onclick="backToMain()" style="background: white; border: 1px solid #c7d2fe; color: #2563eb;">←</button>
-    <div class="nav-title" style="display: flex; align-items: center; gap: 10px; flex: 1;">
-      <!-- CellPilot Logo SVG -->
-      <svg viewBox="0 0 34 34" width="28" height="28" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
-        <g transform="translate(2, 2)">
-          <path d="M4 4 Q4 0 8 0 L26 0 Q30 0 30 4 L30 26 Q30 30 26 30 L8 30 Q4 30 4 26 Z" 
-                fill="none" stroke="#2563eb" stroke-width="2"/>
-          <line x1="17" y1="0" x2="17" y2="30" stroke="#60a5fa" stroke-width="0.8"/>
-          <line x1="4" y1="15" x2="30" y2="15" stroke="#60a5fa" stroke-width="0.8"/>
-          <g transform="translate(7, 7)">
-            <rect x="0" y="0" width="4" height="4" fill="#e5e7eb" opacity="0.8"/>
-            <rect x="4" y="0" width="4" height="4" fill="#3b82f6" opacity="0.3"/>
-            <rect x="8" y="0" width="4" height="4" fill="#60a5fa" opacity="0.2"/>
-            <rect x="12" y="0" width="4" height="4" fill="#e5e7eb" opacity="0.8"/>
-            <rect x="0" y="4" width="4" height="4" fill="#60a5fa" opacity="0.2"/>
-            <rect x="4" y="4" width="4" height="4" fill="#3b82f6"/>
-            <rect x="8" y="4" width="4" height="4" fill="#e5e7eb" opacity="0.8"/>
-            <rect x="12" y="4" width="4" height="4" fill="#60a5fa" opacity="0.3"/>
+  <head>
+    <base target="_top" />
+    <?!= include('SharedStyles'); ?>
+    <style>
+      /* Simple loading indicator */
+      .loading-indicator {
+        display: none;
+        padding: 12px;
+        background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+        color: white;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        margin: 10px 0;
+      }
+
+      .loading-indicator.show {
+        display: block;
+      }
+
+      /* Button disabled state */
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      /* Use consistent nav styles from SharedStyles */
+      /* nav-header, nav-back, and nav-title inherit from SharedStyles */
+
+      /* Card styles matching main panel */
+      .card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        margin-bottom: 16px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+      }
+
+      .card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .card-header {
+        background: linear-gradient(135deg, #fafbfc 0%, #f0f7ff 100%);
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--gray-100);
+      }
+
+      .card-header h3 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--gray-800);
+      }
+
+      .card-header p {
+        margin: 2px 0 0 0;
+        font-size: 11px;
+        color: var(--gray-600);
+      }
+
+      /* Status messages with gradient */
+      .status-message {
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 8px;
+        font-size: 13px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .status-success {
+        background: linear-gradient(135deg, #d4f4dd 0%, #c8f1d6 100%);
+        border: 1px solid var(--success-300);
+        color: var(--success-800);
+      }
+
+      .status-error {
+        background: linear-gradient(135deg, #fee4e2 0%, #fecaca 100%);
+        border: 1px solid var(--error-300);
+        color: var(--error-800);
+      }
+
+      .status-info {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        border: 1px solid var(--info-300);
+        color: var(--info-800);
+      }
+
+      /* Use button styles from SharedStyles for consistency */
+      /* Only add CellM8-specific enhancements */
+
+      .btn-success {
+        background: var(--success-600);
+        color: white;
+        border: 1px solid var(--success-600);
+      }
+
+      .btn-success:hover:not(:disabled) {
+        background: var(--success-700);
+        border-color: var(--success-700);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+      }
+
+      /* Preview container with gradient */
+      .preview-container {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        padding: 12px;
+        margin: 12px 0;
+      }
+
+      .slide-preview {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 6px;
+        padding: 10px;
+        margin: 8px 0;
+        transition: all 0.2s ease;
+      }
+
+      .slide-preview:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transform: translateX(2px);
+      }
+
+      .slide-preview h4 {
+        margin: 0 0 4px 0;
+        font-size: 12px;
+        color: var(--gray-700);
+        font-weight: 600;
+      }
+
+      .slide-preview p {
+        margin: 0;
+        font-size: 11px;
+        color: var(--gray-600);
+        line-height: 1.4;
+      }
+
+      /* Selection info box */
+      #currentSelection {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 1px solid var(--info-200);
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
+      }
+
+      #currentSelection p {
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
+
+      #currentSelection code {
+        background: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        color: var(--primary-600);
+        border: 1px solid var(--gray-200);
+        word-break: break-all;
+        display: inline-block;
+        max-width: 100%;
+      }
+
+      /* Form controls enhancement */
+      .form-control {
+        border: 1px solid var(--gray-300);
+        transition: all 0.2s ease;
+      }
+
+      .form-control:focus {
+        border-color: var(--primary-500);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        outline: none;
+      }
+
+      .form-label {
+        font-weight: 600;
+        color: var(--gray-700);
+      }
+
+      /* Result container with gradient */
+      .status-success {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid var(--success-300);
+      }
+
+      #presentationUrl {
+        font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+        font-size: 11px;
+        background: linear-gradient(135deg, #fafbfc 0%, #f0f7ff 100%);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav-header">
+      <button class="nav-back" onclick="backToMain()">←</button>
+      <div class="nav-title" style="display: flex; align-items: center; gap: 10px; flex: 1">
+        <!-- CellPilot Logo SVG -->
+        <svg viewBox="0 0 34 34" width="28" height="28" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0">
+          <g transform="translate(2, 2)">
+            <path
+              d="M4 4 Q4 0 8 0 L26 0 Q30 0 30 4 L30 26 Q30 30 26 30 L8 30 Q4 30 4 26 Z"
+              fill="none"
+              stroke="#2563eb"
+              stroke-width="2"
+            />
+            <line x1="17" y1="0" x2="17" y2="30" stroke="#60a5fa" stroke-width="0.8" />
+            <line x1="4" y1="15" x2="30" y2="15" stroke="#60a5fa" stroke-width="0.8" />
+            <g transform="translate(7, 7)">
+              <rect x="0" y="0" width="4" height="4" fill="#e5e7eb" opacity="0.8" />
+              <rect x="4" y="0" width="4" height="4" fill="#3b82f6" opacity="0.3" />
+              <rect x="8" y="0" width="4" height="4" fill="#60a5fa" opacity="0.2" />
+              <rect x="12" y="0" width="4" height="4" fill="#e5e7eb" opacity="0.8" />
+              <rect x="0" y="4" width="4" height="4" fill="#60a5fa" opacity="0.2" />
+              <rect x="4" y="4" width="4" height="4" fill="#3b82f6" />
+              <rect x="8" y="4" width="4" height="4" fill="#e5e7eb" opacity="0.8" />
+              <rect x="12" y="4" width="4" height="4" fill="#60a5fa" opacity="0.3" />
+            </g>
+            <g transform="translate(17, 15)">
+              <circle r="2" fill="none" stroke="#2563eb" stroke-width="1" />
+              <line x1="-4" y1="0" x2="4" y2="0" stroke="#2563eb" stroke-width="0.8" />
+              <line x1="0" y1="-4" x2="0" y2="4" stroke="#2563eb" stroke-width="0.8" />
+            </g>
           </g>
-          <g transform="translate(17, 15)">
-            <circle r="2" fill="none" stroke="#2563eb" stroke-width="1"/>
-            <line x1="-4" y1="0" x2="4" y2="0" stroke="#2563eb" stroke-width="0.8"/>
-            <line x1="0" y1="-4" x2="0" y2="4" stroke="#2563eb" stroke-width="0.8"/>
-          </g>
-        </g>
-      </svg>
-      <div style="flex: 1;">
-        <h2 style="color: #1f2937; margin: 0; font-size: 16px; font-weight: 600;">
-          Cell<span style="color: #2563eb;">M8</span>
-        </h2>
-        <p style="color: #6b7280; margin: 1px 0 0 0; font-size: 10px;">
-          Presentation Helper by CellPilot
-        </p>
-      </div>
-    </div>
-  </div>
-  
-  <div class="container">
-    <!-- Status Message -->
-    <div id="statusMessage" style="display: none;"></div>
-    
-    <!-- Loading Indicator -->
-    <div id="loadingIndicator" class="loading-indicator">
-      Processing your request...
-    </div>
-    
-    <!-- Data Selection Card -->
-    <div class="card">
-      <div class="card-header">
-        <h3>Data Selection</h3>
-        <p>Choose the data to include</p>
-      </div>
-      <div class="card-body">
-        <div id="currentSelection" style="padding: 8px; background: var(--gray-50); border-radius: 4px; margin-bottom: 12px; overflow: hidden;">
-          <p style="margin: 0; font-size: 12px; color: var(--gray-600);">Loading selection...</p>
+        </svg>
+        <div style="flex: 1">
+          <h2 style="color: #1f2937; margin: 0; font-size: 16px; font-weight: 600">
+            Cell<span style="color: #2563eb">M8</span>
+          </h2>
+          <p style="color: #6b7280; margin: 1px 0 0 0; font-size: 10px">Presentation Helper by CellPilot</p>
         </div>
-        
-        <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
-          <button class="btn btn-sm" onclick="selectEntireData()" style="flex: 1; min-width: 100px; white-space: nowrap;">
-            Use All Data
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Status Message -->
+      <div id="statusMessage" style="display: none"></div>
+
+      <!-- Loading Indicator -->
+      <div id="loadingIndicator" class="loading-indicator">Processing your request...</div>
+
+      <!-- Data Selection Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Data Selection</h3>
+          <p>Choose the data to include</p>
+        </div>
+        <div class="card-body">
+          <div
+            id="currentSelection"
+            style="padding: 8px; background: var(--gray-50); border-radius: 4px; margin-bottom: 12px; overflow: hidden"
+          >
+            <p style="margin: 0; font-size: 12px; color: var(--gray-600)">Loading selection...</p>
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap">
+            <button
+              class="btn btn-sm btn-secondary"
+              onclick="selectEntireData()"
+              style="flex: 1; min-width: 100px; white-space: nowrap"
+            >
+              Use All Data
+            </button>
+            <button
+              class="btn btn-sm btn-secondary"
+              onclick="useCurrentSelection()"
+              style="flex: 1; min-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
+            >
+              Use Selected
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Or enter specific range:</label>
+            <input type="text" id="customRange" class="form-control" placeholder="e.g., A1:E10" />
+            <button class="btn btn-sm btn-secondary" onclick="selectCustomRange()" style="margin-top: 8px; width: 100%">
+              Apply Range
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Basic Settings Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Presentation Settings</h3>
+          <p>Configure your presentation</p>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Presentation Title</label>
+            <input
+              type="text"
+              id="presentationTitle"
+              class="form-control"
+              placeholder="Enter presentation title"
+              value="Data Presentation"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Subtitle (optional)</label>
+            <input type="text" id="presentationSubtitle" class="form-control" placeholder="Enter subtitle" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Number of Slides</label>
+            <select id="slideCount" class="form-control">
+              <option value="3">3 slides</option>
+              <option value="5" selected>5 slides</option>
+              <option value="7">7 slides</option>
+              <option value="10">10 slides</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Professional Theme</label>
+            <select id="templateStyle" class="form-control">
+              <option value="executive" selected>Executive Suite (Blue Professional)</option>
+              <option value="modern">Modern Tech (Purple Gradient)</option>
+              <option value="elegant">Elegant Minimal (Clean Nordic)</option>
+              <option value="professional">Professional (Corporate Blue)</option>
+              <option value="dark">Dark Mode (Night Theme)</option>
+            </select>
+            <p style="font-size: 11px; color: var(--gray-600); margin: 4px 0 0 0">
+              All themes include subtle gradients, linked charts, and smart contrast
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Dashboard Layout</label>
+            <select id="masterTemplate" class="form-control">
+              <option value="default" selected>Auto-Select (Smart Layout)</option>
+              <option value="executive">Executive Summary</option>
+              <option value="quadview">Quad View (4 Charts)</option>
+              <option value="focus">Focus + Detail</option>
+              <option value="timeline">Timeline View</option>
+              <option value="comparison">Comparison Layout</option>
+            </select>
+            <p style="font-size: 11px; color: var(--gray-600); margin: 4px 0 0 0">
+              Professional dashboard layouts with live data connections
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Features Card -->
+      <div class="card" id="featuresCard">
+        <div class="card-header">
+          <h3>Professional Features</h3>
+          <p>All presentations include:</p>
+        </div>
+        <div class="card-body">
+          <ul style="list-style: none; padding: 0; margin: 0">
+            <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700)">
+              <span style="color: var(--success-600); font-weight: 600">✓</span> Live linked charts that auto-update
+              with data
+            </li>
+            <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700)">
+              <span style="color: var(--success-600); font-weight: 600">✓</span> Professional themes with gradient
+              effects
+            </li>
+            <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700)">
+              <span style="color: var(--success-600); font-weight: 600">✓</span> Dashboard layouts optimized for
+              executives
+            </li>
+            <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700)">
+              <span style="color: var(--success-600); font-weight: 600">✓</span> Native Google Sheets chart integration
+            </li>
+            <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700)">
+              <span style="color: var(--success-600); font-weight: 600">✓</span> Animated transitions and effects
+            </li>
+            <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700)">
+              <span style="color: var(--success-600); font-weight: 600">✓</span> Smart KPI cards with data insights
+            </li>
+            <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700)">
+              <span style="color: var(--success-600); font-weight: 600">✓</span> Speaker notes with presentation tips
+            </li>
+            <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700)">
+              <span style="color: var(--success-600); font-weight: 600">✓</span> Professional table formatting with
+              alternating rows
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Preview Section -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Preview</h3>
+          <p>See what will be created</p>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-secondary btn-block" onclick="generatePreview(this)" id="previewBtn">
+            Generate Preview
           </button>
-          <button class="btn btn-sm" onclick="useCurrentSelection()" style="flex: 1; min-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-            Use Selected
+
+          <div id="previewContainer" class="preview-container" style="display: none">
+            <div id="previewContent"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="card">
+        <div class="card-body">
+          <button class="btn btn-primary btn-block" onclick="createPresentation(this)" id="createBtn">
+            Create Presentation
           </button>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Or enter specific range:</label>
-          <input type="text" id="customRange" class="form-control" placeholder="e.g., A1:E10">
-          <button class="btn btn-sm btn-secondary" onclick="selectCustomRange()" style="margin-top: 8px; width: 100%;">
-            Apply Range
-          </button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Basic Settings Card -->
-    <div class="card">
-      <div class="card-header">
-        <h3>Presentation Settings</h3>
-        <p>Configure your presentation</p>
-      </div>
-      <div class="card-body">
-        <div class="form-group">
-          <label class="form-label">Presentation Title</label>
-          <input type="text" id="presentationTitle" class="form-control" 
-                 placeholder="Enter presentation title" value="Data Presentation">
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Subtitle (optional)</label>
-          <input type="text" id="presentationSubtitle" class="form-control" 
-                 placeholder="Enter subtitle">
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Number of Slides</label>
-          <select id="slideCount" class="form-control">
-            <option value="3">3 slides</option>
-            <option value="5" selected>5 slides</option>
-            <option value="7">7 slides</option>
-            <option value="10">10 slides</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Professional Theme</label>
-          <select id="templateStyle" class="form-control">
-            <option value="executive" selected>Executive Suite (Blue Professional)</option>
-            <option value="modern">Modern Tech (Purple Gradient)</option>
-            <option value="elegant">Elegant Minimal (Clean Nordic)</option>
-            <option value="professional">Professional (Corporate Blue)</option>
-            <option value="dark">Dark Mode (Night Theme)</option>
-          </select>
-          <p style="font-size: 11px; color: var(--gray-600); margin: 4px 0 0 0;">
-            All themes include subtle gradients, linked charts, and smart contrast
-          </p>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Dashboard Layout</label>
-          <select id="masterTemplate" class="form-control">
-            <option value="default" selected>Auto-Select (Smart Layout)</option>
-            <option value="executive">Executive Summary</option>
-            <option value="quadview">Quad View (4 Charts)</option>
-            <option value="focus">Focus + Detail</option>
-            <option value="timeline">Timeline View</option>
-            <option value="comparison">Comparison Layout</option>
-          </select>
-          <p style="font-size: 11px; color: var(--gray-600); margin: 4px 0 0 0;">
-            Professional dashboard layouts with live data connections
-          </p>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Features Card -->
-    <div class="card" id="featuresCard">
-      <div class="card-header" style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);">
-        <h3 style="color: var(--info-800);">Professional Features</h3>
-        <p style="color: var(--info-700);">All presentations include:</p>
-      </div>
-      <div class="card-body">
-        <ul style="list-style: none; padding: 0; margin: 0;">
-          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Live linked charts that auto-update with data
-          </li>
-          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Professional themes with gradient effects
-          </li>
-          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Dashboard layouts optimized for executives
-          </li>
-          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Native Google Sheets chart integration
-          </li>
-          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Animated transitions and effects
-          </li>
-          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Smart KPI cards with data insights
-          </li>
-          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Speaker notes with presentation tips
-          </li>
-          <li style="padding: 6px 0; font-size: 12px; color: var(--gray-700);">
-            <span style="color: var(--success-600); font-weight: 600;">✓</span> Professional table formatting with alternating rows
-          </li>
-        </ul>
-      </div>
-    </div>
-    
-    <!-- Preview Section -->
-    <div class="card">
-      <div class="card-header">
-        <h3>Preview</h3>
-        <p>See what will be created</p>
-      </div>
-      <div class="card-body">
-        <button class="btn btn-secondary btn-block" onclick="generatePreview(this)" id="previewBtn">
-          Generate Preview
-        </button>
-        
-        <div id="previewContainer" class="preview-container" style="display: none;">
-          <div id="previewContent"></div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Action Buttons -->
-    <div class="card">
-      <div class="card-body">
-        <button class="btn btn-primary btn-block" onclick="createPresentation(this)" id="createBtn">
-          Create Presentation
-        </button>
-        
-        <div id="resultContainer" style="display: none; margin-top: 12px;">
-          <div class="status-success">
-            <p style="margin: 0; font-weight: 600;">Presentation Created!</p>
-            <p style="margin: 4px 0 8px 0; font-size: 12px;" id="resultMessage"></p>
-            
-            <div style="background: white; padding: 8px; border-radius: 4px; margin: 8px 0;">
-              <p style="margin: 0 0 4px 0; font-size: 11px; color: var(--gray-600);">Presentation Link:</p>
-              <input type="text" id="presentationUrl" readonly style="width: 100%; padding: 4px; font-size: 11px; border: 1px solid var(--gray-200); border-radius: 3px; background: var(--gray-50);">
-            </div>
-            
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <button class="btn btn-sm btn-success" onclick="openPresentation()" style="flex: 1; min-width: 120px; white-space: normal; padding: 8px 12px;">
-                Open Slides
-              </button>
-              <button class="btn btn-sm" onclick="copyPresentationLink()" style="flex: 1; min-width: 80px;">
-                Copy Link
-              </button>
+
+          <div id="resultContainer" style="display: none; margin-top: 12px">
+            <div class="status-success">
+              <p style="margin: 0; font-weight: 600">Presentation Created!</p>
+              <p style="margin: 4px 0 8px 0; font-size: 12px" id="resultMessage"></p>
+
+              <div style="background: white; padding: 8px; border-radius: 4px; margin: 8px 0">
+                <p style="margin: 0 0 4px 0; font-size: 11px; color: var(--gray-600)">Presentation Link:</p>
+                <input
+                  type="text"
+                  id="presentationUrl"
+                  readonly
+                  style="
+                    width: 100%;
+                    padding: 4px;
+                    font-size: 11px;
+                    border: 1px solid var(--gray-200);
+                    border-radius: 3px;
+                    background: var(--gray-50);
+                  "
+                />
+              </div>
+
+              <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <button
+                  class="btn btn-sm btn-success"
+                  onclick="openPresentation()"
+                  style="flex: 1; min-width: 120px; white-space: normal; padding: 8px 12px"
+                >
+                  Open Slides
+                </button>
+                <button class="btn btn-sm" onclick="copyPresentationLink()" style="flex: 1; min-width: 80px">
+                  Copy Link
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  
-  <script>
-    // Global variables
-    var currentPreview = null;
-    var presentationUrl = null;
-    var currentSelectionInfo = null;
-    
-    // Initialize on load
-    window.onload = function() {
-      updateSelectionInfo();
-      setupTemplateListener();
-    };
-    
-    // Setup template change listener (no longer needed but kept for future use)
-    function setupTemplateListener() {
-      // All templates now have professional features
-      // Features card is always visible
-    }
-    
-    // Navigation function
-    function backToMain() {
-      google.script.run.showCellPilotSidebar();
-    }
-    
-    // Update selection info
-    function updateSelectionInfo() {
-      google.script.run
-        .withSuccessHandler(function(result) {
-          currentSelectionInfo = result;
-          const selDiv = document.getElementById('currentSelection');
-          if (result.success) {
-            let html = '<p style="margin: 0; font-size: 12px;">';
-            html += '<strong>Current: </strong>';
-            if (result.hasSelection) {
-              html += 'Selected range <code>' + result.range + '</code>';
+
+    <script>
+      // Global variables
+      var currentPreview = null;
+      var presentationUrl = null;
+      var currentSelectionInfo = null;
+
+      // Initialize on load
+      window.onload = function () {
+        updateSelectionInfo();
+        setupTemplateListener();
+      };
+
+      // Setup template change listener (no longer needed but kept for future use)
+      function setupTemplateListener() {
+        // All templates now have professional features
+        // Features card is always visible
+      }
+
+      // Navigation function
+      function backToMain() {
+        google.script.run.showCellPilotSidebar();
+      }
+
+      // Update selection info
+      function updateSelectionInfo() {
+        google.script.run
+          .withSuccessHandler(function (result) {
+            currentSelectionInfo = result;
+            const selDiv = document.getElementById('currentSelection');
+            if (result.success) {
+              let html = '<p style="margin: 0; font-size: 12px;">';
+              html += '<strong>Current: </strong>';
+              if (result.hasSelection) {
+                html += 'Selected range <code>' + result.range + '</code>';
+              } else {
+                html += 'Entire sheet';
+              }
+              html += ' (' + result.rows + ' rows × ' + result.cols + ' columns)';
+              html += '</p>';
+              selDiv.innerHTML = html;
             } else {
-              html += 'Entire sheet';
+              selDiv.innerHTML =
+                '<p style="margin: 0; font-size: 12px; color: var(--error-600);">Unable to get selection</p>';
             }
-            html += ' (' + result.rows + ' rows × ' + result.cols + ' columns)';
-            html += '</p>';
-            selDiv.innerHTML = html;
-          } else {
-            selDiv.innerHTML = '<p style="margin: 0; font-size: 12px; color: var(--error-600);">Unable to get selection</p>';
-          }
-        })
-        .withFailureHandler(function(error) {
-          const selDiv = document.getElementById('currentSelection');
-          selDiv.innerHTML = '<p style="margin: 0; font-size: 12px; color: var(--error-600);">Error: ' + error.message + '</p>';
-        })
-        .getCellM8Selection();
-    }
-    
-    // Select entire data
-    function selectEntireData() {
-      google.script.run
-        .withSuccessHandler(function(result) {
-          if (result.success) {
-            showStatus('Selected entire data range', 'success');
-            updateSelectionInfo();
-          } else {
-            showStatus('Failed to select data', 'error');
-          }
-        })
-        .withFailureHandler(function(error) {
-          showStatus('Error: ' + error.message, 'error');
-        })
-        .selectCellM8EntireDataRange();
-    }
-    
-    // Use current selection
-    function useCurrentSelection() {
-      updateSelectionInfo();
-      showStatus('Using current selection', 'info');
-    }
-    
-    // Select custom range
-    function selectCustomRange() {
-      const rangeInput = document.getElementById('customRange').value;
-      if (!rangeInput) {
-        showStatus('Please enter a range', 'error');
-        return;
+          })
+          .withFailureHandler(function (error) {
+            const selDiv = document.getElementById('currentSelection');
+            selDiv.innerHTML =
+              '<p style="margin: 0; font-size: 12px; color: var(--error-600);">Error: ' + error.message + '</p>';
+          })
+          .getCellM8Selection();
       }
-      
-      google.script.run
-        .withSuccessHandler(function(result) {
-          if (result.success) {
-            showStatus('Selected range: ' + result.range, 'success');
-            updateSelectionInfo();
-            document.getElementById('customRange').value = '';
-          } else {
-            showStatus('Invalid range: ' + rangeInput, 'error');
-          }
-        })
-        .withFailureHandler(function(error) {
-          showStatus('Error: ' + error.message, 'error');
-        })
-        .selectCellM8Range(rangeInput);
-    }
-    
-    // Show status message
-    function showStatus(message, type) {
-      const statusDiv = document.getElementById('statusMessage');
-      statusDiv.className = 'status-message status-' + type;
-      statusDiv.textContent = message;
-      statusDiv.style.display = 'block';
-      
-      // Auto-hide after 5 seconds
-      setTimeout(function() {
-        statusDiv.style.display = 'none';
-      }, 5000);
-    }
-    
-    // Generate preview
-    function generatePreview(btn) {
-      const config = {
-        title: document.getElementById('presentationTitle').value,
-        subtitle: document.getElementById('presentationSubtitle').value,
-        slideCount: parseInt(document.getElementById('slideCount').value),
-        template: document.getElementById('templateStyle').value
-      };
-      
-      if (!config.title) {
-        showStatus('Please enter a presentation title', 'error');
-        return;
+
+      // Select entire data
+      function selectEntireData() {
+        google.script.run
+          .withSuccessHandler(function (result) {
+            if (result.success) {
+              showStatus('Selected entire data range', 'success');
+              updateSelectionInfo();
+            } else {
+              showStatus('Failed to select data', 'error');
+            }
+          })
+          .withFailureHandler(function (error) {
+            showStatus('Error: ' + error.message, 'error');
+          })
+          .selectCellM8EntireDataRange();
       }
-      
-      // Simple loading state
-      if (!btn) btn = document.getElementById('previewBtn');
-      btn.disabled = true;
-      btn.textContent = 'Generating...';
-      showStatus('Analyzing data and generating preview...', 'info');
-      
-      // First extract and analyze data
-      google.script.run
-        .withSuccessHandler(function(dataResult) {
-          if (dataResult.success) {
-            // Now analyze the data
-            google.script.run
-              .withSuccessHandler(function(analysisResult) {
-                if (analysisResult.success) {
-                  config.analysis = analysisResult.analysis;
-                  config.data = dataResult;
-                  
-                  // Generate preview with analyzed data
-                  google.script.run
-                    .withSuccessHandler(function(result) {
-                      btn.disabled = false;
-                      btn.textContent = 'Generate Preview';
-                      if (result.success) {
-                        currentPreview = result;
-                        currentPreview.analysis = analysisResult.analysis;
-                        displayPreview(result);
-                        showStatus('Preview generated with data analysis', 'success');
-                      } else {
-                        showStatus(result.error || 'Failed to generate preview', 'error');
-                      }
-                    })
-                    .withFailureHandler(function(error) {
-                      btn.disabled = false;
-                      btn.textContent = 'Generate Preview';
-                      showStatus('Error: ' + error.message, 'error');
-                    })
-                    .previewCellM8Presentation(config);
-                } else {
-                  btn.disabled = false;
-                  btn.textContent = 'Generate Preview';
-                  showStatus('Failed to analyze data', 'error');
-                }
-              })
-              .withFailureHandler(function(error) {
-                btn.disabled = false;
-                btn.textContent = 'Generate Preview';
-                showStatus('Error analyzing data: ' + error.message, 'error');
-              })
-              .analyzeCellM8Data(dataResult);
-          } else {
-            btn.disabled = false;
-            btn.textContent = 'Generate Preview';
-            showStatus('No data found to preview', 'error');
-          }
-        })
-        .withFailureHandler(function(error) {
-          btn.disabled = false;
-          btn.textContent = 'Generate Preview';
-          showStatus('Error extracting data: ' + error.message, 'error');
-        })
-        .extractCellM8Data();
-    }
-    
-    // Display preview
-    function displayPreview(preview) {
-      const container = document.getElementById('previewContainer');
-      const content = document.getElementById('previewContent');
-      
-      let html = '<h4 style="margin: 0 0 8px 0; font-size: 13px;">Preview (' + preview.slideCount + ' slides)</h4>';
-      
-      if (preview.dataInfo) {
-        html += '<p style="font-size: 11px; color: var(--gray-600); margin-bottom: 8px;">';
-        html += 'Data: ' + preview.dataInfo.rows + ' rows × ' + preview.dataInfo.columns + ' columns';
-        
-        if (preview.analysis && preview.analysis.completeness) {
-          html += ' | Completeness: ' + preview.analysis.completeness + '%';
+
+      // Use current selection
+      function useCurrentSelection() {
+        updateSelectionInfo();
+        showStatus('Using current selection', 'info');
+      }
+
+      // Select custom range
+      function selectCustomRange() {
+        const rangeInput = document.getElementById('customRange').value;
+        if (!rangeInput) {
+          showStatus('Please enter a range', 'error');
+          return;
         }
-        html += '</p>';
-      }
-      
-      // Show analysis insights if available
-      if (preview.analysis && preview.analysis.statistics) {
-        html += '<div style="background: var(--info-50); padding: 8px; border-radius: 4px; margin-bottom: 8px;">';
-        html += '<p style="font-size: 11px; margin: 0; font-weight: 600;">Data Analysis:</p>';
-        html += '<ul style="margin: 4px 0 0 16px; padding: 0; font-size: 11px;">';
-        
-        const stats = Object.keys(preview.analysis.statistics).slice(0, 3);
-        stats.forEach(function(key) {
-          const stat = preview.analysis.statistics[key];
-          if (stat && stat.average) {
-            html += '<li>' + key + ': Avg ' + Math.round(stat.average) + '</li>';
-          }
-        });
-        
-        html += '</ul>';
-        html += '</div>';
-      }
-      
-      // Show slide previews
-      if (preview.slides && preview.slides.length > 0) {
-        preview.slides.forEach(function(slide, index) {
-          html += '<div class="slide-preview">';
-          html += '<h4>Slide ' + (index + 1) + ': ' + slide.title + '</h4>';
-          
-          if (slide.bullets && slide.bullets.length > 0) {
-            html += '<ul style="margin: 4px 0 0 16px; padding: 0; font-size: 10px;">';
-            slide.bullets.forEach(function(bullet) {
-              html += '<li>' + bullet + '</li>';
-            });
-            html += '</ul>';
-          } else {
-            html += '<p>' + (slide.subtitle || slide.content || '') + '</p>';
-          }
-          
-          html += '</div>';
-        });
-      }
-      
-      content.innerHTML = html;
-      container.style.display = 'block';
-    }
-    
-    // Create presentation
-    function createPresentation(btn) {
-      const config = {
-        title: document.getElementById('presentationTitle').value,
-        subtitle: document.getElementById('presentationSubtitle').value,
-        slideCount: parseInt(document.getElementById('slideCount').value),
-        template: document.getElementById('templateStyle').value,
-        masterTemplate: document.getElementById('masterTemplate').value,
-        content: currentPreview ? currentPreview.slides : []
-      };
-      
-      if (!config.title) {
-        showStatus('Please enter a presentation title', 'error');
-        return;
-      }
-      
-      // Simple loading state
-      if (!btn) btn = document.getElementById('createBtn');
-      btn.disabled = true;
-      btn.textContent = 'Creating...';
-      showLoading('Creating presentation with ' + config.template + ' theme...');
-      
-      // Call server function
-      google.script.run
-        .withSuccessHandler(function(result) {
-          console.log('Create presentation result:', result);
-          
-          if (result.success && result.url) {
-            presentationUrl = result.url;
-            hideLoading();
-            btn.disabled = false;
-            btn.textContent = 'Create Presentation';
-            showResult(result);
-            showStatus('Presentation created successfully!', 'success');
-            
-            // Optionally apply template (for future enhancement)
-            if (config.template && config.template !== 'simple') {
-              google.script.run
-                .withSuccessHandler(function(templateResult) {
-                  console.log('Template applied:', templateResult);
-                })
-                .withFailureHandler(function(error) {
-                  console.log('Template error:', error);
-                })
-                .applyCellM8Template({id: result.presentationId}, config.template);
+
+        google.script.run
+          .withSuccessHandler(function (result) {
+            if (result.success) {
+              showStatus('Selected range: ' + result.range, 'success');
+              updateSelectionInfo();
+              document.getElementById('customRange').value = '';
+            } else {
+              showStatus('Invalid range: ' + rangeInput, 'error');
             }
-          } else {
-            hideLoading();
-            btn.disabled = false;
-            btn.textContent = 'Create Presentation';
-            showStatus(result.error || 'Failed to create presentation', 'error');
-            console.error('Creation failed:', result);
-          }
-        })
-        .withFailureHandler(function(error) {
-          hideLoading();
-          btn.disabled = false;
-          btn.textContent = 'Create Presentation';
-          showStatus('Error: ' + error.message, 'error');
-          console.error('Creation error:', error);
-        })
-        .createCellM8Presentation(config);
-    }
-    
-    // Show result
-    function showResult(result) {
-      const container = document.getElementById('resultContainer');
-      const message = document.getElementById('resultMessage');
-      const urlInput = document.getElementById('presentationUrl');
-      
-      message.textContent = result.slideCount + ' slides created';
-      presentationUrl = result.url;
-      
-      // Display the URL in the input field
-      if (urlInput && result.url) {
-        urlInput.value = result.url;
+          })
+          .withFailureHandler(function (error) {
+            showStatus('Error: ' + error.message, 'error');
+          })
+          .selectCellM8Range(rangeInput);
       }
-      
-      container.style.display = 'block';
-    }
-    
-    // Open presentation
-    function openPresentation() {
-      if (presentationUrl) {
-        window.open(presentationUrl, '_blank');
-      } else {
-        showStatus('No presentation URL available', 'error');
-      }
-    }
-    
-    // Copy presentation link
-    function copyPresentationLink() {
-      const urlInput = document.getElementById('presentationUrl');
-      if (urlInput && urlInput.value) {
-        urlInput.select();
-        document.execCommand('copy');
-        showStatus('Link copied to clipboard!', 'success');
-      } else {
-        showStatus('No link to copy', 'error');
-      }
-    }
-    
-    // Test function - simple alert
-    function testCellM8() {
-      google.script.run
-        .withSuccessHandler(function(result) {
-          alert('Test successful: ' + JSON.stringify(result));
-        })
-        .withFailureHandler(function(error) {
-          alert('Test failed: ' + error.message);
-        })
-        .testCellM8Function();
-    }
-    
-    // Simple loading functions
-    function showLoading(message) {
-      const indicator = document.getElementById('loadingIndicator');
-      if (indicator) {
-        indicator.textContent = message || 'Processing...';
-        indicator.classList.add('show');
-      }
-    }
-    
-    function hideLoading() {
-      const indicator = document.getElementById('loadingIndicator');
-      if (indicator) {
-        indicator.classList.remove('show');
-      }
-    }
-    
-    // Enhanced status function
-    function showStatus(message, type) {
-      const statusDiv = document.getElementById('statusMessage');
-      if (statusDiv) {
+
+      // Show status message
+      function showStatus(message, type) {
+        const statusDiv = document.getElementById('statusMessage');
         statusDiv.className = 'status-message status-' + type;
         statusDiv.textContent = message;
         statusDiv.style.display = 'block';
-        
-        // Auto-hide after 5 seconds for non-error messages
-        if (type !== 'error') {
-          setTimeout(function() {
-            statusDiv.style.display = 'none';
-          }, 5000);
+
+        // Auto-hide after 5 seconds
+        setTimeout(function () {
+          statusDiv.style.display = 'none';
+        }, 5000);
+      }
+
+      // Generate preview
+      function generatePreview(btn) {
+        const config = {
+          title: document.getElementById('presentationTitle').value,
+          subtitle: document.getElementById('presentationSubtitle').value,
+          slideCount: parseInt(document.getElementById('slideCount').value),
+          template: document.getElementById('templateStyle').value,
+        };
+
+        if (!config.title) {
+          showStatus('Please enter a presentation title', 'error');
+          return;
+        }
+
+        // Simple loading state
+        if (!btn) btn = document.getElementById('previewBtn');
+        btn.disabled = true;
+        btn.textContent = 'Generating...';
+        showStatus('Analyzing data and generating preview...', 'info');
+
+        // First extract and analyze data
+        google.script.run
+          .withSuccessHandler(function (dataResult) {
+            if (dataResult.success) {
+              // Now analyze the data
+              google.script.run
+                .withSuccessHandler(function (analysisResult) {
+                  if (analysisResult.success) {
+                    config.analysis = analysisResult.analysis;
+                    config.data = dataResult;
+
+                    // Generate preview with analyzed data
+                    google.script.run
+                      .withSuccessHandler(function (result) {
+                        btn.disabled = false;
+                        btn.textContent = 'Generate Preview';
+                        if (result.success) {
+                          currentPreview = result;
+                          currentPreview.analysis = analysisResult.analysis;
+                          displayPreview(result);
+                          showStatus('Preview generated with data analysis', 'success');
+                        } else {
+                          showStatus(result.error || 'Failed to generate preview', 'error');
+                        }
+                      })
+                      .withFailureHandler(function (error) {
+                        btn.disabled = false;
+                        btn.textContent = 'Generate Preview';
+                        showStatus('Error: ' + error.message, 'error');
+                      })
+                      .previewCellM8Presentation(config);
+                  } else {
+                    btn.disabled = false;
+                    btn.textContent = 'Generate Preview';
+                    showStatus('Failed to analyze data', 'error');
+                  }
+                })
+                .withFailureHandler(function (error) {
+                  btn.disabled = false;
+                  btn.textContent = 'Generate Preview';
+                  showStatus('Error analyzing data: ' + error.message, 'error');
+                })
+                .analyzeCellM8Data(dataResult);
+            } else {
+              btn.disabled = false;
+              btn.textContent = 'Generate Preview';
+              showStatus('No data found to preview', 'error');
+            }
+          })
+          .withFailureHandler(function (error) {
+            btn.disabled = false;
+            btn.textContent = 'Generate Preview';
+            showStatus('Error extracting data: ' + error.message, 'error');
+          })
+          .extractCellM8Data();
+      }
+
+      // Display preview
+      function displayPreview(preview) {
+        const container = document.getElementById('previewContainer');
+        const content = document.getElementById('previewContent');
+
+        let html = '<h4 style="margin: 0 0 8px 0; font-size: 13px;">Preview (' + preview.slideCount + ' slides)</h4>';
+
+        if (preview.dataInfo) {
+          html += '<p style="font-size: 11px; color: var(--gray-600); margin-bottom: 8px;">';
+          html += 'Data: ' + preview.dataInfo.rows + ' rows × ' + preview.dataInfo.columns + ' columns';
+
+          if (preview.analysis && preview.analysis.completeness) {
+            html += ' | Completeness: ' + preview.analysis.completeness + '%';
+          }
+          html += '</p>';
+        }
+
+        // Show analysis insights if available
+        if (preview.analysis && preview.analysis.statistics) {
+          html += '<div style="background: var(--info-50); padding: 8px; border-radius: 4px; margin-bottom: 8px;">';
+          html += '<p style="font-size: 11px; margin: 0; font-weight: 600;">Data Analysis:</p>';
+          html += '<ul style="margin: 4px 0 0 16px; padding: 0; font-size: 11px;">';
+
+          const stats = Object.keys(preview.analysis.statistics).slice(0, 3);
+          stats.forEach(function (key) {
+            const stat = preview.analysis.statistics[key];
+            if (stat && stat.average) {
+              html += '<li>' + key + ': Avg ' + Math.round(stat.average) + '</li>';
+            }
+          });
+
+          html += '</ul>';
+          html += '</div>';
+        }
+
+        // Show slide previews
+        if (preview.slides && preview.slides.length > 0) {
+          preview.slides.forEach(function (slide, index) {
+            html += '<div class="slide-preview">';
+            html += '<h4>Slide ' + (index + 1) + ': ' + slide.title + '</h4>';
+
+            if (slide.bullets && slide.bullets.length > 0) {
+              html += '<ul style="margin: 4px 0 0 16px; padding: 0; font-size: 10px;">';
+              slide.bullets.forEach(function (bullet) {
+                html += '<li>' + bullet + '</li>';
+              });
+              html += '</ul>';
+            } else {
+              html += '<p>' + (slide.subtitle || slide.content || '') + '</p>';
+            }
+
+            html += '</div>';
+          });
+        }
+
+        content.innerHTML = html;
+        container.style.display = 'block';
+      }
+
+      // Create presentation
+      function createPresentation(btn) {
+        const config = {
+          title: document.getElementById('presentationTitle').value,
+          subtitle: document.getElementById('presentationSubtitle').value,
+          slideCount: parseInt(document.getElementById('slideCount').value),
+          template: document.getElementById('templateStyle').value,
+          masterTemplate: document.getElementById('masterTemplate').value,
+          content: currentPreview ? currentPreview.slides : [],
+        };
+
+        if (!config.title) {
+          showStatus('Please enter a presentation title', 'error');
+          return;
+        }
+
+        // Simple loading state
+        if (!btn) btn = document.getElementById('createBtn');
+        btn.disabled = true;
+        btn.textContent = 'Creating...';
+        showLoading('Creating presentation with ' + config.template + ' theme...');
+
+        // Call server function
+        google.script.run
+          .withSuccessHandler(function (result) {
+            console.log('Create presentation result:', result);
+
+            if (result.success && result.url) {
+              presentationUrl = result.url;
+              hideLoading();
+              btn.disabled = false;
+              btn.textContent = 'Create Presentation';
+              showResult(result);
+              showStatus('Presentation created successfully!', 'success');
+
+              // Optionally apply template (for future enhancement)
+              if (config.template && config.template !== 'simple') {
+                google.script.run
+                  .withSuccessHandler(function (templateResult) {
+                    console.log('Template applied:', templateResult);
+                  })
+                  .withFailureHandler(function (error) {
+                    console.log('Template error:', error);
+                  })
+                  .applyCellM8Template({ id: result.presentationId }, config.template);
+              }
+            } else {
+              hideLoading();
+              btn.disabled = false;
+              btn.textContent = 'Create Presentation';
+              showStatus(result.error || 'Failed to create presentation', 'error');
+              console.error('Creation failed:', result);
+            }
+          })
+          .withFailureHandler(function (error) {
+            hideLoading();
+            btn.disabled = false;
+            btn.textContent = 'Create Presentation';
+            showStatus('Error: ' + error.message, 'error');
+            console.error('Creation error:', error);
+          })
+          .createCellM8Presentation(config);
+      }
+
+      // Show result
+      function showResult(result) {
+        const container = document.getElementById('resultContainer');
+        const message = document.getElementById('resultMessage');
+        const urlInput = document.getElementById('presentationUrl');
+
+        message.textContent = result.slideCount + ' slides created';
+        presentationUrl = result.url;
+
+        // Display the URL in the input field
+        if (urlInput && result.url) {
+          urlInput.value = result.url;
+        }
+
+        container.style.display = 'block';
+      }
+
+      // Open presentation
+      function openPresentation() {
+        if (presentationUrl) {
+          window.open(presentationUrl, '_blank');
+        } else {
+          showStatus('No presentation URL available', 'error');
         }
       }
-    }
-  </script>
-</body>
+
+      // Copy presentation link
+      function copyPresentationLink() {
+        const urlInput = document.getElementById('presentationUrl');
+        if (urlInput && urlInput.value) {
+          urlInput.select();
+          document.execCommand('copy');
+          showStatus('Link copied to clipboard!', 'success');
+        } else {
+          showStatus('No link to copy', 'error');
+        }
+      }
+
+      // Test function - simple alert
+      function testCellM8() {
+        google.script.run
+          .withSuccessHandler(function (result) {
+            alert('Test successful: ' + JSON.stringify(result));
+          })
+          .withFailureHandler(function (error) {
+            alert('Test failed: ' + error.message);
+          })
+          .testCellM8Function();
+      }
+
+      // Simple loading functions
+      function showLoading(message) {
+        const indicator = document.getElementById('loadingIndicator');
+        if (indicator) {
+          indicator.textContent = message || 'Processing...';
+          indicator.classList.add('show');
+        }
+      }
+
+      function hideLoading() {
+        const indicator = document.getElementById('loadingIndicator');
+        if (indicator) {
+          indicator.classList.remove('show');
+        }
+      }
+
+      // Enhanced status function
+      function showStatus(message, type) {
+        const statusDiv = document.getElementById('statusMessage');
+        if (statusDiv) {
+          statusDiv.className = 'status-message status-' + type;
+          statusDiv.textContent = message;
+          statusDiv.style.display = 'block';
+
+          // Auto-hide after 5 seconds for non-error messages
+          if (type !== 'error') {
+            setTimeout(function () {
+              statusDiv.style.display = 'none';
+            }, 5000);
+          }
+        }
+      }
+    </script>
+  </body>
 </html>
