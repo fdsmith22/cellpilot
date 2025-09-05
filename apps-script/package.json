@@ -13,9 +13,19 @@
     "open:installer": "cd beta-installer && npx clasp open",
     "push:all": "npm run push:library && npm run push:installer",
     "logs:library": "cd main-library && npx clasp logs",
-    "logs:installer": "cd beta-installer && npx clasp logs"
+    "logs:installer": "cd beta-installer && npx clasp logs",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "@google/clasp": "^2.4.2"
+    "@google/clasp": "^2.5.0",
+    "dependency-cruiser": "^17.0.1",
+    "eslint": "^9.34.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-googleappsscript": "^1.0.5",
+    "husky": "^9.1.7",
+    "jsdoc": "^4.0.4",
+    "jsdoc-to-markdown": "^9.1.2",
+    "lint-staged": "^16.1.6",
+    "prettier": "^3.6.2"
   }
 }

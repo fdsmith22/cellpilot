@@ -839,7 +839,7 @@ function createMainSidebarHtml(context) {
       }
     </style>
     
-    <div class="nav-header" style="padding: 12px 16px; border-bottom: 1px solid var(--gray-200);">
+    <div class="nav-header" style="background: linear-gradient(135deg, #f0f7ff 0%, #e0e7ff 100%); padding: 12px 16px; border-bottom: 1px solid #c7d2fe;">
       <div style="display: flex; align-items: center; justify-content: center;">
         <a href="https://www.cellpilot.io" target="_blank" style="text-decoration: none;">
           <svg viewBox="0 0 160 50" width="140" height="44" xmlns="http://www.w3.org/2000/svg" style="cursor: pointer;">
@@ -871,7 +871,7 @@ function createMainSidebarHtml(context) {
         </a>
         <!-- Tier Badge -->
         <div style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%);">
-          <span style="display: inline-block; padding: 4px 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 12px;">
+          <span style="display: inline-block; padding: 4px 10px; background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%); color: white; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 12px; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);">
             <?= context.tier || 'BETA' ?>
           </span>
         </div>
@@ -907,22 +907,26 @@ function createMainSidebarHtml(context) {
       
       <!-- CellM8 Presentation Helper -->
       <div style="margin-bottom: 16px;">
-        <div class="card" style="padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative; overflow: hidden;">
-          <div style="position: absolute; top: 6px; right: 8px;">
-            <span style="display: inline-block; padding: 2px 6px; background: rgba(255, 255, 255, 0.9); color: #764ba2; font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 8px;">
+        <div class="card" style="padding: 10px; background: linear-gradient(135deg, #f0f7ff 0%, #e0e7ff 100%); border: 1.5px solid #c7d2fe; position: relative; overflow: hidden; cursor: pointer; transition: all 0.2s ease;"
+             onmouseover="this.style.background='linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)'; this.style.borderColor='#a5b4fc'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(99, 102, 241, 0.15)';"
+             onmouseout="this.style.background='linear-gradient(135deg, #f0f7ff 0%, #e0e7ff 100%)'; this.style.borderColor='#c7d2fe'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+          <div style="position: absolute; top: 4px; right: 6px;">
+            <span style="display: inline-block; padding: 2px 6px; background: rgba(99, 102, 241, 0.9); color: white; font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 8px;">
               NEW
             </span>
           </div>
-          <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
             <div style="flex: 1;">
-              <h3 style="font-size: 14px; font-weight: 700; color: white; margin: 0 0 4px 0;">
-                CellM8 Presentation Helper
+              <h3 style="font-size: 13px; font-weight: 700; color: #1f2937; margin: 0 0 2px 0;">
+                Cell<span style="color: #2563eb;">M8</span> Presentation Helper
               </h3>
-              <p style="font-size: 11px; color: rgba(255, 255, 255, 0.85); margin: 0; line-height: 1.3;">
+              <p style="font-size: 10px; color: #6b7280; margin: 0; line-height: 1.3;">
                 Generate slides from your data
               </p>
             </div>
-            <button onclick="google.script.run.showCellM8()" style="padding: 8px 14px; background: white; color: #667eea; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; white-space: nowrap;">
+            <button onclick="google.script.run.showCellM8()" style="padding: 6px 12px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; white-space: nowrap;"
+                    onmouseover="this.style.background='#1d4ed8';" 
+                    onmouseout="this.style.background='#2563eb';">
               Create →
             </button>
           </div>

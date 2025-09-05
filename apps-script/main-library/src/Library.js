@@ -230,6 +230,18 @@ var getUserUsageStats = getUserUsageStats || function() { return getUserUsageSta
 var trackEvent = trackEvent || function(eventName, eventData) { return trackEvent(eventName, eventData); };
 var trackError = trackError || function(error, context) { return trackError(error, context); };
 
+// Export specific CellM8 functions for direct access from library
+// These wrap the existing CellM8 object functions without redeclaring CellM8
+var createOptimalPresentation = createOptimalPresentation || function(config) { 
+  return CellM8.createOptimalPresentation(config); 
+};
+var analyzeDataIntelligently = analyzeDataIntelligently || function(data) { 
+  return CellM8.analyzeDataIntelligently(data); 
+};
+var buildChartSlide = buildChartSlide || function(slide, spec, data, analysis, theme) {
+  return CellM8.buildChartSlide(slide, spec, data, analysis, theme);
+};
+
 /**
  * This ensures all functions are available when CellPilot is used as a library
  */

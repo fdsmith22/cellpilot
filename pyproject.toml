@@ -1,0 +1,24 @@
+# PyCharm-friendly Python configuration for CellPilot project
+# This helps PyCharm understand the project structure even though it's primarily JavaScript
+
+[tool.pycharm]
+project_name = "CellPilot"
+project_type = "javascript"
+
+[tool.custom_scripts]
+deploy = "cd apps-script && npm run push:library"
+status = "./scripts/status.sh"
+test = "cd apps-script/main-library && clasp run testCellM8Directly"
+logs = "cd apps-script && npm run logs:library"
+
+[project.urls]
+"Homepage" = "https://cellpilot.io"
+"Documentation" = "file:///MASTER_DOCUMENTATION.md"
+"Apps Script Console" = "https://script.google.com"
+"Google Cloud Console" = "https://console.cloud.google.com"
+
+[tool.file_associations]
+"*.gs" = "javascript"
+"*.js" = "javascript"
+"appsscript.json" = "json"
+".clasp.json" = "json"

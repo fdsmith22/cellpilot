@@ -1,6 +1,8 @@
 # Node modules
 node_modules/
 site/node_modules/
+apps-script/node_modules/
+**/node_modules/
 
 # Next.js build output
 site/.next/
@@ -31,9 +33,9 @@ next-env.d.ts
 .DS_Store
 Thumbs.db
 
-# IDE files
+# IDE files (keep PyCharm configs for consistency)
 .vscode/
-.idea/
+# .idea/  # Keeping PyCharm configs for team consistency
 *.sublime-*
 
 # Temporary files
@@ -59,3 +61,31 @@ test/
 # Cache directories
 .cache/
 .parcel-cache/
+
+# Development tool outputs
+ai-context.txt
+ai-context.md
+dependency-graph.svg
+dependency-report.html
+docs/api/
+*.log
+
+# ESLint and Prettier cache
+.eslintcache
+.prettierignore
+
+# Husky
+apps-script/.husky/_/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Generated documentation (can be regenerated)
+docs/api/
+jsdoc-output/
+
+# Backup files
+*.backup
+*.bak
+*~

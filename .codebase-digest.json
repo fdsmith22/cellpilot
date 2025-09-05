@@ -1,0 +1,24 @@
+{
+  "include": [
+    "apps-script/main-library/src/**/*.js",
+    "apps-script/main-library/*.html",
+    "apps-script/main-library/appsscript.json",
+    "site/app/**/*.tsx",
+    "site/app/**/*.ts",
+    "site/components/**/*.tsx"
+  ],
+  "exclude": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.git/**",
+    "**/archive/**",
+    "**/docs/**"
+  ],
+  "outputFormat": "markdown",
+  "maxFileSize": 100000,
+  "maxFiles": 50,
+  "includeTree": true,
+  "includeContent": false,
+  "summaryLength": 500
+}

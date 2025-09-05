@@ -8,7 +8,7 @@
     .loading-indicator {
       display: none;
       padding: 12px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
       color: white;
       border-radius: 8px;
       text-align: center;
@@ -136,7 +136,7 @@
     
     /* Enhanced buttons */
     .btn {
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
       color: white;
       border: none;
       padding: 10px 16px;
@@ -145,12 +145,13 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
     }
     
     .btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
     }
     
     .btn-secondary {
@@ -268,11 +269,41 @@
   </style>
 </head>
 <body>
-  <div class="nav-header">
-    <button class="nav-back" onclick="backToMain()">←</button>
-    <div class="nav-title">
-      <h2>Cell<span style="color: var(--primary-600);">M8</span></h2>
-      <p>Create presentations from your data</p>
+  <div class="nav-header" style="background: linear-gradient(135deg, #f0f7ff 0%, #e0e7ff 100%); border-bottom: 1px solid #c7d2fe; padding: 12px 14px;">
+    <button class="nav-back" onclick="backToMain()" style="background: white; border: 1px solid #c7d2fe; color: #2563eb;">←</button>
+    <div class="nav-title" style="display: flex; align-items: center; gap: 10px; flex: 1;">
+      <!-- CellPilot Logo SVG -->
+      <svg viewBox="0 0 34 34" width="28" height="28" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+        <g transform="translate(2, 2)">
+          <path d="M4 4 Q4 0 8 0 L26 0 Q30 0 30 4 L30 26 Q30 30 26 30 L8 30 Q4 30 4 26 Z" 
+                fill="none" stroke="#2563eb" stroke-width="2"/>
+          <line x1="17" y1="0" x2="17" y2="30" stroke="#60a5fa" stroke-width="0.8"/>
+          <line x1="4" y1="15" x2="30" y2="15" stroke="#60a5fa" stroke-width="0.8"/>
+          <g transform="translate(7, 7)">
+            <rect x="0" y="0" width="4" height="4" fill="#e5e7eb" opacity="0.8"/>
+            <rect x="4" y="0" width="4" height="4" fill="#3b82f6" opacity="0.3"/>
+            <rect x="8" y="0" width="4" height="4" fill="#60a5fa" opacity="0.2"/>
+            <rect x="12" y="0" width="4" height="4" fill="#e5e7eb" opacity="0.8"/>
+            <rect x="0" y="4" width="4" height="4" fill="#60a5fa" opacity="0.2"/>
+            <rect x="4" y="4" width="4" height="4" fill="#3b82f6"/>
+            <rect x="8" y="4" width="4" height="4" fill="#e5e7eb" opacity="0.8"/>
+            <rect x="12" y="4" width="4" height="4" fill="#60a5fa" opacity="0.3"/>
+          </g>
+          <g transform="translate(17, 15)">
+            <circle r="2" fill="none" stroke="#2563eb" stroke-width="1"/>
+            <line x1="-4" y1="0" x2="4" y2="0" stroke="#2563eb" stroke-width="0.8"/>
+            <line x1="0" y1="-4" x2="0" y2="4" stroke="#2563eb" stroke-width="0.8"/>
+          </g>
+        </g>
+      </svg>
+      <div style="flex: 1;">
+        <h2 style="color: #1f2937; margin: 0; font-size: 16px; font-weight: 600;">
+          Cell<span style="color: #2563eb;">M8</span>
+        </h2>
+        <p style="color: #6b7280; margin: 1px 0 0 0; font-size: 10px;">
+          Presentation Helper by CellPilot
+        </p>
+      </div>
     </div>
   </div>
   
